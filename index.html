@@ -2121,7 +2121,33 @@ textarea:focus-visible{
 </script>
 <script>
 
-if (window.pdfjsLib) {
+/* === API BASE CONFIG - FRONTEND SEPARATO / VERCEL READY === */
+const API_BASE_STORAGE_KEY = "utility_doganalista_api_base_v1";
+
+function normalizeApiBase(value){
+  const raw = String(value || "").trim().replace(/\/+$/, "");
+  if (!raw) return "";
+  if (!/^https?:\/\//i.test(raw)) return "https://" + raw;
+  return raw;
+}
+
+function getApiBase(){
+  return "";
+}
+
+function apiUrl(path){
+  const cleanPath = String(path || "");
+  const normalizedPath = cleanPath.startsWith("/") ? cleanPath : "/" + cleanPath;
+  const base = getApiBase();
+  return base ? base + normalizedPath : normalizedPath;
+}
+
+function initApiBaseUi(){
+  // Backend API configurabile disattivato: la utility usa lo stesso dominio del server.
+}
+document.addEventListener("DOMContentLoaded", initApiBaseUi);
+
+  if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   }
 </script>
@@ -2166,7 +2192,6 @@ if (window.pdfjsLib) {
 </div>
 </div>
 </header>
-
 
 
 <section class="panel sectionJumpTarget" id="taric-section">
@@ -4793,7 +4818,7 @@ async function loadShipsSct() {
   refreshShipsBtn.textContent = "Aggiornamento...";
 
   try {
-    const res = await fetch("/get-ships-sct"));
+    const res = await fetch(apiUrl("/get-ships-sct"));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -4850,7 +4875,7 @@ async function loadShipsConateco() {
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi CONATECO...</td></tr>`;
 
   try {
-    const res = await fetch("/get-ships-conateco"));
+    const res = await fetch(apiUrl("/get-ships-conateco"));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -4909,7 +4934,7 @@ async function loadShipsTfg() {
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi TFG...</td></tr>`;
 
   try {
-    const res = await fetch("/get-ships-tfg?refresh=1&_=" + Date.now()));
+    const res = await fetch(apiUrl("/get-ships-tfg?refresh=1&_=" + Date.now()));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -4965,9 +4990,9 @@ function renderShipsTfg(data) {
 
 
 const SHIP_SEARCH_ENDPOINTS = [
-  { terminal: "SCT", url: "/get-ships-sct?all=1&refresh=1" },
-  { terminal: "CONATECO", url: "/get-ships-conateco?all=1&refresh=1" },
-  { terminal: "TFG", url: "/get-ships-tfg?all=1&refresh=1" }
+  { terminal: "SCT", url: apiUrl("/get-ships-sct?all=1&refresh=1") },
+  { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1&refresh=1") },
+  { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1&refresh=1") }
 ];
 
 function normalizeShipSearchText(value){
