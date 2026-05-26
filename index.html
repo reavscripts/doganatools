@@ -1,0 +1,5461 @@
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta name="theme-color" content="#2563eb"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<title>UTILITY PER DOGANALISTA</title>
+<style>
+    :root{
+      --bg:#f3f6fb;
+      --bg-accent:#e9eef8;
+      --panel:#ffffff;
+      --panel-2:#f8fafc;
+      --grid:#d9e2ef;
+      --grid-soft:#e8eef6;
+      --text:#142033;
+      --heading:#0f172a;
+      --muted:#5f718b;
+      --accent:#2563eb;
+      --accent-2:#16a34a;
+      --danger:#dc2626;
+      --surface:#ffffff;
+      --surface-soft:#f8fbff;
+      --surface-elevated:#f7faff;
+      --input-bg:transparent;
+      --input-focus:#f8fbff;
+      --thead-bg:rgba(248,250,252,.95);
+      --tbody-bg:#ffffff;
+      --tbody-hover:#fbfdff;
+      --status-bg:#fbfdff;
+      --hint-bg:#f8fbff;
+      --pill-bg:#ffffff;
+      --kbd-bg:#ffffff;
+      --btn-bg:#ffffff;
+      --btn-border:#d7e1ee;
+      --btn-text:var(--text);
+      --rowbtn-bg:#ffffff;
+      --rowbtn-border:#d7e1ee;
+      --rowbtn-hover:#f9fbff;
+      --shadow:0 18px 45px rgba(15, 23, 42, .08);
+      --shadow-soft:0 8px 20px rgba(15, 23, 42, .06);
+      --radius:18px;
+      --radius-sm:12px;
+      --font: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    }
+
+    body[data-theme="dark"]{
+      --bg:#08111f;
+      --bg-accent:#0d1728;
+      --panel:#0f1a2b;
+      --panel-2:#111f34;
+      --grid:#24344b;
+      --grid-soft:#1d2c42;
+      --text:#e6edf7;
+      --heading:#f8fbff;
+      --muted:#9db0cb;
+      --accent:#60a5fa;
+      --accent-2:#4ade80;
+      --danger:#f87171;
+      --surface:#111b2d;
+      --surface-soft:#132038;
+      --surface-elevated:#14233d;
+      --input-bg:rgba(255,255,255,.01);
+      --input-focus:#162743;
+      --thead-bg:rgba(17,31,52,.96);
+      --tbody-bg:#0f1a2b;
+      --tbody-hover:#13223a;
+      --status-bg:#101b2e;
+      --hint-bg:#122039;
+      --pill-bg:#132038;
+      --kbd-bg:#122039;
+      --btn-bg:#132038;
+      --btn-border:#29405f;
+      --btn-text:#e6edf7;
+      --rowbtn-bg:#132038;
+      --rowbtn-border:#29405f;
+      --rowbtn-hover:#162743;
+      --shadow:0 22px 50px rgba(0, 0, 0, .35);
+      --shadow-soft:0 10px 24px rgba(0, 0, 0, .24);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--text);
+      background:
+        radial-gradient(1000px 500px at 0% -10%, rgba(37,99,235,.10), transparent 60%),
+        radial-gradient(900px 480px at 100% 0%, rgba(22,163,74,.08), transparent 55%),
+        linear-gradient(180deg, var(--bg) 0%, var(--bg-accent) 100%);
+      padding:30px;
+    }
+
+    .wrap{ max-width:1180px; margin:0 auto; }
+
+    header{
+      display:flex;
+      gap:16px;
+      align-items:flex-end;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    h1{
+      margin:0;
+      font-size:24px;
+      font-weight:800;
+      letter-spacing:.01em;
+      color:var(--heading);
+    }
+
+    .sub{
+      margin:6px 0 0;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .panel{
+      background:var(--panel);
+      border:1px solid color-mix(in srgb, var(--grid) 75%, transparent);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter:blur(8px);
+    }
+
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      padding:16px 18px;
+      border-bottom:1px solid var(--grid-soft);
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .left, .right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    button{
+      border:1px solid #d7e1ee;
+      background:var(--tbody-bg);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:13px;
+      transition:.16s ease;
+      box-shadow:0 1px 0 rgba(255,255,255,.9), 0 3px 10px rgba(15,23,42,.03);
+    }
+
+    button:hover{
+      transform:translateY(-1px);
+      border-color:#c4d2e4;
+      box-shadow:var(--shadow-soft);
+    }
+
+    button:active{ transform:translateY(0); }
+
+    .primary{
+      background:linear-gradient(180deg, #3374f0, #2563eb);
+      border-color:#2563eb;
+      color:#fff;
+    }
+
+    .primary:hover{
+      background:linear-gradient(180deg, #3b7af2, #2b67ea);
+      border-color:#215dd8;
+    }
+
+    .success{
+      background:linear-gradient(180deg, #22b35d, #16a34a);
+      border-color:#169447;
+      color:#fff;
+    }
+
+    .success:hover{
+      background:linear-gradient(180deg, #28ba64, #189c48);
+    }
+
+    .danger{
+      background:linear-gradient(180deg, #ef4444, #dc2626);
+      border-color:#cf2424;
+      color:#fff;
+    }
+
+    .danger:hover{
+      background:linear-gradient(180deg, #f45151, #d92525);
+    }
+
+    .pdfHeaderBlock{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      background:var(--hint-bg);
+      border:1px solid var(--grid-soft);
+      border-radius:12px;
+      padding:10px 12px;
+    }
+
+    .headerRight{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    
+    .titleBar{
+      display:block;
+      padding:0;
+      margin:0;
+      border-top:1px solid var(--grid-soft);
+      border-bottom:1px solid var(--grid-soft);
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+    }
+
+    .titleField{
+      width:100%;
+      display:grid;
+      grid-template-columns:260px minmax(0, 1fr);
+      gap:0;
+      align-items:stretch;
+    }
+
+    .titleLabel{
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      min-height:56px;
+      margin:0;
+      padding:0 16px;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:var(--muted);
+      border-right:1px solid var(--grid-soft);
+      background:var(--thead-bg);
+      white-space:nowrap;
+    }
+
+    .titleInput{
+      width:100%;
+      min-height:56px;
+      margin:0;
+      border:0;
+      border-radius:0;
+      background:transparent;
+      color:var(--text);
+      padding:16px 18px;
+      font-size:15px;
+      font-weight:700;
+      box-shadow:none;
+      outline:none;
+      transition:background .16s ease, box-shadow .16s ease;
+    }
+
+    .titleInput:focus{
+      background:var(--hint-bg);
+      box-shadow:inset 0 0 0 1px rgba(148, 163, 184, .55);
+    }
+
+    .titleMeta{
+      display:none;
+    }
+    
+
+    .themeToggle{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--btn-border);
+      background:var(--pill-bg);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .themeToggleLabel{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .themeSwitch{
+      position:relative;
+      width:58px;
+      height:32px;
+      border-radius:999px;
+      border:1px solid var(--btn-border);
+      background:linear-gradient(180deg, var(--surface-soft) 0%, var(--surface) 100%);
+      cursor:pointer;
+      transition:.2s ease;
+      box-shadow:inset 0 1px 1px rgba(255,255,255,.08);
+    }
+
+    .themeSwitch::after{
+      content:"☀";
+      position:absolute;
+      top:3px;
+      left:3px;
+      width:24px;
+      height:24px;
+      border-radius:999px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:var(--surface);
+      color:var(--heading);
+      font-size:13px;
+      box-shadow:0 4px 10px rgba(15,23,42,.16);
+      transition:.2s ease;
+    }
+
+    body[data-theme="dark"] .themeSwitch::after{
+      content:"☾";
+      transform:translateX(26px);
+    }
+
+    .gridWrap{ overflow:auto; }
+
+    table{
+      width:100%;
+      border-collapse:separate;
+      border-spacing:0;
+      min-width:920px;
+    }
+
+    thead th{
+      position:sticky;
+      top:0;
+      background:var(--thead-bg);
+      backdrop-filter:blur(10px);
+      z-index:2;
+      border-bottom:1px solid var(--grid);
+      color:var(--muted);
+      font-weight:800;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      padding:13px 10px;
+    }
+
+    tbody td{
+      border-bottom:1px solid var(--grid-soft);
+      padding:0;
+      background:var(--pill-bg);
+    }
+
+    tbody tr:hover td{ background:var(--tbody-hover); }
+
+    td.num, th.num{ text-align:right; }
+    td.actions, th.actions{ width:60px; text-align:center; }
+
+    input{
+      width:100%;
+      border:0;
+      outline:0;
+      background:var(--input-bg);
+      color:var(--text);
+      padding:13px 12px;
+      font-size:14px;
+      font-family:var(--font);
+    }
+
+    input::placeholder{ color:#9aacbf; }
+
+    input:focus{
+      background:var(--hint-bg);
+      box-shadow:inset 0 0 0 1px rgba(37,99,235,.18);
+    }
+
+    .cell{
+      border-right:1px solid var(--grid-soft);
+    }
+
+    tbody td:last-child{ border-right:0; }
+
+    .rowBtn{
+      width:38px;
+      height:34px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border-radius:10px;
+      border:1px solid #d7e1ee;
+      background:var(--kbd-bg);
+      cursor:pointer;
+      transition:.15s;
+      color:var(--muted);
+    }
+
+    .rowBtn:hover{
+      background:var(--rowbtn-hover);
+      color:var(--danger);
+      border-color:#efc5c5;
+      transform:translateY(-1px);
+    }
+
+    tfoot td{
+      background:var(--panel-2);
+      border-top:1px solid var(--grid);
+      padding:13px 10px;
+      font-weight:800;
+      position:sticky;
+      bottom:0;
+      z-index:1;
+    }
+
+    tfoot .totalHead{
+      color:var(--muted);
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-size:11px;
+    }
+
+    tfoot .totalCell{ color:var(--heading); }
+
+    @media (max-width:700px){
+      body{ padding:16px; }
+      header{ flex-direction:column; align-items:flex-start; gap:10px; }
+      .right{ width:100%; justify-content:flex-start; }
+      .headerRight{ width:100%; justify-content:flex-start; }
+      .titleField{ grid-template-columns:1fr; }
+      .titleLabel{
+        min-height:auto;
+        padding:12px 14px;
+        border-right:0;
+        border-bottom:1px solid var(--grid-soft);
+      }
+      .titleInput{ min-height:52px; padding:14px; }
+    }
+
+    .status{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      padding:14px 18px;
+      color:var(--muted);
+      font-size:12px;
+      border-top:1px solid var(--grid-soft);
+      background:var(--status-bg);
+    }
+
+    .status strong{ color:var(--text); }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      border:1px solid #dbe5f0;
+      background:var(--surface);
+      font-size:12px;
+      box-shadow:0 2px 10px rgba(15,23,42,.04);
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:var(--accent);
+      display:inline-block;
+    }
+
+    .dot.green{ background:var(--accent-2); }
+
+    .kbd{
+      font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:6px;
+      border:1px solid #dbe3ee;
+      background:var(--surface);
+      color:var(--text);
+    }
+
+    .calcPanel, .miniPanel{
+      margin:16px;
+      padding:16px;
+      border:1px solid var(--grid-soft);
+      border-radius:16px;
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+      box-shadow:var(--shadow-soft);
+    }
+
+    .calcPanelEnhanced{
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
+    }
+
+    /* Main calculator: same visual width as the content area */
+    .calcMainPanel{
+      width:calc(100% - 32px) !important;
+      max-width:none !important;
+      margin:16px auto !important;
+      display:block !important;
+    }
+
+    .calcHeader{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:14px;
+    }
+
+    .calcSubtitle{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+
+    .calcHeaderActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .calcMainGrid{
+      display:grid;
+      grid-template-columns:minmax(320px, 1.35fr) minmax(300px, 1fr);
+      gap:14px;
+      align-items:start;
+      width:100%;
+    }
+
+	.calcLeft, .calcRight{
+	  display:flex;
+	  flex-direction:column;
+	  gap:12px;
+	  min-width:0;
+	}
+
+	#calcExpr{
+	  width:100%;
+	  min-height:70px;
+	  max-height:300px;
+	  padding:17px 18px;
+	  border:1px solid var(--btn-border);
+	  border-radius:16px;
+	  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+	  box-shadow:inset 0 1px 0 rgba(255,255,255,.95);
+
+	  color:var(--heading);
+	  font-size:28px;
+	  font-weight:800;
+	  line-height:1.35;
+
+	  /* FIX WRAP NATURALE */
+	  text-align:left;
+	  white-space:pre-wrap;
+	  word-break:break-word;
+	  overflow-wrap:anywhere;
+
+	  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+	  letter-spacing:.02em;
+	  caret-color:var(--accent);
+
+	  resize:none;
+	  overflow-y:auto;
+	  overflow-x:hidden;
+	}
+
+	#calcExpr::placeholder{
+	  color:#95a5ba;
+	  font-weight:600;
+	  font-size:16px;
+	  letter-spacing:0;
+	  font-family:var(--font);
+	}
+
+	#calcExpr:focus{
+	  border-color:rgba(37,99,235,.55);
+	  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
+	  box-shadow:0 0 0 4px rgba(37,99,235,.10);
+	}
+
+    .calcKeypad{
+      display:grid;
+      grid-template-columns:repeat(6, minmax(0, 1fr));
+      gap:8px;
+    }
+
+    .calcKey{
+      min-height:46px;
+      padding:10px 8px;
+      border-radius:12px;
+      font-size:14px;
+      font-weight:800;
+      background:var(--surface);
+    }
+
+    .calcKey.op{
+      background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+      border-color:color-mix(in srgb, var(--accent) 28%, var(--btn-border));
+      color:var(--accent);
+    }
+
+    .calcKey.quick{
+      background:color-mix(in srgb, var(--accent-2) 12%, var(--surface));
+      border-color:color-mix(in srgb, var(--accent-2) 28%, var(--btn-border));
+      color:var(--accent-2);
+      font-size:12px;
+    }
+
+    .calcKey.equal{
+      background:linear-gradient(180deg, #3374f0, #2563eb);
+      border-color:#2563eb;
+      color:#fff;
+    }
+
+    .calcKey.zero{ grid-column:span 2; }
+
+    .calcResultCard{
+      border:1px solid var(--grid-soft);
+      background:var(--surface);
+      border-radius:14px;
+      padding:12px;
+      box-shadow:0 6px 16px rgba(15,23,42,.04);
+    }
+
+    .calcResultCard.main{ padding:16px; }
+
+    .calcLabel{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:6px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .calcResult.big{
+      min-height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:flex-end;
+      font-size:24px;
+      font-weight:800;
+      color:var(--heading);
+    }
+
+    .calcStats{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:10px;
+    }
+
+    .calcHistoryWrap{
+      border:1px solid var(--grid-soft);
+      border-radius:14px;
+      padding:12px;
+      background:var(--surface);
+      display:flex;
+      flex-direction:column;
+      min-height:0;
+    }
+
+    .calcHistorySide{
+      flex:1;
+      min-height:250px;
+      max-height:420px;
+    }
+
+    .calcMiniTitle, .calcTitle, .miniTitle{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:800;
+    }
+
+    .calcInlineGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr minmax(120px, 140px);
+      gap:8px;
+      margin-bottom:8px;
+      align-items:center;
+    }
+
+    .calcInlineGrid:last-child{ margin-bottom:0; }
+
+    .calcHistoryEmpty{
+      color:var(--muted);
+      font-size:13px;
+      display:flex;
+      align-items:center;
+      min-height:100%;
+    }
+
+    .calcHistoryList{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      overflow:auto;
+      min-height:0;
+      padding-right:4px;
+    }
+
+    .calcHistoryItem{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      background:var(--hint-bg);
+      border:1px solid var(--grid-soft);
+      font-size:13px;
+    }
+
+    .calcHistoryExpr{
+      color:var(--muted);
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+      max-width:60%;
+    }
+
+    .calcHistoryVal{ font-weight:800; color:var(--heading); }
+
+    @media (max-width:900px){
+      .calcMainGrid{ grid-template-columns:1fr; }
+    }
+
+    .calcGrid{
+      display:grid;
+      grid-template-columns:1fr auto auto;
+      gap:10px;
+      align-items:center;
+    }
+
+    .calcResult{
+      min-width:140px;
+      padding:11px 12px;
+      border-radius:12px;
+      border:1px solid var(--grid-soft);
+      background:var(--surface);
+      font-weight:800;
+      text-align:right;
+      color:var(--heading);
+      box-shadow:0 3px 12px rgba(15,23,42,.03);
+    }
+
+    @media (max-width:700px){
+      .calcGrid{ grid-template-columns:1fr; }
+      .calcResult{ text-align:left; }
+      .calcKeypad{ grid-template-columns:repeat(4, minmax(0, 1fr)); }
+      .calcKey.zero{ grid-column:span 2; }
+      .calcStats{ grid-template-columns:1fr 1fr; }
+      .calcInlineGrid{ grid-template-columns:1fr; }
+      .calcResult.big{ justify-content:flex-start; }
+      .calcHistorySide{
+        min-height:unset;
+        max-height:none;
+      }
+      #calcExpr{
+        min-height:60px;
+        padding:14px 16px;
+        font-size:22px;
+      }
+      #calcExpr::placeholder{ font-size:14px; }
+    }
+
+    .rollPanelGrid{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:10px;
+      align-items:center;
+    }
+
+    .rollPanelGrid .calcResult{ min-width:unset; }
+
+    .rollHelp{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:10px;
+      line-height:1.45;
+    }
+
+    @media (max-width:700px){
+      .rollPanelGrid{ grid-template-columns:1fr; }
+    }
+
+
+    .utilityGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:16px;
+      margin:16px;
+    }
+
+    .utilityGrid .calcPanel{
+      margin:0;
+      width:100%;
+    }
+
+    .ownerClientCol{
+      min-width:160px;
+    }
+
+    @media (max-width:900px){
+      .utilityGrid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    .miniHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+
+    .miniToolbar{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+
+    .miniWrap{ overflow:auto; }
+
+    .miniTable{
+      width:100%;
+      min-width:620px;
+      border-collapse:separate;
+      border-spacing:0;
+    }
+
+    .miniTable th{
+      background:var(--panel-2);
+      color:var(--muted);
+      font-weight:800;
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      padding:12px 10px;
+      border-bottom:1px solid var(--grid);
+    }
+
+    .miniTable td{
+      border-bottom:1px solid var(--grid-soft);
+      padding:0;
+      background:var(--surface);
+    }
+
+    .miniTable tr:hover td{ background:var(--tbody-hover); }
+    .miniTable td:last-child{ width:60px; text-align:center; }
+
+/* FIX outline pulsanti tema scuro */
+button, input, select {
+    outline: none !important;
+}
+
+button:focus, input:focus, select:focus {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(100, 150, 255, 0.25);
+}
+
+/* miglioramento estetico dark */
+.dark button {
+    border: 1px solid #2a2a2a;
+}
+
+.dark button:hover {
+    background-color: #2f2f2f;
+}
+
+.dark button:active {
+    background-color: #383838;
+}
+
+/* HARD FIX white borders in dark mode */
+.dark button {
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    box-shadow: none !important;
+}
+
+.dark button:focus,
+.dark button:active {
+    outline: none !important;
+    box-shadow: 0 0 0 1px rgba(59,130,246,0.4) !important;
+}
+
+/* remove default browser styles */
+button {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+    .importPanelTextarea{
+      width:100%;
+      min-height:160px;
+      resize:vertical;
+      border:1px solid var(--btn-border);
+      border-radius:14px;
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+      color:var(--text);
+      padding:14px 16px;
+      font-size:14px;
+      font-family:var(--font);
+      outline:0;
+    }
+
+    .importPanelTextarea:focus{
+      border-color:rgba(37,99,235,.55);
+      box-shadow:0 0 0 4px rgba(37,99,235,.10);
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
+    }
+
+    .importPanelGrid{
+      display:grid;
+      grid-template-columns:minmax(0, 1.2fr) minmax(240px, .8fr);
+      gap:12px;
+      align-items:start;
+    }
+
+    .importInfoList{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .importInfoCard{
+      border:1px solid var(--grid-soft);
+      border-radius:14px;
+      background:var(--surface);
+      padding:12px;
+      box-shadow:0 4px 12px rgba(15,23,42,.03);
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .importInfoCard strong{ color:var(--heading); }
+
+    .importPanelActions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:12px;
+    }
+
+    .importStatus{
+      margin-top:12px;
+      border:1px dashed var(--grid);
+      border-radius:12px;
+      padding:11px 12px;
+      color:var(--muted);
+      font-size:13px;
+      background:var(--hint-bg);
+    }
+
+    @media (max-width:900px){
+      .importPanelGrid{ grid-template-columns:1fr; }
+    }
+
+.pdfExportArea{
+  width:100%;
+  background:#fff;
+  color:#000;
+  font-family:'Roboto', sans-serif;
+  padding:25px;
+}
+
+.pdfHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:2px solid #dcdcdc;
+  padding-bottom:14px;
+  margin-bottom:20px;
+}
+
+.pdfHeaderLeft{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.pdfLogo{
+  height:58px;
+  object-fit:contain;
+}
+
+.pdfTitleWrap h1{
+  margin:0;
+  font-size:24px;
+  font-weight:700;
+  color:#111;
+}
+
+.pdfTitleWrap p{
+  margin:4px 0 0;
+  color:#666;
+  font-size:12px;
+}
+
+.pdfInfo{
+  margin-top:10px;
+  border:1px solid #dcdcdc;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+.pdfInfoRow{
+  display:flex;
+  border-bottom:1px solid #e9e9e9;
+}
+
+.pdfInfoRow:last-child{
+  border-bottom:none;
+}
+
+.pdfInfoLabel{
+  width:220px;
+  background:#f5f5f5;
+  padding:10px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.pdfInfoValue{
+  flex:1;
+  padding:10px;
+  font-size:13px;
+}
+
+.pdfFooter{
+  margin-top:25px;
+  font-size:11px;
+  color:#666;
+  text-align:right;
+}
+
+
+/* NAVI IN CHIUSURA - layout compatto */
+.shipPanel{
+  margin-top:16px;
+  overflow:hidden;
+}
+.shipToolbarTitle{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.shipToolbarTitle h2{
+  margin:0;
+  font-size:17px;
+  color:var(--heading);
+}
+.shipToolbarTitle span{
+  color:var(--muted);
+  font-size:12px;
+}
+.shipSummary{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-left:auto;
+}
+.shipBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.shipBadge strong{ color:var(--heading); }
+.shipGrid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:14px;
+  padding:16px;
+}
+.shipCard{
+  border:1px solid var(--grid-soft);
+  border-radius:18px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  overflow:hidden;
+}
+.shipCardHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 16px;
+  border-bottom:1px solid var(--grid-soft);
+}
+.shipCardTitle{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.shipCardTitle strong{
+  color:var(--heading);
+  font-size:14px;
+  letter-spacing:.02em;
+}
+.shipCardTitle span{
+  color:var(--muted);
+  font-size:12px;
+}
+.shipTableWrap{ overflow:auto; }
+.shipTable{
+  width:100%;
+  min-width:520px;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.shipTable th{
+  position:sticky;
+  top:0;
+  background:var(--thead-bg);
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  padding:12px 10px;
+  border-bottom:1px solid var(--grid);
+  text-align:left;
+}
+.shipTable td{
+  padding:12px 10px;
+  border-bottom:1px solid var(--grid-soft);
+  background:var(--surface);
+  vertical-align:middle;
+  font-size:13px;
+}
+.shipTable tr:hover td{ background:var(--tbody-hover); }
+.shipName{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  font-weight:900;
+  color:var(--heading);
+}
+.shipName small{
+  color:var(--muted);
+  font-weight:700;
+}
+.shipStatus{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:92px;
+  padding:6px 9px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.05em;
+  border:1px solid transparent;
+}
+.shipStatus.closed{
+  color:#991b1b;
+  background:#fee2e2;
+  border-color:#fecaca;
+}
+.shipStatus.today{
+  color:#92400e;
+  background:#fef3c7;
+  border-color:#fde68a;
+}
+.shipStatus.tomorrow{
+  color:#075985;
+  background:#e0f2fe;
+  border-color:#bae6fd;
+}
+body[data-theme="dark"] .shipStatus.closed{
+  color:#fecaca;
+  background:rgba(127,29,29,.35);
+  border-color:rgba(248,113,113,.28);
+}
+body[data-theme="dark"] .shipStatus.today{
+  color:#fde68a;
+  background:rgba(120,53,15,.35);
+  border-color:rgba(251,191,36,.28);
+}
+body[data-theme="dark"] .shipStatus.tomorrow{
+  color:#bae6fd;
+  background:rgba(12,74,110,.35);
+  border-color:rgba(56,189,248,.28);
+}
+.shipEmpty{
+  padding:22px;
+  color:var(--muted);
+  text-align:center;
+  font-size:13px;
+}
+.shipLoading{
+  padding:18px;
+  color:var(--muted);
+  font-size:13px;
+}
+@media (max-width:700px){
+  .shipCardHead{ flex-direction:column; }
+  .shipSummary{ width:100%; margin-left:0; }
+}
+
+
+/* CONTENITORI NON ENTRATI - layout migliorato */
+#extraTable{
+  min-width:1500px;
+  table-layout:fixed;
+}
+
+#extraTable th,
+#extraTable td{
+  vertical-align:middle;
+}
+
+#extraTable th:nth-child(1),
+#extraTable td:nth-child(1){ width:60px; }
+
+#extraTable th:nth-child(2),
+#extraTable td:nth-child(2),
+#extraTable th:nth-child(5),
+#extraTable td:nth-child(5),
+#extraTable th:nth-child(8),
+#extraTable td:nth-child(8){ width:170px; }
+
+#extraTable th:nth-child(3),
+#extraTable td:nth-child(3),
+#extraTable th:nth-child(6),
+#extraTable td:nth-child(6),
+#extraTable th:nth-child(9),
+#extraTable td:nth-child(9){ width:220px; }
+
+#extraTable th:nth-child(4),
+#extraTable td:nth-child(4),
+#extraTable th:nth-child(7),
+#extraTable td:nth-child(7){ width:175px; }
+
+#extraTable th:nth-child(10),
+#extraTable td:nth-child(10){ width:70px; }
+
+#extraTable input{
+  font-size:13px;
+  padding:13px 10px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+#extraTable input:focus{
+  position:relative;
+  z-index:5;
+  min-width:210px;
+  overflow:visible;
+  text-overflow:clip;
+  background:var(--surface);
+  box-shadow:0 0 0 3px rgba(37,99,235,.14);
+}
+
+#extraTable td{
+  font-size:13px;
+  overflow:hidden;
+}
+
+#extraTable .sct-status,
+#extraTable .conateco-status{
+  font-weight:800;
+  line-height:1.25;
+  white-space:normal;
+}
+
+#extraTable .sct-status a,
+#extraTable .conateco-status a{
+  display:inline-block;
+  white-space:nowrap;
+}
+
+
+/* === MIGLIORIA MODULI 2026-05 - Navi in chiusura + Contenitori non entrati === */
+.shipPanel{
+  margin:18px 16px;
+  border-radius:22px;
+}
+.shipPanel .toolbar.shipToolbar{
+  align-items:flex-start;
+  gap:14px;
+}
+.shipToolbarActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.shipTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:0 16px 14px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface-soft), var(--surface));
+}
+.shipTab{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  border-radius:999px;
+  padding:9px 13px;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.04em;
+  color:var(--muted);
+  background:var(--pill-bg);
+  border:1px solid var(--grid-soft);
+  box-shadow:none;
+}
+.shipTab::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--grid);
+}
+.shipTab.active{
+  color:#fff;
+  border-color:var(--accent);
+  background:linear-gradient(180deg, #3374f0, #2563eb);
+}
+.shipTab.active::before{ background:#fff; }
+.shipTabCount{
+  min-width:22px;
+  padding:2px 7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.22);
+  color:inherit;
+}
+.shipPanel.is-minimized .shipContent{
+  display:none;
+}
+.shipPanel.is-minimized .shipTabs{
+  border-bottom:0;
+  padding-bottom:16px;
+}
+.shipGrid{
+  grid-template-columns:1fr;
+  padding:16px;
+}
+.shipCard{
+  display:none;
+}
+.shipCard.active{
+  display:block;
+}
+.shipCardHead{
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.shipTerminalIcon{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color:var(--accent);
+  font-weight:900;
+  flex:0 0 auto;
+}
+.shipCardTitleRow{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.shipCardTools{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.shipEmpty{
+  border:1px dashed var(--grid);
+  margin:16px;
+  border-radius:16px;
+  background:var(--hint-bg);
+}
+.shipTable td:first-child{
+  width:55%;
+}
+
+/* Contenitori non entrati: modulo più visibile e pulsanti sempre raggiungibili */
+.extraPanel{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.extraPanel .miniHead{
+  position:sticky;
+  top:0;
+  z-index:8;
+  padding:14px 16px;
+  margin:0;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.extraPanel .miniTitle{
+  margin:0;
+  color:var(--heading);
+  font-size:15px;
+}
+.extraSubtitle{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  text-transform:none;
+  letter-spacing:0;
+  font-weight:600;
+}
+.extraPanel .miniToolbar{
+  margin-left:auto;
+  justify-content:flex-end;
+}
+.extraPanel .miniWrap{
+  width:100%;
+  max-width:100%;
+  overflow:auto;
+  padding:12px;
+}
+#extraTable{
+  min-width:1180px !important;
+  width:100%;
+  table-layout:fixed;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  overflow:hidden;
+}
+#extraTable th:nth-child(1), #extraTable td:nth-child(1){ width:54px; }
+#extraTable th:nth-child(2), #extraTable td:nth-child(2),
+#extraTable th:nth-child(5), #extraTable td:nth-child(5),
+#extraTable th:nth-child(8), #extraTable td:nth-child(8){ width:135px; }
+#extraTable th:nth-child(3), #extraTable td:nth-child(3),
+#extraTable th:nth-child(6), #extraTable td:nth-child(6),
+#extraTable th:nth-child(9), #extraTable td:nth-child(9){ width:175px; }
+#extraTable th:nth-child(4), #extraTable td:nth-child(4),
+#extraTable th:nth-child(7), #extraTable td:nth-child(7){ width:145px; }
+#extraTable th:nth-child(10), #extraTable td:nth-child(10){ width:58px; }
+#extraTable input{
+  min-width:0;
+  padding:12px 9px;
+}
+#extraTable input:focus{
+  min-width:0;
+  width:100%;
+}
+.extraBottomToolbar{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  padding:12px 16px 16px;
+  border-top:1px solid var(--grid-soft);
+  background:var(--surface);
+}
+@media (max-width:900px){
+  .shipToolbarActions{ justify-content:flex-start; width:100%; }
+  .shipSummary{ margin-left:0; }
+  .shipTab{ flex:1 1 130px; justify-content:center; }
+  .extraPanel .miniHead{ position:static; }
+  .extraPanel .miniToolbar, .extraBottomToolbar{ justify-content:flex-start; }
+}
+
+
+
+/* === CONTENITORI NON ENTRATI - tab terminal + auto check === */
+.extraHead{ align-items:flex-start; }
+.extraTopToolbar{ gap:8px; }
+.extraTabs{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  padding:0 16px 14px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface-soft) 0%, var(--surface) 100%);
+}
+.extraTab{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-width:132px;
+  border-radius:999px;
+  background:var(--surface);
+  border-color:var(--btn-border);
+}
+.extraTab.active{
+  background:linear-gradient(180deg, #3374f0, #2563eb);
+  color:#fff;
+  border-color:#2563eb;
+  box-shadow:var(--shadow-soft);
+}
+.extraTabCount{
+  min-width:24px;
+  height:22px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 7px;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color:var(--accent);
+  font-size:12px;
+  font-weight:900;
+}
+.extraTab.active .extraTabCount{
+  background:rgba(255,255,255,.22);
+  color:#fff;
+}
+.extraContent{ display:block; }
+.extraPanel.minimized .extraContent{ display:none; }
+.extraPanel.minimized .extraTabs{ padding-bottom:16px; }
+.autoCheckSwitch{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding:7px 10px;
+  border:1px solid var(--btn-border);
+  background:var(--pill-bg);
+  border-radius:999px;
+  cursor:pointer;
+  user-select:none;
+  box-shadow:var(--shadow-soft);
+}
+.autoCheckSwitch input{ display:none; }
+.autoCheckSlider{
+  position:relative;
+  width:44px;
+  height:24px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--muted) 22%, var(--surface));
+  border:1px solid var(--btn-border);
+  transition:.18s ease;
+}
+.autoCheckSlider::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  background:var(--surface);
+  box-shadow:0 3px 8px rgba(15,23,42,.2);
+  transition:.18s ease;
+}
+.autoCheckSwitch input:checked + .autoCheckSlider{
+  background:linear-gradient(180deg, #22b35d, #16a34a);
+  border-color:#169447;
+}
+.autoCheckSwitch input:checked + .autoCheckSlider::after{ transform:translateX(20px); }
+.autoCheckText{ font-size:12px; color:var(--muted); font-weight:800; white-space:nowrap; }
+.autoCheckText strong{ color:var(--heading); }
+.extraAutoStatus{ color:var(--muted); font-size:12px; margin-right:auto; }
+#extraTable{ min-width:760px !important; }
+#extraTable th:nth-child(1), #extraTable td:nth-child(1){ width:64px; }
+#extraTable th:nth-child(2), #extraTable td:nth-child(2){ width:210px; }
+#extraTable th:nth-child(3), #extraTable td:nth-child(3){ width:260px; }
+#extraTable th:nth-child(4), #extraTable td:nth-child(4){ width:210px; }
+#extraTable th:nth-child(5), #extraTable td:nth-child(5){ width:70px; }
+#extraTable .sct-status,
+#extraTable .conateco-status,
+#extraTable .flavio-status{
+  padding:12px 10px;
+  font-weight:900;
+  line-height:1.25;
+  white-space:normal;
+}
+@media (max-width:900px){
+  .extraTopToolbar{ width:100%; justify-content:flex-start; }
+  .extraTab{ flex:1 1 130px; }
+  .autoCheckSwitch{ order:1; }
+  #extraTable{ min-width:680px !important; }
+}
+
+
+/* === FIX LARGHEZZA MODULO NAVI IN CHIUSURA === */
+.shipPanel{
+  width:calc(100% - 32px) !important;
+  max-width:none !important;
+  margin:18px auto !important;
+  padding:0 !important;
+  box-sizing:border-box !important;
+}
+
+.shipPanel .shipContent,
+.shipPanel .shipGrid,
+.shipPanel .shipCard,
+.shipPanel .shipTableWrap,
+.shipPanel .shipTable{
+  width:100% !important;
+  max-width:100% !important;
+}
+
+.shipPanel .shipGrid{
+  padding:16px !important;
+}
+
+@media (max-width:700px){
+  .shipPanel{
+    width:100% !important;
+    margin:16px 0 !important;
+  }
+}
+
+
+/* === RICERCA RAPIDA NAVI === */
+.shipQuickSearch{
+  width:100%;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  padding:0 16px 14px;
+  background:linear-gradient(180deg, var(--surface-soft), var(--surface));
+  border-bottom:1px solid var(--grid-soft);
+}
+
+.shipQuickSearch input{
+  flex:1 1 260px;
+  min-width:220px;
+  border:1px solid var(--btn-border);
+  border-radius:999px;
+  background:var(--surface);
+  padding:11px 14px;
+  font-weight:800;
+}
+
+.shipQuickSearchStatus{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  padding:0 4px;
+}
+
+.shipSearchResults{
+  display:none;
+  padding:0 16px 16px;
+  background:linear-gradient(180deg, var(--surface), var(--surface-soft));
+}
+
+.shipSearchResults.active{
+  display:block;
+}
+
+.shipSearchResults .shipCard{
+  display:block !important;
+}
+
+.shipSearchHitTerminal{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:78px;
+  padding:5px 8px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+}
+
+
+/* === NOTIFICHE CONTAINER ENTRATI === */
+.extraTab{
+  position:relative;
+}
+
+.extraTabNotify{
+  position:absolute;
+  top:-7px;
+  right:-7px;
+  min-width:20px;
+  height:20px;
+  padding:0 6px;
+  border-radius:999px;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  background:#dc2626;
+  color:#fff;
+  font-size:11px;
+  font-weight:900;
+  line-height:20px;
+  box-shadow:0 8px 18px rgba(220,38,38,.35);
+  border:2px solid var(--surface);
+  z-index:4;
+}
+
+.extraTabNotify.active{
+  display:inline-flex;
+  animation:extraNotifyPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes extraNotifyPulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.12); }
+}
+
+.extraToastStack{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:99999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  pointer-events:none;
+}
+
+.extraToast{
+  min-width:280px;
+  max-width:380px;
+  border-radius:18px;
+  padding:13px 14px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  color:var(--text);
+  border:1px solid var(--grid-soft);
+  box-shadow:0 18px 45px rgba(15,23,42,.22);
+  pointer-events:auto;
+  animation:extraToastIn .22s ease-out;
+}
+
+.extraToast strong{
+  display:block;
+  color:var(--heading);
+  font-size:13px;
+  margin-bottom:3px;
+}
+
+.extraToast span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.extraToast.success{
+  border-color:rgba(22,163,74,.35);
+}
+
+.extraToast.success strong::before{
+  content:"✓ ";
+  color:#16a34a;
+}
+
+.extraToast.error{
+  border-color:rgba(220,38,38,.40);
+}
+
+.extraToast.error strong::before{
+  content:"! ";
+  color:#dc2626;
+}
+
+@keyframes extraToastIn{
+  from{ opacity:0; transform:translateY(10px) scale(.98); }
+  to{ opacity:1; transform:translateY(0) scale(1); }
+}
+
+@media (max-width:700px){
+  .extraToastStack{
+    right:12px;
+    left:12px;
+    bottom:12px;
+  }
+  .extraToast{
+    min-width:0;
+    max-width:none;
+    width:100%;
+  }
+}
+
+
+/* === CONFIGURAZIONE API FRONTEND SEPARATO === */
+.apiConfigPanel{
+  width:calc(100% - 32px);
+  margin:16px auto;
+  padding:14px 16px;
+  border:1px solid var(--grid-soft);
+  border-radius:18px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:10px;
+}
+.apiConfigPanel label{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.apiConfigPanel input{
+  flex:1 1 320px;
+  min-width:240px;
+  border:1px solid var(--btn-border);
+  border-radius:999px;
+  background:var(--surface);
+  padding:11px 14px;
+  font-weight:800;
+}
+.apiConfigHint{
+  width:100%;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+}
+.apiConfigBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border-radius:999px;
+  padding:7px 10px;
+  border:1px solid var(--grid-soft);
+  background:var(--pill-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+}
+
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+</script>
+<script>
+
+/* === API BASE CONFIG - FRONTEND SEPARATO / VERCEL READY === */
+const API_BASE_STORAGE_KEY = "utility_doganalista_api_base_v1";
+
+function normalizeApiBase(value){
+  const raw = String(value || "").trim().replace(/\/+$/, "");
+  if (!raw) return "";
+  if (!/^https?:\/\//i.test(raw)) return "https://" + raw;
+  return raw;
+}
+
+function getApiBase(){
+  try {
+    return normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY) || "");
+  } catch {
+    return "";
+  }
+}
+
+function apiUrl(path){
+  const cleanPath = String(path || "");
+  const normalizedPath = cleanPath.startsWith("/") ? cleanPath : "/" + cleanPath;
+  const base = getApiBase();
+  return base ? base + normalizedPath : normalizedPath;
+}
+
+function initApiBaseUi(){
+  const input = document.getElementById("apiBaseInput");
+  const save = document.getElementById("saveApiBaseBtn");
+  const reset = document.getElementById("resetApiBaseBtn");
+  const current = document.getElementById("apiBaseCurrent");
+
+  if (!input) return;
+
+  const refreshLabel = () => {
+    const base = getApiBase();
+    input.value = base;
+    if (current) current.textContent = base || "stesso dominio";
+  };
+
+  refreshLabel();
+
+  save?.addEventListener("click", () => {
+    const base = normalizeApiBase(input.value);
+    try {
+      if (base) localStorage.setItem(API_BASE_STORAGE_KEY, base);
+      else localStorage.removeItem(API_BASE_STORAGE_KEY);
+    } catch {}
+    refreshLabel();
+    alert("Backend API salvato.");
+  });
+
+  reset?.addEventListener("click", () => {
+    try { localStorage.removeItem(API_BASE_STORAGE_KEY); } catch {}
+    refreshLabel();
+    alert("La utility userà lo stesso dominio della pagina.");
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initApiBaseUi);
+
+  if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+<div class="wrap">
+<header>
+<div>
+<h1>UTILITY PER DOGANALISTA</h1>
+<p class="sub">Aggiungi righe come in Excel, incolla più valori, totali automatici.</p>
+</div>
+<div class="headerRight">
+<div class="themeToggle" title="Cambia tema">
+<span class="themeToggleLabel" id="themeLabel">Tema chiaro</span>
+<button aria-label="Cambia tema" class="themeSwitch" id="themeToggleBtn" type="button"></button>
+</div>
+<div class="pill" title="Suggerimenti">
+<span class="dot"></span> Incolla righe da Excel
+          <span class="kbd">Ctrl</span> + <span class="kbd">V</span>
+</div>
+</div>
+</header>
+
+<div class="apiConfigPanel" id="apiConfigPanel">
+  <label for="apiBaseInput">Backend API</label>
+  <input id="apiBaseInput" type="url" placeholder="es. https://dogana-api.reav.website oppure lascia vuoto per stesso dominio" />
+  <button id="saveApiBaseBtn" type="button">Salva API</button>
+  <button id="resetApiBaseBtn" type="button">Usa stesso dominio</button>
+  <span class="apiConfigBadge">API attiva: <strong id="apiBaseCurrent">stesso dominio</strong></span>
+  <div class="apiConfigHint">
+    Per uso locale lascia vuoto. Quando il frontend sarà su Vercel, inserisci qui il dominio API Cloudflare Tunnel, ad esempio https://dogana-api.reav.website.
+  </div>
+</div>
+
+<section class="panel">
+<div class="toolbar">
+<div class="left">
+<button class="primary" id="addRowBtn">+ Aggiungi riga</button>
+<button class="success" id="add10Btn">+10 righe</button>
+<button id="mergeBtn">Unisci stessa descrizione / TARIC</button>
+<button id="sortValueBtn">Ordina per valore fattura ↓</button>
+<button id="exportPdfBtn">Esporta PDF tabella</button>
+<button id="copyColumnBtn">Copia colonna</button>
+<button id="exportExcelBtn">Esporta Excel</button>
+<button class="danger" id="clearBtn">Svuota tutto</button>
+</div>
+<div class="titleBar">
+<div class="titleField">
+<label class="titleLabel" for="pdfTitleInput">Titolo tabella / titolo PDF</label>
+<input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list export Canada - merce alimentare" type="text"/>
+<div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
+</div>
+</div>
+<div class="gridWrap">
+<table id="sheet">
+<thead>
+<tr>
+<th style="width:70px;">NR.</th>
+<th style="width:320px;">DESCRIZIONE / TARIC</th>
+<th class="num" style="width:90px;">COLLI</th>
+<th class="num" style="width:90px;">PEZZI</th>
+<th class="num" style="width:190px;">LORDO (KG)</th>
+<th class="num" style="width:190px;">NETTO (KG)</th>
+<th class="num" style="width:120px;">MQ</th>
+<th class="num" style="width:190px;">VALORE</th>
+<th class="actions">✕</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+<tfoot>
+<tr id="totalsRow">
+<td class="cell totalHead">Totali</td>
+<td class="cell"></td>
+<td class="cell num totalCell"><span id="totalColli">0</span></td>
+<td class="cell num totalCell"><span id="totalPezzi">0</span></td>
+<td class="cell num totalCell"><span id="totalGross">0,00</span></td>
+<td class="cell num totalCell"><span id="totalNet">0,00</span></td>
+<td class="cell num totalCell"><span id="totalMq">0,00</span></td>
+<td class="cell num totalCell"><span id="totalValue">0,00</span></td>
+<td class="actions"></td>
+</tr>
+</tfoot>
+</table>
+</div>
+
+<div class="calcPanel calcPanelEnhanced calcMainPanel" style="width:calc(100% - 32px); max-width:none; margin:16px auto; display:block;">
+<div class="calcHeader">
+<div>
+<div class="calcTitle">Calcolatrice rapida avanzata</div>
+</div>
+<div class="calcHeaderActions">
+<button id="calcClearBtn" type="button">Pulisci</button>
+<button id="calcCopyBtn" type="button">Copia risultato</button>
+</div>
+</div>
+<div class="calcMainGrid">
+<div class="calcLeft">
+<textarea autocomplete="off" id="calcExpr" inputmode="decimal" placeholder="es. (1200 + 350,50) / 3" spellcheck="false"></textarea>
+<div class="calcKeypad">
+<button class="calcKey" data-insert="7" type="button">7</button>
+<button class="calcKey" data-insert="8" type="button">8</button>
+<button class="calcKey" data-insert="9" type="button">9</button>
+<button class="calcKey op" data-insert="/" type="button">÷</button>
+<button class="calcKey" data-insert="(" type="button">(</button>
+<button class="calcKey" data-insert=")" type="button">)</button>
+<button class="calcKey" data-insert="4" type="button">4</button>
+<button class="calcKey" data-insert="5" type="button">5</button>
+<button class="calcKey" data-insert="6" type="button">6</button>
+<button class="calcKey op" data-insert="*" type="button">×</button>
+<button class="calcKey" data-insert="," type="button">,</button>
+<button class="calcKey" data-action="backspace" type="button">⌫</button>
+<button class="calcKey" data-insert="1" type="button">1</button>
+<button class="calcKey" data-insert="2" type="button">2</button>
+<button class="calcKey" data-insert="3" type="button">3</button>
+<button class="calcKey op" data-insert="-" type="button">−</button>
+<button class="calcKey quick" data-action="percent" type="button">%</button>
+<button class="calcKey equal" id="calcBtn" type="button">=</button>
+<button class="calcKey zero" data-insert="0" type="button">0</button>
+<button class="calcKey op" data-insert="+" type="button">+</button>
+</div>
+</div>
+<div class="calcRight">
+<div class="calcResultCard main">
+<span class="calcLabel">Risultato</span>
+<div class="calcResult big" id="calcResult">0,00</div>
+</div>
+<div class="calcHistoryWrap calcHistorySide">
+<div class="calcMiniTitle">Storico</div>
+<div class="calcHistoryEmpty" id="calcHistory">Nessun calcolo ancora</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="panel shipPanel" id="shipPanel">
+  <div class="toolbar shipToolbar">
+    <div class="left shipToolbarTitle">
+      <h2>Navi in chiusura</h2>
+    </div>
+    <div class="right shipToolbarActions">
+      <div class="shipSummary" id="shipSummary">
+        <span class="shipBadge">SCT <strong id="shipCountSct">0</strong></span>
+        <span class="shipBadge">CONATECO <strong id="shipCountConateco">0</strong></span>
+        <span class="shipBadge">TFG <strong id="shipCountTfg">0</strong></span>
+        <span class="shipBadge">Aggiornamento <strong id="shipLastUpdate">-</strong></span>
+      </div>
+      <button id="minimizeShipsBtn" type="button">Riduci a icona</button>
+      <button class="primary" id="refreshShipsBtn" type="button">Aggiorna navi</button>
+    </div>
+  </div>
+
+  <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
+    <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
+    <button class="shipTab" data-terminal="conateco" type="button">CONATECO <span class="shipTabCount" id="shipTabCountConateco">0</span></button>
+    <button class="shipTab" data-terminal="tfg" type="button">TFG <span class="shipTabCount" id="shipTabCountTfg">0</span></button>
+  </div>
+
+  <div class="shipQuickSearch" id="shipQuickSearch">
+    <input id="shipSearchInput" type="search" placeholder="Cerca nave su SCT, CONATECO e TFG anche se non è in chiusura..." autocomplete="off" />
+    <button id="shipSearchBtn" type="button">Cerca</button>
+    <button id="shipSearchClearBtn" type="button">Pulisci ricerca</button>
+    <span class="shipQuickSearchStatus" id="shipSearchStatus">Ricerca su tutte le navi disponibili</span>
+  </div>
+
+  <div class="shipSearchResults" id="shipSearchResults">
+    <div class="shipCard">
+      <div class="shipCardHead">
+        <div class="shipCardTitleRow">
+          <div class="shipTerminalIcon">🔎</div>
+          <div class="shipCardTitle">
+            <strong>Risultati ricerca nave</strong>
+            <span>Mostra tutte le navi trovate, anche fuori dal filtro chiusura.</span>
+          </div>
+        </div>
+        <span class="shipBadge">Trovate <strong id="shipSearchCount">0</strong></span>
+      </div>
+      <div class="shipTableWrap">
+        <table class="shipTable" id="table-ship-search">
+          <thead>
+            <tr>
+              <th>Terminal</th>
+              <th>Nave</th>
+              <th>Chiusura / stato</th>
+              <th>Note</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-ship-search">
+            <tr><td colspan="4" class="shipEmpty">Scrivi almeno 2 caratteri per cercare una nave.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="shipContent">
+    <div class="shipGrid">
+      <div class="shipCard active" id="card-sct" data-terminal-card="sct">
+        <div class="shipCardHead">
+          <div class="shipCardTitleRow">
+            <div class="shipTerminalIcon">S</div>
+            <div class="shipCardTitle">
+              <strong>SCT - Salerno Container Terminal</strong>
+              <span id="shipFilterLabel">Filtro: già chiuse, oggi e domani</span>
+            </div>
+          </div>
+          <div class="shipCardTools">
+            <span class="shipBadge">Totale filtrate <strong id="shipCountSctHead">0</strong></span>
+          </div>
+        </div>
+        <div class="shipTableWrap">
+          <table class="shipTable" id="table-sct">
+            <thead>
+              <tr>
+                <th>Nave</th>
+                <th>Chiusura doganale</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-sct">
+              <tr><td colspan="2" class="shipEmpty">Premi “Aggiorna navi” per caricare i dati SCT.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="shipCard" id="card-conateco" data-terminal-card="conateco">
+        <div class="shipCardHead">
+          <div class="shipCardTitleRow">
+            <div class="shipTerminalIcon">C</div>
+            <div class="shipCardTitle">
+              <strong>CONATECO</strong>
+              <span>Filtro: chiuse, oggi e domani. Le note evidenziano eventuale accettazione retroporto.</span>
+            </div>
+          </div>
+          <span class="shipBadge">Totale <strong id="shipCountConatecoHead">0</strong></span>
+        </div>
+        <div class="shipTableWrap">
+          <table class="shipTable" id="table-conateco">
+            <thead>
+              <tr>
+                <th>Nave</th>
+                <th>Chiusura doganale</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-conateco">
+              <tr><td colspan="3" class="shipEmpty">Premi “Aggiorna navi” per caricare i dati CONATECO.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="shipCard" id="card-tfg" data-terminal-card="tfg">
+        <div class="shipCardHead">
+          <div class="shipCardTitleRow">
+            <div class="shipTerminalIcon">T</div>
+            <div class="shipCardTitle">
+              <strong>TFG / Flavio Gioia</strong>
+              <span>Filtro: chiuse, oggi e domani dal portale TFG.</span>
+            </div>
+          </div>
+          <span class="shipBadge">Totale <strong id="shipCountTfgHead">0</strong></span>
+        </div>
+        <div class="shipTableWrap">
+          <table class="shipTable" id="table-tfg">
+            <thead>
+              <tr>
+                <th>Nave</th>
+                <th>Chiusura doganale</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-tfg">
+              <tr><td colspan="3" class="shipEmpty">Premi “Aggiorna navi” per caricare i dati TFG.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="miniPanel extraPanel" id="extraPanel">
+  <div class="miniHead extraHead">
+    <div>
+      <div class="miniTitle">CONTENITORI NON ENTRATI</div>
+      <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
+    </div>
+    <div class="miniToolbar extraTopToolbar">
+      <label class="autoCheckSwitch" title="Attiva o disattiva il controllo automatico ogni 5 minuti">
+        <input id="extraAutoCheckToggle" type="checkbox" />
+        <span class="autoCheckSlider"></span>
+        <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
+      </label>
+      <button id="extraCheckNowBtn" type="button">Controlla ora</button>
+      <button id="copyExtraColumnBtn" type="button">Copia container</button>
+      <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
+      <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
+      <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
+      <button class="success" id="addExtra10Btn">+10 righe</button>
+      <button class="danger" id="clearExtraBtn">Svuota sezione</button>
+    </div>
+  </div>
+
+  <div class="extraTabs" id="extraTabs" role="tablist" aria-label="Terminal contenitori non entrati">
+    <button class="extraTab active" data-extra-terminal="sct" type="button">SCT <span class="extraTabCount" id="extraTabCountSct">0</span><span class="extraTabNotify" id="extraNotifySct">0</span></button>
+    <button class="extraTab" data-extra-terminal="conateco" type="button">CONATECO <span class="extraTabCount" id="extraTabCountConateco">0</span><span class="extraTabNotify" id="extraNotifyConateco">0</span></button>
+    <button class="extraTab" data-extra-terminal="flavio" type="button">TFG <span class="extraTabCount" id="extraTabCountFlavio">0</span><span class="extraTabNotify" id="extraNotifyFlavio">0</span></button>
+  </div>
+
+  <div class="extraContent" id="extraContent">
+    <div class="miniWrap">
+      <table class="miniTable" id="extraTable">
+        <thead id="extraThead"></thead>
+        <tbody id="extraTbody"></tbody>
+      </table>
+    </div>
+    <div class="extraBottomToolbar">
+      <span class="extraAutoStatus" id="extraAutoStatus">Controllo automatico disattivato.</span>
+      <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
+      <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
+      <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
+      <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
+      <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
+    </div>
+  </div>
+</div>
+<div class="utilityGrid">
+<div class="calcPanel">
+<div class="calcTitle">Conversione automatica unità</div>
+<div class="calcGrid">
+<input id="convKg" placeholder="Kg" type="number"/>
+<div class="calcResult" id="convTon">0 ton</div>
+<div class="calcResult" id="convLbs">0 lbs</div>
+</div>
+<div style="height:10px"></div>
+<div class="calcGrid">
+<input id="convEuro" placeholder="Valore €" type="number"/>
+<input id="convKg2" placeholder="Peso kg" type="number"/>
+<div class="calcResult" id="convEuroKg">0 €/kg</div>
+</div>
+<div style="height:10px"></div>
+<div class="calcGrid">
+<input id="convEuro2" placeholder="Valore €" type="number"/>
+<input id="convPezzi2" placeholder="Pezzi" type="number"/>
+<div class="calcResult" id="convEuroPezzo">0 €/pz</div>
+</div>
+</div>
+<div class="calcPanel">
+<div class="calcTitle">Conversione rotoli → m²</div>
+<div class="rollPanelGrid">
+<input id="rollCount" placeholder="Numero rotoli" type="number"/>
+<input id="rollWidth" placeholder="Larghezza rotolo (m)" step="0.01" type="number"/>
+<input id="rollLength" placeholder="Lunghezza rotolo (m)" step="0.01" type="number"/>
+<div class="calcResult" id="rollTotalMq">0,00 m²</div>
+</div>
+<div style="height:10px"></div>
+<div class="rollPanelGrid">
+<div class="calcResult" id="rollSingleMq">0,00 m² / rotolo</div>
+<div class="calcResult" id="rollPackingText">Formula: 0 × 0 × 0</div>
+<button id="rollFillFromCalc" type="button">Invia m² in calcolatrice</button>
+<button id="rollClearBtn" type="button">Pulisci modulo</button>
+</div>
+<div class="rollHelp">Utile per packing list con formati tipo 281 rotoli da 1,5 × 100: inserisci rotoli, larghezza e lunghezza e ottieni i metri quadrati totali.</div>
+</div>
+</div>
+<div class="status">
+<span class="pill"><span class="dot"></span> Righe: <strong id="rowCount">0</strong></span>
+<span class="pill"><span class="dot green"></span> Salvataggio automatico: <strong>ON</strong></span>
+<span>Tip: premi <span class="kbd">Enter</span> per scendere, <span class="kbd">Tab</span> per passare alla colonna successiva.</span>
+</div>
+</div></section>
+</div>
+<script>
+    const LS_KEY = "peso_sheet_v3";
+    const PDF_TITLE_KEY = "peso_sheet_pdf_title_v1";
+
+	function parseNumberIT(value) {
+	  if (value == null) return 0;
+
+	  let s = String(value).trim();
+	  if (!s) return 0;
+
+	  // rimuove simboli valuta e caratteri non numerici
+	  s = s.replace(/[^\d.,-]/g, "");
+	  s = s.replace(/\s+/g, "");
+
+	  const hasComma = s.includes(",");
+	  const hasDot = s.includes(".");
+
+	  if (hasComma && hasDot) {
+		const lastComma = s.lastIndexOf(",");
+		const lastDot = s.lastIndexOf(".");
+		const decSep = lastComma > lastDot ? "," : ".";
+		const thouSep = decSep === "," ? "." : ",";
+
+		s = s.split(thouSep).join("");
+		s = s.replace(decSep, ".");
+	  } else if (hasComma) {
+		s = s.replace(",", ".");
+	  }
+
+	  const n = Number(s);
+	  return Number.isFinite(n) ? n : 0;
+	}
+
+	function formatIT(n) {
+	  const num = Number(n) || 0;
+
+	  let out = num.toFixed(3);
+
+	  out = out.replace(/(\.\d*?[1-9])0+$/, "$1");
+
+	  return out.replace(".", ",");
+	}
+
+    function formatInt(n){
+      const v = Math.round(Number(n) || 0);
+      return v.toLocaleString("it-IT");
+    }
+
+    function getPdfTitle(){
+      const raw = document.getElementById("pdfTitleInput")?.value || "";
+      return raw.trim();
+    }
+
+    function savePdfTitle(){
+      try { localStorage.setItem(PDF_TITLE_KEY, getPdfTitle()); } catch {}
+    }
+
+    function loadPdfTitle(){
+      try {
+        const saved = localStorage.getItem(PDF_TITLE_KEY) || "";
+        const input = document.getElementById("pdfTitleInput");
+        if (input) input.value = saved;
+      } catch {}
+    }
+
+    function sanitizeFileName(value){
+      return String(value || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[̀-ͯ]/g, "")
+        .replace(/[^a-z0-9]+/g, "_")
+        .replace(/^_+|_+$/g, "")
+        .slice(0, 60);
+    }
+
+    function getRowsForPdf(){
+      return rows.map((r, index) => ({
+        index: index + 1,
+        desc: String(r?.desc || "").trim(),
+        colli: String(r?.colli || "").trim(),
+        pezzi: String(r?.pezzi || "").trim(),
+        gross: String(r?.gross || "").trim(),
+        net: String(r?.net || "").trim(),
+        mq: String(r?.mq || "").trim(),
+        value: String(r?.value || "").trim()
+      }));
+    }
+
+    
+	function exportTableToPdf(){
+      const dataRows = getRowsForPdf().filter(r => [r.desc, r.colli, r.pezzi, r.gross, r.net, r.mq, r.value].some(Boolean));
+      if (!dataRows.length){
+        alert("La tabella è vuota. Inserisci almeno una riga prima di esportare il PDF.");
+        return;
+      }
+
+      const jsPdfApi = window.jspdf?.jsPDF;
+      if (!jsPdfApi){
+        alert("Libreria PDF non disponibile.");
+        return;
+      }
+
+      const doc = new jsPdfApi({ orientation: "landscape", unit: "mm", format: "a4", compress: true });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 10;
+      const usableWidth = pageWidth - (margin * 2);
+      const footerHeight = 9;
+      const rowLineHeight = 3.8;
+      const cellPadX = 1.8;
+      const cellPadY = 3.1;
+      const pdfTitle = getPdfTitle() || "Tabella TARIC, pesi e valore";
+      const subtitle = "Riepilogo merce con colli, pezzi, pesi, metri quadrati e valore fattura";
+      const colWidths = [12, 95, 16, 16, 23, 23, 17, 23];
+      const headers = ["Riga", "Descrizione / TARIC", "Colli", "Pezzi", "Peso lordo", "Peso netto", "MQ", "Valore €"];
+      let y = margin;
+      let pageNumber = 1;
+      let currentHeaderHeight = 0;
+      let currentTableHeaderHeight = 0;
+
+      const totals = {
+        colli: document.getElementById("totalColli")?.textContent || "0",
+        pezzi: document.getElementById("totalPezzi")?.textContent || "0",
+        gross: document.getElementById("totalGross")?.textContent || "0,00",
+        net: document.getElementById("totalNet")?.textContent || "0,00",
+        mq: document.getElementById("totalMq")?.textContent || "0,00",
+        value: document.getElementById("totalValue")?.textContent || "0,00"
+      };
+
+      const now = new Date();
+      const dateLabel = now.toLocaleDateString("it-IT") + " · " + now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+
+      function splitCellText(value, width){
+        const safe = String(value ?? "").trim();
+        if (!safe) return [""];
+        return doc.splitTextToSize(safe, Math.max(3, width - (cellPadX * 2) - 0.8));
+      }
+
+      function drawCellText(lines, x, topY, width, height, align = "left", opts = {}){
+        const arr = Array.isArray(lines) ? lines : [String(lines || "")];
+        const lineHeight = opts.lineHeight || rowLineHeight;
+        const padX = opts.padX ?? cellPadX;
+        const padY = opts.padY ?? cellPadY;
+        const textX = align === "right"
+          ? x + width - padX
+          : (align === "center" ? x + (width / 2) : x + padX);
+        const startY = topY + padY + 0.6;
+        doc.text(arr, textX, startY, { align, baseline: "top", maxWidth: Math.max(3, width - (padX * 2)) });
+      }
+
+      function drawFooter(){
+        doc.setDrawColor(219, 228, 239);
+        doc.setLineWidth(0.35);
+        doc.line(margin, pageHeight - 7, pageWidth - margin, pageHeight - 7);
+        doc.setTextColor(100, 116, 139);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.2);
+        doc.text("Documento generato da Utility per Doganalista", margin, pageHeight - 3.5);
+        doc.text(`Pagina ${pageNumber}`, pageWidth - margin, pageHeight - 3.5, { align: "right" });
+      }
+
+      function drawPageHeader(){
+        const leftWidth = usableWidth - 55;
+        const rightWidth = 47;
+        const titleLines = doc.splitTextToSize(pdfTitle, leftWidth - 8);
+        const subtitleLines = doc.splitTextToSize(subtitle, leftWidth - 8);
+        const titleBlockHeight = Math.max(18, (titleLines.length * 6.2) + (subtitleLines.length * 3.8) + 8);
+        currentHeaderHeight = titleBlockHeight;
+
+        doc.setFillColor(18, 25, 38);
+        doc.roundedRect(margin, y, leftWidth, titleBlockHeight, 2.4, 2.4, "F");
+
+        doc.setFillColor(244, 247, 251);
+        doc.setDrawColor(205, 214, 226);
+        doc.roundedRect(margin + leftWidth + 4, y, rightWidth, titleBlockHeight, 2.4, 2.4, "FD");
+
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(16);
+        doc.text(titleLines, margin + 4, y + 4.8, { baseline: "top" });
+
+        doc.setTextColor(214, 223, 236);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(9.1);
+        doc.text(subtitleLines, margin + 4, y + 11.8, { baseline: "top" });
+
+        doc.setTextColor(55, 65, 81);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.8);
+        doc.text("DATA EXPORT", margin + leftWidth + 7, y + 5.8);
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.7);
+        doc.text(dateLabel, margin + leftWidth + 7, y + 10.8);
+        doc.setFont("helvetica", "bold");
+        doc.text("RIGHE", margin + leftWidth + 7, y + 16.2);
+        doc.setFont("helvetica", "normal");
+        doc.text(String(dataRows.length), margin + leftWidth + 22.5, y + 16.2);
+        doc.setFont("helvetica", "bold");
+        doc.text("PAGINA", margin + leftWidth + 7, y + 21.6);
+        doc.setFont("helvetica", "normal");
+        doc.text(String(pageNumber), margin + leftWidth + 22.5, y + 21.6);
+
+        y += titleBlockHeight + 6;
+      }
+
+      function drawTableHeader(){
+        const preparedHeaders = headers.map((header, i) => splitCellText(header, colWidths[i]));
+        const headerMaxLines = Math.max(...preparedHeaders.map(lines => Math.max(1, lines.length)));
+        currentTableHeaderHeight = Math.max(9.5, headerMaxLines * 3.6 + 4.2);
+
+        let x = margin;
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.4);
+        doc.setTextColor(51, 65, 85);
+
+        preparedHeaders.forEach((lines, i) => {
+          doc.setFillColor(237, 242, 247);
+          doc.setDrawColor(194, 205, 218);
+          doc.rect(x, y, colWidths[i], currentTableHeaderHeight, "FD");
+          const align = i >= 2 ? "right" : "left";
+          drawCellText(lines, x, y, colWidths[i], currentTableHeaderHeight, align, { lineHeight: 3.5, padY: 2.7 });
+          x += colWidths[i];
+        });
+
+        y += currentTableHeaderHeight;
+      }
+
+      function ensurePageSpace(requiredHeight){
+        if (y + requiredHeight + footerHeight > pageHeight){
+          drawFooter();
+          doc.addPage("a4", "landscape");
+          pageNumber += 1;
+          y = margin;
+          drawPageHeader();
+          drawTableHeader();
+        }
+      }
+
+      drawPageHeader();
+      drawTableHeader();
+
+      dataRows.forEach((row, rowIndex) => {
+        const rowData = [
+          String(row.index),
+          row.desc || "",
+          row.colli || "",
+          row.pezzi || "",
+          row.gross || "",
+          row.net || "",
+          row.mq || "",
+          row.value || ""
+        ];
+
+        const prepared = rowData.map((value, i) => splitCellText(value, colWidths[i]));
+        const maxLines = Math.max(...prepared.map(lines => Math.max(1, lines.length)));
+        const currentRowHeight = Math.max(8.6, (maxLines * rowLineHeight) + (cellPadY * 2) + 0.8);
+
+        ensurePageSpace(currentRowHeight);
+
+        let x = margin;
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(8.5);
+        doc.setTextColor(20, 32, 51);
+
+        prepared.forEach((lines, i) => {
+          const fill = rowIndex % 2 === 0 ? [255, 255, 255] : [249, 251, 253];
+          doc.setFillColor(...fill);
+          doc.setDrawColor(208, 216, 226);
+          doc.rect(x, y, colWidths[i], currentRowHeight, "FD");
+          const align = i >= 2 ? "right" : "left";
+          drawCellText(lines, x, y, colWidths[i], currentRowHeight, align, { lineHeight: rowLineHeight, padY: cellPadY });
+          x += colWidths[i];
+        });
+
+        y += currentRowHeight;
+      });
+
+      const totalRow = ["Totali", "", totals.colli, totals.pezzi, totals.gross, totals.net, totals.mq, totals.value];
+      const totalPrepared = totalRow.map((value, i) => splitCellText(value, colWidths[i]));
+      const totalMaxLines = Math.max(...totalPrepared.map(lines => Math.max(1, lines.length)));
+      const totalHeight = Math.max(9.2, (totalMaxLines * 3.8) + 6.2);
+
+      ensurePageSpace(totalHeight);
+
+      let x = margin;
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(8.7);
+
+      totalPrepared.forEach((lines, i) => {
+        doc.setFillColor(227, 233, 241);
+        doc.setDrawColor(171, 183, 198);
+        doc.rect(x, y, colWidths[i], totalHeight, "FD");
+        const align = i >= 2 ? "right" : "left";
+        drawCellText(lines, x, y, colWidths[i], totalHeight, align, { lineHeight: 3.8, padY: 3.0 });
+        x += colWidths[i];
+      });
+
+      drawFooter();
+
+      const fileBase = sanitizeFileName(pdfTitle) || "tabella_taric";
+      doc.save(`${fileBase}_${now.toISOString().slice(0,10)}.pdf`);
+    }
+
+
+    function makeCellInput({ placeholder, value, className, dataset }) {
+      const td = document.createElement("td");
+      td.className = "cell " + (className || "");
+      const input = document.createElement("input");
+      input.placeholder = placeholder || "";
+      input.value = value ?? "";
+      if (dataset) Object.entries(dataset).forEach(([k, v]) => input.dataset[k] = v);
+      td.appendChild(input);
+      return { td, input };
+    }
+
+    let rows = [];
+    let isMerged = false;
+    let originalRows = [];
+    let sortValueDescending = true;
+
+    const tbody = document.getElementById("tbody");
+    const totalGrossEl = document.getElementById("totalGross");
+    const totalPezziEl = document.getElementById("totalPezzi");
+    const totalNetEl = document.getElementById("totalNet");
+    const totalMqEl = document.getElementById("totalMq");
+    const totalColliEl = document.getElementById("totalColli");
+    const totalValueEl = document.getElementById("totalValue");
+    const rowCountEl = document.getElementById("rowCount");
+
+    document.getElementById("addRowBtn").addEventListener("click", () => addRows(1, true));
+    document.getElementById("add10Btn").addEventListener("click", () => addRows(10, true));
+    document.getElementById("exportPdfBtn")?.addEventListener("click", exportTableToPdf);
+    document.getElementById("pdfTitleInput")?.addEventListener("input", savePdfTitle);
+    document.getElementById("sortValueBtn")?.addEventListener("click", sortRowsByInvoiceValue);
+    document.getElementById("clearBtn").addEventListener("click", () => {
+      if (!confirm("Vuoi svuotare tutto?")) return;
+      resetMergeState();
+      rows = [];
+      render();
+      save();
+    });
+
+    function save(){
+      try { localStorage.setItem(LS_KEY, JSON.stringify(rows)); } catch {}
+      savePdfTitle();
+    }
+
+    function load(){
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return false;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return false;
+        rows = parsed.map(r => ({
+          desc: r?.desc ?? "",
+          colli: r?.colli ?? "",
+          pezzi: r?.pezzi ?? "",
+          gross: r?.gross ?? "",
+          net: r?.net ?? "",
+          mq: r?.mq ?? "",
+          value: r?.value ?? ""
+        }));
+        resetMergeState();
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
+    function resetMergeState(){
+      isMerged = false;
+      originalRows = [];
+    }
+
+    function addRows(count, focusLast=false){
+      resetMergeState();
+      for (let i=0; i<count; i++){
+        rows.push({ desc:"", colli:"", pezzi:"", gross:"", net:"", mq:"", value:"" });
+      }
+      render();
+      save();
+      if (focusLast){
+        const lastRow = tbody.querySelector("tr:last-child input");
+        if (lastRow) lastRow.focus();
+      }
+    }
+
+    function deleteRow(index){
+      resetMergeState();
+      rows.splice(index, 1);
+      render();
+      save();
+    }
+
+    function updateSortValueButtonLabel(){
+      const btn = document.getElementById("sortValueBtn");
+      if (!btn) return;
+      btn.textContent = sortValueDescending
+        ? "Ordina per valore fattura ↓"
+        : "Ordina per valore fattura ↑";
+    }
+
+    function sortRowsByInvoiceValue(){
+      const mergedState = isMerged;
+      const originalSnapshot = JSON.parse(JSON.stringify(originalRows || []));
+
+      rows = rows
+        .map((row, index) => ({ row: { ...row }, index }))
+        .sort((a, b) => {
+          const aValue = parseNumberIT(a.row.value);
+          const bValue = parseNumberIT(b.row.value);
+          const aHasValue = String(a.row.value || "").trim() !== "";
+          const bHasValue = String(b.row.value || "").trim() !== "";
+
+          if (aHasValue !== bHasValue) return aHasValue ? -1 : 1;
+          if (aValue !== bValue) {
+            return sortValueDescending ? bValue - aValue : aValue - bValue;
+          }
+          return a.index - b.index;
+        })
+        .map(item => item.row);
+
+      sortValueDescending = !sortValueDescending;
+      if (mergedState) {
+        isMerged = true;
+        originalRows = originalSnapshot;
+      }
+      updateSortValueButtonLabel();
+      render();
+      save();
+    }
+
+    function recalcTotals(){
+      let sumGross = 0;
+      let sumNet = 0;
+      let sumColli = 0;
+      let sumPezzi = 0;
+      let sumMq = 0;
+      let sumValue = 0;
+
+      for (const r of rows){
+        sumColli += Math.round(parseNumberIT(r.colli));
+        sumPezzi += Math.round(parseNumberIT(r.pezzi));
+        sumGross += parseNumberIT(r.gross);
+        sumNet += parseNumberIT(r.net);
+        sumMq += parseNumberIT(r.mq);
+        sumValue += parseNumberIT(r.value);
+      }
+
+      totalColliEl.textContent = formatInt(sumColli);
+      if(totalPezziEl) totalPezziEl.textContent = formatInt(sumPezzi);
+      totalGrossEl.textContent = formatIT(sumGross);
+      totalNetEl.textContent = formatIT(sumNet);
+      if(totalMqEl) totalMqEl.textContent = formatIT(sumMq);
+      totalValueEl.textContent = formatIT(sumValue);
+      rowCountEl.textContent = String(rows.length);
+    }
+
+    function focusCell(rowIndex, field) {
+      const selector = `input[data-row="${rowIndex}"][data-field="${field}"]`;
+      const target = tbody.querySelector(selector);
+      if (target) {
+        target.focus();
+        target.select?.();
+      }
+    }
+
+    function handleEnterNavigation(e) {
+      if (e.key !== "Enter") return;
+
+      e.preventDefault();
+
+      const currentRow = Number(e.target.dataset.row);
+      const field = e.target.dataset.field;
+
+      let nextRow = currentRow + (e.shiftKey ? -1 : 1);
+      if (nextRow < 0) nextRow = 0;
+
+      if (nextRow >= rows.length) {
+        rows.push({ desc:"", colli:"", pezzi:"", gross:"", net:"", mq:"", value:"" });
+        render();
+        save();
+      }
+
+      focusCell(nextRow, field);
+    }
+
+    function render(){
+      tbody.innerHTML = "";
+
+      rows.forEach((r, idx) => {
+        const tr = document.createElement("tr");
+
+        const tdIndex = document.createElement("td");
+        tdIndex.className = "cell";
+        tdIndex.style.color = "var(--muted)";
+        tdIndex.style.padding = "12px 10px";
+        tdIndex.textContent = String(idx + 1);
+        tr.appendChild(tdIndex);
+
+        const { td: tdDesc, input: inpDesc } = makeCellInput({
+          placeholder: "es. TARIC 9401.61.60 / Articolo...",
+          value: r.desc,
+          dataset: { row: idx, field: "desc" }
+        });
+        tr.appendChild(tdDesc);
+
+        const { td: tdColli, input: inpColli } = makeCellInput({
+          placeholder: "0",
+          value: r.colli,
+          className: "num",
+          dataset: { row: idx, field: "colli" }
+        });
+        tr.appendChild(tdColli);
+
+        const { td: tdPezzi, input: inpPezzi } = makeCellInput({
+          placeholder: "0",
+          value: r.pezzi,
+          className: "num",
+          dataset: { row: idx, field: "pezzi" }
+        });
+        tr.appendChild(tdPezzi);
+
+        const { td: tdGross, input: inpGross } = makeCellInput({
+          placeholder: "0,00",
+          value: r.gross,
+          className: "num",
+          dataset: { row: idx, field: "gross" }
+        });
+        tr.appendChild(tdGross);
+
+        const { td: tdNet, input: inpNet } = makeCellInput({
+          placeholder: "0,00",
+          value: r.net,
+          className: "num",
+          dataset: { row: idx, field: "net" }
+        });
+        tr.appendChild(tdNet);
+
+        const { td: tdMq, input: inpMq } = makeCellInput({
+          placeholder: "0,00",
+          value: r.mq,
+          className: "num",
+          dataset: { row: idx, field: "mq" }
+        });
+        tr.appendChild(tdMq);
+
+        const { td: tdValue, input: inpValue } = makeCellInput({
+          placeholder: "0,00",
+          value: r.value,
+          className: "num",
+          dataset: { row: idx, field: "value" }
+        });
+        tr.appendChild(tdValue);
+
+        const tdActions = document.createElement("td");
+        tdActions.className = "actions";
+        const btn = document.createElement("button");
+        btn.className = "rowBtn";
+        btn.title = "Elimina riga";
+        btn.textContent = "✕";
+        btn.addEventListener("click", () => deleteRow(idx));
+        tdActions.appendChild(btn);
+        tr.appendChild(tdActions);
+
+        [inpDesc, inpColli, inpPezzi, inpGross, inpNet, inpMq, inpValue].forEach(inp => {
+          inp.addEventListener("input", (e) => {
+            resetMergeState();
+            const row = Number(e.target.dataset.row);
+            const field = e.target.dataset.field;
+            rows[row][field] = e.target.value;
+            recalcTotals();
+            save();
+          });
+
+          inp.addEventListener("keydown", handleEnterNavigation);
+
+          inp.addEventListener("paste", (e) => {
+            const text = (e.clipboardData || window.clipboardData).getData("text");
+            if (!text) return;
+
+            const lines = text.replace(/\r/g, "").split("\n").filter(x => x.trim() !== "");
+            if (lines.length <= 1 && !text.includes("\t")) return;
+
+            e.preventDefault();
+
+            const startRow = Number(inp.dataset.row);
+            const field = inp.dataset.field;
+            const colOrder = ["desc", "colli", "pezzi", "gross", "net", "mq", "value"];
+            const startCol = colOrder.indexOf(field);
+
+            const needed = startRow + lines.length;
+            while (rows.length < needed) rows.push({ desc:"", colli:"", pezzi:"", gross:"", net:"", mq:"", value:"" });
+
+            lines.forEach((line, i) => {
+              const cols = line.split("\t");
+              cols.forEach((c, j) => {
+                const targetCol = startCol + j;
+                if (targetCol >= colOrder.length) return;
+                rows[startRow + i][colOrder[targetCol]] = c.trim();
+              });
+            });
+
+            render();
+            save();
+
+            const endRow = startRow + lines.length - 1;
+            const endCol = Math.min(colOrder.length - 1, startCol + (lines[0].split("\t").length - 1));
+            focusCell(endRow, colOrder[endCol]);
+          });
+        });
+
+        tbody.appendChild(tr);
+      });
+
+      recalcTotals();
+    }
+
+
+    const importTextArea = document.getElementById("importTextArea");
+    const importStatus = document.getElementById("importStatus");
+
+    function cleanImportLine(line){
+      return String(line || "")
+        .replace(/[|;]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function normalizeSpaces(value){
+      return String(value || "").replace(/\s+/g, " ").trim();
+    }
+
+    function stripMatchedSegment(source, match){
+      if (!source || !match) return source || "";
+      const start = match.index ?? -1;
+      if (start < 0) return source;
+      return (source.slice(0, start) + " " + source.slice(start + match[0].length)).replace(/\s+/g, " ").trim();
+    }
+
+    function parseImportNumber(raw){
+      return parseNumberIT(String(raw || "").replace(/[^\d.,-]/g, ""));
+    }
+
+    function findLabeledValue(text, patterns){
+      for (const pattern of patterns){
+        const match = pattern.exec(text);
+        if (match){
+          return {
+            value: parseImportNumber(match[1]),
+            raw: match[0],
+            index: match.index
+          };
+        }
+      }
+      return null;
+    }
+
+    function extractCurrency(text){
+      const patterns = [
+        /(?:valore|value|importo)\s*[:\-]?\s*(€?\s*[\d.,]+)/i,
+        /(?:€|eur|euro)\s*[:\-]?\s*([\d.,]+)/i,
+        /([\d.,]+)\s*(?:€|eur|euro)\b/i
+      ];
+      return findLabeledValue(text, patterns);
+    }
+
+    function extractField(text, field){
+      const map = {
+        colli: [
+          /(?:colli|collo|packages|package|pkg|ctns?|cartoni|boxes?)\s*[:\-]?\s*(\d+(?:[.,]\d+)?)/i,
+          /(\d+(?:[.,]\d+)?)\s*(?:colli|collo|packages|package|pkg|ctns?|cartoni|boxes?)\b/i
+        ],
+        pezzi: [
+          /(?:pezzi|pezzo|pcs?|pz)\s*[:\-]?\s*(\d+(?:[.,]\d+)?)/i,
+          /(\d+(?:[.,]\d+)?)\s*(?:pezzi|pezzo|pcs?|pz)\b/i
+        ],
+        gross: [
+          /(?:peso\s*)?(?:lordo|gross)\s*[:\-]?\s*([\d.,]+)\s*(?:kg)?/i,
+          /([\d.,]+)\s*kg\s*(?:lordo|gross)\b/i
+        ],
+        net: [
+          /(?:peso\s*)?(?:netto|net)\s*[:\-]?\s*([\d.,]+)\s*(?:kg)?/i,
+          /([\d.,]+)\s*kg\s*(?:netto|net)\b/i
+        ],
+        mq: [
+          /(?:mq|m²|sqm|square\s*meters?)\s*[:\-]?\s*([\d.,]+)/i,
+          /([\d.,]+)\s*(?:mq|m²|sqm|square\s*meters?)\b/i
+        ]
+      };
+      return findLabeledValue(text, map[field] || []);
+    }
+
+    function getLooseKgCandidates(text){
+      const matches = [...String(text || "").matchAll(/(\d+(?:[.,]\d+)?)\s*kg\b/gi)];
+      return matches.map(match => ({
+        value: parseImportNumber(match[1]),
+        raw: match[0],
+        index: match.index ?? -1
+      })).filter(item => item.value > 0);
+    }
+
+    function fallbackExtractColli(text){
+      const candidates = [...String(text || "").matchAll(/\b\d+\b/g)]
+        .map(m => ({ raw: m[0], value: Number(m[0]), index: m.index ?? -1 }))
+        .filter(item => Number.isFinite(item.value) && item.value > 0 && item.value <= 99999);
+      if (!candidates.length) return null;
+      const firstSmallInt = candidates.find(item => item.value <= 999);
+      return firstSmallInt || candidates[0];
+    }
+
+    function parseDirtyImportLine(line){
+      const cleaned = cleanImportLine(line);
+      if (!cleaned) return null;
+
+      let descSource = cleaned;
+
+      const colliMatch = extractField(cleaned, "colli");
+      const pezziMatch = extractField(cleaned, "pezzi");
+      let grossMatch = extractField(cleaned, "gross");
+      let netMatch = extractField(cleaned, "net");
+      const mqMatch = extractField(cleaned, "mq");
+      const valueMatch = extractCurrency(cleaned);
+
+      [colliMatch, pezziMatch, grossMatch, netMatch, mqMatch, valueMatch].forEach(match => {
+        if (match) descSource = stripMatchedSegment(descSource, match);
+      });
+
+      const looseKg = getLooseKgCandidates(cleaned);
+
+      if (!grossMatch && !netMatch && looseKg.length){
+        grossMatch = looseKg[0];
+        descSource = stripMatchedSegment(descSource, grossMatch);
+      } else if (!grossMatch && looseKg.length >= 1){
+        const available = looseKg.filter(item => !netMatch || item.index !== netMatch.index);
+        if (available.length){
+          grossMatch = available[0];
+          descSource = stripMatchedSegment(descSource, grossMatch);
+        }
+      }
+
+      if (!netMatch && looseKg.length >= 2){
+        const available = looseKg.filter(item => !grossMatch || item.index !== grossMatch.index);
+        if (available.length){
+          netMatch = available[0];
+          descSource = stripMatchedSegment(descSource, netMatch);
+        }
+      }
+
+      let colliFallback = colliMatch;
+      if (!colliFallback){
+        colliFallback = fallbackExtractColli(descSource);
+        if (colliFallback) descSource = stripMatchedSegment(descSource, colliFallback);
+      }
+
+      descSource = descSource
+        .replace(/\b(?:colli|collo|packages|package|pkg|ctns?|cartoni|boxes?|pezzi|pezzo|pcs?|pz|peso|lordo|gross|netto|net|kg|mq|m²|sqm|square\s*meters?|valore|value|importo|eur|euro)\b/gi, " ")
+        .replace(/[€:;-]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      const result = {
+        desc: normalizeSpaces(descSource),
+        colli: colliFallback ? String(Math.round(colliFallback.value || 0)) : "",
+        pezzi: pezziMatch ? String(Math.round(pezziMatch.value || 0)) : "",
+        gross: grossMatch ? formatIT(grossMatch.value) : "",
+        net: netMatch ? formatIT(netMatch.value) : "",
+        mq: mqMatch ? formatIT(mqMatch.value) : "",
+        value: valueMatch ? formatIT(valueMatch.value) : ""
+      };
+
+      const hasUsefulData = result.desc || result.colli || result.pezzi || result.gross || result.net || result.mq || result.value;
+      if (!hasUsefulData) return null;
+
+      if (!result.desc) result.desc = cleaned;
+      return result;
+    }
+
+    function splitDirtyTextIntoLines(text){
+      const rawLines = String(text || "")
+        .replace(/\r/g, "\n")
+        .split("\n")
+        .map(cleanImportLine)
+        .filter(line => line.length > 0);
+
+      const expanded = [];
+      rawLines.forEach(line => {
+        const parts = line
+          .split(/(?=(?:\D|^)\d+(?:[.,]\d+)?\s*(?:colli|collo|kg|lordo|gross|netto|net|€|eur|euro|valore)\b)/i)
+          .map(cleanImportLine)
+          .filter(Boolean);
+
+        if (parts.length > 1) expanded.push(...parts);
+        else expanded.push(line);
+      });
+
+      return expanded;
+    }
+
+    function parseDirtyImportText(text){
+      const lines = splitDirtyTextIntoLines(text);
+      const parsedRows = [];
+      for (const line of lines){
+        const parsed = parseDirtyImportLine(line);
+        if (parsed) parsedRows.push(parsed);
+      }
+      return parsedRows;
+    }
+
+    function applyImportedRows(importedRows, appendMode){
+      const safeRows = Array.isArray(importedRows) ? importedRows : [];
+      if (!safeRows.length){
+        if (importStatus) importStatus.textContent = "Nessuna riga utile trovata nel testo.";
+        return;
+      }
+
+      resetMergeState();
+
+      if (appendMode) {
+        rows = rows.concat(safeRows);
+      } else {
+        rows = safeRows;
+      }
+
+      render();
+      save();
+
+      const filledValueCount = safeRows.reduce((acc, row) => {
+        return acc + ["desc","colli","pezzi","gross","net","mq","value"].filter(key => String(row[key] || "").trim() !== "").length;
+      }, 0);
+
+      if (importStatus){
+        importStatus.textContent = `${safeRows.length} righe importate correttamente. Campi valorizzati: ${filledValueCount}.`;
+      }
+    }
+
+    function runDirtyImport(appendMode=false){
+      const text = importTextArea?.value || "";
+      const importedRows = parseDirtyImportText(text);
+      applyImportedRows(importedRows, appendMode);
+    }
+
+    document.getElementById("parseImportBtn")?.addEventListener("click", () => runDirtyImport(false));
+    document.getElementById("appendImportBtn")?.addEventListener("click", () => runDirtyImport(true));
+
+    document.getElementById("clearImportTextBtn")?.addEventListener("click", () => {
+      if (importTextArea) importTextArea.value = "";
+      if (importStatus) importStatus.textContent = "Area testo pulita.";
+      importTextArea?.focus();
+    });
+
+    document.getElementById("importSampleBtn")?.addEventListener("click", () => {
+      if (!importTextArea) return;
+      importTextArea.value = [
+        "Biscotti 120 colli 850 kg € 4.000,00",
+        "Taralli 80 colli lordo 600 netto 560 euro 2.800,50",
+        "Sedie cucina 12 colli 44 pz gross 420,50 net 390,00 18,50 mq valore 1.250,00"
+      ].join("\\n");
+      if (importStatus) importStatus.textContent = "Esempio caricato. Premi “Estrai e compila”.";
+      importTextArea.focus();
+    });
+
+    importTextArea?.addEventListener("keydown", (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+        e.preventDefault();
+        runDirtyImport(false);
+      }
+    });
+
+
+
+
+    const ocrStatus = document.getElementById("ocrStatus");
+
+    function setOcrStatus(message, visible=true){
+      if (!ocrStatus) return;
+      ocrStatus.style.display = visible ? "block" : "none";
+      ocrStatus.textContent = message;
+    }
+
+    async function renderPdfPageToCanvas(page, scale=2){
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d", { willReadFrequently: true });
+      canvas.width = Math.ceil(viewport.width);
+      canvas.height = Math.ceil(viewport.height);
+      await page.render({ canvasContext: context, viewport }).promise;
+      return canvas;
+    }
+
+    async function loadPdfDocument(file){
+      if (!file) throw new Error("Seleziona un PDF");
+      if (typeof pdfjsLib === "undefined") throw new Error("PDF.js non disponibile");
+      const arrayBuffer = await file.arrayBuffer();
+      const data = new Uint8Array(arrayBuffer);
+      return pdfjsLib.getDocument({ data, useWorkerFetch: false }).promise;
+    }
+
+    async function extractTextFromPdf(file){
+      const pdf = await loadPdfDocument(file);
+      let fullText = "";
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+        try {
+          const page = await pdf.getPage(pageNum);
+          const content = await page.getTextContent();
+          const items = Array.isArray(content?.items) ? content.items : [];
+          const pageText = items
+            .map(item => String(item?.str || "").trim())
+            .filter(Boolean)
+            .join(" ");
+          if (pageText) fullText += pageText + "\n";
+        } catch (pageError) {
+          console.warn("Errore lettura testo pagina PDF", pageNum, pageError);
+        }
+      }
+      return String(fullText || "").trim();
+    }
+
+    async function extractTextFromPdfWithOcr(file){
+      if (typeof Tesseract === "undefined") throw new Error("OCR non disponibile");
+
+      const pdf = await loadPdfDocument(file);
+      let fullText = "";
+
+      const logger = (m) => {
+        if (!ocrStatus) return;
+        if (m?.status === "recognizing text") {
+          const pct = Math.round((m?.progress || 0) * 100);
+          setOcrStatus(`OCR in corso... ${pct}%`);
+        } else if (m?.status) {
+          setOcrStatus(`OCR: ${m.status}`);
+        }
+      };
+
+      for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++){
+        try {
+          setOcrStatus(`OCR pagina ${pageNum} di ${pdf.numPages}...`);
+          const page = await pdf.getPage(pageNum);
+          const canvas = await renderPdfPageToCanvas(page, 2.2);
+          if (!canvas) continue;
+
+          const imageDataUrl = canvas.toDataURL("image/png");
+          const result = await Tesseract.recognize(imageDataUrl, "eng", {
+            logger,
+            tessedit_pageseg_mode: 6,
+            preserve_interword_spaces: 1
+          });
+
+          const pageText = String(result?.data?.text || "").trim();
+          if (pageText) fullText += pageText + "\n";
+        } catch (pageErr) {
+          console.warn("Errore OCR pagina PDF", pageNum, pageErr);
+        }
+      }
+
+      return String(fullText || "").trim();
+    }
+
+
+    function getSelectedPdfFile(){
+      const input = document.getElementById("pdfUpload");
+      const files = Array.from(input?.files || []);
+      return files.length ? files[0] : null;
+    }
+
+    let isImportingPdf = false;
+
+    async function importPdfWithFallback(file){
+      if (!file) throw new Error("Seleziona un PDF");
+
+      setOcrStatus("Tentativo lettura testo interno PDF...", true);
+      const extractedText = String(await extractTextFromPdf(file) || "");
+
+      const parsedNormal = safeParseDirtyImportText(extractedText);
+      if (extractedText.trim().length > 20 && parsedNormal.length){
+        setOcrStatus("OCR non necessario: testo PDF letto correttamente.", true);
+        return { extractedText, importedRows: parsedNormal, usedOcr: false };
+      }
+
+      setOcrStatus("PDF probabilmente scannerizzato. Avvio OCR...", true);
+      const ocrText = String(await extractTextFromPdfWithOcr(file) || "");
+      const parsedOcr = safeParseDirtyImportText(ocrText);
+
+      return { extractedText: ocrText, importedRows: parsedOcr, usedOcr: true };
+    }
+
+    async function handlePdfImport(file){
+      if (isImportingPdf) return;
+      if (!file) {
+        if (importStatus) importStatus.textContent = "Seleziona prima un PDF.";
+        setOcrStatus("Nessun PDF selezionato.", true);
+        return;
+      }
+
+      if (importStatus) importStatus.textContent = "Analisi PDF in corso...";
+      setOcrStatus("Preparazione import PDF...", true);
+      isImportingPdf = true;
+
+      try{
+        const result = await importPdfWithFallback(file);
+        const extractedText = String(result?.extractedText || "");
+        const importedRows = Array.isArray(result?.importedRows) ? result.importedRows : [];
+        const usedOcr = !!result?.usedOcr;
+
+        if (importTextArea) importTextArea.value = extractedText;
+        applyImportedRows(importedRows, false);
+
+        if (importStatus){
+          if (importedRows.length) {
+            importStatus.textContent = `${usedOcr ? "OCR completato" : "PDF letto correttamente"}. ${importedRows.length} righe importate.`;
+          } else if (extractedText.trim()) {
+            importStatus.textContent = "Testo estratto correttamente, ma nessuna riga utile è stata riconosciuta. Controlla l'anteprima testo e l'impaginazione del PDF.";
+          } else {
+            importStatus.textContent = "Impossibile estrarre testo utile dal PDF.";
+          }
+        }
+
+        if (extractedText.trim()) {
+          setOcrStatus(usedOcr ? "OCR completato con successo." : "Testo PDF estratto senza OCR.", true);
+        } else {
+          setOcrStatus("OCR completato ma senza testo utile.", true);
+        }
+      }catch(error){
+        console.error("Errore import PDF", error);
+        const message = String(error?.message || error || "impossibile analizzare il file");
+        if (importStatus) importStatus.textContent = "Errore lettura PDF: " + message;
+        setOcrStatus("Import PDF fallito.", true);
+      } finally {
+        isImportingPdf = false;
+      }
+    }
+
+    document.getElementById("parsePdfBtn")?.addEventListener("click", async () => {
+      await handlePdfImport(getSelectedPdfFile());
+    });
+
+    document.getElementById("pdfUpload")?.addEventListener("change", async (e) => {
+      const file = Array.from(e?.target?.files || [])[0] || null;
+      if (importStatus && file){
+        importStatus.textContent = `PDF selezionato: ${file.name}. Avvio import automatico...`;
+      }
+      if (file) {
+        await handlePdfImport(file);
+      }
+    });
+
+
+    window.addEventListener("unhandledrejection", (event) => {
+      const rawMessage = event?.reason?.message || event?.reason || "errore sconosciuto";
+      const message = String(rawMessage || "");
+      console.error("Promise non gestita:", event?.reason);
+      if (message.toLowerCase().includes("length")) {
+        event.preventDefault?.();
+        if (!isImportingPdf && importStatus && !/righe importate/i.test(String(importStatus.textContent || ""))) {
+          importStatus.textContent = "Errore OCR del browser intercettato. Riprova il PDF: la gestione errori ora evita il blocco della pagina.";
+        }
+        if (!isImportingPdf) {
+          setOcrStatus("Errore OCR intercettato e neutralizzato dal fallback difensivo.", true);
+        }
+      }
+    });
+
+    const loaded = load();
+    loadPdfTitle();
+    if (!loaded || rows.length === 0) addRows(8, false);
+    else render();
+    updateSortValueButtonLabel();
+
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === "Enter") {
+        e.preventDefault();
+        addRows(1, true);
+      }
+    });
+
+    document.getElementById("mergeBtn").addEventListener("click", () => {
+      if (isMerged) {
+        rows = JSON.parse(JSON.stringify(originalRows));
+        resetMergeState();
+        render();
+        save();
+        return;
+      }
+
+      originalRows = JSON.parse(JSON.stringify(rows));
+
+      const mergedMap = new Map();
+      const mergedRows = [];
+
+      rows.forEach((r) => {
+        const key = (r.desc || "").trim().toLowerCase();
+
+        if (!key) {
+          mergedRows.push({ ...r });
+          return;
+        }
+
+        if (!mergedMap.has(key)) {
+          const item = {
+            desc: r.desc || "",
+            colli: parseNumberIT(r.colli),
+            pezzi: parseNumberIT(r.pezzi),
+            gross: parseNumberIT(r.gross),
+            net: parseNumberIT(r.net),
+            mq: parseNumberIT(r.mq),
+            value: parseNumberIT(r.value)
+          };
+          mergedMap.set(key, item);
+          mergedRows.push(item);
+          return;
+        }
+
+        const current = mergedMap.get(key);
+        current.colli += parseNumberIT(r.colli);
+        current.pezzi += parseNumberIT(r.pezzi);
+        current.gross += parseNumberIT(r.gross);
+        current.net += parseNumberIT(r.net);
+        current.mq += parseNumberIT(r.mq);
+        current.value += parseNumberIT(r.value);
+      });
+
+      rows = mergedRows.map((r) => ({
+        desc: r.desc || "",
+        colli: String(Math.round(Number(r.colli) || 0)),
+        pezzi: String(Math.round(Number(r.pezzi) || 0)),
+        gross: formatIT(r.gross),
+        net: formatIT(r.net),
+        mq: formatIT(r.mq),
+        value: formatIT(r.value)
+      }));
+
+      isMerged = true;
+      render();
+      save();
+    });
+
+    const CALC_HISTORY_KEY = "peso_sheet_calc_history_v1";
+    const calcExpr = document.getElementById("calcExpr");
+    const calcBtn = document.getElementById("calcBtn");
+    const calcResult = document.getElementById("calcResult");
+    const calcHistoryEl = document.getElementById("calcHistory");
+    const calcCopyBtn = document.getElementById("calcCopyBtn");
+    const calcClearBtn = document.getElementById("calcClearBtn");
+    let calcHistory = [];
+
+    function safeEvalExpression(expr){
+      const normalized = String(expr || "")
+        .replace(/\s+/g, "")
+        .replace(/,/g, ".")
+        .replace(/[^0-9+\-*/().]/g, "");
+      if (!normalized) return 0;
+      if (!/^[0-9+\-*/().]+$/.test(normalized)) throw new Error("Espressione non valida");
+      const result = Function('"use strict"; return (' + normalized + ')')();
+      if (!Number.isFinite(result)) throw new Error("Risultato non valido");
+      return result;
+    }
+
+    function saveCalcHistory(){
+      try { localStorage.setItem(CALC_HISTORY_KEY, JSON.stringify(calcHistory.slice(0,8))); } catch {}
+    }
+
+    function loadCalcHistory(){
+      try {
+        const raw = localStorage.getItem(CALC_HISTORY_KEY);
+        const parsed = JSON.parse(raw || "[]");
+        if (Array.isArray(parsed)) calcHistory = parsed.slice(0,8);
+      } catch {}
+    }
+
+    function renderCalcHistory(){
+      if (!calcHistoryEl) return;
+      if (!calcHistory.length) {
+        calcHistoryEl.className = "calcHistoryEmpty";
+        calcHistoryEl.textContent = "Nessun calcolo ancora";
+        return;
+      }
+      calcHistoryEl.className = "calcHistoryList";
+      calcHistoryEl.innerHTML = calcHistory.map(item => `
+        <div class="calcHistoryItem" title="${String(item.expr || '').replace(/"/g, '&quot;')}">
+          <span class="calcHistoryExpr">${item.expr}</span>
+          <span class="calcHistoryVal">${item.result}</span>
+        </div>
+      `).join("");
+    }
+
+    function updateCalcDerived(value){
+      return Number(value) || 0;
+    }
+
+
+    function pushCalcHistory(expr, value){
+      const cleanExpr = String(expr || "").trim();
+      if (!cleanExpr) return;
+      calcHistory.unshift({ expr: cleanExpr, result: formatIT(value) });
+      calcHistory = calcHistory.filter((item, idx, arr) => idx === arr.findIndex(x => x.expr === item.expr && x.result === item.result)).slice(0,8);
+      saveCalcHistory();
+      renderCalcHistory();
+    }
+
+    function runCalculator(){
+      try{
+        const value = safeEvalExpression(calcExpr.value);
+        calcResult.textContent = formatIT(value);
+        updateCalcDerived(value);
+        pushCalcHistory(calcExpr.value, value);
+      }catch{
+        calcResult.textContent = "Errore";
+        updateCalcDerived(0);
+      }
+    }
+
+    function insertCalcText(text){
+      if (!calcExpr) return;
+      const start = calcExpr.selectionStart ?? calcExpr.value.length;
+      const end = calcExpr.selectionEnd ?? calcExpr.value.length;
+      const current = calcExpr.value;
+      calcExpr.value = current.slice(0, start) + text + current.slice(end);
+      const nextPos = start + text.length;
+      calcExpr.focus();
+      calcExpr.setSelectionRange(nextPos, nextPos);
+    }
+
+    function getCurrentCalcValue(){
+      const raw = calcResult?.textContent || "0";
+      return parseNumberIT(raw);
+    }
+
+    document.querySelectorAll(".calcKey").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const insert = btn.dataset.insert;
+        const action = btn.dataset.action;
+        if (insert != null) {
+          insertCalcText(insert);
+          return;
+        }
+        if (action === "backspace") {
+          const current = calcExpr.value || "";
+          const start = calcExpr.selectionStart ?? current.length;
+          const end = calcExpr.selectionEnd ?? current.length;
+          if (start !== end) {
+            calcExpr.value = current.slice(0, start) + current.slice(end);
+            calcExpr.setSelectionRange(start, start);
+          } else if (start > 0) {
+            calcExpr.value = current.slice(0, start - 1) + current.slice(end);
+            calcExpr.setSelectionRange(start - 1, start - 1);
+          }
+          calcExpr.focus();
+          return;
+        }
+        if (action === "percent") insertCalcText("/100");
+        if (action === "plusVat") insertCalcText("*1.22");
+        if (action === "minusVat") insertCalcText("/1.22");
+        if (action === "percentOf") insertCalcText("*100/");
+      });
+    });
+
+    calcBtn?.addEventListener("click", runCalculator);
+    calcExpr?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        runCalculator();
+      }
+    });
+
+    calcCopyBtn?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(calcResult?.textContent || "0,00");
+        calcCopyBtn.textContent = "Copiato";
+        setTimeout(() => calcCopyBtn.textContent = "Copia risultato", 1200);
+      } catch {}
+    });
+
+    calcClearBtn?.addEventListener("click", () => {
+      if (calcExpr) calcExpr.value = "";
+      if (calcResult) calcResult.textContent = "0,00";
+      updateCalcDerived(0);
+      calcExpr?.focus();
+    });
+
+    loadCalcHistory();
+    renderCalcHistory();
+    updateCalcDerived(getCurrentCalcValue());
+
+
+    const EXTRA_LS_KEY = "peso_sheet_extra_v1";
+    const EXTRA_ACTIVE_TERMINAL_KEY = "peso_sheet_extra_active_terminal_v1";
+    const EXTRA_AUTOCHECK_KEY = "peso_sheet_extra_autocheck_v1";
+    let extraRows = [];
+    let activeExtraTerminal = "sct";
+    let extraAutoCheckEnabled = false;
+    let extraAutoCheckTimer = null;
+    const EXTRA_CHECK_INTERVAL = 5 * 60 * 1000;
+
+    const extraTbody = document.getElementById("extraTbody");
+    const extraThead = document.getElementById("extraThead");
+    const extraPanel = document.getElementById("extraPanel");
+    const addExtraRowBtn = document.getElementById("addExtraRowBtn");
+    const addExtra10Btn = document.getElementById("addExtra10Btn");
+    const clearExtraBtn = document.getElementById("clearExtraBtn");
+    const addExtraRowBtnBottom = document.getElementById("addExtraRowBtnBottom");
+    const addExtra10BtnBottom = document.getElementById("addExtra10BtnBottom");
+    const clearExtraBtnBottom = document.getElementById("clearExtraBtnBottom");
+    const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
+    const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
+    const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
+    const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
+    const extraAutoStatus = document.getElementById("extraAutoStatus");
+    const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
+
+    const EXTRA_TERMINALS = {
+      sct: {
+        label: "SCT",
+        title: "Container SCT",
+        clientField: "clientSct",
+        containerField: "sct",
+        statusField: "sctStatus",
+        statusClass: "sct-status",
+        placeholder: "INSERISCI CNT SCT",
+        subtitle: "SCT: Salerno Containers Terminal."
+      },
+      conateco: {
+        label: "CONATECO",
+        title: "Container Conateco",
+        clientField: "clientConateco",
+        containerField: "conateco",
+        statusField: "conatecoStatus",
+        statusClass: "conateco-status",
+        placeholder: "INSERISCI CNT CONATECO",
+        subtitle: "CONATECO: Consorzio Napoletano Terminal Cnts"
+      },
+      flavio: {
+        label: "TFG",
+        title: "Container TFG / Flavio Gioia",
+        clientField: "clientFlavio",
+        containerField: "flavio",
+        statusField: "flavioStatus",
+        statusClass: "flavio-status",
+        placeholder: "INSERISCI CNT TFG",
+        subtitle: "TFG: Terminal Flavio Gioia"
+      }
+    };
+
+    function emptyExtraRow(){
+      return {
+        clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
+        clientConateco:"", conateco:"", conatecoStatus:"",
+        clientFlavio:"", flavio:"", flavioStatus:""
+      };
+    }
+
+    function normalizeExtraRow(r){
+      return {
+        ...emptyExtraRow(),
+        clientSct: r?.clientSct ?? "",
+        sct: r?.sct ?? "",
+        sctStatus: r?.sctStatus ?? "",
+        sctPdfUrl: r?.sctPdfUrl ?? "",
+        StatoEsteso: r?.StatoEsteso ?? "",
+        DataIngresso: r?.DataIngresso ?? "",
+        Ora: r?.Ora ?? "",
+        Causale: r?.Causale ?? "",
+        clientConateco: r?.clientConateco ?? "",
+        conateco: r?.conateco ?? "",
+        conatecoStatus: r?.conatecoStatus ?? "",
+        clientFlavio: r?.clientFlavio ?? "",
+        flavio: r?.flavio ?? "",
+        flavioStatus: r?.flavioStatus ?? ""
+      };
+    }
+
+    function saveExtra(){
+      try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
+      try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
+      try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+    }
+
+    function loadExtra(){
+      try{
+        const savedTerminal = localStorage.getItem(EXTRA_ACTIVE_TERMINAL_KEY);
+        if (EXTRA_TERMINALS[savedTerminal]) activeExtraTerminal = savedTerminal;
+        extraAutoCheckEnabled = localStorage.getItem(EXTRA_AUTOCHECK_KEY) === "1";
+        const raw = localStorage.getItem(EXTRA_LS_KEY);
+        if(!raw) return false;
+        const parsed = JSON.parse(raw);
+        if(!Array.isArray(parsed)) return false;
+        extraRows = parsed.map(normalizeExtraRow);
+        return true;
+      }catch{
+        return false;
+      }
+    }
+
+    function addExtraRows(count, focusLast=false){
+      for(let i=0; i<count; i++) extraRows.push(emptyExtraRow());
+      renderExtra();
+      saveExtra();
+      if(focusLast){
+        const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
+        if(last) last.focus();
+      }
+    }
+
+    function deleteExtraRow(index){
+      extraRows.splice(index, 1);
+      renderExtra();
+      saveExtra();
+    }
+
+    function focusExtraCell(rowIndex, field){
+      const selector = `input[data-extra-row="${rowIndex}"][data-extra-field="${field}"]`;
+      const target = extraTbody.querySelector(selector);
+      if(target){ target.focus(); target.select?.(); }
+    }
+
+    function handleExtraEnterNavigation(e){
+      if (e.key !== "Enter") return;
+      e.preventDefault();
+      const currentRow = Number(e.target.dataset.extraRow);
+      const field = e.target.dataset.extraField;
+      let nextRow = currentRow + (e.shiftKey ? -1 : 1);
+      if(nextRow < 0) nextRow = 0;
+      if(nextRow >= extraRows.length){
+        extraRows.push(emptyExtraRow());
+        renderExtra();
+        saveExtra();
+      }
+      focusExtraCell(nextRow, field);
+    }
+
+    function countFilledExtra(termKey){
+      const cfg = EXTRA_TERMINALS[termKey];
+      return extraRows.filter(r => String(r?.[cfg.containerField] || "").trim()).length;
+    }
+
+    function updateExtraTabs(){
+      document.querySelectorAll(".extraTab").forEach(btn => {
+        btn.classList.toggle("active", btn.dataset.extraTerminal === activeExtraTerminal);
+      });
+      const sct = document.getElementById("extraTabCountSct");
+      const con = document.getElementById("extraTabCountConateco");
+      const fla = document.getElementById("extraTabCountFlavio");
+      if (sct) sct.textContent = String(countFilledExtra("sct"));
+      if (con) con.textContent = String(countFilledExtra("conateco"));
+      if (fla) fla.textContent = String(countFilledExtra("flavio"));
+      const cfg = EXTRA_TERMINALS[activeExtraTerminal];
+      if (extraTerminalSubtitle) extraTerminalSubtitle.textContent = cfg.subtitle;
+    }
+
+    function renderExtraStatusCell(td, row, cfg, containerValue){
+      td.className = cfg.statusClass;
+      const status = row?.[cfg.statusField] || "-";
+      td.textContent = "";
+
+      if (activeExtraTerminal === "sct" && row.sctPdfUrl) {
+        const pdfUrl = String(row.sctPdfUrl || "").replace(/\\/g, "/");
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "📄 SCARICA PDF";
+        link.style.color = "#2563eb";
+        link.style.fontWeight = "900";
+        link.style.textDecoration = "underline";
+        td.appendChild(link);
+        return;
+      }
+
+      td.textContent = status;
+      if (activeExtraTerminal !== "flavio") colorStatus(td, status, containerValue, activeExtraTerminal);
+      if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
+    }
+
+    function renderExtra(){
+      if(!extraTbody || !extraThead) return;
+      const cfg = EXTRA_TERMINALS[activeExtraTerminal] || EXTRA_TERMINALS.sct;
+      extraThead.innerHTML = `
+        <tr>
+          <th>Riga</th>
+          <th>Cliente</th>
+          <th>${cfg.title}</th>
+          <th>Stato</th>
+          <th class="actions">✕</th>
+        </tr>`;
+      extraTbody.innerHTML = "";
+
+      if (!extraRows.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 5;
+        td.className = "shipEmpty";
+        td.textContent = "Nessuna riga presente. Usa “+ Aggiungi riga”.";
+        tr.appendChild(td);
+        extraTbody.appendChild(tr);
+        updateExtraTabs();
+        updateAutoCheckUI();
+        return;
+      }
+
+      extraRows.forEach((r, idx) => {
+        const row = normalizeExtraRow(r);
+        extraRows[idx] = row;
+        const tr = document.createElement("tr");
+
+        const tdIndex = document.createElement("td");
+        tdIndex.className = "cell";
+        tdIndex.style.color = "var(--muted)";
+        tdIndex.style.padding = "12px 10px";
+        tdIndex.textContent = String(idx + 1);
+        tr.appendChild(tdIndex);
+
+        const makeExtraInput = (value, field, placeholder="") => {
+          const td = document.createElement("td");
+          td.className = "cell";
+          const input = document.createElement("input");
+          input.value = value ?? "";
+          input.placeholder = placeholder;
+          input.dataset.extraRow = idx;
+          input.dataset.extraField = field;
+          td.appendChild(input);
+
+          input.addEventListener("input", (e) => {
+            const rowIndex = Number(e.target.dataset.extraRow);
+            const key = e.target.dataset.extraField;
+            extraRows[rowIndex][key] = e.target.value;
+
+            if (key === "sct") {
+              extraRows[rowIndex].sctStatus = "";
+              extraRows[rowIndex].sctPdfUrl = "";
+              extraRows[rowIndex].StatoEsteso = "";
+              extraRows[rowIndex].DataIngresso = "";
+              extraRows[rowIndex].Ora = "";
+              extraRows[rowIndex].Causale = "";
+            }
+            if (key === "conateco") extraRows[rowIndex].conatecoStatus = "";
+            if (key === "flavio") extraRows[rowIndex].flavioStatus = "";
+
+            updateExtraTabs();
+            saveExtra();
+          });
+
+          input.addEventListener("keydown", handleExtraEnterNavigation);
+          return td;
+        };
+
+        tr.appendChild(makeExtraInput(row[cfg.clientField], cfg.clientField, "CLIENTE"));
+        tr.appendChild(makeExtraInput(row[cfg.containerField], cfg.containerField, cfg.placeholder));
+
+        const statusTd = document.createElement("td");
+        renderExtraStatusCell(statusTd, row, cfg, row[cfg.containerField]);
+        tr.appendChild(statusTd);
+
+        const tdActions = document.createElement("td");
+        tdActions.className = "actions";
+        const btn = document.createElement("button");
+        btn.className = "rowBtn";
+        btn.title = "Elimina riga";
+        btn.textContent = "✕";
+        btn.addEventListener("click", () => deleteExtraRow(idx));
+        tdActions.appendChild(btn);
+        tr.appendChild(tdActions);
+
+        extraTbody.appendChild(tr);
+      });
+      updateExtraTabs();
+      updateAutoCheckUI();
+    }
+
+    function setActiveExtraTerminal(termKey){
+      if (!EXTRA_TERMINALS[termKey]) return;
+      activeExtraTerminal = termKey;
+      renderExtra();
+      saveExtra();
+    }
+
+    function clearExtraSection(){
+      if(!confirm("Vuoi svuotare questa sezione?")) return;
+      extraRows = [];
+      renderExtra();
+      saveExtra();
+    }
+
+    function updateAutoCheckUI(){
+      if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
+      if (extraAutoCheckLabel) extraAutoCheckLabel.textContent = extraAutoCheckEnabled ? "ON" : "OFF";
+      if (extraAutoStatus) {
+        extraAutoStatus.textContent = extraAutoCheckEnabled
+          ? "Controllo automatico attivo: ogni 5 minuti."
+          : "Controllo automatico disattivato.";
+      }
+    }
+
+    function setExtraAutoCheck(enabled){
+      extraAutoCheckEnabled = !!enabled;
+      if (extraAutoCheckTimer) {
+        clearInterval(extraAutoCheckTimer);
+        extraAutoCheckTimer = null;
+      }
+      if (extraAutoCheckEnabled) {
+        extraAutoCheckTimer = setInterval(runAutoCheck, EXTRA_CHECK_INTERVAL);
+      }
+      updateAutoCheckUI();
+      saveExtra();
+    }
+
+    addExtraRowBtn?.addEventListener("click", () => addExtraRows(1, true));
+    addExtra10Btn?.addEventListener("click", () => addExtraRows(10, true));
+    addExtraRowBtnBottom?.addEventListener("click", () => addExtraRows(1, true));
+    addExtra10BtnBottom?.addEventListener("click", () => addExtraRows(10, true));
+    clearExtraBtn?.addEventListener("click", clearExtraSection);
+    clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
+    extraCheckNowBtn?.addEventListener("click", runAutoCheck);
+    extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
+    minimizeExtraBtn?.addEventListener("click", () => {
+      extraPanel?.classList.toggle("minimized");
+      minimizeExtraBtn.textContent = extraPanel?.classList.contains("minimized") ? "Espandi modulo" : "Riduci a icona";
+    });
+    document.querySelectorAll(".extraTab").forEach(btn => {
+      btn.addEventListener("click", () => setActiveExtraTerminal(btn.dataset.extraTerminal));
+    });
+
+    const extraLoaded = loadExtra();
+    if(!extraLoaded || extraRows.length === 0) addExtraRows(3, false);
+    else renderExtra();
+    setExtraAutoCheck(extraAutoCheckEnabled);
+
+  
+
+    const ROLL_LS_KEY = "peso_sheet_roll_converter_v1";
+
+    function parseLooseNumber(value){
+      const n = parseNumberIT(value);
+      return Number.isFinite(n) ? n : 0;
+    }
+
+    function saveRollConverter(){
+      try{
+        localStorage.setItem(ROLL_LS_KEY, JSON.stringify({
+          count: document.getElementById("rollCount")?.value || "",
+          width: document.getElementById("rollWidth")?.value || "",
+          length: document.getElementById("rollLength")?.value || ""
+        }));
+      }catch{}
+    }
+
+    function loadRollConverter(){
+      try{
+        const raw = localStorage.getItem(ROLL_LS_KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        const countEl = document.getElementById("rollCount");
+        const widthEl = document.getElementById("rollWidth");
+        const lengthEl = document.getElementById("rollLength");
+        if(countEl) countEl.value = data?.count ?? "";
+        if(widthEl) widthEl.value = data?.width ?? "";
+        if(lengthEl) lengthEl.value = data?.length ?? "";
+      }catch{}
+    }
+
+    function updateRollConverter(){
+      const count = parseLooseNumber(document.getElementById("rollCount")?.value || 0);
+      const width = parseLooseNumber(document.getElementById("rollWidth")?.value || 0);
+      const length = parseLooseNumber(document.getElementById("rollLength")?.value || 0);
+
+      const singleMq = width * length;
+      const totalMq = count * singleMq;
+
+      const totalEl = document.getElementById("rollTotalMq");
+      const singleEl = document.getElementById("rollSingleMq");
+      const formulaEl = document.getElementById("rollPackingText");
+
+      if(totalEl) totalEl.textContent = formatIT(totalMq) + " m²";
+      if(singleEl) singleEl.textContent = formatIT(singleMq) + " m² / rotolo";
+      if(formulaEl) formulaEl.textContent = `Formula: ${formatIT(count)} × ${formatIT(width)} × ${formatIT(length)}`;
+
+      saveRollConverter();
+    }
+
+function updateConversions(){
+
+  const kg = parseFloat(document.getElementById("convKg")?.value || 0);
+  const ton = kg / 1000;
+  const lbs = kg * 2.20462;
+
+  const tonEl = document.getElementById("convTon");
+  const lbsEl = document.getElementById("convLbs");
+
+  if(tonEl) tonEl.textContent = ton.toFixed(3) + " ton";
+  if(lbsEl) lbsEl.textContent = lbs.toFixed(2) + " lbs";
+
+  const euro = parseFloat(document.getElementById("convEuro")?.value || 0);
+  const kg2 = parseFloat(document.getElementById("convKg2")?.value || 0);
+  const euroKgEl = document.getElementById("convEuroKg");
+
+  if(euroKgEl){
+    euroKgEl.textContent = kg2 > 0 ? (euro/kg2).toFixed(2) + " €/kg" : "0 €/kg";
+  }
+
+  const euro2 = parseFloat(document.getElementById("convEuro2")?.value || 0);
+  const pezzi = parseFloat(document.getElementById("convPezzi2")?.value || 0);
+  const euroPezzoEl = document.getElementById("convEuroPezzo");
+
+  if(euroPezzoEl){
+    euroPezzoEl.textContent = pezzi > 0 ? (euro2/pezzi).toFixed(2) + " €/pz" : "0 €/pz";
+  }
+}
+
+["convKg","convEuro","convKg2","convEuro2","convPezzi2"].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el){
+    el.addEventListener("input",updateConversions);
+  }
+});
+
+
+["rollCount","rollWidth","rollLength"].forEach(id=>{
+  const el = document.getElementById(id);
+  if(el){
+    el.addEventListener("input", updateRollConverter);
+  }
+});
+
+document.getElementById("rollClearBtn")?.addEventListener("click", () => {
+  const countEl = document.getElementById("rollCount");
+  const widthEl = document.getElementById("rollWidth");
+  const lengthEl = document.getElementById("rollLength");
+  if(countEl) countEl.value = "";
+  if(widthEl) widthEl.value = "";
+  if(lengthEl) lengthEl.value = "";
+  updateRollConverter();
+});
+
+document.getElementById("rollFillFromCalc")?.addEventListener("click", () => {
+  const totalMqText = document.getElementById("rollTotalMq")?.textContent || "0";
+  const cleanText = totalMqText.replace(/[^\d,.-]/g, "");
+  const totalMq = parseNumberIT(cleanText);
+  if(calcExpr){
+    calcExpr.value = formatIT(totalMq);
+    calcExpr.focus();
+    calcExpr.setSelectionRange(calcExpr.value.length, calcExpr.value.length);
+  }
+  if(calcResult) calcResult.textContent = formatIT(totalMq);
+});
+
+loadRollConverter();
+updateRollConverter();
+
+
+
+const THEME_LS_KEY = "peso_sheet_theme_v1";
+
+function applyTheme(theme){
+  const safeTheme = theme === "dark" ? "dark" : "light";
+  document.body.setAttribute("data-theme", safeTheme);
+  const label = document.getElementById("themeLabel");
+  if(label) label.textContent = safeTheme === "dark" ? "Tema scuro" : "Tema chiaro";
+  try{ localStorage.setItem(THEME_LS_KEY, safeTheme); }catch{}
+}
+
+function loadTheme(){
+  let saved = null;
+  try{ saved = localStorage.getItem(THEME_LS_KEY); }catch{}
+  if(saved !== "light" && saved !== "dark"){
+    saved = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  applyTheme(saved);
+}
+
+document.getElementById("themeToggleBtn")?.addEventListener("click", () => {
+  const current = document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  applyTheme(current === "dark" ? "light" : "dark");
+});
+
+loadTheme();
+
+const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minut
+
+async function checkContainerSCT(container) {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/get-pdf?container=${encodeURIComponent(container)}`
+    );
+
+    const data = await response.json().catch(() => null);
+
+    if (response.status === 403 || data?.permissionDenied) {
+      return {
+        success: false,
+        found: false,
+        permissionDenied: true,
+        error: "NO PERMESSI JMT"
+      };
+    }
+
+    if (!response.ok) {
+      return {
+        success: false,
+        found: false,
+        error: data?.error || "Errore backend JMT"
+      };
+    }
+
+    if (data?.success && data?.pdfUrl) {
+      return {
+        success: true,
+        found: true,
+        pdfUrl: data.pdfUrl
+      };
+    }
+
+    return {
+      success: false,
+      found: false,
+      error: data?.error || "PDF non trovato"
+    };
+
+  } catch (err) {
+    console.error("Errore comunicazione JMT:", err);
+
+    return {
+      success: false,
+      found: false,
+      error: "Backend JMT non raggiungibile"
+    };
+  }
+}
+async function ottieniPdf(container) {
+    try {
+        const response = await fetch(`http://localhost:3000/get-pdf?container=${container}`);
+        const result = await response.json();
+        
+        if (result.pdfUrl) {
+            window.open(result.pdfUrl, '_blank'); // Apre direttamente il PDF nel browser
+        } else {
+            alert("Errore: PDF non trovato.");
+        }
+    } catch (e) {
+        alert("Ponte non raggiungibile. Verifica che server.js sia avviato.");
+    }
+}
+
+async function checkContainerConateco(container) {
+  try {
+    const url = `https://api.conateco.it/ConatecoServicesApi/NewTrackingContainer?codice=${container}&tipo=E`;
+    const res = await fetch(url);
+    const data = await res.json();
+
+    // ❌ nessun risultato
+    if (!data || data.length === 0) {
+      return "NON ENTRATO";
+    }
+
+    const text = JSON.stringify(data).toUpperCase();
+
+    // 🟡 euristica retroporto
+    if (text.includes("EDP")) {
+      return "ENTRATO (RETROPORTO)";
+    }
+
+    // 🟢 default
+    return "ENTRATO";
+
+  } catch (e) {
+    return "ERRORE";
+  }
+}
+
+function colorStatus(cell, status, container, terminal = activeExtraTerminal, pdfUrl = "") {
+  if (!cell) return;
+
+  cell.style.fontWeight = "700";
+  cell.onclick = null;
+  cell.style.cursor = "default";
+  cell.style.textDecoration = "none";
+
+  const value = String(status || "").toUpperCase().trim();
+
+  if (pdfUrl) {
+    cell.innerHTML = `<a href="${pdfUrl}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
+    cell.style.color = "#2563eb";
+    return;
+  }
+
+  cell.textContent = status || "-";
+
+  if (value.includes("NON ENTRATO")) {
+    cell.style.color = "#dc2626";
+  } else if (value.includes("RETROPORTO")) {
+    cell.style.color = "#f59e0b";
+  } else if (value === "ENTRATO") {
+    cell.style.color = "#16a34a";
+  } else if (value.includes("PDF")) {
+    cell.style.color = "#2563eb";
+  } else {
+    cell.style.color = "#6b7280";
+  }
+}
+
+async function checkExtraRowByTerminal(rowData, terminalKey) {
+  const term = String(terminalKey || activeExtraTerminal || "sct").toLowerCase();
+
+  // IMPORTANTE:
+  // renderExtra() normalizza e ricrea gli oggetti dentro extraRows.
+  // Quindi dopo un render non bisogna più aggiornare il vecchio rowData,
+  // ma la riga reale dentro extraRows.
+  const rowIndex = extraRows.indexOf(rowData);
+  const getLiveRow = () => {
+    if (rowIndex >= 0 && extraRows[rowIndex]) return extraRows[rowIndex];
+    return rowData;
+  };
+
+  if (term === "conateco") {
+    let liveRow = getLiveRow();
+    const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
+    if (!conatecoValue) return;
+
+    liveRow.conateco = conatecoValue;
+    liveRow.conatecoStatus = "Controllo...";
+    if (activeExtraTerminal === "conateco") renderExtra();
+
+    const result = await checkContainerConateco(conatecoValue);
+
+    liveRow = getLiveRow();
+    liveRow.conateco = conatecoValue;
+    liveRow.conatecoStatus = result;
+
+    saveExtra();
+    if (activeExtraTerminal === "conateco") renderExtra();
+    return;
+  }
+
+  if (term === "sct") {
+    let liveRow = getLiveRow();
+    const sctValue = String(liveRow.sct || "").trim().toUpperCase();
+    if (!sctValue) return;
+
+    liveRow.sct = sctValue;
+
+    const alreadyHasPdf =
+      liveRow.sctStatus === "PDF PRONTO" &&
+      String(liveRow.sctPdfUrl || "").trim();
+
+    if (alreadyHasPdf) return;
+
+    liveRow.sctStatus = "Controllo...";
+    liveRow.sctPdfUrl = "";
+    saveExtra();
+
+    if (activeExtraTerminal === "sct") renderExtra();
+
+    const result = await checkContainerSCT(sctValue);
+
+    liveRow = getLiveRow();
+    liveRow.sct = sctValue;
+
+    if (result && result.success && result.pdfUrl) {
+      const pdfUrl = String(result.pdfUrl || "").replace(/\\/g, "/");
+
+      liveRow.sctStatus = "PDF PRONTO";
+      liveRow.sctPdfUrl = pdfUrl;
+      liveRow.StatoEsteso = result.StatoEsteso || "";
+      liveRow.DataIngresso = result.DataIngresso || "";
+      liveRow.Ora = result.Ora || "";
+      liveRow.Causale = result.Causale || "";
+
+      console.log("PDF TROVATO E SALVATO NELLA RIGA:", sctValue, pdfUrl);
+    } else {
+      const errorText = result?.error || "NON TROVATO";
+
+      liveRow.sctStatus = errorText.includes("PDF non trovato")
+        ? "NON TROVATO"
+        : errorText;
+
+      liveRow.sctPdfUrl = "";
+
+      console.log("PDF NON TROVATO/ERRORE:", sctValue, result);
+    }
+
+    saveExtra();
+
+    if (activeExtraTerminal === "sct") {
+      renderExtra();
+    }
+    return;
+  }
+
+  if (term === "flavio") {
+    const liveRow = getLiveRow();
+    if (String(liveRow.flavio || "").trim() && !liveRow.flavioStatus) {
+      liveRow.flavioStatus = "DA COLLEGARE";
+      saveExtra();
+      if (activeExtraTerminal === "flavio") renderExtra();
+    }
+  }
+}
+
+// --- FUNZIONE PRINCIPALE ---
+async function runAutoCheck(terminalKey = activeExtraTerminal) {
+  if (!Array.isArray(extraRows)) return;
+
+  const terminalToCheck = EXTRA_TERMINALS?.[terminalKey]
+    ? terminalKey
+    : (EXTRA_TERMINALS?.[activeExtraTerminal] ? activeExtraTerminal : "sct");
+
+  for (let i = 0; i < extraRows.length; i++) {
+    const rowData = extraRows[i];
+    if (!rowData) continue;
+
+    try {
+      // Controlla SOLO il terminal attualmente selezionato.
+      // Così CONATECO/Napoli non richiama più SCT/Salerno.
+      await checkExtraRowByTerminal(rowData, terminalToCheck);
+    } catch (err) {
+      console.error("Errore controllo contenitori riga", i, err);
+    }
+  }
+
+  if (typeof saveExtra === "function") saveExtra();
+  if (typeof renderExtra === "function") renderExtra();
+  if (extraAutoStatus) {
+    const terminalLabel = EXTRA_TERMINALS?.[terminalToCheck]?.label || terminalToCheck.toUpperCase();
+    extraAutoStatus.textContent = extraAutoCheckEnabled
+      ? `Ultimo controllo ${terminalLabel}: ${new Date().toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" })} · prossimo automatico entro 5 minuti.`
+      : `Ultimo controllo manuale ${terminalLabel}: ${new Date().toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" })}`;
+  }
+
+  console.log("Check completato", terminalToCheck, new Date().toLocaleTimeString());
+}
+
+async function downloadPDF(container) {
+
+  const { jsPDF } = window.jspdf;
+
+  try {
+
+    const url =
+      `https://api.conateco.it/ConatecoServicesApi/NewTrackingContainer?codice=${container}&tipo=E`;
+
+    const res = await fetch(url);
+
+    const data = await res.json();
+
+    if (!data) {
+      alert("Nessun dato");
+      return;
+    }
+
+    const pdfContainer = document.getElementById("pdfExportContainer");
+
+    const now = new Date();
+
+    const formattedDate =
+      now.toLocaleDateString("it-IT") + " " +
+      now.toLocaleTimeString("it-IT", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+    pdfContainer.innerHTML = `
+
+      <div class="pdfExportArea">
+
+        <div class="pdfHeader">
+
+          <div class="pdfHeaderLeft">
+
+            <img
+              class="pdfLogo"
+              src="https://www.conateco.it/media/1031/logo-small2newr.png"
+              crossorigin="anonymous"
+            >
+
+            <div class="pdfTitleWrap">
+              <h1>Tracking Container</h1>
+              <p>CO.NA.TE.CO. S.p.A.</p>
+            </div>
+
+          </div>
+
+          <div style="font-size:12px; color:#555; text-align:right;">
+            PDF generato il<br>
+            <b>${formattedDate}</b>
+          </div>
+
+        </div>
+
+        <div class="pdfInfo">
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Container</div>
+            <div class="pdfInfoValue">${data.CodiceContainer || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Nave</div>
+            <div class="pdfInfoValue">${data.NomeNave || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Viaggio</div>
+            <div class="pdfInfoValue">${data.IdViaggio || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Armatore</div>
+            <div class="pdfInfoValue">${data.Armatore || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Tipo</div>
+            <div class="pdfInfoValue">${data.Tipo || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Dimensione</div>
+            <div class="pdfInfoValue">${data.Dimensione || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Stato</div>
+            <div class="pdfInfoValue">${data.Stato || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Stato esteso</div>
+            <div class="pdfInfoValue">${data.StatoEsteso || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Ingresso</div>
+            <div class="pdfInfoValue">${data.DataIngresso || "-"}</div>
+          </div>
+
+          <div class="pdfInfoRow">
+            <div class="pdfInfoLabel">Ora</div>
+            <div class="pdfInfoValue">${data.Ora || "-"}</div>
+          </div>
+
+          ${
+            data.Causale === "EDP"
+            ? `
+            <div class="pdfInfoRow">
+              <div class="pdfInfoLabel">Nota</div>
+              <div class="pdfInfoValue">
+                GIACENTE A RETROPORTO
+              </div>
+            </div>
+            `
+            : ""
+          }
+
+        </div>
+
+      </div>
+    `;
+
+    const canvas = await html2canvas(pdfContainer.firstElementChild, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: "#ffffff"
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const imgWidth = 190;
+
+    const imgHeight =
+      canvas.height * imgWidth / canvas.width;
+
+    pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
+
+    pdf.save(`${container}.pdf`);
+
+  } catch (e) {
+
+    console.error(e);
+
+    alert("Errore PDF");
+  }
+}
+
+
+function initShipTabs(){
+  const panel = document.getElementById("shipPanel");
+  const minimizeBtn = document.getElementById("minimizeShipsBtn");
+  const tabs = Array.from(document.querySelectorAll(".shipTab[data-terminal]"));
+  const cards = Array.from(document.querySelectorAll(".shipCard[data-terminal-card]"));
+
+  function activateTerminal(terminal){
+    tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.terminal === terminal));
+    cards.forEach(card => card.classList.toggle("active", card.dataset.terminalCard === terminal));
+    if (panel?.classList.contains("is-minimized")) {
+      panel.classList.remove("is-minimized");
+      if (minimizeBtn) minimizeBtn.textContent = "Riduci a icona";
+    }
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener("click", () => {
+      activateTerminal(tab.dataset.terminal);
+      if (tab.dataset.terminal === "tfg") {
+        const tbody = document.getElementById("tbody-tfg");
+        const txt = (tbody?.innerText || "").trim();
+        if (!txt || txt.includes("Premi") || txt.includes("Nessuna nave")) {
+          loadShipsTfg();
+        }
+      }
+    });
+  });
+
+  minimizeBtn?.addEventListener("click", () => {
+    panel?.classList.toggle("is-minimized");
+    const minimized = panel?.classList.contains("is-minimized");
+    minimizeBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+  });
+}
+
+initShipTabs();
+
+const refreshShipsBtn = document.getElementById("refreshShipsBtn");
+
+if (refreshShipsBtn) {
+  refreshShipsBtn.addEventListener("click", async () => {
+    await Promise.allSettled([
+      loadShipsSct(),
+      loadShipsConateco(),
+      loadShipsTfg()
+    ]);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function getShipStatusClass(row) {
+  return row?.stato === "CHIUSA" ? "closed" : "today";
+}
+
+function getShipStatusLabel(row) {
+  return row?.stato === "CHIUSA" ? "CHIUSA" : "IN CHIUSURA";
+}
+
+function setShipCounts(count, generatedAt) {
+  const countText = String(count || 0);
+  const updateText = generatedAt
+    ? new Date(generatedAt).toLocaleString("it-IT", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
+    : "-";
+
+  document.getElementById("shipCountSct") && (document.getElementById("shipCountSct").textContent = countText);
+  document.getElementById("shipCountSctHead") && (document.getElementById("shipCountSctHead").textContent = countText);
+  document.getElementById("shipTabCountSct") && (document.getElementById("shipTabCountSct").textContent = countText);
+  document.getElementById("shipLastUpdate") && (document.getElementById("shipLastUpdate").textContent = updateText);
+}
+
+function setShipConatecoCounts(count) {
+  const countText = String(count || 0);
+  document.getElementById("shipCountConateco") && (document.getElementById("shipCountConateco").textContent = countText);
+  document.getElementById("shipCountConatecoHead") && (document.getElementById("shipCountConatecoHead").textContent = countText);
+  document.getElementById("shipTabCountConateco") && (document.getElementById("shipTabCountConateco").textContent = countText);
+}
+
+function setShipTfgCounts(count) {
+  const countText = String(count || 0);
+  document.getElementById("shipCountTfg") && (document.getElementById("shipCountTfg").textContent = countText);
+  document.getElementById("shipCountTfgHead") && (document.getElementById("shipCountTfgHead").textContent = countText);
+  document.getElementById("shipTabCountTfg") && (document.getElementById("shipTabCountTfg").textContent = countText);
+}
+
+async function loadShipsSct() {
+  const tbody = document.getElementById("tbody-sct");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="2" class="shipLoading">Caricamento navi SCT...</td></tr>`;
+  refreshShipsBtn.disabled = true;
+  refreshShipsBtn.textContent = "Aggiornamento...";
+
+  try {
+    const res = await fetch(apiUrl("/get-ships-sct"));
+    const payload = await res.json();
+
+    if (!res.ok || payload?.success === false) {
+      throw new Error(payload?.error || "Errore durante il recupero SCT");
+    }
+
+    const ships = Array.isArray(payload) ? payload : (payload.ships || []);
+    renderShipsSct(ships);
+    setShipCounts(ships.length, payload.generatedAt || payload.updatedAt);
+  } catch (e) {
+    console.error("Error SCT", e);
+    tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Errore SCT: ${escapeHtml(e.message)}</td></tr>`;
+    setShipCounts(0, null);
+  } finally {
+    refreshShipsBtn.disabled = false;
+    refreshShipsBtn.textContent = "Aggiorna navi";
+  }
+}
+
+function renderShipsSct(data) {
+  const tbody = document.getElementById("tbody-sct");
+  if (!tbody) return;
+
+  if (!Array.isArray(data) || !data.length) {
+    tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Nessuna nave SCT chiusa o in chiusura oggi/domani.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(row => {
+    const statusClass = getShipStatusClass(row);
+    const statusLabel = getShipStatusLabel(row);
+    const nave = row.nave || row.nome || "-";
+    const chiusura = row.chiusura || row.data || "-";
+
+    return `
+      <tr>
+        <td>
+          <div class="shipName">${escapeHtml(nave)}</div>
+        </td>
+        <td>
+          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+
+async function loadShipsConateco() {
+  const tbody = document.getElementById("tbody-conateco");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi CONATECO...</td></tr>`;
+
+  try {
+    const res = await fetch(apiUrl("/get-ships-conateco"));
+    const payload = await res.json();
+
+    if (!res.ok || payload?.success === false) {
+      throw new Error(payload?.error || "Errore durante il recupero CONATECO");
+    }
+
+    const ships = Array.isArray(payload) ? payload : (payload.ships || []);
+    renderShipsConateco(ships);
+    setShipConatecoCounts(ships.length);
+  } catch (e) {
+    console.error("Error CONATECO", e);
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Errore CONATECO: ${escapeHtml(e.message)}</td></tr>`;
+    setShipConatecoCounts(0);
+  }
+}
+
+function renderShipsConateco(data) {
+  const tbody = document.getElementById("tbody-conateco");
+  if (!tbody) return;
+
+  if (!Array.isArray(data) || !data.length) {
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO chiusa o in chiusura oggi/domani.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(row => {
+    const statusClass = getShipStatusClass(row);
+    const statusLabel = getShipStatusLabel(row);
+    const nave = row.nave || "-";
+    const chiusura = row.chiusura || "-";
+    const note = row.note || "-";
+    const hasRetroporto = !!row.retroporto || String(note).toUpperCase().includes("RETROPORTO");
+
+    return `
+      <tr>
+        <td>
+          <div class="shipName">${escapeHtml(nave)}</div>
+        </td>
+        <td>
+          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
+        </td>
+        <td>
+          <span style="font-weight:900; color:${hasRetroporto ? '#92400e' : 'var(--muted)'};">${escapeHtml(note)}</span>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+
+async function loadShipsTfg() {
+  const tbody = document.getElementById("tbody-tfg");
+  if (!tbody) return;
+
+  tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi TFG...</td></tr>`;
+
+  try {
+    const res = await fetch(apiUrl("/get-ships-tfg?refresh=1&_=" + Date.now()));
+    const payload = await res.json();
+
+    if (!res.ok || payload?.success === false) {
+      throw new Error(payload?.error || "Errore durante il recupero TFG");
+    }
+
+    const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
+    console.log("TFG payload:", payload, "ships:", ships);
+    renderShipsTfg(ships);
+    setShipTfgCounts(ships.length);
+  } catch (e) {
+    console.error("Error TFG", e);
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Errore TFG: ${escapeHtml(e.message)}</td></tr>`;
+    setShipTfgCounts(0);
+  }
+}
+
+function renderShipsTfg(data) {
+  const tbody = document.getElementById("tbody-tfg");
+  if (!tbody) return;
+
+  if (!Array.isArray(data) || !data.length) {
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa o in chiusura oggi/domani.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = data.map(row => {
+    const statusClass = getShipStatusClass(row);
+    const statusLabel = getShipStatusLabel(row);
+    const nave = row.nave || "-";
+    const chiusura = row.chiusura || "-";
+    const note = row.note || row.statoCarico || row.agenzia || "-";
+
+    return `
+      <tr>
+        <td>
+          <div class="shipName">
+            ${escapeHtml(nave)}
+            <small>${escapeHtml(row.viaggio || "")}</small>
+          </div>
+        </td>
+        <td>
+          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
+        </td>
+        <td>
+          <span style="font-weight:900; color:var(--muted);">${escapeHtml(note)}</span>
+        </td>
+      </tr>
+    `;
+  }).join("");
+}
+
+
+const SHIP_SEARCH_ENDPOINTS = [
+  { terminal: "SCT", url: apiUrl("/get-ships-sct?all=1&refresh=1") },
+  { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1&refresh=1") },
+  { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1&refresh=1") }
+];
+
+function normalizeShipSearchText(value){
+  return String(value || "")
+    .toUpperCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getShipRowName(row){
+  return row?.nave || row?.nome || row?.nome_nave || row?.vessel || "";
+}
+
+function getShipRowClose(row){
+  return row?.chiusura || row?.data || row?.customCloseTime || row?.stato || "-";
+}
+
+function getShipRowNotes(row){
+  return row?.note || row?.statoCarico || row?.agenzia || row?.fonteConateco || row?.terminal || "";
+}
+
+async function searchShipsEverywhere(query){
+  const tbody = document.getElementById("tbody-ship-search");
+  const box = document.getElementById("shipSearchResults");
+  const count = document.getElementById("shipSearchCount");
+  const status = document.getElementById("shipSearchStatus");
+
+  if (!tbody || !box) return;
+
+  const q = normalizeShipSearchText(query);
+
+  box.classList.add("active");
+
+  if (q.length < 2) {
+    tbody.innerHTML = `<tr><td colspan="4" class="shipEmpty">Scrivi almeno 2 caratteri per cercare una nave.</td></tr>`;
+    if (count) count.textContent = "0";
+    if (status) status.textContent = "Ricerca su tutte le navi disponibili";
+    return;
+  }
+
+  tbody.innerHTML = `<tr><td colspan="4" class="shipLoading">Ricerca nave in corso...</td></tr>`;
+  if (status) status.textContent = "Ricerca in corso...";
+
+  const responses = await Promise.allSettled(
+    SHIP_SEARCH_ENDPOINTS.map(async item => {
+      const res = await fetch(item.url + "&_=" + Date.now());
+      const payload = await res.json();
+      if (!res.ok || payload?.success === false) {
+        throw new Error(payload?.error || `Errore ${item.terminal}`);
+      }
+      const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
+      return ships.map(ship => ({ ...ship, terminalRicerca: item.terminal }));
+    })
+  );
+
+  const allShips = [];
+  const errors = [];
+
+  responses.forEach((result, index) => {
+    if (result.status === "fulfilled") {
+      allShips.push(...result.value);
+    } else {
+      errors.push(`${SHIP_SEARCH_ENDPOINTS[index].terminal}: ${result.reason?.message || "errore"}`);
+    }
+  });
+
+  const matches = allShips.filter(row => {
+    const haystack = normalizeShipSearchText([
+      getShipRowName(row),
+      row.viaggio,
+      row.arrVoy,
+      row.depVoy,
+      row.stato,
+      row.statoCarico,
+      getShipRowNotes(row)
+    ].filter(Boolean).join(" "));
+    return haystack.includes(q);
+  });
+
+  if (count) count.textContent = String(matches.length);
+
+  if (!matches.length) {
+    tbody.innerHTML = `<tr><td colspan="4" class="shipEmpty">Nessuna nave trovata per “${escapeHtml(query)}”.</td></tr>`;
+    if (status) status.textContent = errors.length ? `Nessun risultato. Errori: ${errors.join(" | ")}` : "Nessun risultato";
+    return;
+  }
+
+  tbody.innerHTML = matches.map(row => {
+    const terminal = row.terminalRicerca || "-";
+    const nave = getShipRowName(row) || "-";
+    const chiusura = getShipRowClose(row);
+    const note = getShipRowNotes(row) || "-";
+    const statusClass = getShipStatusClass(row);
+    const statusLabel = getShipStatusLabel(row);
+
+    return `
+      <tr>
+        <td><span class="shipSearchHitTerminal">${escapeHtml(terminal)}</span></td>
+        <td>
+          <div class="shipName">
+            ${escapeHtml(nave)}
+            <small>${escapeHtml(row.viaggio || row.arrVoy || row.depVoy || "")}</small>
+          </div>
+        </td>
+        <td>
+          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
+        </td>
+        <td>${escapeHtml(note)}</td>
+      </tr>
+    `;
+  }).join("");
+
+  if (status) {
+    status.textContent = errors.length
+      ? `Trovate ${matches.length}. Alcuni terminal non hanno risposto: ${errors.join(" | ")}`
+      : `Trovate ${matches.length} navi`;
+  }
+}
+
+function initShipSearch(){
+  const input = document.getElementById("shipSearchInput");
+  const btn = document.getElementById("shipSearchBtn");
+  const clearBtn = document.getElementById("shipSearchClearBtn");
+  const box = document.getElementById("shipSearchResults");
+  const tbody = document.getElementById("tbody-ship-search");
+  const count = document.getElementById("shipSearchCount");
+  const status = document.getElementById("shipSearchStatus");
+
+  if (!input) return;
+
+  let timer = null;
+
+  function run(){
+    clearTimeout(timer);
+    timer = setTimeout(() => searchShipsEverywhere(input.value), 250);
+  }
+
+  input.addEventListener("input", run);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchShipsEverywhere(input.value);
+    }
+  });
+
+  btn?.addEventListener("click", () => searchShipsEverywhere(input.value));
+
+  clearBtn?.addEventListener("click", () => {
+    input.value = "";
+    box?.classList.remove("active");
+    if (tbody) tbody.innerHTML = `<tr><td colspan="4" class="shipEmpty">Scrivi almeno 2 caratteri per cercare una nave.</td></tr>`;
+    if (count) count.textContent = "0";
+    if (status) status.textContent = "Ricerca su tutte le navi disponibili";
+    input.focus();
+  });
+}
+
+initShipSearch();
+
+
+// Carica automaticamente SCT, CONATECO e TFG all'apertura dell'utility.
+loadShipsSct();
+loadShipsConateco();
+loadShipsTfg();
+
+document.getElementById("copyColumnBtn").addEventListener("click", copyColumn);
+document.getElementById("exportExcelBtn").addEventListener("click", exportExcel);
+
+function copyColumn(){
+  const columns = {
+    desc:"Descrizione / TARIC",
+    colli:"Colli",
+    pezzi:"Pezzi",
+    gross:"Lordo",
+    net:"Netto",
+    mq:"MQ",
+    value:"Valore"
+  };
+
+  const choice = prompt(
+    "Quale colonna copiare?\n\n" +
+    Object.entries(columns)
+      .map(([k,v])=>`${k} = ${v}`)
+      .join("\n")
+  );
+
+  if(!choice || !columns[choice]) return;
+
+  const txt = rows.map(r => r[choice] || "").join("\n");
+
+  navigator.clipboard.writeText(txt)
+    .then(()=>alert(`Colonna "${columns[choice]}" copiata.`))
+    .catch(()=>alert("Errore copia."));
+}
+
+function exportExcel(){
+  const headers = [
+    "NR",
+    "DESCRIZIONE / TARIC",
+    "COLLI",
+    "PEZZI",
+    "LORDO",
+    "NETTO",
+    "MQ",
+    "VALORE"
+  ];
+
+  const csv = [
+    headers.join(";"),
+    ...rows.map((r,i)=>[
+      i+1,
+      `"${(r.desc||"").replace(/"/g,'""')}"`,
+      r.colli||"",
+      r.pezzi||"",
+      r.gross||"",
+      r.net||"",
+      r.mq||"",
+      r.value||""
+    ].join(";"))
+  ].join("\n");
+
+  const blob = new Blob(
+    ["\ufeff"+csv],
+    {type:"text/csv;charset=utf-8;"}
+  );
+
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+
+  const name = sanitizeFileName(getPdfTitle()) || "tabella";
+  link.download = name + ".csv";
+
+  link.click();
+}
+
+
+/* === FIX DEFINITIVO PULSANTI CONTAINER: COPIA CONTAINER + PDF LISTA === */
+function extraGetActiveTerminalName(){
+  const tab = document.querySelector(".extraTab.active");
+  if (!tab) return "Container";
+  return String(tab.innerText || tab.textContent || "Container")
+    .replace(/\d+/g, "")
+    .replace(/\s+/g, " ")
+    .trim() || "Container";
+}
+
+function extraCollectContainerRows(){
+  const table = document.getElementById("extraTable");
+  if (!table) return [];
+
+  const headers = Array.from(table.querySelectorAll("thead th")).map((th, index) => ({
+    index,
+    label: String(th.innerText || th.textContent || `Colonna ${index + 1}`).replace(/\s+/g, " ").trim()
+  }));
+
+  const rows = Array.from(table.querySelectorAll("tbody tr")).map(tr => {
+    const cells = Array.from(tr.querySelectorAll("td")).map(td => {
+      const input = td.querySelector("input, textarea, select");
+      if (input) return String(input.value || "").trim();
+
+      return String(td.innerText || td.textContent || "")
+        .replace(/\s+/g, " ")
+        .trim();
+    });
+
+    return cells;
+  }).filter(row => row.some(Boolean));
+
+  return { headers, rows };
+}
+
+function extraExtractContainerCodes(){
+  const { rows } = extraCollectContainerRows();
+
+  const found = [];
+
+  rows.forEach(row => {
+    row.forEach(cell => {
+      const value = String(cell || "").toUpperCase();
+      const matches = value.match(/[A-Z]{4}\d{7}/g);
+      if (matches) found.push(...matches);
+    });
+  });
+
+  return [...new Set(found)];
+}
+
+function copyExtraContainersOnly(){
+  const containers = extraExtractContainerCodes();
+
+  if (!containers.length) {
+    alert("Nessun numero container trovato nel modulo.");
+    return;
+  }
+
+  const text = containers.join("\n");
+
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text)
+      .then(() => alert(`${containers.length} container copiati.`))
+      .catch(() => fallbackCopyExtraContainers(text, containers.length));
+  } else {
+    fallbackCopyExtraContainers(text, containers.length);
+  }
+}
+
+function fallbackCopyExtraContainers(text, count){
+  const area = document.createElement("textarea");
+  area.value = text;
+  area.style.position = "fixed";
+  area.style.left = "-9999px";
+  area.style.top = "0";
+  document.body.appendChild(area);
+  area.focus();
+  area.select();
+
+  try {
+    document.execCommand("copy");
+    alert(`${count} container copiati.`);
+  } catch (err) {
+    alert("Copia non riuscita. Seleziona e copia manualmente:\n\n" + text);
+  }
+
+  area.remove();
+}
+
+function exportExtraContainerPdfFixed(){
+  const jsPdfApi = window.jspdf?.jsPDF;
+
+  if (!jsPdfApi) {
+    alert("Libreria PDF non disponibile. Controlla la connessione internet o il caricamento di jsPDF.");
+    return;
+  }
+
+  const { headers, rows } = extraCollectContainerRows();
+
+  if (!headers.length || !rows.length) {
+    alert("Nessun dato container da esportare.");
+    return;
+  }
+
+  const usefulHeaders = headers.filter(h => {
+    const label = h.label.toLowerCase();
+    return !label.includes("✕") && !label.includes("azioni") && !label.includes("x");
+  });
+
+  const selectedHeaders = usefulHeaders.length ? usefulHeaders : headers;
+  const terminal = extraGetActiveTerminalName();
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString("it-IT") + " " + now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+
+  const doc = new jsPdfApi({
+    orientation: "landscape",
+    unit: "mm",
+    format: "a4",
+    compress: true
+  });
+
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  const margin = 10;
+  const usableWidth = pageWidth - margin * 2;
+  const colWidth = usableWidth / Math.max(1, selectedHeaders.length);
+  let y = margin;
+  let page = 1;
+
+  function drawHeader(){
+    y = margin;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.setTextColor(15, 23, 42);
+    doc.text("Lista container non entrati", margin, y);
+
+    y += 7;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    doc.setTextColor(80, 95, 120);
+    doc.text(`Terminal: ${terminal}`, margin, y);
+    doc.text(`Righe: ${rows.length}`, pageWidth - margin, y, { align: "right" });
+
+    y += 8;
+    doc.setFillColor(245, 247, 251);
+    doc.setDrawColor(220, 228, 239);
+    doc.rect(margin, y, usableWidth, 8, "FD");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8);
+    doc.setTextColor(30, 41, 59);
+
+    selectedHeaders.forEach((h, i) => {
+      const x = margin + i * colWidth;
+      doc.text(String(h.label || `Col. ${i + 1}`).slice(0, 28), x + 2, y + 5.3, {
+        maxWidth: colWidth - 4
+      });
+    });
+
+    y += 8;
+  }
+
+  function drawFooter(){
+    doc.setDrawColor(220, 228, 239);
+    doc.line(margin, pageHeight - 8, pageWidth - margin, pageHeight - 8);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(100, 116, 139);
+    doc.text(`Utility Doganalista - ${dateLabel}`, margin, pageHeight - 4);
+    doc.text(`Pagina ${page}`, pageWidth - margin, pageHeight - 4, { align: "right" });
+  }
+
+  drawHeader();
+
+  rows.forEach((row, rowIndex) => {
+    const values = selectedHeaders.map(h => row[h.index] || "");
+    const wrapped = values.map(v => doc.splitTextToSize(String(v || "-"), colWidth - 4));
+    const lineCount = Math.max(1, ...wrapped.map(lines => lines.length));
+    const rowHeight = Math.max(7, lineCount * 4 + 3);
+
+    if (y + rowHeight > pageHeight - 12) {
+      drawFooter();
+      doc.addPage();
+      page += 1;
+      drawHeader();
+    }
+
+    if (rowIndex % 2 === 0) {
+      doc.setFillColor(255, 255, 255);
+    } else {
+      doc.setFillColor(248, 250, 252);
+    }
+
+    doc.setDrawColor(232, 238, 246);
+    doc.rect(margin, y, usableWidth, rowHeight, "FD");
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(20, 32, 51);
+
+    wrapped.forEach((lines, i) => {
+      const x = margin + i * colWidth;
+      doc.text(lines, x + 2, y + 4.5, { maxWidth: colWidth - 4 });
+    });
+
+    y += rowHeight;
+  });
+
+  drawFooter();
+
+  const filename = `lista_container_${terminal.toLowerCase().replace(/[^a-z0-9]+/gi, "_")}_${now.toISOString().slice(0,10)}.pdf`;
+  doc.save(filename);
+}
+
+document.addEventListener("click", function(e){
+  const copyBtn = e.target.closest("#copyExtraColumnBtn, #copyExtraColumnBtnBottom");
+  if (copyBtn) {
+    e.preventDefault();
+    copyExtraContainersOnly();
+    return;
+  }
+
+  const pdfBtn = e.target.closest("#exportExtraPdfBtn, #exportExtraPdfBtnBottom");
+  if (pdfBtn) {
+    e.preventDefault();
+    exportExtraContainerPdfFixed();
+  }
+});
+
+
+/* === NOTIFICHE RICERCA CONTAINER / PDF GENERATO === */
+const EXTRA_NOTIFY_STATE = {
+  sct: new Set(),
+  conateco: new Set(),
+  flavio: new Set()
+};
+
+function ensureExtraToastStack(){
+  let stack = document.getElementById("extraToastStack");
+  if (!stack) {
+    stack = document.createElement("div");
+    stack.id = "extraToastStack";
+    stack.className = "extraToastStack";
+    document.body.appendChild(stack);
+  }
+  return stack;
+}
+
+function showExtraToast(title, message, type = "success"){
+  const stack = ensureExtraToastStack();
+  const toast = document.createElement("div");
+  toast.className = `extraToast ${type}`;
+  toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span>`;
+  stack.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateY(10px) scale(.98)";
+    toast.style.transition = ".18s ease";
+    setTimeout(() => toast.remove(), 220);
+  }, 5200);
+}
+
+async function requestExtraDesktopNotificationPermission(){
+  if (!("Notification" in window)) return false;
+  if (Notification.permission === "granted") return true;
+  if (Notification.permission === "denied") return false;
+
+  try {
+    const permission = await Notification.requestPermission();
+    return permission === "granted";
+  } catch {
+    return false;
+  }
+}
+
+function notifyExtraDesktop(container, terminal){
+  const title = "Container entrato";
+  const body = `${container} - PDF generato (${terminal || "Utility Doganalista"})`;
+
+  showExtraToast(title, body, "success");
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    try {
+      new Notification(title, {
+        body,
+        tag: `container-${container}`,
+        requireInteraction: false
+      });
+    } catch {}
+  }
+}
+
+function setExtraTabNotify(terminal, count){
+  const map = {
+    sct: "extraNotifySct",
+    conateco: "extraNotifyConateco",
+    flavio: "extraNotifyFlavio"
+  };
+
+  const el = document.getElementById(map[terminal]);
+  if (!el) return;
+
+  const n = Number(count) || 0;
+  el.textContent = String(n);
+  el.classList.toggle("active", n > 0);
+}
+
+function incrementExtraTerminalNotify(terminal, container){
+  if (!terminal || !container) return;
+
+  const key = terminal === "tfg" ? "flavio" : terminal;
+  if (!EXTRA_NOTIFY_STATE[key]) EXTRA_NOTIFY_STATE[key] = new Set();
+
+  EXTRA_NOTIFY_STATE[key].add(String(container).toUpperCase());
+  setExtraTabNotify(key, EXTRA_NOTIFY_STATE[key].size);
+}
+
+function clearExtraTerminalNotify(terminal){
+  const key = terminal === "tfg" ? "flavio" : terminal;
+  if (EXTRA_NOTIFY_STATE[key]) EXTRA_NOTIFY_STATE[key].clear();
+  setExtraTabNotify(key, 0);
+}
+
+function getActiveExtraTerminalKey(){
+  const tab = document.querySelector(".extraTab.active");
+  const key = tab?.dataset?.extraTerminal || "sct";
+  return key === "tfg" ? "flavio" : key;
+}
+
+function extractContainerFromValue(value){
+  const match = String(value || "").toUpperCase().match(/[A-Z]{4}\d{7}/);
+  return match ? match[0] : "";
+}
+
+function getContainerFromExtraRow(row){
+  if (!row) return "";
+  const values = Array.from(row.querySelectorAll("input, textarea, td"))
+    .map(el => el.value || el.innerText || el.textContent || "");
+  for (const value of values) {
+    const container = extractContainerFromValue(value);
+    if (container) return container;
+  }
+  return "";
+}
+
+function rowLooksPdfGenerated(row){
+  if (!row) return false;
+
+  const text = String(row.innerText || row.textContent || "").toUpperCase();
+
+  return (
+    text.includes("PDF GENERATO") ||
+    text.includes("PDF SCARICATO") ||
+    text.includes("PDF OK") ||
+    text.includes("ENTRATO") ||
+    !!row.querySelector('a[href*=".pdf"], a[href*="report"], a[href*="pdf"]')
+  );
+}
+
+function scanExtraRowsForEnteredContainers(){
+  const terminal = getActiveExtraTerminalKey();
+  const rows = Array.from(document.querySelectorAll("#extraTable tbody tr"));
+
+  rows.forEach(row => {
+    const container = getContainerFromExtraRow(row);
+    if (!container || !rowLooksPdfGenerated(row)) return;
+
+    const key = terminal === "tfg" ? "flavio" : terminal;
+    if (!EXTRA_NOTIFY_STATE[key]) EXTRA_NOTIFY_STATE[key] = new Set();
+
+    if (!EXTRA_NOTIFY_STATE[key].has(container)) {
+      incrementExtraTerminalNotify(key, container);
+      notifyExtraDesktop(container, key.toUpperCase());
+    }
+  });
+}
+
+function installExtraNotificationObserver(){
+  const tbody = document.querySelector("#extraTable tbody");
+  if (!tbody || tbody.dataset.extraNotifyObserver === "1") return;
+
+  tbody.dataset.extraNotifyObserver = "1";
+
+  const observer = new MutationObserver(() => {
+    clearTimeout(window.__extraNotifyTimer);
+    window.__extraNotifyTimer = setTimeout(scanExtraRowsForEnteredContainers, 250);
+  });
+
+  observer.observe(tbody, {
+    childList:true,
+    subtree:true,
+    characterData:true,
+    attributes:true
+  });
+}
+
+function patchFetchPdfForExtraNotifications(){
+  if (window.__extraPdfFetchPatched) return;
+  window.__extraPdfFetchPatched = true;
+
+  const originalFetch = window.fetch.bind(window);
+
+  window.fetch = async function(input, init){
+    const response = await originalFetch(input, init);
+
+    try {
+      const url = typeof input === "string" ? input : String(input?.url || "");
+      if (url.includes("/get-pdf")) {
+        const parsed = new URL(url, window.location.origin);
+        const container = String(parsed.searchParams.get("container") || "").toUpperCase();
+        const terminal = getActiveExtraTerminalKey();
+
+        response.clone().json().then(data => {
+          if (container && data && data.success && data.found && data.pdfUrl) {
+            incrementExtraTerminalNotify(terminal, container);
+            notifyExtraDesktop(container, terminal.toUpperCase());
+          }
+        }).catch(() => {});
+      }
+    } catch {}
+
+    return response;
+  };
+}
+
+function installExtraTabClearOnClick(){
+  document.addEventListener("click", e => {
+    const tab = e.target.closest(".extraTab[data-extra-terminal]");
+    if (!tab) return;
+    const key = tab.dataset.extraTerminal;
+    clearExtraTerminalNotify(key);
+  }, true);
+}
+
+(function initExtraNotifications(){
+  requestExtraDesktopNotificationPermission();
+  patchFetchPdfForExtraNotifications();
+  installExtraTabClearOnClick();
+
+  const wait = setInterval(() => {
+    installExtraNotificationObserver();
+    if (document.querySelector("#extraTable tbody")) clearInterval(wait);
+  }, 700);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) {
+      installExtraNotificationObserver();
+      scanExtraRowsForEnteredContainers();
+    }
+  });
+})();
+
+</script>
+<div id="pdfExportContainer" style="position:absolute; left:-99999px; top:0;"></div>
+</body>
+</html>
