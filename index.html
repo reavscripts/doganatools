@@ -2121,67 +2121,7 @@ textarea:focus-visible{
 </script>
 <script>
 
-/* === API BASE CONFIG - FRONTEND SEPARATO / VERCEL READY === */
-const API_BASE_STORAGE_KEY = "utility_doganalista_api_base_v1";
-
-function normalizeApiBase(value){
-  const raw = String(value || "").trim().replace(/\/+$/, "");
-  if (!raw) return "";
-  if (!/^https?:\/\//i.test(raw)) return "https://" + raw;
-  return raw;
-}
-
-function getApiBase(){
-  try {
-    return normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY) || "");
-  } catch {
-    return "";
-  }
-}
-
-function apiUrl(path){
-  const cleanPath = String(path || "");
-  const normalizedPath = cleanPath.startsWith("/") ? cleanPath : "/" + cleanPath;
-  const base = getApiBase();
-  return base ? base + normalizedPath : normalizedPath;
-}
-
-function initApiBaseUi(){
-  const input = document.getElementById("apiBaseInput");
-  const save = document.getElementById("saveApiBaseBtn");
-  const reset = document.getElementById("resetApiBaseBtn");
-  const current = document.getElementById("apiBaseCurrent");
-
-  if (!input) return;
-
-  const refreshLabel = () => {
-    const base = getApiBase();
-    input.value = base;
-    if (current) current.textContent = base || "stesso dominio";
-  };
-
-  refreshLabel();
-
-  save?.addEventListener("click", () => {
-    const base = normalizeApiBase(input.value);
-    try {
-      if (base) localStorage.setItem(API_BASE_STORAGE_KEY, base);
-      else localStorage.removeItem(API_BASE_STORAGE_KEY);
-    } catch {}
-    refreshLabel();
-    alert("Backend API salvato.");
-  });
-
-  reset?.addEventListener("click", () => {
-    try { localStorage.removeItem(API_BASE_STORAGE_KEY); } catch {}
-    refreshLabel();
-    alert("La utility userà lo stesso dominio della pagina.");
-  });
-}
-
-document.addEventListener("DOMContentLoaded", initApiBaseUi);
-
-  if (window.pdfjsLib) {
+if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   }
 </script>
@@ -2206,7 +2146,7 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     <a href="#container-section">Container</a>
     <a href="#tools-section">Strumenti</a>
     <button id="compactModeBtn" type="button">Compatta</button>
-    <button id="apiPanelToggleBtn" type="button">API</button>
+    
   </nav>
 </div>
 
@@ -2227,16 +2167,7 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
 </div>
 </header>
 
-<div class="apiConfigPanel" id="apiConfigPanel">
-  <label for="apiBaseInput">Backend API</label>
-  <input id="apiBaseInput" type="url" placeholder="es. https://dogana-api.reav.website oppure lascia vuoto per stesso dominio" />
-  <button id="saveApiBaseBtn" type="button">Salva API</button>
-  <button id="resetApiBaseBtn" type="button">Usa stesso dominio</button>
-  <span class="apiConfigBadge">API attiva: <strong id="apiBaseCurrent">stesso dominio</strong></span>
-  <div class="apiConfigHint">
-    Per uso locale lascia vuoto. Quando il frontend sarà su Vercel, inserisci qui il dominio API Cloudflare Tunnel, ad esempio https://dogana-api.reav.website.
-  </div>
-</div>
+
 
 <section class="panel sectionJumpTarget" id="taric-section">
 <div class="toolbar">
@@ -4862,7 +4793,7 @@ async function loadShipsSct() {
   refreshShipsBtn.textContent = "Aggiornamento...";
 
   try {
-    const res = await fetch(apiUrl("/get-ships-sct"));
+    const res = await fetch("/get-ships-sct"));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -4919,7 +4850,7 @@ async function loadShipsConateco() {
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi CONATECO...</td></tr>`;
 
   try {
-    const res = await fetch(apiUrl("/get-ships-conateco"));
+    const res = await fetch("/get-ships-conateco"));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -4978,7 +4909,7 @@ async function loadShipsTfg() {
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi TFG...</td></tr>`;
 
   try {
-    const res = await fetch(apiUrl("/get-ships-tfg?refresh=1&_=" + Date.now()));
+    const res = await fetch("/get-ships-tfg?refresh=1&_=" + Date.now()));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -5034,9 +4965,9 @@ function renderShipsTfg(data) {
 
 
 const SHIP_SEARCH_ENDPOINTS = [
-  { terminal: "SCT", url: apiUrl("/get-ships-sct?all=1&refresh=1") },
-  { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1&refresh=1") },
-  { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1&refresh=1") }
+  { terminal: "SCT", url: "/get-ships-sct?all=1&refresh=1" },
+  { terminal: "CONATECO", url: "/get-ships-conateco?all=1&refresh=1" },
+  { terminal: "TFG", url: "/get-ships-tfg?all=1&refresh=1" }
 ];
 
 function normalizeShipSearchText(value){
