@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <rect width="32" height="32" rx="6" fill="#1D2731"/>
+  <!-- Il "Container" o pacco merci -->
+  <rect x="6" y="10" width="14" height="12" rx="2" fill="none" stroke="#009688" stroke-width="2.5"/>
+  <path d="M6 15h14M13 10v12" stroke="#009688" stroke-width="1.5" opacity="0.7"/>
+  <!-- Il Visto / Spunta di sdoganamento verde -->
+  <path d="M14 18l4 4 9-10" fill="none" stroke="#4CAF50" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
