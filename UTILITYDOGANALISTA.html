@@ -2116,12 +2116,81 @@ textarea:focus-visible{
   }
 }
 
+
+/* === FIX BADGE ROSSO NOTIFICA TAB CONTAINER === */
+.extraTabs{
+  overflow:visible !important;
+  padding-top:10px !important;
+}
+
+.extraTab{
+  overflow:visible !important;
+}
+
+.extraTabNotify{
+  top:-10px !important;
+  right:8px !important;
+  min-width:22px !important;
+  height:22px !important;
+  line-height:22px !important;
+  z-index:20 !important;
+  box-shadow:0 8px 18px rgba(220,38,38,.40) !important;
+}
+
+.extraPanel,
+.extraContent,
+.extraPanel .miniHead{
+  overflow:visible !important;
+}
+
+.extraPanel .miniWrap{
+  overflow:auto !important;
+}
+
+
+/* === NOTIFICA SONORA CONTAINER === */
+.soundNotifyBtn.sound-on{
+  border-color:rgba(22,163,74,.45) !important;
+  background:color-mix(in srgb, var(--accent-2) 14%, var(--surface)) !important;
+  color:var(--accent-2) !important;
+}
+
+.soundNotifyBtn.sound-off{
+  border-color:rgba(220,38,38,.25) !important;
+  background:color-mix(in srgb, var(--danger) 8%, var(--surface)) !important;
+  color:var(--muted) !important;
+}
+
+
+/* === FIX MODULO NAVI: SPAZIO TAB + ALLINEAMENTO === */
+.shipTabs{
+  gap:12px !important;
+  padding-top:14px !important;
+  padding-bottom:18px !important;
+  overflow:visible !important;
+}
+
+.shipTab{
+  margin-top:2px !important;
+  margin-bottom:2px !important;
+  min-height:40px !important;
+}
+
+.shipPanel .shipQuickSearch{
+  padding-top:14px !important;
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
 </script>
 <script>
 
-/* === API BASE CONFIG - FRONTEND SEPARATO / VERCEL READY === */
+
+/* === API AUTO CONFIG - DoganaTools ===
+   locale/LAN: usa lo stesso dominio/porta della pagina.
+   dominio pubblico/Vercel: usa localStorage oppure https://dogana-api.reav.website.
+   Forza temporanea: ?api=http://192.168.10.229:3000
+*/
 const API_BASE_STORAGE_KEY = "utility_doganalista_api_base_v1";
 
 function normalizeApiBase(value){
@@ -2131,12 +2200,33 @@ function normalizeApiBase(value){
   return raw;
 }
 
+function isLocalOrLanHost(hostname){
+  const h = String(hostname || "").toLowerCase();
+  return (
+    h === "localhost" ||
+    h === "127.0.0.1" ||
+    h.startsWith("192.168.") ||
+    h.startsWith("10.") ||
+    /^172\.(1[6-9]|2\d|3[0-1])\./.test(h)
+  );
+}
+
 function getApiBase(){
   try {
-    return normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY) || "");
-  } catch {
-    return "";
-  }
+    const params = new URLSearchParams(window.location.search);
+    const apiParam = normalizeApiBase(params.get("api") || "");
+    if (apiParam) {
+      localStorage.setItem(API_BASE_STORAGE_KEY, apiParam);
+      return apiParam;
+    }
+
+    const saved = normalizeApiBase(localStorage.getItem(API_BASE_STORAGE_KEY) || "");
+    if (saved) return saved;
+  } catch {}
+
+  if (isLocalOrLanHost(window.location.hostname)) return "";
+
+  return "https://dogana-api.reav.website";
 }
 
 function apiUrl(path){
@@ -2147,47 +2237,91 @@ function apiUrl(path){
 }
 
 function initApiBaseUi(){
-  const input = document.getElementById("apiBaseInput");
-  const save = document.getElementById("saveApiBaseBtn");
-  const reset = document.getElementById("resetApiBaseBtn");
-  const current = document.getElementById("apiBaseCurrent");
-
-  if (!input) return;
-
-  const refreshLabel = () => {
-    const base = getApiBase();
-    input.value = base;
-    if (current) current.textContent = base || "stesso dominio";
-  };
-
-  refreshLabel();
-
-  save?.addEventListener("click", () => {
-    const base = normalizeApiBase(input.value);
-    try {
-      if (base) localStorage.setItem(API_BASE_STORAGE_KEY, base);
-      else localStorage.removeItem(API_BASE_STORAGE_KEY);
-    } catch {}
-    refreshLabel();
-    alert("Backend API salvato.");
-  });
-
-  reset?.addEventListener("click", () => {
-    try { localStorage.removeItem(API_BASE_STORAGE_KEY); } catch {}
-    refreshLabel();
-    alert("La utility userà lo stesso dominio della pagina.");
-  });
+  // configurazione automatica, nessun pannello visibile
 }
-
 document.addEventListener("DOMContentLoaded", initApiBaseUi);
 
-  if (window.pdfjsLib) {
+
+/* === FETCH GUARD: diagnostica backend === */
+(function installDoganaFetchGuard(){
+  if (window.__doganaFetchGuardInstalled) return;
+  window.__doganaFetchGuardInstalled = true;
+
+  const originalFetch = window.fetch.bind(window);
+
+  window.fetch = async function(input, init){
+    const response = await originalFetch(input, init);
+
+    try {
+      const url = typeof input === "string" ? input : String(input?.url || "");
+      if (url.includes("/get-")) {
+        const contentType = response.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) {
+          const preview = await response.clone().text().catch(() => "");
+          console.warn("Risposta non JSON dal backend:", url, preview.slice(0, 160));
+        }
+      }
+    } catch {}
+
+    return response;
+  };
+})();
+
+if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* === FIX INCOLLA EXCEL CONTAINER IN COLONNA === */
+document.addEventListener("DOMContentLoaded", () => {
+  const candidates = [
+    "#extraContainerInput",
+    "#containerListInput",
+    "#extraContainers",
+    "#extraTable input[data-extra-field='sct']",
+    "#extraTable input[data-extra-field='conateco']",
+    "#extraTable input[data-extra-field='flavio']"
+  ];
+
+  const attachPasteFix = (input) => {
+    if (!input || input.dataset.excelPasteFix === "1") return;
+    input.dataset.excelPasteFix = "1";
+
+    input.addEventListener("paste", (e) => {
+      const text = (e.clipboardData || window.clipboardData).getData("text");
+      if (!text) return;
+
+      const hasExcelSeparators = text.includes("\t") || text.includes("\r") || text.includes("\n");
+      if (!hasExcelSeparators) return;
+
+      e.preventDefault();
+
+      const containers = text
+        .replace(/\r/g, "\n")
+        .replace(/\t/g, "\n")
+        .split("\n")
+        .map(x => x.trim().toUpperCase())
+        .filter(Boolean);
+
+      input.value = containers.join("\n");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  };
+
+  candidates.forEach(sel => document.querySelectorAll(sel).forEach(attachPasteFix));
+
+  const table = document.getElementById("extraTable");
+  if (table) {
+    const observer = new MutationObserver(() => {
+      candidates.forEach(sel => document.querySelectorAll(sel).forEach(attachPasteFix));
+    });
+    observer.observe(table, { childList: true, subtree: true });
+  }
+});
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -2201,12 +2335,12 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     </div>
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
-    <a href="#taric-section">TARIC</a>
+    <a href="#dogana-section">Tabella</a>
     <a href="#navi-section">Navi</a>
     <a href="#container-section">Container</a>
     <a href="#tools-section">Strumenti</a>
     <button id="compactModeBtn" type="button">Compatta</button>
-    <button id="apiPanelToggleBtn" type="button">API</button>
+    
   </nav>
 </div>
 
@@ -2227,18 +2361,8 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
 </div>
 </header>
 
-<div class="apiConfigPanel" id="apiConfigPanel">
-  <label for="apiBaseInput">Backend API</label>
-  <input id="apiBaseInput" type="url" placeholder="es. https://dogana-api.reav.website oppure lascia vuoto per stesso dominio" />
-  <button id="saveApiBaseBtn" type="button">Salva API</button>
-  <button id="resetApiBaseBtn" type="button">Usa stesso dominio</button>
-  <span class="apiConfigBadge">API attiva: <strong id="apiBaseCurrent">stesso dominio</strong></span>
-  <div class="apiConfigHint">
-    Per uso locale lascia vuoto. Quando il frontend sarà su Vercel, inserisci qui il dominio API Cloudflare Tunnel, ad esempio https://dogana-api.reav.website.
-  </div>
-</div>
 
-<section class="panel sectionJumpTarget" id="taric-section">
+<section class="panel sectionJumpTarget" id="dogana-section">
 <div class="toolbar">
 <div class="left">
 <button class="primary" id="addRowBtn">+ Aggiungi riga</button>
@@ -2498,9 +2622,11 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
         <span class="autoCheckSlider"></span>
         <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
       </label>
+      <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
       <button id="extraCheckNowBtn" type="button">Controlla ora</button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP PDF trovati</button>
       <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
       <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
       <button class="success" id="addExtra10Btn">+10 righe</button>
@@ -2525,6 +2651,7 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
       <span class="extraAutoStatus" id="extraAutoStatus">Controllo automatico disattivato.</span>
       <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
       <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP PDF trovati</button>
       <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
       <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
       <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
@@ -3886,6 +4013,8 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
     const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
+    const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
+    const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
 
     const EXTRA_TERMINALS = {
       sct: {
@@ -3920,17 +4049,29 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
       }
     };
 
-    function emptyExtraRow(){
+    function emptyExtraRow(termKey = activeExtraTerminal){
       return {
+        __terminal: EXTRA_TERMINALS[termKey] ? termKey : "sct",
         clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
         clientConateco:"", conateco:"", conatecoStatus:"",
         clientFlavio:"", flavio:"", flavioStatus:""
       };
     }
 
+    function inferExtraTerminal(r){
+      const explicit = String(r?.__terminal || r?.terminal || "").toLowerCase();
+      if (EXTRA_TERMINALS[explicit]) return explicit;
+
+      if (String(r?.conateco || r?.clientConateco || r?.conatecoStatus || "").trim()) return "conateco";
+      if (String(r?.flavio || r?.clientFlavio || r?.flavioStatus || "").trim()) return "flavio";
+      return "sct";
+    }
+
     function normalizeExtraRow(r){
+      const term = inferExtraTerminal(r);
       return {
-        ...emptyExtraRow(),
+        ...emptyExtraRow(term),
+        __terminal: term,
         clientSct: r?.clientSct ?? "",
         sct: r?.sct ?? "",
         sctStatus: r?.sctStatus ?? "",
@@ -3946,6 +4087,19 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
         flavio: r?.flavio ?? "",
         flavioStatus: r?.flavioStatus ?? ""
       };
+    }
+
+    function rowBelongsToTerminal(row, termKey = activeExtraTerminal){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
+      const rowTerm = inferExtraTerminal(row);
+      return rowTerm === term;
+    }
+
+    function getVisibleExtraEntries(termKey = activeExtraTerminal){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
+      return extraRows
+        .map((row, index) => ({ row: normalizeExtraRow(row), index }))
+        .filter(entry => rowBelongsToTerminal(entry.row, term));
     }
 
     function saveExtra(){
@@ -3971,7 +4125,7 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     }
 
     function addExtraRows(count, focusLast=false){
-      for(let i=0; i<count; i++) extraRows.push(emptyExtraRow());
+      for(let i=0; i<count; i++) extraRows.push(emptyExtraRow(activeExtraTerminal));
       renderExtra();
       saveExtra();
       if(focusLast){
@@ -3981,6 +4135,8 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     }
 
     function deleteExtraRow(index){
+      if (index < 0 || index >= extraRows.length) return;
+      if (!rowBelongsToTerminal(extraRows[index], activeExtraTerminal)) return;
       extraRows.splice(index, 1);
       renderExtra();
       saveExtra();
@@ -3997,19 +4153,26 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
       e.preventDefault();
       const currentRow = Number(e.target.dataset.extraRow);
       const field = e.target.dataset.extraField;
-      let nextRow = currentRow + (e.shiftKey ? -1 : 1);
-      if(nextRow < 0) nextRow = 0;
-      if(nextRow >= extraRows.length){
-        extraRows.push(emptyExtraRow());
-        renderExtra();
-        saveExtra();
+      const visible = getVisibleExtraEntries(activeExtraTerminal).map(entry => entry.index);
+      const pos = visible.indexOf(currentRow);
+      let nextIndex = visible[pos + (e.shiftKey ? -1 : 1)];
+
+      if (nextIndex === undefined) {
+        if (e.shiftKey) nextIndex = visible[0] ?? currentRow;
+        else {
+          extraRows.push(emptyExtraRow(activeExtraTerminal));
+          nextIndex = extraRows.length - 1;
+          renderExtra();
+          saveExtra();
+        }
       }
-      focusExtraCell(nextRow, field);
+
+      focusExtraCell(nextIndex, field);
     }
 
     function countFilledExtra(termKey){
       const cfg = EXTRA_TERMINALS[termKey];
-      return extraRows.filter(r => String(r?.[cfg.containerField] || "").trim()).length;
+      return extraRows.filter(r => rowBelongsToTerminal(r, termKey) && String(r?.[cfg.containerField] || "").trim()).length;
     }
 
     function updateExtraTabs(){
@@ -4063,7 +4226,9 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
         </tr>`;
       extraTbody.innerHTML = "";
 
-      if (!extraRows.length) {
+      const visibleEntries = getVisibleExtraEntries(activeExtraTerminal);
+
+      if (!visibleEntries.length) {
         const tr = document.createElement("tr");
         const td = document.createElement("td");
         td.colSpan = 5;
@@ -4076,8 +4241,10 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
         return;
       }
 
-      extraRows.forEach((r, idx) => {
-        const row = normalizeExtraRow(r);
+      visibleEntries.forEach((entry, visibleIdx) => {
+        const idx = entry.index;
+        const row = normalizeExtraRow(entry.row);
+        row.__terminal = activeExtraTerminal;
         extraRows[idx] = row;
         const tr = document.createElement("tr");
 
@@ -4085,7 +4252,7 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
         tdIndex.className = "cell";
         tdIndex.style.color = "var(--muted)";
         tdIndex.style.padding = "12px 10px";
-        tdIndex.textContent = String(idx + 1);
+        tdIndex.textContent = String(visibleIdx + 1);
         tr.appendChild(tdIndex);
 
         const makeExtraInput = (value, field, placeholder="") => {
@@ -4101,6 +4268,8 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
           input.addEventListener("input", (e) => {
             const rowIndex = Number(e.target.dataset.extraRow);
             const key = e.target.dataset.extraField;
+            if (!extraRows[rowIndex]) return;
+            extraRows[rowIndex].__terminal = activeExtraTerminal;
             extraRows[rowIndex][key] = e.target.value;
 
             if (key === "sct") {
@@ -4154,9 +4323,116 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
 
     function clearExtraSection(){
       if(!confirm("Vuoi svuotare questa sezione?")) return;
-      extraRows = [];
+      extraRows = extraRows.filter(row => !rowBelongsToTerminal(row, activeExtraTerminal));
       renderExtra();
       saveExtra();
+    }
+
+
+    function downloadExtraBlobFile(blob, filename){
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 1500);
+    }
+
+    function collectAlreadyFoundSctPdfContainers(){
+      return [...new Set(
+        getVisibleExtraEntries("sct")
+          .map(entry => normalizeExtraRow(extraRows[entry.index]))
+          .filter(row => {
+            const container = String(row.sct || "").trim().toUpperCase();
+            const pdfUrl = String(row.sctPdfUrl || "").trim();
+            const status = String(row.sctStatus || "").toUpperCase();
+
+            return (
+              /[A-Z]{4}\d{7}/.test(container) &&
+              pdfUrl &&
+              (
+                status.includes("PDF") ||
+                status.includes("ENTRATO") ||
+                pdfUrl.toLowerCase().includes("pdf") ||
+                pdfUrl.toLowerCase().includes("report")
+              )
+            );
+          })
+          .map(row => String(row.sct || "").trim().toUpperCase().match(/[A-Z]{4}\d{7}/)?.[0])
+          .filter(Boolean)
+      )];
+    }
+
+    async function downloadAllFoundExtraPdfs(){
+      if (activeExtraTerminal !== "sct") {
+        alert("Il download PDF multiplo è disponibile nella scheda SCT.");
+        return;
+      }
+
+      const buttons = [downloadAllExtraPdfsBtn, downloadAllExtraPdfsBtnBottom].filter(Boolean);
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.textContent = "Creo ZIP...";
+      });
+
+      try {
+        const containers = collectAlreadyFoundSctPdfContainers();
+
+        if (!containers.length) {
+          alert("Nessun PDF già trovato nella lista SCT.\nPrima esegui il controllo, poi premi questo pulsante.");
+          return;
+        }
+
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = `Creo ZIP con ${containers.length} PDF già trovati...`;
+        }
+
+        const response = await fetch(
+          apiUrl(`/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
+          { method: "GET" }
+        );
+
+        if (!response.ok) {
+          let message = `Errore backend ${response.status}`;
+
+          try {
+            const data = await response.json();
+            message = data?.error || message;
+          } catch {}
+
+          throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        const ok = response.headers.get("X-PDF-OK") || containers.length;
+        const failed = response.headers.get("X-PDF-FAILED") || "0";
+        const today = new Date().toISOString().slice(0, 10);
+
+        downloadExtraBlobFile(blob, `pdf_container_trovati_${today}.zip`);
+
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = `ZIP scaricato: ${ok} PDF${Number(failed) ? `, ${failed} non scaricati` : ""}.`;
+        }
+
+        if (Number(failed)) {
+          alert(`ZIP scaricato.\nPDF inclusi: ${ok}\nPDF non scaricati: ${failed}\nQuelli non inclusi potrebbero avere cache scaduta.`);
+        }
+
+      } catch (err) {
+        console.error("Errore download ZIP PDF:", err);
+        alert("Errore download ZIP PDF: " + (err?.message || err));
+      } finally {
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = "Scarica ZIP PDF trovati";
+        });
+      }
     }
 
     function updateAutoCheckUI(){
@@ -4189,6 +4465,8 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
     clearExtraBtn?.addEventListener("click", clearExtraSection);
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
     extraCheckNowBtn?.addEventListener("click", runAutoCheck);
+    downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
+    downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     minimizeExtraBtn?.addEventListener("click", () => {
       extraPanel?.classList.toggle("minimized");
@@ -4354,6 +4632,31 @@ loadTheme();
 
 const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minut
 
+
+function showJmtDisconnectedMessage(container = "") {
+  const code = String(container || "").trim().toUpperCase();
+  const msg =
+    "Sessione JMT scaduta o utente disconnesso" +
+    (code ? ` per il container ${code}` : "") +
+    ". Riprova il controllo; se continua, riavvia il backend per rifare il login JMT.";
+
+  if (typeof showExtraToast === "function") {
+    showExtraToast("JMT disconnesso", msg, "error");
+  }
+
+  const statusEl =
+    document.getElementById("extraAutoStatus") ||
+    document.querySelector(".extraAutoStatus");
+
+  if (statusEl) {
+    statusEl.textContent = msg;
+    statusEl.style.color = "var(--danger)";
+    statusEl.style.fontWeight = "900";
+  }
+
+  alert(msg);
+}
+
 async function checkContainerSCT(container) {
   try {
     const response = await fetch(
@@ -4361,6 +4664,18 @@ async function checkContainerSCT(container) {
     );
 
     const data = await response.json().catch(() => null);
+
+    if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
+      showJmtDisconnectedMessage(container);
+
+      return {
+        success: false,
+        found: false,
+        sessionExpired: true,
+        jmtSessionExpired: true,
+        error: data?.error || "SESSIONE JMT SCADUTA / UTENTE DISCONNESSO"
+      };
+    }
 
     if (response.status === 403 || data?.permissionDenied) {
       return {
@@ -4581,8 +4896,10 @@ async function runAutoCheck(terminalKey = activeExtraTerminal) {
     ? terminalKey
     : (EXTRA_TERMINALS?.[activeExtraTerminal] ? activeExtraTerminal : "sct");
 
-  for (let i = 0; i < extraRows.length; i++) {
-    const rowData = extraRows[i];
+  const rowsToCheck = getVisibleExtraEntries(terminalToCheck);
+
+  for (let i = 0; i < rowsToCheck.length; i++) {
+    const rowData = extraRows[rowsToCheck[i].index];
     if (!rowData) continue;
 
     try {
@@ -4819,24 +5136,133 @@ function escapeHtml(value) {
     .replace(/'/g, "&#039;");
 }
 
+
+/* === FIX MODULO NAVI: DATE, UPDATE E FILTRO CHIUSE === */
+function normalizeShipTerminalStatus(value){
+  return String(value || "").trim().toUpperCase();
+}
+
+function parseShipDate(value){
+  const raw = String(value || "").trim();
+  if (!raw || raw === "-") return null;
+
+  // dd/mm/yyyy oppure dd/mm/yyyy hh:mm
+  let m = raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2})[:.](\d{2}))?/);
+  if (m) {
+    const d = Number(m[1]);
+    const mo = Number(m[2]) - 1;
+    const y = Number(m[3]);
+    const h = Number(m[4] || 0);
+    const mi = Number(m[5] || 0);
+    const date = new Date(y, mo, d, h, mi, 0, 0);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  // yyyy-mm-dd oppure yyyy-mm-dd hh:mm
+  m = raw.match(/(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s]+(\d{1,2})[:.](\d{2}))?/);
+  if (m) {
+    const y = Number(m[1]);
+    const mo = Number(m[2]) - 1;
+    const d = Number(m[3]);
+    const h = Number(m[4] || 0);
+    const mi = Number(m[5] || 0);
+    const date = new Date(y, mo, d, h, mi, 0, 0);
+    return Number.isNaN(date.getTime()) ? null : date;
+  }
+
+  const date = new Date(raw);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function getShipCloseValue(row){
+  return row?.chiusura || row?.data || row?.customCloseTime || row?.tdtcd1 || row?.closing || "";
+}
+
+function isShipClosed(row){
+  const stato = normalizeShipTerminalStatus(row?.stato || row?.status || row?.statoCarico);
+  return stato.includes("CHIUSA") || stato.includes("CLOSED") || stato.includes("NO_ACCETTA");
+}
+
+function isShipVisibleInClosingModule(row){
+  const closeDate = parseShipDate(getShipCloseValue(row));
+  if (!closeDate) return true;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const closeDay = new Date(closeDate);
+  closeDay.setHours(0, 0, 0, 0);
+
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const dayAfterTomorrow = new Date(today);
+  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
+
+  if (isShipClosed(row)) {
+    // Navi già chiuse: mostra solo ieri e oggi.
+    return closeDay >= yesterday && closeDay <= today;
+  }
+
+  // Navi in chiusura/aperta: mostra oggi, domani e dopodomani.
+  return closeDay >= today && closeDay <= dayAfterTomorrow;
+}
+
+function filterShipsVisibleForClosingModule(rows){
+  return Array.isArray(rows) ? rows.filter(isShipVisibleInClosingModule) : [];
+}
+
+function formatShipUpdateText(value){
+  const raw = String(value || "").trim();
+  if (!raw || raw === "-") return "";
+
+  // Se arriva già in formato italiano, non passarlo da new Date.
+  const it = raw.match(/(\d{1,2}\/\d{1,2}\/\d{4})(?:\s+(\d{1,2}[:.]\d{2}))?/);
+  if (it) return it[2] ? `${it[1]} ${it[2].replace(".", ":")}` : it[1];
+
+  const parsed = parseShipDate(raw);
+  if (!parsed) return raw;
+
+  return parsed.toLocaleString("it-IT", {
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  });
+}
+
+function setShipLastUpdateSafe(value){
+  const el = document.getElementById("shipLastUpdate");
+  if (!el) return;
+
+  const formatted = formatShipUpdateText(value);
+  if (formatted && formatted !== "Invalid Date") {
+    el.textContent = formatted;
+  } else if (!el.textContent || el.textContent === "Invalid Date") {
+    el.textContent = "-";
+  }
+}
+
 function getShipStatusClass(row) {
-  return row?.stato === "CHIUSA" ? "closed" : "today";
+  return isShipClosed(row) ? "closed" : "today";
 }
 
 function getShipStatusLabel(row) {
-  return row?.stato === "CHIUSA" ? "CHIUSA" : "IN CHIUSURA";
+  return isShipClosed(row) ? "CHIUSA" : "IN CHIUSURA";
 }
 
 function setShipCounts(count, generatedAt) {
   const countText = String(count || 0);
-  const updateText = generatedAt
-    ? new Date(generatedAt).toLocaleString("it-IT", { hour: "2-digit", minute: "2-digit", day: "2-digit", month: "2-digit" })
-    : "-";
 
   document.getElementById("shipCountSct") && (document.getElementById("shipCountSct").textContent = countText);
   document.getElementById("shipCountSctHead") && (document.getElementById("shipCountSctHead").textContent = countText);
   document.getElementById("shipTabCountSct") && (document.getElementById("shipTabCountSct").textContent = countText);
-  document.getElementById("shipLastUpdate") && (document.getElementById("shipLastUpdate").textContent = updateText);
+
+  setShipLastUpdateSafe(generatedAt);
 }
 
 function setShipConatecoCounts(count) {
@@ -4870,8 +5296,9 @@ async function loadShipsSct() {
     }
 
     const ships = Array.isArray(payload) ? payload : (payload.ships || []);
-    renderShipsSct(ships);
-    setShipCounts(ships.length, payload.generatedAt || payload.updatedAt);
+    const visibleShips = filterShipsVisibleForClosingModule(ships);
+    renderShipsSct(visibleShips);
+    setShipCounts(visibleShips.length, payload.updatedAt || payload.generatedAt || payload.lastUpdate);
   } catch (e) {
     console.error("Error SCT", e);
     tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Errore SCT: ${escapeHtml(e.message)}</td></tr>`;
@@ -4887,7 +5314,7 @@ function renderShipsSct(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Nessuna nave SCT chiusa o in chiusura oggi/domani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Nessuna nave SCT chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
     return;
   }
 
@@ -4927,8 +5354,10 @@ async function loadShipsConateco() {
     }
 
     const ships = Array.isArray(payload) ? payload : (payload.ships || []);
-    renderShipsConateco(ships);
-    setShipConatecoCounts(ships.length);
+    const visibleShips = filterShipsVisibleForClosingModule(ships);
+    renderShipsConateco(visibleShips);
+    setShipConatecoCounts(visibleShips.length);
+    setShipLastUpdateSafe(payload.updatedAt || payload.generatedAt || payload.lastUpdate);
   } catch (e) {
     console.error("Error CONATECO", e);
     tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Errore CONATECO: ${escapeHtml(e.message)}</td></tr>`;
@@ -4941,7 +5370,7 @@ function renderShipsConateco(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO chiusa o in chiusura oggi/domani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
     return;
   }
 
@@ -4987,8 +5416,10 @@ async function loadShipsTfg() {
 
     const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
     console.log("TFG payload:", payload, "ships:", ships);
-    renderShipsTfg(ships);
-    setShipTfgCounts(ships.length);
+    const visibleShips = filterShipsVisibleForClosingModule(ships);
+    renderShipsTfg(visibleShips);
+    setShipTfgCounts(visibleShips.length);
+    setShipLastUpdateSafe(payload.updatedAt || payload.generatedAt || payload.lastUpdate);
   } catch (e) {
     console.error("Error TFG", e);
     tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Errore TFG: ${escapeHtml(e.message)}</td></tr>`;
@@ -5001,7 +5432,7 @@ function renderShipsTfg(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa o in chiusura oggi/domani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
     return;
   }
 
@@ -5843,11 +6274,473 @@ function installExtraTabClearOnClick(){
   window.addEventListener("resize", adaptButtonLabels, { passive:true });
 })();
 
+
+/* === AUDIO NOTIFICA CONTAINER ENTRATO === */
+let extraSoundEnabled = false;
+let extraAudioCtx = null;
+
+function initExtraAudioContext(){
+  if (!extraAudioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return null;
+    extraAudioCtx = new AudioContextClass();
+  }
+
+  if (extraAudioCtx.state === "suspended") {
+    extraAudioCtx.resume().catch(() => {});
+  }
+
+  return extraAudioCtx;
+}
+
+function playExtraContainerSound(){
+  if (!extraSoundEnabled) return;
+
+  const ctx = initExtraAudioContext();
+  if (!ctx) return;
+
+  try {
+    const now = ctx.currentTime;
+
+    function beep(freq, start, duration, gainValue){
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, now + start);
+
+      gain.gain.setValueAtTime(0.0001, now + start);
+      gain.gain.exponentialRampToValueAtTime(gainValue, now + start + 0.015);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
+
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      osc.start(now + start);
+      osc.stop(now + start + duration + 0.03);
+    }
+
+    beep(880, 0.00, 0.13, 0.08);
+    beep(1175, 0.16, 0.16, 0.07);
+  } catch {}
+}
+
+function updateExtraSoundButton(){
+  const btn = document.getElementById("extraSoundNotifyBtn");
+  if (!btn) return;
+
+  btn.classList.toggle("sound-on", extraSoundEnabled);
+  btn.classList.toggle("sound-off", !extraSoundEnabled);
+  btn.textContent = extraSoundEnabled ? "🔔 Suono ON" : "🔇 Suono OFF";
+}
+
+function initExtraSoundNotify(){
+  const btn = document.getElementById("extraSoundNotifyBtn");
+
+  try {
+    extraSoundEnabled = localStorage.getItem("doganatools_container_sound") === "1";
+  } catch {
+    extraSoundEnabled = false;
+  }
+
+  updateExtraSoundButton();
+
+  btn?.addEventListener("click", () => {
+    extraSoundEnabled = !extraSoundEnabled;
+
+    if (extraSoundEnabled) {
+      initExtraAudioContext();
+      setTimeout(playExtraContainerSound, 80);
+    }
+
+    try {
+      localStorage.setItem("doganatools_container_sound", extraSoundEnabled ? "1" : "0");
+    } catch {}
+
+    updateExtraSoundButton();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
+
+/* === PATCH CONATECO: BADGE/NOTIFICA SOLO SE DAVVERO ENTRATO === */
+(function conatecoBadgeOnlyWhenEntered(){
+  if (window.__conatecoBadgeOnlyWhenEnteredInstalled) return;
+  window.__conatecoBadgeOnlyWhenEnteredInstalled = true;
+
+  function textOfRowForContainer(container){
+    const code = String(container || "").toUpperCase();
+    const row = Array.from(document.querySelectorAll("#extraTable tbody tr"))
+      .find(r => String(r.innerText || r.textContent || "").toUpperCase().includes(code));
+    return String(row?.innerText || row?.textContent || "").toUpperCase();
+  }
+
+  function isPositive(text){
+    const t = String(text || "").toUpperCase();
+    if (t.includes("NON ENTRATO") || t.includes("NON TROVATO") || t.includes("NON RISULTA") || t.includes("NESSUN") || t.includes("ERRORE")) return false;
+    return t.includes("PDF") || t.includes("ENTRATO") || t.includes("VISTO ENTRARE");
+  }
+
+  function cleanConatecoBadge(){
+    try {
+      if (window.EXTRA_NOTIFY_STATE?.conateco) {
+        [...window.EXTRA_NOTIFY_STATE.conateco].forEach(code => {
+          if (!isPositive(textOfRowForContainer(code))) window.EXTRA_NOTIFY_STATE.conateco.delete(code);
+        });
+        if (typeof setExtraTabNotify === "function") setExtraTabNotify("conateco", window.EXTRA_NOTIFY_STATE.conateco.size);
+      }
+    } catch {}
+  }
+
+  const install = () => {
+    if (typeof incrementExtraTerminalNotify === "function" && !window.__originalIncrementExtraTerminalNotifySafe) {
+      window.__originalIncrementExtraTerminalNotifySafe = incrementExtraTerminalNotify;
+      incrementExtraTerminalNotify = function(terminal, container){
+        if (String(terminal || "").toLowerCase() === "conateco" && !isPositive(textOfRowForContainer(container))) {
+          cleanConatecoBadge();
+          return;
+        }
+        return window.__originalIncrementExtraTerminalNotifySafe(terminal, container);
+      };
+    }
+    if (typeof notifyExtraDesktop === "function" && !window.__originalNotifyExtraDesktopSafe) {
+      window.__originalNotifyExtraDesktopSafe = notifyExtraDesktop;
+      notifyExtraDesktop = function(container, terminal){
+        if (String(terminal || "").toLowerCase() === "conateco" && !isPositive(textOfRowForContainer(container))) {
+          cleanConatecoBadge();
+          return;
+        }
+        return window.__originalNotifyExtraDesktopSafe(container, terminal);
+      };
+    }
+    if (!window.__originalIncrementExtraTerminalNotifySafe || !window.__originalNotifyExtraDesktopSafe) setTimeout(install, 400);
+  };
+
+  install();
+  document.addEventListener("click", e => {
+    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom")) {
+      setTimeout(cleanConatecoBadge, 800);
+      setTimeout(cleanConatecoBadge, 2000);
+    }
+  }, true);
+})();
+
+/* === FIX NOTIFICHE CONTAINER: NO DUPLICATI SU CAMBIO TAB === */
+(function fixContainerNotificationDuplicates(){
+  if (window.__fixContainerNotificationDuplicatesInstalled) return;
+  window.__fixContainerNotificationDuplicatesInstalled = true;
+
+  const notifiedKey = "doganatools_notified_containers_v2";
+  const notifiedRuntime = {
+    sct: new Set(),
+    conateco: new Set(),
+    flavio: new Set()
+  };
+
+  function loadNotified(){
+    try {
+      const raw = JSON.parse(sessionStorage.getItem(notifiedKey) || "{}");
+      ["sct", "conateco", "flavio"].forEach(t => {
+        (raw[t] || []).forEach(code => notifiedRuntime[t].add(String(code).toUpperCase()));
+      });
+    } catch {}
+  }
+
+  function saveNotified(){
+    try {
+      const raw = {};
+      ["sct", "conateco", "flavio"].forEach(t => {
+        raw[t] = [...notifiedRuntime[t]];
+      });
+      sessionStorage.setItem(notifiedKey, JSON.stringify(raw));
+    } catch {}
+  }
+
+  function normTerminal(value){
+    const v = String(value || "").toLowerCase();
+    if (v === "tfg") return "flavio";
+    if (v === "sct" || v === "conateco" || v === "flavio") return v;
+    const active = document.querySelector(".extraTab.active")?.dataset?.extraTerminal || "sct";
+    return active === "tfg" ? "flavio" : active;
+  }
+
+  function normContainer(value){
+    const m = String(value || "").toUpperCase().match(/[A-Z]{4}\d{7}/);
+    return m ? m[0] : String(value || "").toUpperCase().trim();
+  }
+
+  function textOf(value){
+    return String(value || "").replace(/\s+/g, " ").trim().toUpperCase();
+  }
+
+  function isNegativeStatus(text){
+    const t = textOf(text);
+    return (
+      t.includes("NON TROVATO") ||
+      t.includes("NON ENTRATO") ||
+      t.includes("NON RISULTA") ||
+      t.includes("NON PRESENTE") ||
+      t.includes("NESSUN") ||
+      t.includes("ASSENTE") ||
+      t.includes("ERRORE") ||
+      t.includes("PDF NON TROVATO") ||
+      t.includes("NOT FOUND")
+    );
+  }
+
+  function isPositiveStatus(text){
+    const t = textOf(text);
+    if (isNegativeStatus(t)) return false;
+
+    return (
+      t.includes("PDF GENERATO") ||
+      t.includes("PDF OK") ||
+      t.includes("SCARICA PDF") ||
+      t.includes("VISTO ENTRARE") ||
+      t.includes("ENTRATO")
+    );
+  }
+
+  function getRowContainer(row){
+    const inputs = Array.from(row?.querySelectorAll?.("input, textarea") || []);
+    for (const input of inputs) {
+      const code = normContainer(input.value);
+      if (/^[A-Z]{4}\d{7}$/.test(code)) return code;
+    }
+    return normContainer(row?.innerText || row?.textContent || "");
+  }
+
+  function getRowStatus(row){
+    const cell = row?.querySelector?.(".sct-status, .conateco-status, .flavio-status");
+    return cell?.innerText || cell?.textContent || row?.innerText || "";
+  }
+
+  function findRow(container){
+    const code = normContainer(container);
+    return Array.from(document.querySelectorAll("#extraTable tbody tr")).find(row => {
+      return getRowContainer(row) === code || textOf(row.innerText).includes(code);
+    });
+  }
+
+  function shouldNotify(terminal, container){
+    const t = normTerminal(terminal);
+    const c = normContainer(container);
+    if (!c || !/^[A-Z]{4}\d{7}$/.test(c)) return false;
+
+    const row = findRow(c);
+    const status = getRowStatus(row);
+
+    if (!isPositiveStatus(status)) return false;
+    if (notifiedRuntime[t].has(c)) return false;
+
+    return true;
+  }
+
+  function markNotified(terminal, container){
+    const t = normTerminal(terminal);
+    const c = normContainer(container);
+    if (!c) return;
+
+    notifiedRuntime[t].add(c);
+    saveNotified();
+  }
+
+  function cleanBadgeFromAlreadyNotified(){
+    // Il badge rosso deve indicare nuovi entrati non ancora visti/notificati.
+    try {
+      ["sct", "conateco", "flavio"].forEach(t => {
+        const state = window.EXTRA_NOTIFY_STATE?.[t];
+        if (!state) return;
+
+        [...state].forEach(code => {
+          if (notifiedRuntime[t].has(String(code).toUpperCase())) {
+            state.delete(code);
+          }
+        });
+
+        if (typeof setExtraTabNotify === "function") {
+          setExtraTabNotify(t, state.size);
+        }
+      });
+    } catch {}
+  }
+
+  loadNotified();
+
+  // Protegge l'incremento del badge rosso: non incrementare se già notificato.
+  const installIncrementGuard = () => {
+    if (typeof incrementExtraTerminalNotify !== "function") {
+      setTimeout(installIncrementGuard, 300);
+      return;
+    }
+
+    if (window.__originalIncrementExtraTerminalNotifyNoDup) return;
+    window.__originalIncrementExtraTerminalNotifyNoDup = incrementExtraTerminalNotify;
+
+    incrementExtraTerminalNotify = function(terminal, container){
+      const t = normTerminal(terminal);
+      const c = normContainer(container);
+
+      if (!shouldNotify(t, c)) {
+        cleanBadgeFromAlreadyNotified();
+        return;
+      }
+
+      return window.__originalIncrementExtraTerminalNotifyNoDup(t, c);
+    };
+  };
+
+  // Protegge toast/desktop/suono: solo una volta per terminale+container.
+  const installNotifyGuard = () => {
+    if (typeof notifyExtraDesktop !== "function") {
+      setTimeout(installNotifyGuard, 300);
+      return;
+    }
+
+    if (window.__originalNotifyExtraDesktopNoDup) return;
+    window.__originalNotifyExtraDesktopNoDup = notifyExtraDesktop;
+
+    notifyExtraDesktop = function(container, terminal){
+      const t = normTerminal(terminal);
+      const c = normContainer(container);
+
+      if (!shouldNotify(t, c)) {
+        cleanBadgeFromAlreadyNotified();
+        return;
+      }
+
+      // Prima mostra notifica/toast SOLO per container entrato e non ancora notificato.
+      const result = window.__originalNotifyExtraDesktopNoDup(c, t.toUpperCase());
+
+      // Suono SOLO qui: evento positivo, non duplicato, non cambio tab.
+      try {
+        const soundOn =
+          localStorage.getItem("doganatools_container_sound") === "1" ||
+          document.getElementById("extraSoundNotifyBtn")?.classList.contains("sound-on");
+
+        if (soundOn && typeof playExtraContainerSound === "function") {
+          setTimeout(playExtraContainerSound, 80);
+        }
+      } catch {}
+
+      markNotified(t, c);
+      cleanBadgeFromAlreadyNotified();
+
+      return result;
+    };
+  };
+
+  installIncrementGuard();
+  installNotifyGuard();
+
+  // Quando cambi tab, non rieseguire notifiche su righe già presenti.
+  document.addEventListener("click", e => {
+    const tab = e.target.closest(".extraTab[data-extra-terminal]");
+    if (!tab) return;
+
+    setTimeout(cleanBadgeFromAlreadyNotified, 80);
+    setTimeout(cleanBadgeFromAlreadyNotified, 500);
+  }, true);
+
+  // Se il DOM viene ri-renderizzato quando cambi tab, ripulisce eventuali riaccensioni del badge.
+  const startObserver = () => {
+    const tbody = document.querySelector("#extraTable tbody");
+    if (!tbody) {
+      setTimeout(startObserver, 400);
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      clearTimeout(window.__noDupCleanBadgeTimer);
+      window.__noDupCleanBadgeTimer = setTimeout(cleanBadgeFromAlreadyNotified, 120);
+    });
+
+    observer.observe(tbody, {
+      childList:true,
+      subtree:true,
+      characterData:true,
+      attributes:true
+    });
+  };
+
+  startObserver();
+
+  // Esponi reset manuale in caso ti serva da console:
+  // doganaResetNotificheContainer()
+  window.doganaResetNotificheContainer = function(){
+    ["sct", "conateco", "flavio"].forEach(t => notifiedRuntime[t].clear());
+    try { sessionStorage.removeItem(notifiedKey); } catch {}
+    cleanBadgeFromAlreadyNotified();
+    alert("Memoria notifiche container resettata per questa sessione.");
+  };
+})();
+
+
+
+/* === GUARDIA ANTI-RAFFICA SUONO CONTAINER === */
+(function guardContainerSoundBurst(){
+  if (window.__guardContainerSoundBurstInstalled) return;
+  window.__guardContainerSoundBurstInstalled = true;
+
+  const install = () => {
+    if (typeof playExtraContainerSound !== "function") {
+      setTimeout(install, 300);
+      return;
+    }
+
+    if (window.__originalPlayExtraContainerSoundGuarded) return;
+    window.__originalPlayExtraContainerSoundGuarded = playExtraContainerSound;
+
+    playExtraContainerSound = function(){
+      const now = Date.now();
+      if (window.__lastContainerSoundAt && now - window.__lastContainerSoundAt < 1500) {
+        return;
+      }
+      window.__lastContainerSoundAt = now;
+      return window.__originalPlayExtraContainerSoundGuarded();
+    };
+  };
+
+  install();
+})();
+
 </script>
 <div id="pdfExportContainer" style="position:absolute; left:-99999px; top:0;"></div>
 
 <button class="floatingBackTop" id="floatingBackTop" type="button" aria-label="Torna su">↑</button>
 <div class="appSaveIndicator" id="appSaveIndicator">Salvataggio automatico aggiornato</div>
+
+
+<script>
+/* === FIX INCOLLA EXCEL CONTAINER IN COLONNA - standalone === */
+document.addEventListener("DOMContentLoaded", () => {
+  const table = document.getElementById("extraTable");
+  if (!table || table.dataset.excelPasteFix === "1") return;
+
+  table.dataset.excelPasteFix = "1";
+
+  table.addEventListener("paste", (e) => {
+    const target = e.target;
+    if (!target || !target.matches("input, textarea")) return;
+
+    const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+    if (!text || (!text.includes("\t") && !text.includes("\n") && !text.includes("\r"))) return;
+
+    const containers = text
+      .replace(/\r/g, "\n")
+      .replace(/\t/g, "\n")
+      .split("\n")
+      .map(x => (x.match(/[A-Z]{4}\d{7}/i) || [x.trim()])[0].toUpperCase())
+      .filter(Boolean);
+
+    if (containers.length <= 1) return;
+
+    e.preventDefault();
+    target.value = containers.join("\n");
+    target.dispatchEvent(new Event("input", { bubbles: true }));
+  }, true);
+});
+</script>
 
 </body>
 </html>
