@@ -2274,6 +2274,54 @@ if (window.pdfjsLib) {
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+/* === FIX INCOLLA EXCEL CONTAINER IN COLONNA === */
+document.addEventListener("DOMContentLoaded", () => {
+  const candidates = [
+    "#extraContainerInput",
+    "#containerListInput",
+    "#extraContainers",
+    "#extraTable input[data-extra-field='sct']",
+    "#extraTable input[data-extra-field='conateco']",
+    "#extraTable input[data-extra-field='flavio']"
+  ];
+
+  const attachPasteFix = (input) => {
+    if (!input || input.dataset.excelPasteFix === "1") return;
+    input.dataset.excelPasteFix = "1";
+
+    input.addEventListener("paste", (e) => {
+      const text = (e.clipboardData || window.clipboardData).getData("text");
+      if (!text) return;
+
+      const hasExcelSeparators = text.includes("\t") || text.includes("\r") || text.includes("\n");
+      if (!hasExcelSeparators) return;
+
+      e.preventDefault();
+
+      const containers = text
+        .replace(/\r/g, "\n")
+        .replace(/\t/g, "\n")
+        .split("\n")
+        .map(x => x.trim().toUpperCase())
+        .filter(Boolean);
+
+      input.value = containers.join("\n");
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+  };
+
+  candidates.forEach(sel => document.querySelectorAll(sel).forEach(attachPasteFix));
+
+  const table = document.getElementById("extraTable");
+  if (table) {
+    const observer = new MutationObserver(() => {
+      candidates.forEach(sel => document.querySelectorAll(sel).forEach(attachPasteFix));
+    });
+    observer.observe(table, { childList: true, subtree: true });
+  }
+});
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -2578,6 +2626,7 @@ if (window.pdfjsLib) {
       <button id="extraCheckNowBtn" type="button">Controlla ora</button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP PDF trovati</button>
       <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
       <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
       <button class="success" id="addExtra10Btn">+10 righe</button>
@@ -2602,6 +2651,7 @@ if (window.pdfjsLib) {
       <span class="extraAutoStatus" id="extraAutoStatus">Controllo automatico disattivato.</span>
       <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
       <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP PDF trovati</button>
       <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
       <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
       <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
@@ -3963,6 +4013,8 @@ if (window.pdfjsLib) {
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
     const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
+    const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
+    const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
 
     const EXTRA_TERMINALS = {
       sct: {
@@ -4276,6 +4328,113 @@ if (window.pdfjsLib) {
       saveExtra();
     }
 
+
+    function downloadExtraBlobFile(blob, filename){
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = filename;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+
+      setTimeout(() => {
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 1500);
+    }
+
+    function collectAlreadyFoundSctPdfContainers(){
+      return [...new Set(
+        getVisibleExtraEntries("sct")
+          .map(entry => normalizeExtraRow(extraRows[entry.index]))
+          .filter(row => {
+            const container = String(row.sct || "").trim().toUpperCase();
+            const pdfUrl = String(row.sctPdfUrl || "").trim();
+            const status = String(row.sctStatus || "").toUpperCase();
+
+            return (
+              /[A-Z]{4}\d{7}/.test(container) &&
+              pdfUrl &&
+              (
+                status.includes("PDF") ||
+                status.includes("ENTRATO") ||
+                pdfUrl.toLowerCase().includes("pdf") ||
+                pdfUrl.toLowerCase().includes("report")
+              )
+            );
+          })
+          .map(row => String(row.sct || "").trim().toUpperCase().match(/[A-Z]{4}\d{7}/)?.[0])
+          .filter(Boolean)
+      )];
+    }
+
+    async function downloadAllFoundExtraPdfs(){
+      if (activeExtraTerminal !== "sct") {
+        alert("Il download PDF multiplo è disponibile nella scheda SCT.");
+        return;
+      }
+
+      const buttons = [downloadAllExtraPdfsBtn, downloadAllExtraPdfsBtnBottom].filter(Boolean);
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.textContent = "Creo ZIP...";
+      });
+
+      try {
+        const containers = collectAlreadyFoundSctPdfContainers();
+
+        if (!containers.length) {
+          alert("Nessun PDF già trovato nella lista SCT.\nPrima esegui il controllo, poi premi questo pulsante.");
+          return;
+        }
+
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = `Creo ZIP con ${containers.length} PDF già trovati...`;
+        }
+
+        const response = await fetch(
+          apiUrl(`/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
+          { method: "GET" }
+        );
+
+        if (!response.ok) {
+          let message = `Errore backend ${response.status}`;
+
+          try {
+            const data = await response.json();
+            message = data?.error || message;
+          } catch {}
+
+          throw new Error(message);
+        }
+
+        const blob = await response.blob();
+        const ok = response.headers.get("X-PDF-OK") || containers.length;
+        const failed = response.headers.get("X-PDF-FAILED") || "0";
+        const today = new Date().toISOString().slice(0, 10);
+
+        downloadExtraBlobFile(blob, `pdf_container_trovati_${today}.zip`);
+
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = `ZIP scaricato: ${ok} PDF${Number(failed) ? `, ${failed} non scaricati` : ""}.`;
+        }
+
+        if (Number(failed)) {
+          alert(`ZIP scaricato.\nPDF inclusi: ${ok}\nPDF non scaricati: ${failed}\nQuelli non inclusi potrebbero avere cache scaduta.`);
+        }
+
+      } catch (err) {
+        console.error("Errore download ZIP PDF:", err);
+        alert("Errore download ZIP PDF: " + (err?.message || err));
+      } finally {
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = "Scarica ZIP PDF trovati";
+        });
+      }
+    }
+
     function updateAutoCheckUI(){
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
       if (extraAutoCheckLabel) extraAutoCheckLabel.textContent = extraAutoCheckEnabled ? "ON" : "OFF";
@@ -4306,6 +4465,8 @@ if (window.pdfjsLib) {
     clearExtraBtn?.addEventListener("click", clearExtraSection);
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
     extraCheckNowBtn?.addEventListener("click", runAutoCheck);
+    downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
+    downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     minimizeExtraBtn?.addEventListener("click", () => {
       extraPanel?.classList.toggle("minimized");
@@ -4471,6 +4632,31 @@ loadTheme();
 
 const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minut
 
+
+function showJmtDisconnectedMessage(container = "") {
+  const code = String(container || "").trim().toUpperCase();
+  const msg =
+    "Sessione JMT scaduta o utente disconnesso" +
+    (code ? ` per il container ${code}` : "") +
+    ". Riprova il controllo; se continua, riavvia il backend per rifare il login JMT.";
+
+  if (typeof showExtraToast === "function") {
+    showExtraToast("JMT disconnesso", msg, "error");
+  }
+
+  const statusEl =
+    document.getElementById("extraAutoStatus") ||
+    document.querySelector(".extraAutoStatus");
+
+  if (statusEl) {
+    statusEl.textContent = msg;
+    statusEl.style.color = "var(--danger)";
+    statusEl.style.fontWeight = "900";
+  }
+
+  alert(msg);
+}
+
 async function checkContainerSCT(container) {
   try {
     const response = await fetch(
@@ -4478,6 +4664,18 @@ async function checkContainerSCT(container) {
     );
 
     const data = await response.json().catch(() => null);
+
+    if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
+      showJmtDisconnectedMessage(container);
+
+      return {
+        success: false,
+        found: false,
+        sessionExpired: true,
+        jmtSessionExpired: true,
+        error: data?.error || "SESSIONE JMT SCADUTA / UTENTE DISCONNESSO"
+      };
+    }
 
     if (response.status === 403 || data?.permissionDenied) {
       return {
@@ -6511,6 +6709,38 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 <button class="floatingBackTop" id="floatingBackTop" type="button" aria-label="Torna su">↑</button>
 <div class="appSaveIndicator" id="appSaveIndicator">Salvataggio automatico aggiornato</div>
+
+
+<script>
+/* === FIX INCOLLA EXCEL CONTAINER IN COLONNA - standalone === */
+document.addEventListener("DOMContentLoaded", () => {
+  const table = document.getElementById("extraTable");
+  if (!table || table.dataset.excelPasteFix === "1") return;
+
+  table.dataset.excelPasteFix = "1";
+
+  table.addEventListener("paste", (e) => {
+    const target = e.target;
+    if (!target || !target.matches("input, textarea")) return;
+
+    const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+    if (!text || (!text.includes("\t") && !text.includes("\n") && !text.includes("\r"))) return;
+
+    const containers = text
+      .replace(/\r/g, "\n")
+      .replace(/\t/g, "\n")
+      .split("\n")
+      .map(x => (x.match(/[A-Z]{4}\d{7}/i) || [x.trim()])[0].toUpperCase())
+      .filter(Boolean);
+
+    if (containers.length <= 1) return;
+
+    e.preventDefault();
+    target.value = containers.join("\n");
+    target.dispatchEvent(new Event("input", { bubbles: true }));
+  }, true);
+});
+</script>
 
 </body>
 </html>
