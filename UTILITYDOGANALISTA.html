@@ -2212,6 +2212,21 @@ function isLocalOrLanHost(hostname){
 }
 
 function getApiBase(){
+  const publicApi = "https://dogana-api.reav.website";
+  const host = String(window.location.hostname || "").toLowerCase();
+
+  // FRONTEND PUBBLICO: usa sempre l'API pubblica, senza localStorage vecchio.
+  if (
+    host === "dogana.reav.website" ||
+    host === "doganatools.reav.website" ||
+    host.endsWith(".reav.website") ||
+    host.includes("vercel.app")
+  ) {
+    try { localStorage.removeItem(API_BASE_STORAGE_KEY); } catch {}
+    return publicApi;
+  }
+
+  // Forza temporanea manuale solo fuori dal dominio pubblico.
   try {
     const params = new URLSearchParams(window.location.search);
     const apiParam = normalizeApiBase(params.get("api") || "");
@@ -2226,7 +2241,13 @@ function getApiBase(){
 
   if (isLocalOrLanHost(window.location.hostname)) return "";
 
-  return "https://dogana-api.reav.website";
+  return publicApi;
+}
+
+function getPublicPdfUrl(container){
+  const code = String(container || "").trim().toUpperCase();
+  if (!code) return "";
+  return apiUrl(`/api/download-cached-pdf?container=${encodeURIComponent(code)}`);
 }
 
 function apiUrl(path){
@@ -4102,10 +4123,63 @@ document.addEventListener("DOMContentLoaded", () => {
         .filter(entry => rowBelongsToTerminal(entry.row, term));
     }
 
+    let extraSharedSaveTimer = null;
+    let extraSharedLastPull = 0;
+
+    function scheduleSharedExtraSave(){
+      clearTimeout(extraSharedSaveTimer);
+      extraSharedSaveTimer = setTimeout(async () => {
+        try {
+          await fetch(apiUrl("/api/shared-state"), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              extraRows,
+              activeExtraTerminal,
+              extraAutoCheckEnabled
+            })
+          });
+        } catch (err) {
+          console.warn("Salvataggio stato condiviso non riuscito", err);
+        }
+      }, 350);
+    }
+
+    async function syncExtraFromBackend(forceRender = true){
+      try {
+        const res = await fetch(apiUrl("/api/shared-state?_=" + Date.now()));
+        const payload = await res.json().catch(() => null);
+        const state = payload?.state;
+        if (!res.ok || !state) return false;
+
+        if (Array.isArray(state.extraRows)) {
+          extraRows = state.extraRows.map(normalizeExtraRow);
+        }
+
+        if (EXTRA_TERMINALS[state.activeExtraTerminal]) {
+          activeExtraTerminal = state.activeExtraTerminal;
+        }
+
+        extraAutoCheckEnabled = !!state.extraAutoCheckEnabled;
+        extraSharedLastPull = Date.now();
+
+        try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
+        try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
+        try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+
+        if (forceRender) renderExtra();
+        return true;
+      } catch (err) {
+        console.warn("Lettura stato condiviso non riuscita", err);
+        return false;
+      }
+    }
+
     function saveExtra(){
       try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
       try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
       try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+      scheduleSharedExtraSave();
     }
 
     function loadExtra(){
@@ -4394,7 +4468,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const response = await fetch(
-          apiUrl(`/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
+          apiUrl(`/api/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
           { method: "GET" }
         );
 
@@ -4479,6 +4553,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraLoaded = loadExtra();
     if(!extraLoaded || extraRows.length === 0) addExtraRows(3, false);
     else renderExtra();
+
+    // Stato condiviso: appena il backend risponde, sostituisce la copia locale.
+    // Così tutti i PC vedono la stessa tabella contenitori e gli stessi risultati.
+    syncExtraFromBackend(true).then((ok) => {
+      if (!ok && (!extraLoaded || extraRows.length === 0)) saveExtra();
+    });
+
+    // Aggiorna periodicamente dagli altri client, senza scaricare nuovamente i dati dai terminal.
+    setInterval(() => {
+      const active = document.activeElement;
+      const isEditingExtra = active && active.matches && active.matches("#extraTable input[data-extra-field]");
+      if (!isEditingExtra) syncExtraFromBackend(true);
+    }, 30000);
     setExtraAutoCheck(extraAutoCheckEnabled);
 
   
@@ -4660,7 +4747,14 @@ function showJmtDisconnectedMessage(container = "") {
 async function checkContainerSCT(container) {
   try {
     const response = await fetch(
-      `http://localhost:3000/get-pdf?container=${encodeURIComponent(container)}`
+      apiUrl(`/api/get-pdf?container=${encodeURIComponent(container)}&_=${Date.now()}`),
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      }
     );
 
     const data = await response.json().catch(() => null);
@@ -4698,7 +4792,10 @@ async function checkContainerSCT(container) {
       return {
         success: true,
         found: true,
-        pdfUrl: data.pdfUrl
+        // Non esporre il link interno JMT al browser pubblico:
+        // il download passa sempre dal backend condiviso.
+        pdfUrl: getPublicPdfUrl(container),
+        rawPdfUrl: data.pdfUrl
       };
     }
 
@@ -4709,7 +4806,7 @@ async function checkContainerSCT(container) {
     };
 
   } catch (err) {
-    console.error("Errore comunicazione JMT:", err);
+    console.error("Errore comunicazione JMT:", err, "API_BASE:", getApiBase(), "URL:", apiUrl(`/api/get-pdf?container=${encodeURIComponent(container)}`));
 
     return {
       success: false,
@@ -4720,11 +4817,20 @@ async function checkContainerSCT(container) {
 }
 async function ottieniPdf(container) {
     try {
-        const response = await fetch(`http://localhost:3000/get-pdf?container=${container}`);
+        const response = await fetch(
+      apiUrl(`/api/get-pdf?container=${encodeURIComponent(container)}&_=${Date.now()}`),
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      }
+    );
         const result = await response.json();
         
         if (result.pdfUrl) {
-            window.open(result.pdfUrl, '_blank'); // Apre direttamente il PDF nel browser
+            window.open(getPublicPdfUrl(container), '_blank'); // Apre il PDF tramite backend condiviso
         } else {
             alert("Errore: PDF non trovato.");
         }
@@ -4770,7 +4876,8 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const value = String(status || "").toUpperCase().trim();
 
   if (pdfUrl) {
-    cell.innerHTML = `<a href="${pdfUrl}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
+    const href = getPublicPdfUrl(container) || pdfUrl;
+    cell.innerHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
     cell.style.color = "#2563eb";
     return;
   }
@@ -5407,7 +5514,7 @@ async function loadShipsTfg() {
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi TFG...</td></tr>`;
 
   try {
-    const res = await fetch(apiUrl("/get-ships-tfg?refresh=1&_=" + Date.now()));
+    const res = await fetch(apiUrl("/get-ships-tfg"));
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -5465,9 +5572,9 @@ function renderShipsTfg(data) {
 
 
 const SHIP_SEARCH_ENDPOINTS = [
-  { terminal: "SCT", url: apiUrl("/get-ships-sct?all=1&refresh=1") },
-  { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1&refresh=1") },
-  { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1&refresh=1") }
+  { terminal: "SCT", url: apiUrl("/get-ships-sct?all=1") },
+  { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1") },
+  { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1") }
 ];
 
 function normalizeShipSearchText(value){
@@ -6740,6 +6847,358 @@ document.addEventListener("DOMContentLoaded", () => {
     target.dispatchEvent(new Event("input", { bubbles: true }));
   }, true);
 });
+
+
+
+
+/* === PDF EXPORT STILE SEMPLICE - COME LISTA CONTAINER ALLEGATA === */
+(function installSimpleTablePdfExports(){
+  if (window.__simpleTablePdfExportsInstalled) return;
+  window.__simpleTablePdfExportsInstalled = true;
+
+  function cleanPdfText(value){
+    return String(value ?? "").replace(/\s+/g, " ").trim();
+  }
+
+  function pdfDateTime(){
+    return new Date().toLocaleString("it-IT", {
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric",
+      hour:"2-digit",
+      minute:"2-digit"
+    });
+  }
+
+  function pdfFileDate(){
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function cleanFileName(value, fallback){
+    return String(value || fallback || "documento")
+      .toLowerCase()
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 70) || fallback || "documento";
+  }
+
+  function line(doc, x1, y1, x2, y2, width = 0.18, gray = 0){
+    doc.setDrawColor(gray, gray, gray);
+    doc.setLineWidth(width);
+    doc.line(x1, y1, x2, y2);
+  }
+
+  function writeSimpleHeader(doc, title, subtitle, rowsCount, margin){
+    const pageWidth = doc.internal.pageSize.getWidth();
+    let y = margin;
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text(cleanPdfText(title), margin, y);
+
+    y += 7;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(cleanPdfText(subtitle), margin, y);
+
+    y += 6;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("Righe: " + String(rowsCount || 0), margin, y);
+    doc.text(pdfDateTime(), pageWidth - margin, y, { align:"right" });
+
+    y += 4;
+    line(doc, margin, y, pageWidth - margin, y, 0.35, 0);
+
+    return y + 4;
+  }
+
+  function writeSimpleFooter(doc, page, margin){
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    line(doc, margin, pageHeight - 11, pageWidth - margin, pageHeight - 11, 0.18, 120);
+
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.text("DoganaTools - " + pdfDateTime(), margin, pageHeight - 5);
+    doc.text("Pagina " + page, pageWidth - margin, pageHeight - 5, { align:"right" });
+  }
+
+  function tableHeader(doc, columns, x, y, height){
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(7.4);
+    doc.setDrawColor(0, 0, 0);
+    doc.setLineWidth(0.25);
+
+    let cx = x;
+    columns.forEach(col => {
+      doc.rect(cx, y, col.w, height, "S");
+      doc.text(col.label, cx + (col.align === "right" ? col.w - 1.4 : 1.4), y + 5.2, {
+        align: col.align || "left",
+        maxWidth: col.w - 2.8
+      });
+      cx += col.w;
+    });
+
+    return y + height;
+  }
+
+  function measureRow(doc, columns, values, minHeight = 7){
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.5);
+
+    let maxLines = 1;
+    values.forEach((value, index) => {
+      const col = columns[index];
+      const lines = doc.splitTextToSize(cleanPdfText(value) || "-", col.w - 2.8);
+      maxLines = Math.max(maxLines, lines.length);
+    });
+
+    return Math.max(minHeight, 3.4 + maxLines * 3.5);
+  }
+
+  function tableRow(doc, columns, values, x, y, height, bold = false){
+    doc.setTextColor(0, 0, 0);
+    doc.setFont("helvetica", bold ? "bold" : "normal");
+    doc.setFontSize(7.5);
+    doc.setDrawColor(70, 70, 70);
+    doc.setLineWidth(bold ? 0.28 : 0.14);
+
+    let cx = x;
+    columns.forEach((col, index) => {
+      doc.rect(cx, y, col.w, height, "S");
+      const text = cleanPdfText(values[index]) || "-";
+      const lines = doc.splitTextToSize(text, col.w - 2.8);
+      doc.text(lines, cx + (col.align === "right" ? col.w - 1.4 : 1.4), y + 2.25, {
+        align: col.align || "left",
+        baseline:"top",
+        maxWidth: col.w - 2.8
+      });
+      cx += col.w;
+    });
+
+    return y + height;
+  }
+
+  async function exportTaricSimplePdf(){
+    const jsPDF = window.jspdf?.jsPDF;
+    if (!jsPDF) {
+      alert("Libreria PDF non disponibile.");
+      return;
+    }
+
+    const rows = getRowsForPdf()
+      .filter(row => [row.desc, row.colli, row.pezzi, row.gross, row.net, row.mq, row.value].some(Boolean));
+
+    if (!rows.length) {
+      alert("La tabella è vuota. Inserisci almeno una riga prima di esportare il PDF.");
+      return;
+    }
+
+    const doc = new jsPDF({
+      orientation:"landscape",
+      unit:"mm",
+      format:"a4",
+      compress:true
+    });
+
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 9;
+    const footerSpace = 14;
+    let page = 1;
+
+    const title = getPdfTitle() || "Tabella descrizione / TARIC";
+    const subtitle = "Colli, pezzi, peso lordo, peso netto, MQ e valore fattura";
+
+    const columns = [
+      { label:"RIGA", w:12, align:"right" },
+      { label:"DESCRIZIONE / TARIC", w:116, align:"left" },
+      { label:"COLLI", w:17, align:"right" },
+      { label:"PEZZI", w:17, align:"right" },
+      { label:"LORDO", w:27, align:"right" },
+      { label:"NETTO", w:27, align:"right" },
+      { label:"MQ", w:17, align:"right" },
+      { label:"VALORE", w:30, align:"right" }
+    ];
+
+    const tableWidth = columns.reduce((sum, col) => sum + col.w, 0);
+    const tableX = margin + Math.max(0, (pageWidth - margin * 2 - tableWidth) / 2);
+
+    const totals = [
+      "TOT.",
+      "",
+      document.getElementById("totalColli")?.textContent || "0",
+      document.getElementById("totalPezzi")?.textContent || "0",
+      document.getElementById("totalGross")?.textContent || "0,00",
+      document.getElementById("totalNet")?.textContent || "0,00",
+      document.getElementById("totalMq")?.textContent || "0,00",
+      document.getElementById("totalValue")?.textContent || "0,00"
+    ];
+
+    function newPage(){
+      let y = writeSimpleHeader(doc, title, subtitle, rows.length, margin);
+      return tableHeader(doc, columns, tableX, y, 8);
+    }
+
+    let y = newPage();
+
+    rows.forEach(rowData => {
+      const values = [
+        rowData.index,
+        rowData.desc,
+        rowData.colli,
+        rowData.pezzi,
+        rowData.gross,
+        rowData.net,
+        rowData.mq,
+        rowData.value
+      ];
+
+      const height = measureRow(doc, columns, values, 7);
+
+      if (y + height + footerSpace > pageHeight) {
+        writeSimpleFooter(doc, page, margin);
+        doc.addPage("a4", "landscape");
+        page += 1;
+        y = newPage();
+      }
+
+      y = tableRow(doc, columns, values, tableX, y, height, false);
+    });
+
+    const totalHeight = 8;
+
+    if (y + totalHeight + footerSpace > pageHeight) {
+      writeSimpleFooter(doc, page, margin);
+      doc.addPage("a4", "landscape");
+      page += 1;
+      y = newPage();
+    }
+
+    tableRow(doc, columns, totals, tableX, y, totalHeight, true);
+    writeSimpleFooter(doc, page, margin);
+
+    doc.save(cleanFileName(title, "tabella_taric") + "_" + pdfFileDate() + ".pdf");
+  }
+
+  async function exportContainerSimplePdf(){
+    const jsPDF = window.jspdf?.jsPDF;
+    if (!jsPDF) {
+      alert("Libreria PDF non disponibile.");
+      return;
+    }
+
+    const collected = extraCollectContainerRows();
+    const sourceRows = collected.rows || [];
+
+    if (!sourceRows.length) {
+      alert("Nessun dato container da esportare.");
+      return;
+    }
+
+    const terminal = extraGetActiveTerminalName();
+
+    const doc = new jsPDF({
+      orientation:"landscape",
+      unit:"mm",
+      format:"a4",
+      compress:true
+    });
+
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const margin = 9;
+    const footerSpace = 14;
+    let page = 1;
+
+    const columns = [
+      { label:"RIGA", w:12, align:"right" },
+      { label:"CLIENTE", w:60, align:"left" },
+      { label:"CONTAINER", w:44, align:"left" },
+      { label:String(terminal || "TERMINAL").toUpperCase() + " STATO", w:150, align:"left" }
+    ];
+
+    function normalizeContainerRow(row, index){
+      const values = Object.keys(row)
+        .sort((a, b) => Number(a) - Number(b))
+        .map(key => cleanPdfText(row[key]));
+
+      const allText = values.join(" ");
+      const code = allText.match(/[A-Z]{4}\d{7}/i)?.[0]?.toUpperCase();
+
+      return [
+        values[0] || String(index + 1),
+        values[1] || "-",
+        code || values[2] || "-",
+        values[3] || values.slice(3).filter(Boolean).join(" ") || "-"
+      ];
+    }
+
+    const rows = sourceRows.map(normalizeContainerRow);
+
+    function newPage(){
+      let y = writeSimpleHeader(
+        doc,
+        "Lista container non entrati",
+        "Terminal: " + terminal,
+        rows.length,
+        margin
+      );
+      return tableHeader(doc, columns, margin, y, 8);
+    }
+
+    let y = newPage();
+
+    rows.forEach(values => {
+      const height = measureRow(doc, columns, values, 7);
+
+      if (y + height + footerSpace > pageHeight) {
+        writeSimpleFooter(doc, page, margin);
+        doc.addPage("a4", "landscape");
+        page += 1;
+        y = newPage();
+      }
+
+      y = tableRow(doc, columns, values, margin, y, height, false);
+    });
+
+    writeSimpleFooter(doc, page, margin);
+
+    doc.save("lista_container_" + cleanFileName(terminal, "terminal") + "_" + pdfFileDate() + ".pdf");
+  }
+
+  // Cattura i click prima dei vecchi listener: applica questo stile a entrambi.
+  document.addEventListener("click", function(e){
+    const taricBtn = e.target.closest("#exportPdfBtn");
+    if (taricBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      exportTaricSimplePdf();
+      return false;
+    }
+
+    const containerBtn = e.target.closest("#exportExtraPdfBtn, #exportExtraPdfBtnBottom");
+    if (containerBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      exportContainerSimplePdf();
+      return false;
+    }
+  }, true);
+
+  window.exportTaricSimplePdf = exportTaricSimplePdf;
+  window.exportContainerSimplePdf = exportContainerSimplePdf;
+})();
+
 </script>
 
 </body>
