@@ -3967,6 +3967,205 @@ background:var(--surface);
   --backend-status-color:#dc2626;
 }
 
+
+
+/* === MODULO TABELLA + CALCOLATRICE UNIFICATI E MINIMIZZABILI === */
+.doganaTableModuleCard .calcMainPanel{
+  width:calc(100% - 32px) !important;
+  margin:0 auto 16px !important;
+  border-radius:18px !important;
+  box-shadow:none !important;
+}
+
+.doganaTableModuleCard .calcHeader{
+  padding-bottom:12px;
+  border-bottom:1px solid var(--grid-soft);
+}
+
+.doganaIconMinimizeBtn{
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  padding:0 !important;
+  border-radius:14px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  font-size:16px !important;
+  line-height:1 !important;
+  background:color-mix(in srgb, var(--accent) 10%, var(--surface)) !important;
+  color:var(--accent) !important;
+  border-color:color-mix(in srgb, var(--accent) 28%, var(--btn-border)) !important;
+}
+
+.doganaModuleMiniInfo{
+  display:none;
+  align-items:center;
+  gap:8px;
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  color:var(--heading);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.doganaTableModuleCard.is-minimized{
+  width:auto !important;
+  min-width:0 !important;
+  display:inline-block !important;
+  margin:16px !important;
+  border-radius:18px !important;
+}
+
+#dogana-section:has(.doganaTableModuleCard.is-minimized){
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-start;
+  min-height:86px;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTableTitleBar,
+.doganaTableModuleCard.is-minimized .doganaTableGridCard,
+.doganaTableModuleCard.is-minimized .doganaBottomToolbar,
+.doganaTableModuleCard.is-minimized .calcMainPanel{
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
+  padding:10px !important;
+  border-bottom:0 !important;
+  border-radius:18px !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons{
+  width:auto !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons button:not(#doganaMinimizeBtn){
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
+  display:inline-flex !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn{
+  background:linear-gradient(180deg, #3374f0, #2563eb) !important;
+  border-color:#2563eb !important;
+  color:#fff !important;
+}
+
+@media (max-width:700px){
+  .doganaTableModuleCard.is-minimized{
+    width:auto !important;
+    margin:12px !important;
+  }
+  .doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
+    max-width:190px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+}
+
+
+/* === FIX MINIMIZZA TABELLA: stesso comportamento degli altri moduli === */
+.doganaTableModuleCard.is-minimized{
+  width:calc(100% - 32px) !important;
+  min-width:0 !important;
+  display:block !important;
+  margin:16px auto !important;
+  border-radius:20px !important;
+}
+
+#dogana-section:has(.doganaTableModuleCard.is-minimized){
+  display:block !important;
+  min-height:0 !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTableTitleBar,
+.doganaTableModuleCard.is-minimized .doganaTableGridCard,
+.doganaTableModuleCard.is-minimized .doganaBottomToolbar,
+.doganaTableModuleCard.is-minimized .calcMainPanel{
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
+  padding:14px 16px !important;
+  border-bottom:0 !important;
+  border-radius:20px !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons{
+  width:100% !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons button:not(#doganaMinimizeBtn){
+  display:inline-flex !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn{
+  background:var(--tbody-bg) !important;
+  color:var(--text) !important;
+  border-color:#d7e1ee !important;
+}
+
+@media (max-width:700px){
+  .doganaTableModuleCard.is-minimized{
+    width:100% !important;
+    margin:12px 0 !important;
+  }
+  .doganaTableModuleCard.is-minimized .doganaTopButtons{
+    justify-content:flex-start !important;
+  }
+}
+
+
+/* === MISURA DEFAULT UNIFORME PULSANTI ===
+   Uniforma dimensione e allineamento dei pulsanti principali
+   senza modificare colori, bordi, ombre o varianti esistenti. */
+:root{
+  --button-default-min-width:132px;
+  --button-default-min-height:40px;
+}
+
+button:not(.rowBtn):not(.calcKey):not(.themeSwitch):not(.floatingBackTop){
+  min-width:var(--button-default-min-width);
+  min-height:var(--button-default-min-height);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+
+button.shipTab,
+button.extraTab{
+  min-width:var(--button-default-min-width);
+}
+
+button.appMenuSettingsBtn,
+button.appSessionSync{
+  min-width:var(--button-default-min-width);
+}
+
+@media (max-width:700px){
+  button:not(.rowBtn):not(.calcKey):not(.themeSwitch):not(.floatingBackTop){
+    min-width:120px;
+  }
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -4895,6 +5094,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <button id="copyColumnBtn">Copia colonna</button>	  
       <button id="exportPdfBtn">Esporta PDF</button>
       <button id="exportExcelBtn">Esporta Excel</button>
+	  <button id="doganaMinimizeBtn" type="button">Riduci a icona</button>
     </div>
   </div>
 
@@ -4943,7 +5143,6 @@ document.addEventListener("DOMContentLoaded", () => {
     <button class="success" id="add10Btn">+10 righe</button>
     <button class="danger" id="clearBtn">Svuota tutto</button>
   </div>
-</div>
 
 <div class="calcPanel calcPanelEnhanced calcMainPanel" style="width:calc(100% - 32px); max-width:none; margin:16px auto; display:block;">
 <div class="calcHeader">
@@ -5039,6 +5238,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </details>
 </div>
+</div>
 
 <div id="navi-section" class="sectionJumpTarget"></div>
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
@@ -5057,9 +5257,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="shipBadge">CONATECO <strong id="shipCountConateco">0</strong></span>
         <span class="shipBadge">TFG <strong id="shipCountTfg">0</strong></span>
         <span class="shipBadge">Aggiornamento <strong id="shipLastUpdate">-</strong></span>
-      </div>
-      <button id="minimizeShipsBtn" type="button">Riduci a icona</button>
+      </div>    
       <button class="primary" id="refreshShipsBtn" type="button">Aggiorna navi</button>
+	  <button id="minimizeShipsBtn" type="button">Riduci a icona</button>
     </div>
   </div>
   <div class="shipQuickSearch" id="shipQuickSearch">
@@ -11121,6 +11321,42 @@ const id = getClientId();
   window.renderShipsTfg = function(data){
     renderToList('tbody-tfg', 'table-tfg', data, 'TFG', 'Nessuna nave TFG chiusa oggi o in chiusura oggi/domani/dopodomani.');
   };
+})();
+</script>
+
+
+<script>
+(function(){
+  function initDoganaTableMinimize(){
+    const module = document.querySelector('.doganaTableModuleCard');
+    const btn = document.getElementById('doganaMinimizeBtn');
+    if (!module || !btn || btn.dataset.minimizeReady === '1') return;
+    btn.dataset.minimizeReady = '1';
+
+    const storageKey = 'doganaTableModuleMinimized';
+    const applyState = (minimized) => {
+      module.classList.toggle('is-minimized', minimized);
+      btn.textContent = minimized ? 'Mostra modulo' : 'Riduci a icona';
+      btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+      btn.setAttribute('aria-label', minimized ? 'Mostra modulo tabella' : 'Riduci a icona modulo tabella');
+      btn.setAttribute('title', minimized ? 'Mostra modulo' : 'Riduci a icona');
+      try { localStorage.setItem(storageKey, minimized ? '1' : '0'); } catch(e) {}
+    };
+
+    let saved = '0';
+    try { saved = localStorage.getItem(storageKey) || '0'; } catch(e) {}
+    applyState(saved === '1');
+
+    btn.addEventListener('click', function(){
+      applyState(!module.classList.contains('is-minimized'));
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDoganaTableMinimize);
+  } else {
+    initDoganaTableMinimize();
+  }
 })();
 </script>
 
