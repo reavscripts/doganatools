@@ -3333,6 +3333,176 @@ background:var(--surface);
   display:none !important;
 }
 
+
+
+/* === CONSOLE SERVER.JS - modulo isolato in fondo === */
+.serverConsolePanel{
+  width:calc(100% - 32px);
+  margin:18px auto;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.serverConsoleHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.serverConsoleTitle{
+  margin:0;
+  color:var(--heading);
+  font-size:15px;
+  font-weight:900;
+}
+.serverConsoleSubtitle{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+}
+.serverConsoleActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.serverConsoleStatus{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--pill-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.serverConsoleStatus::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--danger);
+}
+.serverConsoleStatus.connected::before{ background:var(--accent-2); }
+.serverConsoleBody{ padding:12px 16px 16px; }
+.serverConsoleOutput{
+  height:320px;
+  overflow:auto;
+  margin:0;
+  padding:14px;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  background:#07111f;
+  color:#d7e7ff;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size:12px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.serverConsolePanel.is-minimized .serverConsoleBody{ display:none; }
+@media (max-width:700px){
+  .serverConsolePanel{ width:100%; margin:16px 0; }
+  .serverConsoleOutput{ height:260px; }
+  .serverConsoleActions{ width:100%; justify-content:flex-start; }
+}
+
+
+/* === FOOTER APP - compatto e coerente con i moduli === */
+.appFooter{
+  width:calc(100% - 32px);
+  margin:18px auto 0;
+  padding:14px 16px;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:12px;
+}
+.appFooterBrand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:220px;
+}
+.appFooterLogo{
+  width:32px;
+  height:32px;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.02em;
+  background:linear-gradient(180deg, #3374f0, #2563eb);
+  box-shadow:0 8px 18px rgba(37,99,235,.18);
+}
+.appFooterTitle{
+  color:var(--heading);
+  font-weight:900;
+  line-height:1.2;
+}
+.appFooterSub{
+  margin-top:2px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+.appFooterMeta{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.appFooterPill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--pill-bg);
+  color:var(--muted);
+  font-weight:800;
+}
+.appFooterPill strong{ color:var(--heading); }
+.appFooterDot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--accent);
+  display:inline-block;
+}
+.appFooterDot.green{ background:var(--accent-2); }
+.appFooterLink{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:900;
+}
+.appFooterLink:hover{ text-decoration:underline; }
+@media (max-width:700px){
+  .appFooter{ width:100%; align-items:flex-start; }
+  .appFooterMeta{ justify-content:flex-start; }
+}
+
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -3667,10 +3837,9 @@ if (window.pdfjsLib) {
     if (document.getElementById("doganaSettingsButton")) return;
 
     const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
+      Array.from(document.querySelectorAll("header .right, .headerRight, .toolbar .right, .toolbar"))
+        .find(el => !el.closest("#shipPanel")) ||
+      document.querySelector(".appQuickNav") ||
       document.body;
 
     const btn = document.createElement("button");
@@ -4159,2154 +4328,9 @@ if (window.pdfjsLib) {
 })();
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
-
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js">
-
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
-
-</script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js">
-
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 /* === FIX INCOLLA EXCEL CONTAINER IN COLONNA === */
 document.addEventListener("DOMContentLoaded", () => {
@@ -6356,718 +4380,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
 
 </script>
 </head>
@@ -7300,7 +4612,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shipTerminalIcon">C</div>
             <div class="shipCardTitle">
               <strong>CONATECO</strong>
-              <span>Filtro: chiuse, oggi e domani. Le note evidenziano eventuale accettazione retroporto.</span>
+              <span>Filtro: navi CONATECO da Presenti, Previste, Ormeggiate e Partite. Le note evidenziano eventuale accettazione retroporto.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountConatecoHead">0</strong></span>
@@ -7439,11 +4751,36 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="rollHelp">Utile per packing list con formati tipo 281 rotoli da 1,5 × 100: inserisci rotoli, larghezza e lunghezza e ottieni i metri quadrati totali.</div>
 </div>
 </div>
-<div class="status">
-<span class="pill"><span class="dot"></span> Righe: <strong id="rowCount">0</strong></span>
-<span class="pill"><span class="dot green"></span> Salvataggio automatico: <strong>ON</strong></span>
-<span>Tip: premi <span class="kbd">Enter</span> per scendere, <span class="kbd">Tab</span> per passare alla colonna successiva.</span>
-</div>
+<section class="serverConsolePanel" id="serverConsolePanel" aria-label="Console server.js">
+  <div class="serverConsoleHead">
+    <div>
+      <h2 class="serverConsoleTitle">Console</h2>
+      <div class="serverConsoleSubtitle">Output live di server.js</div>
+    </div>
+    <div class="serverConsoleActions">
+      <span class="serverConsoleStatus" id="serverConsoleStatus">Disconnessa</span>
+      <button type="button" id="serverConsoleReconnect">Riconnetti</button>
+      <button type="button" id="serverConsoleClear">Pulisci</button>
+      <button type="button" id="serverConsoleToggle">Riduci a icona</button>
+    </div>
+  </div>
+  <div class="serverConsoleBody">
+    <pre class="serverConsoleOutput" id="serverConsoleOutput">Console pronta. In attesa dell'output di server.js...</pre>
+  </div>
+</section>
+<footer class="appFooter" aria-label="Footer Utility Doganalista">
+  <div class="appFooterBrand">
+    <img class="appFooterLogo" src="img/logo.svg" alt="Logo Utility Doganalista" loading="lazy" />
+    <div>
+      <div class="appFooterTitle">DoganaTools</div>
+      <div class="appFooterSub">Utility operativa doganale</div>
+    </div>
+  </div>
+  <div class="appFooterMeta">
+    <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
+    <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
+  </div>
+</footer>
 </section>
 </div>
 <script>
@@ -10307,7 +7644,22 @@ function getShipCloseValue(row){
 
 function isShipClosed(row){
   const stato = normalizeShipTerminalStatus(row?.stato || row?.status || row?.statoCarico);
-  return stato.includes("CHIUSA") || stato.includes("CLOSED") || stato.includes("NO_ACCETTA");
+  return stato.includes("CHIUSA") || stato.includes("CLOSED") || stato.includes("NO_ACCETTA") || stato.includes("PARTITA");
+}
+
+function isTfgAcceptaCarico(row){
+  const statusText = normalizeShipTerminalStatus([
+    row?.stato,
+    row?.status,
+    row?.statoCarico,
+    row?.note,
+    row?.terminal,
+    row?.terminalRicerca
+  ].filter(Boolean).join(" "));
+
+  return statusText.includes("ACCETTA CARICO") &&
+    !statusText.includes("NON ACCETTA CARICO") &&
+    !statusText.includes("NO_ACCETTA_CARICO");
 }
 
 function isShipVisibleInClosingModule(row){
@@ -10375,10 +7727,22 @@ function setShipLastUpdateSafe(value){
 }
 
 function getShipStatusClass(row) {
-  return isShipClosed(row) ? "closed" : "today";
+  const stato = normalizeShipTerminalStatus(row?.stato || row?.status || row?.statoCarico || row?.fonteConateco);
+  if (stato.includes("CHIUSA") || stato.includes("PARTITA") || stato.includes("ANNULLATA")) return "closed";
+  if (stato.includes("ORMEGGIATA") || stato.includes("PRESENTE")) return "tomorrow";
+  return "today";
 }
 
 function getShipStatusLabel(row) {
+  const stato = String(row?.stato || row?.status || row?.statoCarico || "").trim();
+  if (stato) return stato.toUpperCase();
+
+  const fonte = String(row?.fonteConateco || row?.categoriaConateco || "").trim().toUpperCase();
+  if (fonte === "PRESENTI") return "PRESENTE";
+  if (fonte === "PREVISTE") return "IN CHIUSURA";
+  if (fonte === "ORMEGGIATE") return "ORMEGGIATA";
+  if (fonte === "PARTITE") return "PARTITA";
+
   return isShipClosed(row) ? "CHIUSA" : "IN CHIUSURA";
 }
 
@@ -10497,7 +7861,7 @@ function renderShipsConateco(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO nel filtro corrente. La ricerca in alto controlla anche Presenti, Previste, Ormeggiate e Partite.</td></tr>`;
     return;
   }
 
@@ -10506,7 +7870,8 @@ function renderShipsConateco(data) {
     const statusLabel = getShipStatusLabel(row);
     const nave = row.nave || "-";
     const chiusura = row.chiusura || "-";
-    const note = row.note || "-";
+    const fonte = row.fonteConateco || row.categoriaConateco || "";
+    const note = [fonte, row.note].filter(Boolean).join(" · ") || "-";
     const hasRetroporto = !!row.retroporto || String(note).toUpperCase().includes("RETROPORTO");
 
     return `
@@ -10543,7 +7908,14 @@ async function loadShipsTfg() {
 
     const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
     console.log("TFG payload:", payload, "ships:", ships);
-    const visibleShips = filterShipsVisibleForClosingModule(ships);
+
+    // TFG: oltre al filtro data della chiusura doganale, mostra sempre
+    // le navi che accettano carico. Sono operative anche se non rientrano
+    // nella finestra oggi/domani/dopodomani.
+    const visibleShips = ships.filter(row =>
+      isShipVisibleInClosingModule(row) || isTfgAcceptaCarico(row)
+    );
+
     renderShipsTfg(visibleShips);
     setShipTfgCounts(visibleShips.length);
     setShipLastUpdateSafe(payload.updatedAt || payload.generatedAt || payload.lastUpdate);
@@ -10611,11 +7983,26 @@ function getShipRowName(row){
 }
 
 function getShipRowClose(row){
-  return row?.chiusura || row?.data || row?.customCloseTime || row?.stato || "-";
+  const fonteSct = String(row?.fonteSct || row?.section || "").toUpperCase();
+  if (fonteSct.includes("FORECAST")) {
+    return row?.eta || row?.data || row?.chiusura || row?.customCloseTime || row?.stato || "-";
+  }
+  return row?.chiusura || row?.data || row?.customCloseTime || row?.eta || row?.stato || "-";
 }
 
 function getShipRowNotes(row){
-  return row?.note || row?.statoCarico || row?.agenzia || row?.fonteConateco || row?.terminal || "";
+  const acceptance = [
+    row?.acceptanceDry ? `DRY: ${row.acceptanceDry}` : "",
+    row?.acceptanceReef ? `REEF: ${row.acceptanceReef}` : ""
+  ].filter(Boolean).join(" · ");
+
+  return [
+    row?.fonteConateco || row?.categoriaConateco || row?.fonteSct,
+    acceptance,
+    row?.note || row?.statoCarico || row?.agenzia || row?.terminal
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 async function searchShipsEverywhere(query){
@@ -10669,8 +8056,12 @@ async function searchShipsEverywhere(query){
       row.viaggio,
       row.arrVoy,
       row.depVoy,
+      row.eta,
+      row.etd,
       row.stato,
       row.statoCarico,
+      row.acceptanceDry,
+      row.acceptanceReef,
       getShipRowNotes(row)
     ].filter(Boolean).join(" "));
     return haystack.includes(q);
@@ -11855,720 +9246,9 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 
 
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
 
 </script>
+
 <div id="pdfExportContainer" style="position:absolute; left:-99999px; top:0;"></div>
 
 <button class="floatingBackTop" id="floatingBackTop" type="button" aria-label="Torna su">↑</button>
@@ -13051,718 +9731,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
-(function(){
-  const PUBLIC_API = "https://dogana-api.reav.website";
-  const LOCK_REFRESH_MS = 900;
-  const STATE_REFRESH_MS = 1200;
-  const LOCK_HEARTBEAT_MS = 1200;
-
-  function apiBaseSafe(){
-    try {
-      if (typeof getApiBase === "function") return getApiBase() || "";
-    } catch {}
-    const host = String(location.hostname || "").toLowerCase();
-    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
-    return "";
-  }
-
-  function api(path){
-    const p = String(path || "");
-    const clean = p.startsWith("/") ? p : "/" + p;
-    const base = apiBaseSafe();
-    return base ? base + clean : clean;
-  }
-
-  function randomSuffix(){
-    return Math.random().toString(36).slice(2, 6).toUpperCase();
-  }
-
-  function makeClientId(){
-    try {
-      let id = localStorage.getItem("dogana_multi_client_id_v3");
-      if (!id) {
-        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
-        localStorage.setItem("dogana_multi_client_id_v3", id);
-      }
-      return id;
-    } catch {
-      return "pc-" + Math.random().toString(36).slice(2, 10);
-    }
-  }
-
-  function getAutoClientName(){
-    try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
-      if (!name) {
-        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
-        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
-          name = oldManual.trim().toUpperCase();
-        } else {
-          name = "PC-" + randomSuffix();
-        }
-        localStorage.setItem("dogana_multi_client_name_v3", name);
-      }
-      return name;
-    } catch {
-      return "PC-" + randomSuffix();
-    }
-  }
-
-  function hashColor(str){
-    let h = 0;
-    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
-    const hue = Math.abs(h) % 360;
-    return `hsl(${hue} 78% 44%)`;
-  }
-
-  function getClientColor(clientId, clientName){
-    try {
-      let color = localStorage.getItem("dogana_multi_client_color_v3");
-      if (!color) {
-        color = hashColor(clientName + clientId);
-        localStorage.setItem("dogana_multi_client_color_v3", color);
-      }
-      return color;
-    } catch {
-      return hashColor(clientName + clientId);
-    }
-  }
-
-  const clientId = makeClientId();
-  let clientName = getAutoClientName();
-  let clientColor = getClientColor(clientId, clientName);
-
-  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
-
-  let activeCell = null;
-  let locks = new Map();
-  let lockTimer = null;
-  let stateTimer = null;
-  let heartbeatTimer = null;
-  let lastLocalEditAt = 0;
-
-  function ensureHint(){
-    let el = document.getElementById("extraLockHint");
-    if (!el) {
-      el = document.createElement("div");
-      el.id = "extraLockHint";
-      el.className = "extraLockHint";
-      document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  function showHint(text){
-    const el = ensureHint();
-    el.textContent = text;
-    el.classList.add("show");
-    clearTimeout(showHint._t);
-    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
-  }
-
-  function setThemeFromSettings(theme){
-    try {
-      if (theme === "dark" || theme === "light") {
-        localStorage.setItem("utility_theme_v1", theme);
-      }
-    } catch {}
-    try {
-      if (typeof applyTheme === "function") applyTheme(theme);
-      else document.body.setAttribute("data-theme", theme);
-    } catch {
-      document.body.setAttribute("data-theme", theme);
-    }
-  }
-
-  function currentTheme(){
-    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
-  }
-
-  function createSettings(){
-    if (document.getElementById("doganaSettingsPanel")) return;
-
-    const backdrop = document.createElement("div");
-    backdrop.id = "doganaSettingsBackdrop";
-    backdrop.className = "doganaSettingsBackdrop";
-
-    const panel = document.createElement("div");
-    panel.id = "doganaSettingsPanel";
-    panel.className = "doganaSettingsPanel";
-    panel.innerHTML = `
-      <div class="doganaSettingsHead">
-        <div class="doganaSettingsTitle">
-          <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
-        </div>
-        <button type="button" id="doganaSettingsClose">Chiudi</button>
-      </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
-          </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Tema</strong>
-            <span>Cambia rapidamente tema chiaro/scuro.</span>
-          </div>
-          <button type="button" id="doganaThemeToggleSettings">Tema</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
-          </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
-          </div>
-          <button type="button" id="doganaResetSession">Reset</button>
-        </div>
-      </div>
-    `;
-
-    document.body.appendChild(backdrop);
-    document.body.appendChild(panel);
-
-    function close(){
-      panel.classList.remove("show");
-      backdrop.classList.remove("show");
-    }
-
-    backdrop.addEventListener("click", close);
-    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
-    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
-    function refreshThemeButton(){
-      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
-    }
-    refreshThemeButton();
-    themeBtn?.addEventListener("click", () => {
-      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
-    });
-    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
-      await fetchLocks();
-      await safeRefreshSharedState(true);
-      showHint("Sincronizzazione completata.");
-    });
-    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
-      try {
-        localStorage.removeItem("dogana_multi_client_id_v3");
-        localStorage.removeItem("dogana_multi_client_name_v3");
-        localStorage.removeItem("dogana_multi_client_color_v3");
-      } catch {}
-      showHint("Postazione rigenerata. Ricarico la pagina...");
-      setTimeout(() => location.reload(), 900);
-    });
-  }
-
-  function addSettingsButton(){
-    createSettings();
-
-    if (document.getElementById("doganaSettingsButton")) return;
-
-    const target =
-      document.querySelector("header .right") ||
-      document.querySelector(".headerRight") ||
-      document.querySelector(".toolbar .right") ||
-      document.querySelector(".toolbar") ||
-      document.body;
-
-    const btn = document.createElement("button");
-    btn.id = "doganaSettingsButton";
-    btn.type = "button";
-    btn.className = "topSettingsButton";
-    btn.textContent = "⚙ Impostazioni";
-
-    btn.addEventListener("click", () => {
-      document.getElementById("doganaSettingsPanel")?.classList.add("show");
-      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
-    });
-
-    target.appendChild(btn);
-  }
-
-  function addLiveBadge(){
-    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
-    const parent = toolbars[0];
-    if (!parent || document.getElementById("extraLiveBadge")) return;
-    const badge = document.createElement("span");
-    badge.id = "extraLiveBadge";
-    badge.className = "extraLiveBadge";
-    badge.style.setProperty("--session-color", clientColor);
-    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
-    parent.prepend(badge);
-  }
-
-  function findRowId(input){
-    const tr = input.closest("tr");
-    if (!tr) return "";
-    if (!tr.dataset.rowId) {
-      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
-      const value = input.value || tr.innerText || index;
-      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
-    }
-    return tr.dataset.rowId;
-  }
-
-  function findField(input){
-    if (input.dataset.field) return input.dataset.field;
-    const td = input.closest("td");
-    const tr = input.closest("tr");
-    if (!td || !tr) return input.name || "container";
-    const col = Array.from(tr.children).indexOf(td);
-    const placeholder = input.placeholder || "";
-    const cls = input.className || "";
-    let field = "col_" + col;
-    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
-    input.dataset.field = field;
-    return field;
-  }
-
-  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
-
-  function applyLocksToInputs(){
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      const rowId = findRowId(input);
-      const field = findField(input);
-      const key = getCellKey(rowId, field);
-      const lock = locks.get(key);
-
-      const td = input.closest("td");
-      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
-      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
-      td?.removeAttribute("data-lock-name");
-      input.readOnly = false;
-      input.disabled = false;
-      input.style.removeProperty("--lock-color");
-      td?.style.removeProperty("--lock-color");
-      input.title = "";
-
-      if (!lock) return;
-
-      input.style.setProperty("--lock-color", lock.color || "#2563eb");
-      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
-
-      if (lock.clientId === clientId) {
-        input.classList.add("extraCellLockedByMe");
-        td?.classList.add("extraCellLockedByMeTd");
-        input.disabled = false;
-        input.readOnly = false;
-        input.title = `Stai modificando questa cella (${clientName})`;
-      } else {
-        input.classList.add("extraCellLockedByOther");
-        td?.classList.add("extraCellLockedByOtherTd");
-        input.readOnly = true;
-        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
-      }
-    });
-  }
-
-
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
-      window.__doganaExtraEventSource = es;
-
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
-
-      es.addEventListener("shared-state", ev => {
-        try {
-          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-          safeRefreshSharedState(true);
-        } catch {}
-      });
-
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
-    } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
-    }
-  }
-
-  async function fetchLocks(){
-    try {
-      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-      const data = await res.json().catch(() => null);
-      if (!data?.success) return;
-      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-      applyLocksToInputs();
-    } catch (err) {
-      console.warn("Lock refresh fallito:", err);
-    }
-  }
-
-  async function acquireLock(input){
-    const rowId = findRowId(input);
-    const field = findField(input);
-    activeCell = { rowId, field };
-
-    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
-    const localKey = getCellKey(rowId, field);
-    locks.set(localKey, {
-      key: localKey,
-      rowId,
-      field,
-      clientId,
-      clientName,
-      color: clientColor,
-      updatedAt: Date.now()
-    });
-    applyLocksToInputs();
-
-    try {
-      const res = await fetch(api("/api/extra-lock"), {
-        method:"POST",
-        mode:"cors",
-        cache:"no-store",
-        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
-        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
-      });
-      const data = await res.json().catch(() => null);
-
-      if (res.status === 409 || data?.locked) {
-        const l = data?.lock || {};
-        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
-        input.blur();
-        await fetchLocks();
-        return false;
-      }
-
-      if (data?.locks) {
-        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-        applyLocksToInputs();
-      }
-      return true;
-    } catch (err) {
-      console.warn("Acquire lock fallito:", err);
-      return true;
-    }
-  }
-
-  async function releaseLock(rowId, field){
-    try {
-      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
-        method:"DELETE",
-        mode:"cors",
-        cache:"no-store"
-      });
-    } catch {}
-    await fetchLocks();
-  }
-
-  function heartbeat(){
-    if (!activeCell) return;
-    const input = document.activeElement;
-    if (!input || !input.matches || !input.matches("#extraTable input")) return;
-    acquireLock(input);
-  }
-
-  function hookInputs(){
-    addSettingsButton();
-    addLiveBadge();
-
-    document.querySelectorAll("#extraTable input").forEach(input => {
-      if (input.dataset.multiHookedV3 === "1") return;
-      input.dataset.multiHookedV3 = "1";
-
-      input.addEventListener("focus", async () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        const existing = locks.get(getCellKey(rowId, field));
-        if (existing && existing.clientId !== clientId) {
-          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
-          input.blur();
-          return;
-        }
-        await acquireLock(input);
-      });
-
-      input.addEventListener("keydown", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("input", () => {
-        lastLocalEditAt = Date.now();
-        acquireLock(input);
-      });
-
-      input.addEventListener("blur", () => {
-        const rowId = findRowId(input);
-        const field = findField(input);
-        setTimeout(() => releaseLock(rowId, field), 2500);
-        activeCell = null;
-      });
-    });
-
-    applyLocksToInputs();
-  }
-
-  async function safeRefreshSharedState(force = false){
-    if (!force) {
-      if (Date.now() - lastLocalEditAt < 1600) return;
-      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
-    }
-
-    try {
-      if (typeof loadExtraSharedState === "function") {
-        await loadExtraSharedState({ silent:true, preserveFocused:true });
-      } else if (typeof syncExtraSharedState === "function") {
-        await syncExtraSharedState();
-      } else {
-        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
-        await res.json().catch(() => null);
-      }
-    } catch (err) {
-      console.warn("Refresh stato condiviso fallito:", err);
-    }
-
-    hookInputs();
-  }
-
-  function boot(){
-    hookInputs();
-    connectLocksRealtime();
-    fetchLocks();
-
-    clearInterval(lockTimer);
-    clearInterval(stateTimer);
-    clearInterval(heartbeatTimer);
-
-    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
-    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
-    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
-
-    const obs = new MutationObserver(() => hookInputs());
-    const table = document.getElementById("extraTable");
-    if (table) obs.observe(table, { childList:true, subtree:true });
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot);
-  } else {
-    boot();
-  }
-
-  window.addEventListener("beforeunload", () => {
-    try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
-    } catch {}
-  });
-})();
-
-
-/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
-(function(){
-  function txt(el){
-    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
-      .trim()
-      .replace(/\s+/g, " ")
-      .toLowerCase();
-  }
-
-  function shortenLabels(root){
-    const map = new Map([
-      ["controlla tutti", "Controlla ora"],
-      ["copia contenitori", "Copia container"],
-      ["copia container", "Copia container"],
-      ["pdf lista contenitori", "PDF lista container"],
-      ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
-      ["aggiungi riga", "+ Aggiungi riga"],
-      ["+ aggiungi riga", "+ Aggiungi riga"],
-      ["+10 righe", "+10 righe"],
-      ["svuota sezione", "Svuota sezione"],
-      ["riduci a icona", "Riduci a icona"]
-    ]);
-
-    root.querySelectorAll("button").forEach(btn => {
-      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
-      const key = raw.toLowerCase();
-      const next = map.get(key);
-      if (next) {
-        btn.dataset.fullLabel = raw;
-        btn.textContent = next;
-        btn.title = raw;
-      }
-    });
-  }
-
-  function isBottomAction(el){
-    const t = txt(el);
-    return (
-      t.includes("copia") ||
-      t.includes("pdf lista") ||
-      t.includes("zip") ||
-      t.includes("aggiungi") ||
-      t.includes("+10") ||
-      t.includes("svuota") ||
-      t.includes("importa") ||
-      t.includes("excel") ||
-      t.includes("esporta")
-    );
-  }
-
-  function isTopAction(el){
-    const t = txt(el);
-    return (
-      t.includes("controlla") ||
-      t.includes("riduci") ||
-      t.includes("suono") ||
-      t.includes("auto") ||
-      t.includes("pc-")
-    );
-  }
-
-  function ensureBottom(panel){
-    let bottom = panel.querySelector(".extraBottomToolbar");
-    if (!bottom) {
-      bottom = document.createElement("div");
-      bottom.className = "extraBottomToolbar";
-      const content = panel.querySelector(".extraContent") || panel;
-      content.appendChild(bottom);
-    }
-    return bottom;
-  }
-
-  function ensureTop(panel){
-    let top =
-      panel.querySelector(".extraTopToolbar") ||
-      panel.querySelector(".miniHead .miniToolbar") ||
-      panel.querySelector(".extraHead .miniToolbar") ||
-      panel.querySelector(".miniToolbar");
-
-    if (!top) {
-      top = document.createElement("div");
-      top.className = "miniToolbar extraTopToolbar";
-      const head = panel.querySelector(".miniHead, .extraHead") || panel;
-      head.appendChild(top);
-    }
-
-    top.classList.add("extraTopToolbar");
-    return top;
-  }
-
-  function move(el, target){
-    if (!el || !target || el.parentElement === target) return;
-    target.appendChild(el);
-  }
-
-  function organize(){
-    const panel = document.querySelector(".extraPanel");
-    if (!panel) return;
-
-    const top = ensureTop(panel);
-    const bottom = ensureBottom(panel);
-
-    shortenLabels(panel);
-
-    // Sposta elementi non-button legati al controllo in alto.
-    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
-      move(el, top);
-    });
-
-    // Sposta i pulsanti nella toolbar corretta.
-    Array.from(panel.querySelectorAll("button")).forEach(btn => {
-      if (btn.classList.contains("extraTab")) return;
-      if (btn.closest(".doganaSettingsPanel")) return;
-      if (btn.id === "doganaSettingsButton") return;
-
-      if (isBottomAction(btn)) {
-        move(btn, bottom);
-      } else if (isTopAction(btn)) {
-        move(btn, top);
-      }
-    });
-
-    // Rimuove duplicati esatti nella stessa toolbar.
-    [top, bottom].forEach(tb => {
-      const seen = new Set();
-      Array.from(tb.children).forEach(el => {
-        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
-        if (seen.has(key) && el.matches("button")) el.remove();
-        else seen.add(key);
-      });
-    });
-
-    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
-    const orderTop = [
-      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
-      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
-      el => txt(el).includes("suono"),
-      el => txt(el).includes("controlla"),
-      el => txt(el).includes("riduci")
-    ];
-
-    const topItems = Array.from(top.children);
-    orderTop.forEach(test => {
-      topItems.filter(test).forEach(el => top.appendChild(el));
-    });
-
-    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
-    const orderBottom = [
-      el => txt(el).includes("copia"),
-      el => txt(el).includes("pdf lista"),
-      el => txt(el).includes("zip"),
-      el => txt(el).includes("aggiungi"),
-      el => txt(el).includes("+10"),
-      el => txt(el).includes("svuota")
-    ];
-
-    const bottomItems = Array.from(bottom.children);
-    orderBottom.forEach(test => {
-      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
-    });
-  }
-
-  function schedule(){
-    clearTimeout(schedule._t);
-    schedule._t = setTimeout(organize, 80);
-  }
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", schedule);
-  } else {
-    schedule();
-  }
-  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
-})();
 
 </script>
 
@@ -14038,6 +10006,104 @@ const id = getClientId();
 
   setTimeout(removeExtraSessionName, 300);
   setTimeout(removeExtraSessionName, 1000);
+})();
+</script>
+
+
+
+<script>
+/* === CONSOLE SERVER.JS - solo lettura output backend === */
+(function(){
+  const MAX_LINES = 500;
+  let source = null;
+  let lines = [];
+
+  function $(id){ return document.getElementById(id); }
+
+  function api(path){
+    const base = (window.DOGANA_API_BASE || window.API_BASE || "").replace(/\/$/, "");
+    return base + path;
+  }
+
+  function setStatus(text, connected){
+    const el = $("serverConsoleStatus");
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle("connected", !!connected);
+  }
+
+  function render(){
+    const out = $("serverConsoleOutput");
+    if (!out) return;
+    out.textContent = lines.length ? lines.join("\n") : "Console pronta. In attesa dell'output di server.js...";
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function addLine(entry){
+    const time = entry && entry.time ? new Date(entry.time).toLocaleTimeString("it-IT", { hour12:false }) : new Date().toLocaleTimeString("it-IT", { hour12:false });
+    const prefix = entry && entry.source === "stderr" ? "ERR" : "LOG";
+    const text = entry && entry.line ? String(entry.line) : "";
+    if (!text) return;
+    lines.push(`[${time}] ${prefix} ${text}`);
+    while (lines.length > MAX_LINES) lines.shift();
+    render();
+  }
+
+  function connect(){
+    if (!$("serverConsoleOutput")) return;
+    if (source) {
+      try { source.close(); } catch {}
+      source = null;
+    }
+
+    if (!window.EventSource) {
+      setStatus("EventSource non supportato", false);
+      return;
+    }
+
+    setStatus("Connessione...", false);
+    source = new EventSource(api("/api/console-stream"));
+
+    source.addEventListener("ready", function(){
+      setStatus("Connessa", true);
+    });
+
+    source.addEventListener("line", function(event){
+      try { addLine(JSON.parse(event.data || "{}")); } catch {}
+    });
+
+    source.onerror = function(){
+      setStatus("Disconnessa", false);
+    };
+  }
+
+  function boot(){
+    const clearBtn = $("serverConsoleClear");
+    const reconnectBtn = $("serverConsoleReconnect");
+    const toggleBtn = $("serverConsoleToggle");
+    const panel = $("serverConsolePanel");
+
+    if (clearBtn) clearBtn.addEventListener("click", function(){
+      lines = [];
+      render();
+    });
+
+    if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
+
+    if (toggleBtn && panel) toggleBtn.addEventListener("click", function(){
+      const minimized = panel.classList.toggle("is-minimized");
+      toggleBtn.textContent = minimized ? "Mostra" : "Riduci a icona";
+    });
+
+    connect();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+
+  window.addEventListener("beforeunload", function(){
+    try { source && source.close(); } catch {}
+  });
 })();
 </script>
 
