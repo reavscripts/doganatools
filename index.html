@@ -7575,7 +7575,7 @@ document.addEventListener("DOMContentLoaded", () => {
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     minimizeExtraBtn?.addEventListener("click", () => {
       extraPanel?.classList.toggle("minimized");
-      minimizeExtraBtn.textContent = extraPanel?.classList.contains("minimized") ? "Espandi modulo" : "Riduci a icona";
+      minimizeExtraBtn.textContent = extraPanel?.classList.contains("minimized") ? "Mostra modulo" : "Riduci a icona";
     });
     document.querySelectorAll(".extraTab").forEach(btn => {
       btn.addEventListener("click", () => setActiveExtraTerminal(btn.dataset.extraTerminal));
@@ -10908,7 +10908,7 @@ const id = getClientId();
 
     if (toggleBtn && panel) toggleBtn.addEventListener("click", function(){
       const minimized = panel.classList.toggle("is-minimized");
-      toggleBtn.textContent = minimized ? "Mostra" : "Riduci a icona";
+      toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
     });
 
     connect();
@@ -11338,7 +11338,7 @@ const id = getClientId();
       module.classList.toggle('is-minimized', minimized);
       btn.textContent = minimized ? 'Mostra modulo' : 'Riduci a icona';
       btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
-      btn.setAttribute('aria-label', minimized ? 'Mostra modulo tabella' : 'Riduci a icona modulo tabella');
+      btn.setAttribute('aria-label', minimized ? 'Mostra modulo' : 'Riduci a icona');
       btn.setAttribute('title', minimized ? 'Mostra modulo' : 'Riduci a icona');
       try { localStorage.setItem(storageKey, minimized ? '1' : '0'); } catch(e) {}
     };
