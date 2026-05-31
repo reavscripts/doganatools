@@ -12,7 +12,7 @@
 
 <meta name="robots" content="noindex,nofollow" />
 <meta name="referrer" content="no-referrer" />
-<title>UTILITY PER DOGANALISTA</title>
+<title>DoganaTools - Utility operativa doganale</title>
 <style>
     :root{
       --bg:#f3f6fb;
@@ -1305,6 +1305,170 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   background:rgba(12,74,110,.35);
   border-color:rgba(56,189,248,.28);
 }
+
+
+/* === NAVI IN CHIUSURA - schede dettagliate filtro oggi/domani/dopodomani === */
+.shipClosingCard{
+  width:100%;
+  display:grid;
+  grid-template-columns:minmax(240px, 1.15fr) minmax(280px, 1fr);
+  gap:12px;
+  padding:13px;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:0 7px 18px rgba(15,23,42,.045);
+}
+.shipClosingMain{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.shipClosingTop{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.shipClosingTerminal{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:74px;
+  padding:5px 9px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.shipClosingWindow{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:5px 9px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.04em;
+}
+.shipClosingName{
+  color:var(--heading);
+  font-size:17px;
+  font-weight:950;
+  line-height:1.15;
+  word-break:break-word;
+}
+.shipClosingSub{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  line-height:1.35;
+}
+.shipClosingClose{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:10px 11px;
+  border-radius:13px;
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+}
+.shipClosingClose span{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.shipClosingClose strong{
+  color:var(--heading);
+  font-size:14px;
+  font-weight:950;
+}
+.shipClosingInfoGrid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:8px;
+}
+.shipClosingInfoItem{
+  min-width:0;
+  border:1px solid var(--grid-soft);
+  border-radius:13px;
+  background:var(--surface);
+  padding:9px 10px;
+}
+.shipClosingInfoItem span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:4px;
+}
+.shipClosingInfoItem strong{
+  display:block;
+  color:var(--heading);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.shipClosingBadges{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+}
+.shipClosingBadge{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border-radius:999px;
+  background:var(--hint-bg);
+  border:1px solid var(--grid-soft);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+}
+.shipClosingNote{
+  padding:10px 11px;
+  border-radius:13px;
+  border:1px dashed var(--grid);
+  background:var(--hint-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  line-height:1.4;
+}
+.shipTable.closingCardsTable{
+  min-width:0 !important;
+}
+.shipTable.closingCardsTable thead{
+  display:none;
+}
+.shipTable.closingCardsTable td{
+  padding:8px;
+  background:transparent;
+}
+.shipTable.closingCardsTable tr:hover td{
+  background:transparent;
+}
+@media (max-width:900px){
+  .shipClosingCard{ grid-template-columns:1fr; }
+}
+@media (max-width:640px){
+  .shipClosingInfoGrid{ grid-template-columns:1fr; }
+  .shipClosingName{ font-size:16px; }
+}
 .shipEmpty{
   padding:22px;
   color:var(--muted);
@@ -1791,6 +1955,166 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   font-size:11px;
   font-weight:900;
 }
+
+/* === RICERCA NAVI - RISULTATI DETTAGLIATI === */
+.shipSearchResults .shipTableWrap{
+  padding:14px;
+  overflow:visible;
+}
+
+#table-ship-search,
+#table-ship-search tbody,
+#table-ship-search tr,
+#table-ship-search td{
+  display:block;
+  width:100%;
+  min-width:0;
+}
+
+#table-ship-search{
+  min-width:0 !important;
+  border-collapse:separate;
+  border-spacing:0 12px;
+}
+
+#table-ship-search thead{
+  display:none;
+}
+
+#table-ship-search td{
+  border:0;
+  padding:0;
+  background:transparent;
+}
+
+.shipSearchCard{
+  display:grid;
+  grid-template-columns:minmax(220px, .9fr) minmax(0, 1.6fr);
+  gap:14px;
+  padding:14px;
+  border:1px solid var(--grid-soft);
+  border-radius:18px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+
+.shipSearchMain{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-width:0;
+}
+
+.shipSearchTop{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.shipSearchName{
+  color:var(--heading);
+  font-size:18px;
+  font-weight:950;
+  line-height:1.15;
+  word-break:break-word;
+}
+
+.shipSearchSub{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.shipSearchStatusLine{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.shipSearchClose{
+  color:var(--heading);
+  font-weight:950;
+  font-size:14px;
+}
+
+.shipSearchInfoGrid{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(0, 1fr));
+  gap:8px;
+}
+
+.shipSearchInfoItem{
+  min-width:0;
+  padding:10px 11px;
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  background:var(--surface);
+}
+
+.shipSearchInfoItem span{
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:950;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:4px;
+}
+
+.shipSearchInfoItem strong{
+  display:block;
+  color:var(--heading);
+  font-size:13px;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.shipSearchBadges{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.shipSearchBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+}
+
+.shipSearchNoteBox{
+  padding:11px 12px;
+  border-radius:14px;
+  border:1px dashed var(--grid);
+  background:var(--hint-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  line-height:1.45;
+}
+
+@media (max-width:900px){
+  .shipSearchCard{ grid-template-columns:1fr; }
+  .shipSearchInfoGrid{ grid-template-columns:repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width:560px){
+  .shipSearchInfoGrid{ grid-template-columns:1fr; }
+  .shipSearchName{ font-size:16px; }
+}
+
 
 
 /* === NOTIFICHE CONTAINER ENTRATI === */
@@ -4752,7 +5076,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <div class="shipTerminalIcon">🔎</div>
           <div class="shipCardTitle">
             <strong>Risultati ricerca nave</strong>
-            <span>Mostra tutte le navi trovate, anche fuori dal filtro chiusura.</span>
+            <span>Schede dettagliate con terminale, viaggio, chiusura, ETA/ETD, accettazione carico e note disponibili.</span>
           </div>
         </div>
         <span class="shipBadge">Trovate <strong id="shipSearchCount">0</strong></span>
@@ -4783,7 +5107,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shipTerminalIcon">S</div>
             <div class="shipCardTitle">
               <strong>SCT - Salerno Container Terminal</strong>
-              <span id="shipFilterLabel">Filtro: già chiuse, oggi e domani</span>
+              <span id="shipFilterLabel">Filtro: chiuse oggi · in chiusura oggi, domani e dopodomani</span>
             </div>
           </div>
           <div class="shipCardTools">
@@ -4791,7 +5115,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
         <div class="shipTableWrap">
-          <table class="shipTable" id="table-sct">
+          <table class="shipTable closingCardsTable" id="table-sct">
             <thead>
               <tr>
                 <th>Nave</th>
@@ -4811,13 +5135,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shipTerminalIcon">C</div>
             <div class="shipCardTitle">
               <strong>CONATECO</strong>
-              <span>Filtro: navi CONATECO da Presenti, Previste, Ormeggiate e Partite. Le note evidenziano eventuale accettazione retroporto.</span>
+              <span>Filtro: chiuse oggi · in chiusura oggi, domani e dopodomani. Le note evidenziano eventuale accettazione retroporto.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountConatecoHead">0</strong></span>
         </div>
         <div class="shipTableWrap">
-          <table class="shipTable" id="table-conateco">
+          <table class="shipTable closingCardsTable" id="table-conateco">
             <thead>
               <tr>
                 <th>Nave</th>
@@ -4838,13 +5162,13 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shipTerminalIcon">T</div>
             <div class="shipCardTitle">
               <strong>TFG / Flavio Gioia</strong>
-              <span>Filtro: chiuse, oggi e domani dal portale TFG.</span>
+              <span>Filtro: chiuse oggi · in chiusura oggi, domani e dopodomani dal portale TFG.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountTfgHead">0</strong></span>
         </div>
         <div class="shipTableWrap">
-          <table class="shipTable" id="table-tfg">
+          <table class="shipTable closingCardsTable" id="table-tfg">
             <thead>
               <tr>
                 <th>Nave</th>
@@ -7837,9 +8161,6 @@ function isShipVisibleInClosingModule(row){
   const closeDay = new Date(closeDate);
   closeDay.setHours(0, 0, 0, 0);
 
-  const yesterday = new Date(today);
-  yesterday.setDate(yesterday.getDate() - 1);
-
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
@@ -7847,8 +8168,8 @@ function isShipVisibleInClosingModule(row){
   dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
 
   if (isShipClosed(row)) {
-    // Navi già chiuse: mostra solo ieri e oggi.
-    return closeDay >= yesterday && closeDay <= today;
+    // Navi già chiuse: mostra solo quelle chiuse oggi.
+    return closeDay.getTime() === today.getTime();
   }
 
   // Navi in chiusura/aperta: mostra oggi, domani e dopodomani.
@@ -7965,33 +8286,127 @@ async function loadShipsSct() {
   }
 }
 
+function shipClosingValue(row, keys, fallback = "-") {
+  for (const key of keys) {
+    const value = row?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return String(value).trim();
+    }
+  }
+  return fallback;
+}
+
+function shipClosingInfoItem(label, value) {
+  const clean = value === undefined || value === null || String(value).trim() === "" ? "-" : String(value).trim();
+  return `<div class="shipClosingInfoItem"><span>${escapeHtml(label)}</span><strong title="${escapeHtml(clean)}">${escapeHtml(clean)}</strong></div>`;
+}
+
+function shipClosingBadge(label) {
+  const clean = String(label || "").trim();
+  return clean ? `<span class="shipClosingBadge">${escapeHtml(clean)}</span>` : "";
+}
+
+function getShipWindowLabel(row) {
+  const closeDate = parseShipDate(getShipCloseValue(row));
+  if (!closeDate) return "DATA NON LETTA";
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const closeDay = new Date(closeDate);
+  closeDay.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((closeDay - today) / 86400000);
+
+  if (isShipClosed(row)) {
+    if (diffDays === 0) return "CHIUSA OGGI";
+    if (diffDays === -1) return "CHIUSA IERI";
+    return "CHIUSA";
+  }
+
+  if (diffDays === 0) return "IN CHIUSURA OGGI";
+  if (diffDays === 1) return "IN CHIUSURA DOMANI";
+  if (diffDays === 2) return "IN CHIUSURA DOPODOMANI";
+  return "IN CHIUSURA";
+}
+
+function renderShipClosingCard(row, terminal) {
+  const statusClass = getShipStatusClass(row);
+  const statusLabel = getShipStatusLabel(row);
+  const nave = shipClosingValue(row, ["nave", "nome", "nome_nave", "vessel"], "-");
+  const chiusura = getShipCloseValue(row) || "-";
+  const viaggio = shipClosingValue(row, ["viaggio", "voyage", "arrVoy", "depVoy", "voy", "codiceViaggio"]);
+  const eta = shipClosingValue(row, ["eta", "ETA", "eTA", "E.T.A.", "arrivo", "arrival", "dataArrivo", "data_arrivo", "tdta", "etaDate"]);
+  const etd = shipClosingValue(row, ["etd", "ETD", "eTD", "E.T.D.", "ets", "ETS", "partenza", "departure", "dataPartenza", "data_partenza", "tdtd"]);
+  const fonte = shipClosingValue(row, ["fonteSct", "fonteConateco", "categoriaConateco", "fonte", "section"]);
+  const statoCarico = shipClosingValue(row, ["statoCarico", "accettaCarico", "acceptance", "acceptanceStatus"]);
+  const dry = shipClosingValue(row, ["acceptanceDry", "dry", "accettazioneDry"], "");
+  const reef = shipClosingValue(row, ["acceptanceReef", "acceptanceReefer", "reefer", "accettazioneReef"], "");
+  const agenzia = shipClosingValue(row, ["agenzia", "armatore", "linea", "compagnia", "carrier"]);
+  const ormeggio = shipClosingValue(row, ["ormeggio", "berth", "banchina", "molo"]);
+  const noteParts = [row?.note, row?.terminal, row?.porto, row?.statoCarico].filter(Boolean);
+  const note = noteParts.length ? noteParts.join(" · ") : "Nessuna nota operativa aggiuntiva disponibile.";
+  const windowLabel = getShipWindowLabel(row);
+
+  const badges = [
+    terminal,
+    fonte,
+    statoCarico,
+    dry ? `DRY ${dry}` : "",
+    reef ? `REEFER ${reef}` : "",
+    row?.tipo,
+    row?.flag
+  ].filter(Boolean).map(shipClosingBadge).join("");
+
+  return `
+    <tr>
+      <td colspan="3">
+        <div class="shipClosingCard">
+          <div class="shipClosingMain">
+            <div class="shipClosingTop">
+              <span class="shipClosingTerminal">${escapeHtml(terminal)}</span>
+              <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+              <span class="shipClosingWindow">${escapeHtml(windowLabel)}</span>
+            </div>
+            <div>
+              <div class="shipClosingName">${escapeHtml(nave)}</div>
+              <div class="shipClosingSub">${escapeHtml([viaggio ? `Viaggio: ${viaggio}` : "", eta ? `ETA: ${eta}` : "", fonte ? `Fonte: ${fonte}` : ""].filter(Boolean).join(" · ") || "Dettagli operativi")}</div>
+            </div>
+            <div class="shipClosingClose">
+              <span>Chiusura doganale</span>
+              <strong>${escapeHtml(chiusura)}</strong>
+            </div>
+            ${eta && eta !== "-" ? `<div class="shipClosingClose"><span>ETA</span><strong>${escapeHtml(eta)}</strong></div>` : ""}
+            ${etd && etd !== "-" ? `<div class="shipClosingClose"><span>ETD / ETS</span><strong>${escapeHtml(etd)}</strong></div>` : ""}
+            <div class="shipClosingBadges">${badges || shipClosingBadge("Dettagli non disponibili")}</div>
+          </div>
+          <div class="shipClosingMain">
+            <div class="shipClosingInfoGrid">
+              ${shipClosingInfoItem("ETA", eta)}
+              ${shipClosingInfoItem("ETD", etd)}
+              ${shipClosingInfoItem("Carico", statoCarico)}
+              ${shipClosingInfoItem("Agenzia / armatore", agenzia)}
+              ${shipClosingInfoItem("DRY", dry || "-")}
+              ${shipClosingInfoItem("REEFER", reef || "-")}
+              ${shipClosingInfoItem("Ormeggio", ormeggio)}
+              ${shipClosingInfoItem("Sezione", fonte)}
+            </div>
+            <div class="shipClosingNote">${escapeHtml(note)}</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `;
+}
+
 function renderShipsSct(data) {
   const tbody = document.getElementById("tbody-sct");
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="2" class="shipEmpty">Nessuna nave SCT chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = data.map(row => {
-    const statusClass = getShipStatusClass(row);
-    const statusLabel = getShipStatusLabel(row);
-    const nave = row.nave || row.nome || "-";
-    const chiusura = row.chiusura || row.data || "-";
-
-    return `
-      <tr>
-        <td>
-          <div class="shipName">${escapeHtml(nave)}</div>
-        </td>
-        <td>
-          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
-          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
-        </td>
-      </tr>
-    `;
-  }).join("");
+  tbody.innerHTML = data.map(row => renderShipClosingCard(row, "SCT")).join("");
 }
 
 
@@ -8030,30 +8445,7 @@ function renderShipsConateco(data) {
     return;
   }
 
-  tbody.innerHTML = data.map(row => {
-    const statusClass = getShipStatusClass(row);
-    const statusLabel = getShipStatusLabel(row);
-    const nave = row.nave || "-";
-    const chiusura = row.chiusura || "-";
-    const fonte = row.fonteConateco || row.categoriaConateco || "";
-    const note = [fonte, row.note].filter(Boolean).join(" · ") || "-";
-    const hasRetroporto = !!row.retroporto || String(note).toUpperCase().includes("RETROPORTO");
-
-    return `
-      <tr>
-        <td>
-          <div class="shipName">${escapeHtml(nave)}</div>
-        </td>
-        <td>
-          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
-          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
-        </td>
-        <td>
-          <span style="font-weight:900; color:${hasRetroporto ? '#92400e' : 'var(--muted)'};">${escapeHtml(note)}</span>
-        </td>
-      </tr>
-    `;
-  }).join("");
+  tbody.innerHTML = data.map(row => renderShipClosingCard(row, "CONATECO")).join("");
 }
 
 
@@ -8096,36 +8488,13 @@ function renderShipsTfg(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
     return;
   }
 
-  tbody.innerHTML = data.map(row => {
-    const statusClass = getShipStatusClass(row);
-    const statusLabel = getShipStatusLabel(row);
-    const nave = row.nave || "-";
-    const chiusura = row.chiusura || "-";
-    const note = row.note || row.statoCarico || row.agenzia || "-";
-
-    return `
-      <tr>
-        <td>
-          <div class="shipName">
-            ${escapeHtml(nave)}
-            <small>${escapeHtml(row.viaggio || "")}</small>
-          </div>
-        </td>
-        <td>
-          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
-          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
-        </td>
-        <td>
-          <span style="font-weight:900; color:var(--muted);">${escapeHtml(note)}</span>
-        </td>
-      </tr>
-    `;
-  }).join("");
+  tbody.innerHTML = data.map(row => renderShipClosingCard(row, "TFG")).join("");
 }
+
 
 
 const SHIP_SEARCH_ENDPOINTS = [
@@ -8168,6 +8537,102 @@ function getShipRowNotes(row){
   ]
     .filter(Boolean)
     .join(" · ");
+}
+
+function firstShipValue(row, keys, fallback = "-"){
+  for (const key of keys) {
+    const value = row?.[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return String(value).trim();
+    }
+  }
+  return fallback;
+}
+
+function shipInfoItem(label, value){
+  const clean = value === undefined || value === null || String(value).trim() === "" ? "-" : String(value).trim();
+  return `<div class="shipSearchInfoItem"><span>${escapeHtml(label)}</span><strong title="${escapeHtml(clean)}">${escapeHtml(clean)}</strong></div>`;
+}
+
+function shipSearchBadge(label){
+  const clean = String(label || "").trim();
+  return clean ? `<span class="shipSearchBadge">${escapeHtml(clean)}</span>` : "";
+}
+
+function renderShipSearchCard(row){
+  const terminal = row.terminalRicerca || firstShipValue(row, ["terminal", "terminale"], "-");
+  const nave = getShipRowName(row) || "-";
+  const chiusura = getShipRowClose(row);
+  const statusClass = getShipStatusClass(row);
+  const statusLabel = getShipStatusLabel(row);
+  const viaggio = firstShipValue(row, ["viaggio", "voyage", "arrVoy", "depVoy", "voy", "codiceViaggio"]);
+  const eta = firstShipValue(row, ["eta", "ETA", "eTA", "E.T.A.", "arrivo", "arrival", "dataArrivo", "data_arrivo", "tdta", "etaDate"]);
+  const etd = firstShipValue(row, ["etd", "ETD", "eTD", "E.T.D.", "ets", "ETS", "partenza", "departure", "dataPartenza", "data_partenza", "tdtd", "etaDeparture"]);
+  const fonte = firstShipValue(row, ["fonteSct", "fonteConateco", "categoriaConateco", "fonte", "section", "source"]);
+  const statoCarico = firstShipValue(row, ["statoCarico", "accettaCarico", "acceptance", "acceptanceStatus", "carico"]);
+  const dry = firstShipValue(row, ["acceptanceDry", "dry", "accettazioneDry"], "");
+  const reef = firstShipValue(row, ["acceptanceReef", "acceptanceReefer", "reefer", "accettazioneReef"], "");
+  const agenzia = firstShipValue(row, ["agenzia", "armatore", "linea", "compagnia", "carrier"]);
+  const ormeggio = firstShipValue(row, ["ormeggio", "berth", "banchina", "molo"]);
+  const viaggioImbarco = firstShipValue(row, ["viaggioImbarco", "viaggioimbarco", "arrVoy", "arrivoVoy"], "");
+  const viaggioPartenza = firstShipValue(row, ["depVoy", "viaggioPartenza", "partenzaVoy"], "");
+  const intRif = firstShipValue(row, ["intRif", "int_rif", "riferimento", "reference"], "");
+  const pol = firstShipValue(row, ["pol", "POL", "porto", "portoCarico"], "");
+  const linea = firstShipValue(row, ["linea", "cod_lin_nv", "servizio", "service"], "");
+  const note = getShipRowNotes(row) || "Nessuna nota aggiuntiva disponibile.";
+
+  const badges = [
+    terminal,
+    fonte,
+    statoCarico,
+    dry ? `DRY ${dry}` : "",
+    reef ? `REEFER ${reef}` : "",
+    row?.stato,
+    row?.tipo,
+    row?.flag
+  ].filter(Boolean).map(shipSearchBadge).join("");
+
+  return `
+    <tr>
+      <td colspan="4">
+        <div class="shipSearchCard">
+          <div class="shipSearchMain">
+            <div class="shipSearchTop">
+              <span class="shipSearchHitTerminal">${escapeHtml(terminal)}</span>
+              <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+            </div>
+            <div>
+              <div class="shipSearchName">${escapeHtml(nave)}</div>
+              <div class="shipSearchSub">Viaggio: ${escapeHtml(viaggio)} · Fonte: ${escapeHtml(fonte)}</div>
+            </div>
+            <div class="shipSearchStatusLine">
+              <span class="shipSearchClose">Chiusura: ${escapeHtml(chiusura)}</span>
+            </div>
+            <div class="shipSearchBadges">${badges || shipSearchBadge("Nessun dettaglio extra")}</div>
+          </div>
+          <div class="shipSearchMain">
+            <div class="shipSearchInfoGrid">
+              ${shipInfoItem("ETA", eta)}
+              ${shipInfoItem("ETD / ETS", etd)}
+              ${shipInfoItem("Chiusura", chiusura)}
+              ${shipInfoItem("Carico", statoCarico)}
+              ${shipInfoItem("Viaggio arrivo", viaggioImbarco || row?.arrVoy || "-")}
+              ${shipInfoItem("Viaggio partenza", viaggioPartenza || viaggio || "-")}
+              ${shipInfoItem("Agenzia / armatore", agenzia)}
+              ${shipInfoItem("Linea / servizio", linea || "-")}
+              ${shipInfoItem("DRY", dry || "-")}
+              ${shipInfoItem("REEFER", reef || "-")}
+              ${shipInfoItem("Ormeggio", ormeggio)}
+              ${shipInfoItem("POL", pol || "-")}
+              ${shipInfoItem("Rif.", intRif || "-")}
+              ${shipInfoItem("Sezione", fonte)}
+            </div>
+            <div class="shipSearchNoteBox">${escapeHtml(note)}</div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  `;
 }
 
 async function searchShipsEverywhere(query){
@@ -8240,31 +8705,7 @@ async function searchShipsEverywhere(query){
     return;
   }
 
-  tbody.innerHTML = matches.map(row => {
-    const terminal = row.terminalRicerca || "-";
-    const nave = getShipRowName(row) || "-";
-    const chiusura = getShipRowClose(row);
-    const note = getShipRowNotes(row) || "-";
-    const statusClass = getShipStatusClass(row);
-    const statusLabel = getShipStatusLabel(row);
-
-    return `
-      <tr>
-        <td><span class="shipSearchHitTerminal">${escapeHtml(terminal)}</span></td>
-        <td>
-          <div class="shipName">
-            ${escapeHtml(nave)}
-            <small>${escapeHtml(row.viaggio || row.arrVoy || row.depVoy || "")}</small>
-          </div>
-        </td>
-        <td>
-          <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
-          <strong style="margin-left:8px;">${escapeHtml(chiusura)}</strong>
-        </td>
-        <td>${escapeHtml(note)}</td>
-      </tr>
-    `;
-  }).join("");
+  tbody.innerHTML = matches.map(renderShipSearchCard).join("");
 
   if (status) {
     status.textContent = errors.length
@@ -10204,10 +10645,20 @@ const id = getClientId();
     out.scrollTop = out.scrollHeight;
   }
 
+  function cleanConsoleText(value){
+    return String(value || "")
+      .replace(/[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g, "")
+      .replace(/\\u001b\[[0-9;?]*[A-Za-z]/gi, "")
+      .replace(/\\x1b\[[0-9;?]*[A-Za-z]/gi, "")
+      .replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "")
+      .trimEnd();
+  }
+
   function addLine(entry){
     const time = entry && entry.time ? new Date(entry.time).toLocaleTimeString("it-IT", { hour12:false }) : new Date().toLocaleTimeString("it-IT", { hour12:false });
-    const prefix = entry && entry.source === "stderr" ? "ERR" : "LOG";
-    const text = entry && entry.line ? String(entry.line) : "";
+    const rawLevel = String((entry && (entry.level || entry.source)) || "log").toLowerCase();
+    const prefix = rawLevel.includes("err") || rawLevel === "stderr" ? "ERRORE" : rawLevel.includes("warn") || rawLevel.includes("avviso") ? "AVVISO" : rawLevel.includes("table") || rawLevel.includes("tabella") ? "TABELLA" : "LOG";
+    const text = cleanConsoleText(entry && entry.line ? entry.line : "");
     if (!text) return;
     lines.push(`[${time}] ${prefix} ${text}`);
     while (lines.length > MAX_LINES) lines.shift();
@@ -10383,6 +10834,293 @@ const id = getClientId();
   }
 
   window.doganaCheckBackendStatus = checkBackend;
+})();
+</script>
+
+
+
+<style id="ship-closing-card-force-style">
+/* === PATCH FINALE: lista navi filtrate full-width e senza campi vuoti === */
+.shipPanel .shipTableWrap{
+  width:100% !important;
+  max-width:100% !important;
+  overflow:visible !important;
+}
+
+#table-sct.force-card-table,
+#table-conateco.force-card-table,
+#table-tfg.force-card-table{
+  min-width:0 !important;
+  table-layout:auto !important;
+}
+
+#table-sct.force-card-table thead,
+#table-conateco.force-card-table thead,
+#table-tfg.force-card-table thead{
+  display:none !important;
+}
+
+#table-sct.force-card-table td,
+#table-conateco.force-card-table td,
+#table-tfg.force-card-table td{
+  border:0 !important;
+  padding:0 !important;
+  background:transparent !important;
+}
+
+#table-sct.force-card-table tr:hover td,
+#table-conateco.force-card-table tr:hover td,
+#table-tfg.force-card-table tr:hover td{
+  background:transparent !important;
+}
+
+.shipClosingCardsList{
+  width:100% !important;
+  max-width:100% !important;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  padding:10px;
+  box-sizing:border-box;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+
+.shipClosingCardsList .shipClosingCard{
+  width:100% !important;
+  max-width:100% !important;
+  min-width:0 !important;
+  box-sizing:border-box !important;
+  display:grid !important;
+  grid-template-columns:minmax(220px, 1fr) 160px 130px;
+  gap:10px;
+  align-items:center;
+  padding:10px 12px;
+  border:1px solid var(--grid-soft);
+  border-radius:15px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:0 5px 14px rgba(15,23,42,.035);
+}
+
+.shipClosingCompactMain{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.shipClosingCompactNameWrap{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+
+.shipClosingTerminalPill{
+  min-width:48px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  text-align:center;
+  flex:0 0 auto;
+}
+
+.shipClosingTitleName{
+  color:var(--heading);
+  font-size:15px;
+  line-height:1.15;
+  font-weight:950;
+  letter-spacing:.01em;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.shipClosingMetaLine{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  line-height:1.25;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.shipClosingDateBox{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  min-width:0;
+}
+
+.shipClosingDateBox span{
+  color:var(--muted);
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.shipClosingDateBox strong{
+  color:var(--heading);
+  font-size:13px;
+  font-weight:950;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.shipClosingTopLine,
+.shipClosingMainBlock,
+.shipClosingDataBlock,
+.shipClosingDetailGrid,
+.shipClosingDetail,
+.shipClosingTags,
+.shipClosingNotesWide,
+.shipClosingWindowPill{
+  display:none !important;
+}
+
+@media (max-width:760px){
+  .shipClosingCardsList .shipClosingCard{
+    grid-template-columns:1fr 1fr;
+  }
+  .shipClosingCompactMain{
+    grid-column:1 / -1;
+  }
+}
+
+@media (max-width:520px){
+  .shipClosingCardsList .shipClosingCard{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+<script id="ship-closing-card-force-script">
+(function(){
+  function htmlEscape(v){
+    if (typeof escapeHtml === 'function') return escapeHtml(v == null ? '' : String(v));
+    return String(v == null ? '' : v).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function isRealValue(value){
+    if (value === undefined || value === null) return false;
+    const clean = String(value).trim();
+    return clean !== '' && clean !== '-' && clean.toLowerCase() !== 'null' && clean.toLowerCase() !== 'undefined';
+  }
+
+  function pick(row, keys, fallback){
+    for (const key of keys) {
+      const value = row && row[key];
+      if (isRealValue(value)) return String(value).trim();
+    }
+    return fallback == null ? '' : fallback;
+  }
+
+  function statusLabel(row){
+    if (typeof getShipStatusLabel === 'function') return getShipStatusLabel(row);
+    const raw = String(row?.stato || row?.status || row?.statoChiusura || '').trim();
+    return raw || 'IN CHIUSURA';
+  }
+
+  function closeValue(row){
+    if (typeof getShipCloseValue === 'function') return getShipCloseValue(row) || '';
+    return pick(row, ['chiusura','customCloseTime','closing','dataChiusura','data','eta'], '');
+  }
+
+  function splitDateTime(value){
+    const clean = String(value || '').replace(/<[^>]*>/g, '').replace(/\./g, ':').trim();
+    const m = clean.match(/\b(\d{1,2}\/\d{1,2}\/\d{2,4}|\d{4}-\d{1,2}-\d{1,2})(?:\s+(\d{1,2}:\d{2}))?\b/);
+    return { date: m ? m[1] : '', time: m && m[2] ? m[2] : '', full: clean };
+  }
+
+  function closingParts(row){
+    const raw = pick(row, ['chiusura','customCloseTime','closing','dataChiusura','closingDate'], closeValue(row));
+    const parsed = splitDateTime(raw);
+    return {
+      date: pick(row, ['chiusuraDateOnly','closingDate','chiusuraGiorno'], parsed.date || raw || '-'),
+      time: pick(row, ['chiusuraTime','closingTime','chiusuraOra'], parsed.time || '-')
+    };
+  }
+
+  function etaParts(row){
+    const raw = pick(row, ['eta','ETA','eTA','E.T.A.','arrivo','arrival','dataArrivo','data_arrivo','tdta','etaDate'], '');
+    const parsed = splitDateTime(raw);
+    return {
+      date: pick(row, ['etaDate'], parsed.date || raw || '-'),
+      time: pick(row, ['etaTime'], parsed.time || '-')
+    };
+  }
+
+  function compactCard(row, terminal, options = {}){
+    const nave = pick(row, ['nave','nome','nome_nave','vessel','shipName'], '-');
+    const fonte = pick(row, ['fonteSct','fonteConateco','categoriaConateco','fonte','section','source'], '');
+    const viaggio = pick(row, ['viaggio','voyage','arrVoy','depVoy','voy','codiceViaggio','travel'], '');
+    const isForecast = options.isForecast === true;
+    const parts = isForecast ? etaParts(row) : closingParts(row);
+    const labelPrefix = isForecast ? 'ETA' : 'Chiusura';
+    const meta = [fonte, viaggio ? `Viaggio: ${viaggio}` : '', statusLabel(row)].filter(isRealValue).join(' · ');
+
+    return `<div class="shipClosingCard shipClosingCompactCard">
+      <div class="shipClosingCompactMain">
+        <span class="shipClosingTerminalPill">${htmlEscape(terminal)}</span>
+        <div class="shipClosingCompactNameWrap">
+          <div class="shipClosingTitleName" title="${htmlEscape(nave)}">${htmlEscape(nave)}</div>
+          <div class="shipClosingMetaLine" title="${htmlEscape(meta)}">${htmlEscape(meta || '-')}</div>
+        </div>
+      </div>
+      <div class="shipClosingDateBox">
+        <span>${htmlEscape(labelPrefix)} giorno</span>
+        <strong title="${htmlEscape(parts.date)}">${htmlEscape(parts.date)}</strong>
+      </div>
+      <div class="shipClosingDateBox">
+        <span>${htmlEscape(labelPrefix)} ora</span>
+        <strong title="${htmlEscape(parts.time)}">${htmlEscape(parts.time)}</strong>
+      </div>
+    </div>`;
+  }
+
+  function renderToList(tbodyId, tableId, data, terminal, emptyText){
+    const tbody = document.getElementById(tbodyId);
+    const table = document.getElementById(tableId);
+    if (!tbody) return;
+    if (table) table.classList.add('force-card-table');
+    if (!Array.isArray(data) || !data.length) {
+      tbody.innerHTML = `<tr><td><div class="shipEmpty">${htmlEscape(emptyText)}</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = `<tr><td><div class="shipClosingCardsList">${data.map(row => compactCard(row, terminal)).join('')}</div></td></tr>`;
+  }
+
+  window.renderShipsSct = function(data){
+    const tbody = document.getElementById('tbody-sct');
+    const table = document.getElementById('table-sct');
+    if (!tbody) return;
+    if (table) table.classList.add('force-card-table');
+    if (!Array.isArray(data) || !data.length) {
+      tbody.innerHTML = `<tr><td><div class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura oggi/domani/dopodomani.</div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = `<tr><td><div class="shipClosingCardsList">${data.map(row => {
+      const fonte = pick(row, ['fonteSct','fonte','section','source'], '');
+      const isForecast = /FORECAST/i.test(fonte) || (!isRealValue(row?.chiusura) && !isRealValue(row?.customCloseTime) && !isRealValue(row?.closing));
+      return compactCard(row, 'SCT', { isForecast });
+    }).join('')}</div></td></tr>`;
+  };
+
+  window.renderShipsConateco = function(data){
+    renderToList('tbody-conateco', 'table-conateco', data, 'CONATECO', 'Nessuna nave CONATECO nel filtro corrente. La ricerca in alto controlla anche Presenti, Previste, Ormeggiate e Partite.');
+  };
+
+  window.renderShipsTfg = function(data){
+    renderToList('tbody-tfg', 'table-tfg', data, 'TFG', 'Nessuna nave TFG chiusa oggi o in chiusura oggi/domani/dopodomani.');
+  };
 })();
 </script>
 
