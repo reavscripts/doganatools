@@ -1878,7 +1878,44 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 .autoCheckSwitch input:checked + .autoCheckSlider::after{ transform:translateX(20px); }
 .autoCheckText{ font-size:12px; color:var(--muted); font-weight:800; white-space:nowrap; }
 .autoCheckText strong{ color:var(--heading); }
-.extraAutoStatus{ color:var(--muted); font-size:12px; margin-right:auto; }
+ .extraAutoStatus{ color:var(--muted); font-size:12px; margin-right:auto; }
+.extraCheckInfoBar{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.extraCheckInfoItem{
+  min-width:0;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:10px 12px;
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  background:var(--surface);
+  box-shadow:0 5px 14px rgba(15,23,42,.035);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.extraCheckInfoDot{
+  width:9px;
+  height:9px;
+  border-radius:999px;
+  background:var(--muted);
+  flex:0 0 auto;
+}
+.extraCheckInfoDot.ok{ background:var(--accent-2); }
+.extraCheckInfoDot.wait{ background:#f59e0b; }
+.extraCheckInfoText{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.extraCheckInfoText strong{ color:var(--heading); }
+@media (max-width:900px){
+  .extraCheckInfoBar{ grid-template-columns:1fr; }
+  .extraCheckInfoText{ white-space:normal; }
+}
 #extraTable{ min-width:760px !important; }
 #extraTable th:nth-child(1), #extraTable td:nth-child(1){ width:64px; }
 #extraTable th:nth-child(2), #extraTable td:nth-child(2){ width:210px; }
@@ -3950,6 +3987,37 @@ background:var(--surface);
 }
 
 
+/* === FOOTER COPYRIGHT CENTRATO SOLO TESTO COPYRIGHT === */
+.appFooter{
+  position:relative;
+}
+.appFooterCopyright{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%, -50%);
+  justify-content:center;
+  text-align:center;
+  color:var(--heading);
+  white-space:nowrap;
+}
+
+.appFooterHeart{
+  color:#dc2626;
+  font-size:14px;
+  line-height:1;
+  display:inline-block;
+}
+@media (max-width:900px){
+  .appFooterCopyright{
+    position:static;
+    transform:none;
+    order:2;
+    width:100%;
+  }
+}
+
+
 /* === STATO BACKEND NEL MODULO CONTENITORI === */
 .extraPanel #extraLiveBadge.backendStatusBadge,
 .extraPanel .backendStatusBadge,
@@ -4194,6 +4262,165 @@ button.appSessionSync{
 @media (max-width:700px){
   button:not(.rowBtn):not(.calcKey):not(.themeSwitch):not(.floatingBackTop){
     min-width:120px;
+  }
+}
+
+
+/* === CONTENITORI: controlli controllo affiancati alle pill terminal === */
+.extraTabs{
+  align-items:center !important;
+  justify-content:flex-start !important;
+  gap:8px !important;
+}
+
+/* Il gruppo dei 3 controlli occupa lo spazio libero e centra i box al suo interno */
+.extraTabs .extraCheckInfoBar{
+  flex:1 1 0 !important;
+  min-width:360px !important;
+  width:auto !important;
+  max-width:none !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  padding:0 0 0 16px !important;
+  margin-left:10px !important;
+  border-left:1px solid var(--grid) !important;
+  border-top:0 !important;
+  border-bottom:0 !important;
+  background:transparent !important;
+}
+
+.extraTabs .extraCheckInfoItem{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+  min-height:40px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:8px 12px !important;
+  border-radius:12px !important;
+  border:1px solid var(--btn-border) !important;
+  background:var(--surface) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.85), 0 3px 10px rgba(15,23,42,.03) !important;
+  font-size:11px !important;
+}
+
+.extraTabs .extraCheckInfoItem:hover{
+  border-color:#c4d2e4 !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+.extraTabs .extraCheckInfoDot{
+  width:8px !important;
+  height:8px !important;
+}
+
+.extraTabs .extraCheckInfoText{
+  min-width:auto !important;
+  width:auto !important;
+  white-space:nowrap !important;
+  overflow:visible !important;
+  text-overflow:clip !important;
+}
+
+@media (max-width:1100px){
+  .extraTabs .extraCheckInfoBar{
+    flex:1 1 100% !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    padding:12px 0 0 0 !important;
+    border-left:0 !important;
+    border-top:1px solid var(--grid-soft) !important;
+    justify-content:center !important;
+  }
+}
+
+@media (max-width:700px){
+  .extraTabs .extraCheckInfoBar{
+    justify-content:center !important;
+    gap:7px !important;
+  }
+
+  .extraTabs .extraCheckInfoItem{
+    flex:0 1 auto !important;
+    max-width:100% !important;
+  }
+
+  .extraTabs .extraCheckInfoText{
+    white-space:normal !important;
+  }
+}
+
+
+
+/* === TITOLI MODULI UNIFORMATI SU STILE CONTENITORI NON ENTRATI === */
+.doganaModuleTitle,
+.shipToolbarTitle h2,
+.extraPanel .miniTitle{
+  margin:0 !important;
+  color:var(--heading) !important;
+  font-family:var(--font) !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+}
+
+.doganaTableModuleCard .doganaTableTopToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  flex-wrap:wrap !important;
+}
+
+.doganaTableHeaderGroup{
+  display:flex !important;
+  align-items:center !important;
+  gap:12px !important;
+  flex:0 0 auto !important;
+  min-width:max-content !important;
+}
+
+.doganaTitleSeparator{
+  width:1px !important;
+  height:28px !important;
+  background:var(--grid-soft) !important;
+  display:inline-block !important;
+}
+
+.doganaTableModuleCard .doganaTopButtons{
+  width:auto !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+
+.shipToolbarTitle{
+  flex:0 0 auto !important;
+}
+
+@media (max-width:700px){
+  .doganaTableHeaderGroup{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .doganaTitleSeparator{
+    display:none !important;
+  }
+
+  .doganaTableModuleCard .doganaTopButtons{
+    width:100% !important;
+    justify-content:flex-start !important;
   }
 }
 
@@ -5100,8 +5327,8 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
     <a href="#dogana-section">Tabella</a>
-    <a href="#navi-section">Navi</a>
-    <a href="#extraPanel" data-jump-focus="#extraTable input">Container</a>
+    <a href="#navi-section">Previsione Navi</a>
+    <a href="#extraPanel" data-jump-focus="#extraTable input">Ricerca Contenitori</a>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">⚙ Impostazioni</button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
@@ -5116,6 +5343,10 @@ document.addEventListener("DOMContentLoaded", () => {
 <section class="panel sectionJumpTarget" id="dogana-section">
 <div class="doganaTableModuleCard">
   <div class="toolbar doganaTableTopToolbar">
+    <div class="doganaTableHeaderGroup">
+      <div class="miniTitle doganaModuleTitle">Tabella</div>
+      <span class="doganaTitleSeparator" aria-hidden="true"></span>
+    </div>
     <div class="left doganaTopButtons">
       <button id="mergeBtn">Unisci stessa descrizione</button>
       <button id="sortValueBtn">Ordina per valore fattura ↓</button>
@@ -5272,7 +5503,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
   <div class="toolbar shipToolbar">
     <div class="left shipToolbarTitle">
-      <h2>Navi in chiusura</h2>
+      <h2>Previsione Navi</h2>
     </div>
     <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
     <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
@@ -5291,10 +5522,9 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   <div class="shipQuickSearch" id="shipQuickSearch">
-    <input id="shipSearchInput" type="search" placeholder="Cerca in tutte le navi..." autocomplete="off" />
+    <input id="shipSearchInput" type="search" placeholder="Cerca in tutti i Terminal..." autocomplete="off" />
     <button id="shipSearchBtn" type="button">Cerca</button>
     <button id="shipSearchClearBtn" type="button">Pulisci ricerca</button>
-    <span class="shipQuickSearchStatus" id="shipSearchStatus">Ricerca su tutte le navi disponibili</span>
   </div>
 
   <div class="shipSearchResults" id="shipSearchResults">
@@ -5417,7 +5647,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="miniPanel extraPanel" id="extraPanel">
   <div class="miniHead extraHead">
     <div>
-      <div class="miniTitle">CONTENITORI NON ENTRATI</div>
+      <div class="miniTitle">Ricerca Contenitori</div>
       <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
     </div>
     <div class="miniToolbar extraTopToolbar">
@@ -5442,6 +5672,21 @@ document.addEventListener("DOMContentLoaded", () => {
     <button class="extraTab active" data-extra-terminal="sct" type="button">SCT <span class="extraTabCount" id="extraTabCountSct">0</span><span class="extraTabNotify" id="extraNotifySct">0</span></button>
     <button class="extraTab" data-extra-terminal="conateco" type="button">CONATECO <span class="extraTabCount" id="extraTabCountConateco">0</span><span class="extraTabNotify" id="extraNotifyConateco">0</span></button>
     <button class="extraTab" data-extra-terminal="flavio" type="button">TFG <span class="extraTabCount" id="extraTabCountFlavio">0</span><span class="extraTabNotify" id="extraNotifyFlavio">0</span></button>
+
+    <div class="extraCheckInfoBar" id="extraCheckInfoBar" aria-live="polite">
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot" id="extraLastCheckDot"></span>
+        <span class="extraCheckInfoText">Ultimo controllo: <strong id="extraLastCheckText">mai eseguito</strong></span>
+      </div>
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot wait" id="extraNextCheckDot"></span>
+        <span class="extraCheckInfoText">Prossimo: <strong id="extraNextCheckText">automatico disattivato</strong></span>
+      </div>
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot ok"></span>
+        <span class="extraCheckInfoText">Terminal: <strong id="extraCheckTerminalText">SCT</strong></span>
+      </div>
+    </div>
   </div>
 
   <div class="extraContent" id="extraContent">
@@ -5489,6 +5734,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   <div class="appFooterMeta">
+    <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
     <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
     <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
@@ -6815,6 +7061,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let activeExtraTerminal = "sct";
     let extraAutoCheckEnabled = false;
     let extraAutoCheckTimer = null;
+    let extraCountdownTimer = null;
+    let extraLastCheckAt = null;
+    let extraNextCheckAt = null;
     const EXTRA_CHECK_INTERVAL = 5 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
@@ -6870,6 +7119,11 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
+    const extraLastCheckText = document.getElementById("extraLastCheckText");
+    const extraNextCheckText = document.getElementById("extraNextCheckText");
+    const extraCheckTerminalText = document.getElementById("extraCheckTerminalText");
+    const extraLastCheckDot = document.getElementById("extraLastCheckDot");
+    const extraNextCheckDot = document.getElementById("extraNextCheckDot");
     const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
     const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
     const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
@@ -7732,14 +7986,67 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function updateAutoCheckUI(){
+    function formatExtraClock(value){
+      if (!value) return "mai eseguito";
+      const date = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(date.getTime())) return "mai eseguito";
+      return date.toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit", second:"2-digit" });
+    }
+
+    function formatExtraCountdown(ms){
+      const total = Math.max(0, Math.ceil(Number(ms || 0) / 1000));
+      const minutes = Math.floor(total / 60);
+      const seconds = total % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function getExtraEffectiveCheckInterval(){
+      try {
+        const raw = localStorage.getItem("doganatools_extra_auto_minutes");
+        const value = Number.parseInt(raw || "", 10);
+        if (Number.isFinite(value) && value >= 1) {
+          return Math.min(value, 1440) * 60 * 1000;
+        }
+      } catch {}
+      return EXTRA_CHECK_INTERVAL;
+    }
+
+    function updateExtraCheckInfo(){
+      const terminalLabel = EXTRA_TERMINALS?.[activeExtraTerminal]?.label || String(activeExtraTerminal || "sct").toUpperCase();
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
       if (extraAutoCheckLabel) extraAutoCheckLabel.textContent = extraAutoCheckEnabled ? "ON" : "OFF";
-      if (extraAutoStatus) {
-        extraAutoStatus.textContent = extraAutoCheckEnabled
-          ? "Controllo automatico attivo: ogni 5 minuti."
-          : "Controllo automatico disattivato.";
+      if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
+
+      if (extraLastCheckText) extraLastCheckText.textContent = extraLastCheckAt ? formatExtraClock(extraLastCheckAt) : "mai eseguito";
+      extraLastCheckDot?.classList.toggle("ok", !!extraLastCheckAt);
+
+      if (extraAutoCheckEnabled) {
+        if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+        const remaining = Math.max(0, extraNextCheckAt - Date.now());
+        if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = extraLastCheckAt
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}.`
+            : `Controllo automatico attivo: primo controllo tra ${formatExtraCountdown(remaining)}.`;
+        }
+      } else {
+        extraNextCheckAt = null;
+        if (extraNextCheckText) extraNextCheckText.textContent = "automatico disattivato";
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = extraLastCheckAt
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · automatico disattivato.`
+            : "Controllo automatico disattivato.";
+        }
       }
+    }
+
+    function updateAutoCheckUI(){
+      updateExtraCheckInfo();
+    }
+
+    function restartExtraCountdownTimer(){
+      if (extraCountdownTimer) clearInterval(extraCountdownTimer);
+      extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
     function setExtraAutoCheck(enabled){
@@ -7749,8 +8056,14 @@ document.addEventListener("DOMContentLoaded", () => {
         extraAutoCheckTimer = null;
       }
       if (extraAutoCheckEnabled) {
-        extraAutoCheckTimer = setInterval(runAutoCheck, EXTRA_CHECK_INTERVAL);
+        extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+        extraAutoCheckTimer = setInterval(async () => {
+          await runAutoCheck(activeExtraTerminal);
+        }, getExtraEffectiveCheckInterval());
+      } else {
+        extraNextCheckAt = null;
       }
+      restartExtraCountdownTimer();
       updateAutoCheckUI();
       saveExtra();
     }
@@ -8258,12 +8571,11 @@ async function runAutoCheck(terminalKey = activeExtraTerminal) {
 
   if (typeof saveExtra === "function") saveExtra();
   if (typeof renderExtra === "function") renderExtra();
-  if (extraAutoStatus) {
-    const terminalLabel = EXTRA_TERMINALS?.[terminalToCheck]?.label || terminalToCheck.toUpperCase();
-    extraAutoStatus.textContent = extraAutoCheckEnabled
-      ? `Ultimo controllo ${terminalLabel}: ${new Date().toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" })} · prossimo automatico entro 5 minuti.`
-      : `Ultimo controllo manuale ${terminalLabel}: ${new Date().toLocaleTimeString("it-IT", { hour:"2-digit", minute:"2-digit" })}`;
+  extraLastCheckAt = Date.now();
+  if (extraAutoCheckEnabled) {
+    extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
   }
+  if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 
   console.log("Check completato", terminalToCheck, new Date().toLocaleTimeString());
 }
@@ -10882,6 +11194,24 @@ const id = getClientId();
     timer = setInterval(runCheck, m * 60 * 1000);
   }
 
+  function syncVisibleAutoWithInfo(on){
+    try {
+      if (typeof extraAutoCheckEnabled !== "undefined") extraAutoCheckEnabled = !!on;
+      if (typeof extraNextCheckAt !== "undefined") {
+        extraNextCheckAt = on ? Date.now() + (minutes() * 60 * 1000) : null;
+      }
+      const hiddenToggle = document.getElementById("extraAutoCheckToggle");
+      if (hiddenToggle) hiddenToggle.checked = !!on;
+      const hiddenLabel = document.getElementById("extraAutoCheckLabel");
+      if (hiddenLabel) hiddenLabel.textContent = on ? "ON" : "OFF";
+      if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
+      if (typeof saveExtraLocalOnly === "function") saveExtraLocalOnly();
+      if (typeof scheduleSharedMetaSave === "function") scheduleSharedMetaSave();
+    } catch (err) {
+      console.warn("Aggiornamento stato auto contenitori non riuscito", err);
+    }
+  }
+
   function setOn(on, now){
     const btn = document.getElementById("extraAutoSingleButton");
     const label = document.getElementById("extraAutoSingleState");
@@ -10894,6 +11224,8 @@ const id = getClientId();
     }
 
     if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
+
+    syncVisibleAutoWithInfo(on);
 
     if (on) start(now);
     else stop();
@@ -10936,7 +11268,12 @@ const id = getClientId();
     input.onclick = function(e){ e.stopPropagation(); };
     input.onchange = function(){
       minutes();
-      if (btn.classList.contains("is-on")) start(false);
+      if (btn.classList.contains("is-on")) {
+        syncVisibleAutoWithInfo(true);
+        start(false);
+      } else {
+        syncVisibleAutoWithInfo(false);
+      }
     };
     input.oninput = function(){
       localStorage.setItem(MIN_KEY, String(input.value || 5));
@@ -11522,6 +11859,196 @@ const id = getClientId();
   } else {
     initDoganaTableMinimize();
   }
+})();
+</script>
+
+
+
+<style id="extra-toolbar-safe-order-style">
+/* === FIX SICURO TOOLBAR CONTENITORI: Backend, Auto, Suono, Controlla, Riduci === */
+.extraPanel .extraTopToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+}
+
+.extraPanel #extraLiveBadge.backendStatusBadge,
+#extraLiveBadge.backendStatusBadge{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  height:36px !important;
+  min-height:36px !important;
+  padding:8px 12px !important;
+  border-radius:12px !important;
+  border:1px solid var(--btn-border) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  color:var(--text) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9), 0 3px 10px rgba(15,23,42,.03) !important;
+  order:10 !important;
+}
+
+.extraPanel #extraLiveBadge.backendStatusBadge *,
+#extraLiveBadge.backendStatusBadge *{
+  display:inline-flex !important;
+}
+
+.extraPanel #extraLiveBadge.backendStatusBadge .backendStatusDot,
+#extraLiveBadge.backendStatusBadge .backendStatusDot{
+  width:9px !important;
+  height:9px !important;
+  border-radius:999px !important;
+  flex:0 0 auto !important;
+}
+
+.extraPanel .extraTopToolbar #extraAutoSingleButton{ order:20 !important; }
+.extraPanel .extraTopToolbar #extraSoundNotifyBtn{ order:30 !important; }
+.extraPanel .extraTopToolbar #extraCheckNowBtn{ order:40 !important; }
+.extraPanel .extraTopToolbar #minimizeExtraBtn{ order:50 !important; }
+
+.extraPanel .extraTopToolbar #extraAutoSingleButton,
+.extraPanel .extraTopToolbar #extraSoundNotifyBtn,
+.extraPanel .extraTopToolbar #extraCheckNowBtn,
+.extraPanel .extraTopToolbar #minimizeExtraBtn{
+  flex:0 0 auto !important;
+}
+
+
+/* === PREVISIONE NAVI: titolo sinistra, terminal centrati, azioni destra === */
+.shipPanel .toolbar.shipToolbar{
+  display:grid !important;
+  grid-template-columns:minmax(180px, 1fr) auto minmax(180px, 1fr) !important;
+  align-items:center !important;
+  gap:12px !important;
+  flex-wrap:unset !important;
+}
+
+.shipPanel .shipToolbarTitle{
+  justify-self:start !important;
+  grid-column:1 !important;
+  margin:0 !important;
+}
+
+.shipPanel .shipToolbarTitle h2{
+  margin:0 !important;
+}
+
+.shipPanel .toolbar.shipToolbar > .shipTabs{
+  grid-column:2 !important;
+  justify-self:center !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:auto !important;
+  max-width:100% !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  flex:none !important;
+}
+
+.shipPanel .shipToolbarActions{
+  grid-column:3 !important;
+  justify-self:end !important;
+  margin-left:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+
+@media (max-width:900px){
+  .shipPanel .toolbar.shipToolbar{
+    grid-template-columns:1fr !important;
+    justify-items:stretch !important;
+  }
+
+  .shipPanel .shipToolbarTitle,
+  .shipPanel .toolbar.shipToolbar > .shipTabs,
+  .shipPanel .shipToolbarActions{
+    grid-column:1 !important;
+    justify-self:stretch !important;
+  }
+
+  .shipPanel .toolbar.shipToolbar > .shipTabs{
+    justify-content:center !important;
+  }
+
+  .shipPanel .shipToolbarActions{
+    justify-content:flex-start !important;
+  }
+}
+</style>
+
+<script id="extra-toolbar-safe-order-script">
+(function(){
+  function panel(){
+    return document.getElementById("extraPanel") || document.querySelector(".extraPanel");
+  }
+
+  function toolbar(){
+    const p = panel();
+    if (!p) return null;
+    return p.querySelector(".extraTopToolbar") || p.querySelector(".miniHead .miniToolbar") || p.querySelector(".extraHead .miniToolbar") || p.querySelector(".miniToolbar");
+  }
+
+  function ensureBackendBadge(tb){
+    let badge = document.getElementById("extraLiveBadge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.id = "extraLiveBadge";
+      badge.className = "extraLiveBadge backendStatusBadge backend-checking";
+      badge.setAttribute("role", "status");
+      badge.setAttribute("aria-live", "polite");
+      badge.innerHTML = '<span class="extraLiveDot backendStatusDot" aria-hidden="true"></span><span id="extraBackendStatusText">Backend...</span>';
+    }
+    badge.classList.add("backendStatusBadge");
+    return badge;
+  }
+
+  function reorderExtraToolbar(){
+    const tb = toolbar();
+    if (!tb) return;
+    tb.classList.add("extraTopToolbar");
+
+    const backend = ensureBackendBadge(tb);
+    const auto = document.getElementById("extraAutoSingleButton") || panel()?.querySelector(".extraAutoSingleButton");
+    const sound = document.getElementById("extraSoundNotifyBtn");
+    const check = document.getElementById("extraCheckNowBtn");
+    const minimize = document.getElementById("minimizeExtraBtn");
+    const ordered = [backend, auto, sound, check, minimize].filter(Boolean);
+
+    // Inserisce i cinque elementi richiesti all'inizio della toolbar, nell'ordine corretto,
+    // senza toccare i pulsanti inferiori e senza osservatori continui che possano rompere il modulo.
+    let anchor = tb.firstChild;
+    for (const el of ordered) {
+      if (el.parentElement !== tb) tb.appendChild(el);
+      if (el !== anchor) tb.insertBefore(el, anchor);
+      anchor = el.nextSibling;
+    }
+  }
+
+  function start(){
+    reorderExtraToolbar();
+    setTimeout(reorderExtraToolbar, 120);
+    setTimeout(reorderExtraToolbar, 500);
+    setTimeout(reorderExtraToolbar, 1200);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+  else start();
+
+  window.reorderExtraToolbar = reorderExtraToolbar;
 })();
 </script>
 
