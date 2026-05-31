@@ -3627,6 +3627,20 @@ function getPublicPdfUrl(container){
   return apiUrl(`/api/download-cached-pdf?container=${encodeURIComponent(code)}`);
 }
 
+function normalizeJmtPdfUrl(url){
+  let clean = String(url || "").trim().replace(/\\/g, "/");
+  if (!clean) return "";
+
+  // Alcune risposte JMT possono arrivare come percorso relativo.
+  if (clean.startsWith("/downloads/")) {
+    clean = "https://jmt.salernocontainerterminal.com" + clean;
+  } else if (clean.startsWith("downloads/")) {
+    clean = "https://jmt.salernocontainerterminal.com/" + clean;
+  }
+
+  return clean;
+}
+
 function apiUrl(path){
   const cleanPath = String(path || "");
   const normalizedPath = cleanPath.startsWith("/") ? cleanPath : "/" + cleanPath;
@@ -6625,7 +6639,7 @@ document.addEventListener("DOMContentLoaded", () => {
       td.textContent = "";
 
       if (activeExtraTerminal === "sct" && row.sctPdfUrl) {
-        const pdfUrl = String(row.sctPdfUrl || "").replace(/\\/g, "/");
+        const pdfUrl = normalizeJmtPdfUrl(row.sctPdfUrl || "");
         const link = document.createElement("a");
         link.href = pdfUrl;
         link.target = "_blank";
@@ -7190,13 +7204,17 @@ async function checkContainerSCT(container) {
     }
 
     if (data?.success && data?.pdfUrl) {
+      const directPdfUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
       return {
         success: true,
         found: true,
-        // Non esporre il link interno JMT al browser pubblico:
-        // il download passa sempre dal backend condiviso.
-        pdfUrl: getPublicPdfUrl(container),
-        rawPdfUrl: data.pdfUrl
+
+        // Ora apriamo direttamente il link originale generato da SCT/JMT.
+        pdfUrl: directPdfUrl,
+        rawPdfUrl: directPdfUrl,
+
+        // Fallback mantenuto: link proxy/cache del backend.
+        cachedPdfUrl: getPublicPdfUrl(container)
       };
     }
 
@@ -7231,7 +7249,8 @@ async function ottieniPdf(container) {
         const result = await response.json();
         
         if (result.pdfUrl) {
-            window.open(getPublicPdfUrl(container), '_blank'); // Apre il PDF tramite backend condiviso
+            const directPdfUrl = normalizeJmtPdfUrl(result.jmtPdfUrl || result.pdfUrl);
+            window.open(directPdfUrl || getPublicPdfUrl(container), '_blank');
         } else {
             alert("Errore: PDF non trovato.");
         }
@@ -7277,7 +7296,7 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const value = String(status || "").toUpperCase().trim();
 
   if (pdfUrl) {
-    const href = getPublicPdfUrl(container) || pdfUrl;
+    const href = normalizeJmtPdfUrl(pdfUrl) || getPublicPdfUrl(container);
     cell.innerHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
     cell.style.color = "#2563eb";
     return;
@@ -7366,7 +7385,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     liveRow.sct = sctValue;
 
     if (result && result.success && result.pdfUrl) {
-      const pdfUrl = String(result.pdfUrl || "").replace(/\\/g, "/");
+      const pdfUrl = normalizeJmtPdfUrl(result.pdfUrl || result.rawPdfUrl || "");
 
       liveRow.sctStatus = "PDF PRONTO";
       liveRow.sctPdfUrl = pdfUrl;
