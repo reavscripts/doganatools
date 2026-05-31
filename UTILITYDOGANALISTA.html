@@ -825,6 +825,91 @@
       width:100%;
     }
 
+    .calcExtraTools{
+      margin-top:14px;
+      border:1px solid var(--grid-soft);
+      border-radius:16px;
+      background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+      overflow:hidden;
+      box-shadow:0 6px 16px rgba(15,23,42,.04);
+    }
+
+    .calcExtraTools summary{
+      list-style:none;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:13px 14px;
+      cursor:pointer;
+      user-select:none;
+      color:var(--heading);
+      font-weight:900;
+    }
+
+    .calcExtraTools summary::-webkit-details-marker{
+      display:none;
+    }
+
+    .calcExtraTools summary::after{
+      content:"▾";
+      width:30px;
+      height:30px;
+      border-radius:999px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--grid-soft);
+      background:var(--surface);
+      color:var(--muted);
+      transition:transform .18s ease;
+      flex:0 0 auto;
+    }
+
+    .calcExtraTools[open] summary::after{
+      transform:rotate(180deg);
+    }
+
+    .calcExtraToolsTitle{
+      font-size:13px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+    }
+
+    .calcExtraToolsHint{
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      margin-left:auto;
+      text-transform:none;
+      letter-spacing:0;
+    }
+
+    .calcExtraToolsGrid{
+      margin:0;
+      padding:14px;
+      border-top:1px solid var(--grid-soft);
+    }
+
+    .calcExtraToolsGrid .calcPanel{
+      box-shadow:none;
+      border-radius:14px;
+    }
+
+    @media (max-width:700px){
+      .calcExtraTools summary{
+        align-items:flex-start;
+        flex-direction:column;
+      }
+      .calcExtraToolsHint{
+        margin-left:0;
+      }
+      .calcExtraTools summary::after{
+        position:absolute;
+        right:28px;
+      }
+    }
+
     .ownerClientCol{
       min-width:160px;
     }
@@ -4583,6 +4668,52 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 </div>
 </div>
+<div id="tools-section" class="sectionJumpTarget"></div>
+<details class="calcExtraTools">
+  <summary>
+    <span class="calcExtraToolsTitle">Strumenti aggiuntivi</span>
+    <span class="calcExtraToolsHint">Conversioni unità e rotoli → m²</span>
+  </summary>
+  <div class="utilityGrid calcExtraToolsGrid">
+    <div class="calcPanel">
+      <div class="calcTitle">Conversione automatica unità</div>
+      <div class="calcGrid">
+        <input id="convKg" placeholder="Kg" type="number"/>
+        <div class="calcResult" id="convTon">0 ton</div>
+        <div class="calcResult" id="convLbs">0 lbs</div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="calcGrid">
+        <input id="convEuro" placeholder="Valore €" type="number"/>
+        <input id="convKg2" placeholder="Peso kg" type="number"/>
+        <div class="calcResult" id="convEuroKg">0 €/kg</div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="calcGrid">
+        <input id="convEuro2" placeholder="Valore €" type="number"/>
+        <input id="convPezzi2" placeholder="Pezzi" type="number"/>
+        <div class="calcResult" id="convEuroPezzo">0 €/pz</div>
+      </div>
+    </div>
+    <div class="calcPanel">
+      <div class="calcTitle">Conversione rotoli → m²</div>
+      <div class="rollPanelGrid">
+        <input id="rollCount" placeholder="Numero rotoli" type="number"/>
+        <input id="rollWidth" placeholder="Larghezza rotolo (m)" step="0.01" type="number"/>
+        <input id="rollLength" placeholder="Lunghezza rotolo (m)" step="0.01" type="number"/>
+        <div class="calcResult" id="rollTotalMq">0,00 m²</div>
+      </div>
+      <div style="height:10px"></div>
+      <div class="rollPanelGrid">
+        <div class="calcResult" id="rollSingleMq">0,00 m² / rotolo</div>
+        <div class="calcResult" id="rollPackingText">Formula: 0 × 0 × 0</div>
+        <button id="rollFillFromCalc" type="button">Invia m² in calcolatrice</button>
+        <button id="rollClearBtn" type="button">Pulisci modulo</button>
+      </div>
+      <div class="rollHelp">Utile per packing list con formati tipo 281 rotoli da 1,5 × 100: inserisci rotoli, larghezza e lunghezza e ottieni i metri quadrati totali.</div>
+    </div>
+  </div>
+</details>
 </div>
 
 <div id="navi-section" class="sectionJumpTarget"></div>
@@ -4779,46 +4910,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
 </div>
-<div id="tools-section" class="sectionJumpTarget"></div>
-<div class="utilityGrid">
-<div class="calcPanel">
-<div class="calcTitle">Conversione automatica unità</div>
-<div class="calcGrid">
-<input id="convKg" placeholder="Kg" type="number"/>
-<div class="calcResult" id="convTon">0 ton</div>
-<div class="calcResult" id="convLbs">0 lbs</div>
-</div>
-<div style="height:10px"></div>
-<div class="calcGrid">
-<input id="convEuro" placeholder="Valore €" type="number"/>
-<input id="convKg2" placeholder="Peso kg" type="number"/>
-<div class="calcResult" id="convEuroKg">0 €/kg</div>
-</div>
-<div style="height:10px"></div>
-<div class="calcGrid">
-<input id="convEuro2" placeholder="Valore €" type="number"/>
-<input id="convPezzi2" placeholder="Pezzi" type="number"/>
-<div class="calcResult" id="convEuroPezzo">0 €/pz</div>
-</div>
-</div>
-<div class="calcPanel">
-<div class="calcTitle">Conversione rotoli → m²</div>
-<div class="rollPanelGrid">
-<input id="rollCount" placeholder="Numero rotoli" type="number"/>
-<input id="rollWidth" placeholder="Larghezza rotolo (m)" step="0.01" type="number"/>
-<input id="rollLength" placeholder="Lunghezza rotolo (m)" step="0.01" type="number"/>
-<div class="calcResult" id="rollTotalMq">0,00 m²</div>
-</div>
-<div style="height:10px"></div>
-<div class="rollPanelGrid">
-<div class="calcResult" id="rollSingleMq">0,00 m² / rotolo</div>
-<div class="calcResult" id="rollPackingText">Formula: 0 × 0 × 0</div>
-<button id="rollFillFromCalc" type="button">Invia m² in calcolatrice</button>
-<button id="rollClearBtn" type="button">Pulisci modulo</button>
-</div>
-<div class="rollHelp">Utile per packing list con formati tipo 281 rotoli da 1,5 × 100: inserisci rotoli, larghezza e lunghezza e ottieni i metri quadrati totali.</div>
-</div>
-</div>
+
 <section class="serverConsolePanel" id="serverConsolePanel" aria-label="Console server.js">
   <div class="serverConsoleHead">
     <div>
