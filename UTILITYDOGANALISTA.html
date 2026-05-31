@@ -3448,11 +3448,17 @@ background:var(--surface);
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  color:#fff;
-  font-weight:900;
-  letter-spacing:.02em;
-  background:linear-gradient(180deg, #3374f0, #2563eb);
-  box-shadow:0 8px 18px rgba(37,99,235,.18);
+  background:var(--surface);
+  border:1px solid var(--grid-soft);
+  padding:4px;
+  box-shadow:0 8px 18px rgba(37,99,235,.12);
+  flex:0 0 auto;
+}
+.appFooterLogoImg{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:contain;
 }
 .appFooterTitle{
   color:var(--heading);
@@ -3501,6 +3507,55 @@ background:var(--surface);
 @media (max-width:700px){
   .appFooter{ width:100%; align-items:flex-start; }
   .appFooterMeta{ justify-content:flex-start; }
+}
+
+
+/* === STATO BACKEND NEL MODULO CONTENITORI === */
+.extraPanel #extraLiveBadge.backendStatusBadge,
+.extraPanel .backendStatusBadge,
+#extraLiveBadge.backendStatusBadge{
+  height:34px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:7px 11px !important;
+  border-radius:999px !important;
+  border:1px solid var(--grid-soft) !important;
+  background:var(--surface) !important;
+  color:var(--muted) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+}
+
+.extraPanel #extraLiveBadge.backendStatusBadge *,
+#extraLiveBadge.backendStatusBadge *{
+  display:inline-flex !important;
+}
+
+.backendStatusDot,
+.extraPanel #extraLiveBadge .backendStatusDot{
+  width:10px !important;
+  height:10px !important;
+  border-radius:999px !important;
+  background:var(--backend-status-color, #f59e0b) !important;
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--backend-status-color, #f59e0b) 18%, transparent) !important;
+  flex:0 0 auto !important;
+}
+
+.backendStatusBadge.backend-ok{
+  --backend-status-color:#16a34a;
+}
+
+.backendStatusBadge.backend-warn,
+.backendStatusBadge.backend-checking{
+  --backend-status-color:#f59e0b;
+}
+
+.backendStatusBadge.backend-offline{
+  --backend-status-color:#dc2626;
 }
 
 </style>
@@ -3834,13 +3889,12 @@ if (window.pdfjsLib) {
   function addSettingsButton(){
     createSettings();
 
+    // Il pulsante Impostazioni non deve essere inserito nei moduli operativi
+    // (Tabella, Navi, Container). L'apertura resta disponibile dal menu superiore.
+    if (document.getElementById("doganaMenuSettingsBtn")) return;
     if (document.getElementById("doganaSettingsButton")) return;
 
-    const target =
-      Array.from(document.querySelectorAll("header .right, .headerRight, .toolbar .right, .toolbar"))
-        .find(el => !el.closest("#shipPanel")) ||
-      document.querySelector(".appQuickNav") ||
-      document.body;
+    const target = document.querySelector(".appQuickNav") || document.body;
 
     const btn = document.createElement("button");
     btn.id = "doganaSettingsButton";
@@ -4411,21 +4465,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <section class="panel sectionJumpTarget" id="dogana-section">
 <div class="doganaTableModuleCard">
-  <div class="titleBar doganaTableTitleBar">
-    <div class="titleField">
-      <label class="titleLabel" for="pdfTitleInput">Titolo tabella / titolo PDF</label>
-      <input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list export Canada - merce alimentare" type="text"/>
-      <div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
+  <div class="toolbar doganaTableTopToolbar">
+    <div class="left doganaTopButtons">
+      <button id="mergeBtn">Unisci stessa descrizione</button>
+      <button id="sortValueBtn">Ordina per valore fattura ↓</button>
+      <button id="copyColumnBtn">Copia colonna</button>	  
+      <button id="exportPdfBtn">Esporta PDF</button>
+      <button id="exportExcelBtn">Esporta Excel</button>
     </div>
   </div>
 
-  <div class="toolbar doganaTableTopToolbar">
-    <div class="left doganaTopButtons">
-      <button id="mergeBtn">Unisci stessa descrizione / TARIC</button>
-      <button id="sortValueBtn">Ordina per valore fattura ↓</button>
-      <button id="exportPdfBtn">Esporta PDF tabella</button>
-      <button id="copyColumnBtn">Copia colonna</button>
-      <button id="exportExcelBtn">Esporta Excel</button>
+  <div class="titleBar doganaTableTitleBar">
+    <div class="titleField">
+      <label class="titleLabel" for="pdfTitleInput">Titolo</label>
+      <input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list" type="text"/>
+      <div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
     </div>
   </div>
 
@@ -4540,7 +4594,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   <div class="shipQuickSearch" id="shipQuickSearch">
-    <input id="shipSearchInput" type="search" placeholder="Cerca nave su SCT, CONATECO e TFG anche se non è in chiusura..." autocomplete="off" />
+    <input id="shipSearchInput" type="search" placeholder="Ricerca Navi Globale..." autocomplete="off" />
     <button id="shipSearchBtn" type="button">Cerca</button>
     <button id="shipSearchClearBtn" type="button">Pulisci ricerca</button>
     <span class="shipQuickSearchStatus" id="shipSearchStatus">Ricerca su tutte le navi disponibili</span>
@@ -4770,14 +4824,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </section>
 <footer class="appFooter" aria-label="Footer Utility Doganalista">
   <div class="appFooterBrand">
-    <span class="appFooterLogo">UD</span>
+    <span class="appFooterLogo" aria-hidden="true"><img class="appFooterLogoImg" src="./img/logo.svg" alt="" loading="eager" decoding="async" /></span>
     <div>
       <div class="appFooterTitle">DoganaTools</div>
       <div class="appFooterSub">Utility operativa doganale</div>
     </div>
   </div>
   <div class="appFooterMeta">
-    <span class="appFooterPill"><span class="appFooterDot"></span> Righe tabella: <strong id="rowCount">0</strong></span>
     <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
     <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
@@ -5267,7 +5320,7 @@ document.addEventListener("DOMContentLoaded", () => {
       totalNetEl.textContent = formatIT(sumNet);
       if(totalMqEl) totalMqEl.textContent = formatIT(sumMq);
       totalValueEl.textContent = formatIT(sumValue);
-      rowCountEl.textContent = String(rows.length);
+      if (rowCountEl) rowCountEl.textContent = String(rows.length);
     }
 
     function focusCell(rowIndex, field) {
@@ -5313,7 +5366,7 @@ document.addEventListener("DOMContentLoaded", () => {
         tr.appendChild(tdIndex);
 
         const { td: tdDesc, input: inpDesc } = makeCellInput({
-          placeholder: "es. TARIC 9401.61.60 / Articolo...",
+          placeholder: "Descrizione articolo...",
           value: r.desc,
           dataset: { row: idx, field: "desc" }
         });
@@ -9935,7 +9988,7 @@ const id = getClientId();
 
     const p = panel();
     if (p) {
-      p.querySelectorAll(".doganaSessionChip, .extraLiveBadge").forEach(el => el.remove());
+      p.querySelectorAll(".doganaSessionChip").forEach(el => el.remove());
       p.querySelectorAll(".extraAutoStatus").forEach(el => el.style.display = "none");
       p.querySelectorAll(".autoCheckSwitch").forEach(el => el.style.display = "none");
     }
@@ -9989,7 +10042,7 @@ const id = getClientId();
     const panel = document.querySelector(".extraPanel") || document.getElementById("extraPanel");
     if (!panel) return;
 
-    panel.querySelectorAll(".doganaSessionChip, .extraLiveBadge, .extraLiveDot, [data-session]").forEach(el => el.remove());
+    panel.querySelectorAll(".doganaSessionChip, [data-session]").forEach(el => el.remove());
 
     Array.from(panel.querySelectorAll("span, div, button")).forEach(el => {
       const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
@@ -10105,6 +10158,120 @@ const id = getClientId();
   window.addEventListener("beforeunload", function(){
     try { source && source.close(); } catch {}
   });
+})();
+</script>
+
+<script>
+/* === STATO BACKEND NEL BADGE CONTENITORI NON ENTRATI === */
+(function(){
+  const CHECK_INTERVAL_MS = 30000;
+  const TIMEOUT_MS = 6000;
+  let timer = null;
+
+  function findPanel(){
+    return document.querySelector(".extraPanel") || document.getElementById("extraPanel");
+  }
+
+  function findToolbar(){
+    const panel = findPanel();
+    if (!panel) return null;
+    return (
+      panel.querySelector(".extraTopToolbar") ||
+      panel.querySelector(".miniToolbar") ||
+      panel.querySelector(".extraBottomToolbar")
+    );
+  }
+
+  function ensureBadge(){
+    const toolbar = findToolbar();
+    if (!toolbar) return null;
+
+    let badge = document.getElementById("extraLiveBadge");
+    if (!badge) {
+      badge = document.createElement("span");
+      badge.id = "extraLiveBadge";
+      toolbar.insertBefore(badge, toolbar.firstChild);
+    } else if (badge.parentElement !== toolbar) {
+      toolbar.insertBefore(badge, toolbar.firstChild);
+    }
+
+    badge.className = "extraLiveBadge backendStatusBadge backend-checking";
+    badge.removeAttribute("style");
+    badge.setAttribute("role", "status");
+    badge.setAttribute("aria-live", "polite");
+
+    if (!badge.querySelector(".backendStatusDot") || !badge.querySelector("#extraBackendStatusText")) {
+      badge.innerHTML = '<span class="extraLiveDot backendStatusDot" aria-hidden="true"></span><span id="extraBackendStatusText">Backend...</span>';
+    }
+
+    return badge;
+  }
+
+  function setBackendStatus(status, label, title){
+    const badge = ensureBadge();
+    if (!badge) return;
+
+    badge.classList.remove("backend-ok", "backend-warn", "backend-offline", "backend-checking");
+    badge.classList.add("backend-" + status);
+
+    const text = badge.querySelector("#extraBackendStatusText");
+    if (text) text.textContent = label;
+
+    badge.title = title || label;
+  }
+
+  async function checkBackend(){
+    setBackendStatus("checking", "Backend...", "Controllo collegamento backend in corso");
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+
+    try {
+      const url = typeof apiUrl === "function" ? apiUrl("/api/status") : "/api/status";
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+
+      if (!response.ok) {
+        setBackendStatus("offline", "Backend OFF", "Backend scollegato o risposta HTTP " + response.status);
+        return;
+      }
+
+      let data = null;
+      try { data = await response.clone().json(); } catch {}
+
+      const statusText = String(data?.status || data?.backend || "").toLowerCase();
+      const isOk = data?.success === true || statusText === "ok";
+
+      if (isOk) {
+        setBackendStatus("ok", "Backend OK", "Backend collegato e funzionante");
+      } else {
+        setBackendStatus("warn", "Backend ?", "Backend raggiungibile, ma risposta non confermata");
+      }
+    } catch (err) {
+      clearTimeout(timeout);
+      setBackendStatus("offline", "Backend OFF", "Backend scollegato: " + (err?.message || "errore di connessione"));
+    }
+  }
+
+  function start(){
+    ensureBadge();
+    checkBackend();
+    if (timer) clearInterval(timer);
+    timer = setInterval(checkBackend, CHECK_INTERVAL_MS);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
+
+  window.doganaCheckBackendStatus = checkBackend;
 })();
 </script>
 
