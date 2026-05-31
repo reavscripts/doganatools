@@ -1966,37 +1966,6 @@ body{
   box-shadow:var(--shadow-soft);
 }
 
-body.compact-mode .calcPanel,
-body.compact-mode .miniPanel,
-body.compact-mode .shipGrid,
-body.compact-mode .utilityGrid{
-  margin-top:10px !important;
-  margin-bottom:10px !important;
-}
-
-body.compact-mode .toolbar,
-body.compact-mode .shipCardHead,
-body.compact-mode .extraPanel .miniHead{
-  padding-top:10px !important;
-  padding-bottom:10px !important;
-}
-
-body.compact-mode input,
-body.compact-mode button{
-  padding-top:8px;
-  padding-bottom:8px;
-}
-
-body.compact-mode .shipTable td,
-body.compact-mode .shipTable th,
-body.compact-mode .miniTable th,
-body.compact-mode #extraTable .sct-status,
-body.compact-mode #extraTable .conateco-status,
-body.compact-mode #extraTable .flavio-status{
-  padding-top:8px;
-  padding-bottom:8px;
-}
-
 .apiConfigPanel.is-collapsed .apiConfigHint,
 .apiConfigPanel.is-collapsed input,
 .apiConfigPanel.is-collapsed #saveApiBaseBtn,
@@ -2016,6 +1985,15 @@ body.compact-mode #extraTable .flavio-status{
 .sectionJumpTarget{
   scroll-margin-top:92px;
 }
+
+#extraPanel{
+  scroll-margin-top:112px;
+}
+
+@media (max-width:800px){
+  #extraPanel{ scroll-margin-top:132px; }
+}
+
 
 .floatingBackTop{
   position:fixed;
@@ -2180,9 +2158,1353 @@ textarea:focus-visible{
   padding-top:14px !important;
 }
 
+
+
+/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
+.topSettingsButton{
+  min-width:116px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+
+.doganaSettingsBackdrop{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background:rgba(15,23,42,.34);
+  backdrop-filter:blur(4px);
+  display:none;
+}
+
+.doganaSettingsBackdrop.show{ display:block; }
+
+.doganaSettingsPanel{
+  position:fixed;
+  top:22px;
+  right:22px;
+  z-index:9999;
+  width:min(420px, calc(100vw - 32px));
+  border:1px solid var(--grid-soft);
+  border-radius:22px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  display:none;
+}
+
+.doganaSettingsPanel.show{ display:block; }
+
+.doganaSettingsHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--grid-soft);
+}
+
+.doganaSettingsTitle{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.doganaSettingsTitle strong{
+  color:var(--heading);
+  font-size:15px;
+}
+
+.doganaSettingsTitle span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.doganaSettingsBody{
+  padding:16px 18px 18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.doganaSettingCard{
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+  border-radius:16px;
+  padding:13px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.doganaSettingInfo{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
+.doganaSettingInfo strong{
+  color:var(--heading);
+  font-size:13px;
+}
+
+.doganaSettingInfo span{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+}
+
+.doganaSessionChip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  color:var(--text);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.doganaSessionColor{
+  width:14px;
+  height:14px;
+  border-radius:999px;
+  background:var(--session-color, #2563eb);
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--session-color, #2563eb) 18%, transparent);
+}
+
+.doganaCompactActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.doganaCompactActions button,
+.extraTopToolbar button,
+.extraBottomToolbar button,
+.shipToolbarActions button{
+  min-width:112px;
+  justify-content:center;
+}
+
+#extraTable input.extraCellLockedByOther,
+#extraTable input.extraCellLockedByMe{
+  border:2px solid var(--lock-color, #2563eb) !important;
+  border-radius:10px !important;
+  box-shadow:none !important;
+  background:var(--surface) !important;
+}
+
+#extraTable input.extraCellLockedByOther{
+  outline:3px solid color-mix(in srgb, var(--lock-color, #2563eb) 18%, transparent) !important;
+}
+
+#extraTable input.extraCellLockedByMe{
+  outline:3px solid color-mix(in srgb, var(--lock-color, #16a34a) 16%, transparent) !important;
+}
+
+.extraLockHint{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:9999;
+  max-width:360px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+  color:var(--text);
+  box-shadow:var(--shadow);
+  font-size:13px;
+  display:none;
+}
+
+.extraLockHint.show{ display:block; }
+
+.extraLiveBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 11px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+}
+
+.extraLiveDot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:var(--session-color, var(--accent-2));
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--session-color, var(--accent-2)) 16%, transparent);
+}
+
+@media (max-width:700px){
+  .doganaSettingsPanel{
+    top:12px;
+    right:12px;
+    width:calc(100vw - 24px);
+  }
+  .doganaSettingCard{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .doganaCompactActions button,
+  .extraTopToolbar button,
+  .extraBottomToolbar button,
+  .shipToolbarActions button{
+    min-width:calc(50% - 6px);
+    flex:1 1 calc(50% - 6px);
+  }
+}
+
+
+/* === PULIZIA TEMA + TOOLBAR COMPATTE === */
+/* Il cambio tema ora sta nel pannello Impostazioni */
+.themeToggle,
+#themeToggleBtn,
+.themeSwitch,
+.themeToggleLabel{
+  display:none !important;
+}
+
+/* Toolbar più professionali e compatte quando ci sono molti pulsanti */
+.toolbar .right,
+.toolbar .left,
+.headerRight,
+.extraTopToolbar,
+.extraBottomToolbar,
+.shipToolbarActions,
+.miniToolbar{
+  gap:7px !important;
+}
+
+.extraTopToolbar,
+.extraBottomToolbar,
+.shipToolbarActions,
+.miniToolbar,
+.doganaCompactActions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:wrap !important;
+}
+
+.extraTopToolbar button,
+.extraBottomToolbar button,
+.shipToolbarActions button,
+.miniToolbar button,
+.toolbar button,
+.headerRight button{
+  min-width:auto !important;
+  width:auto !important;
+  flex:0 1 auto !important;
+  padding:9px 11px !important;
+  font-size:12px !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+
+#doganaSettingsButton{
+  min-width:118px !important;
+  padding:9px 12px !important;
+}
+
+.extraLiveBadge{
+  padding:7px 10px !important;
+  flex:0 0 auto !important;
+}
+
+/* Quando lo spazio è stretto, i pulsanti si stringono ma restano leggibili */
+@media (max-width:1100px){
+  .extraTopToolbar button,
+  .extraBottomToolbar button,
+  .shipToolbarActions button,
+  .miniToolbar button,
+  .toolbar button,
+  .headerRight button{
+    max-width:150px !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+}
+
+@media (max-width:700px){
+  .extraTopToolbar,
+  .extraBottomToolbar,
+  .shipToolbarActions,
+  .miniToolbar{
+    justify-content:flex-start !important;
+  }
+
+  .extraTopToolbar button,
+  .extraBottomToolbar button,
+  .shipToolbarActions button,
+  .miniToolbar button,
+  .toolbar button,
+  .headerRight button{
+    min-width:0 !important;
+    flex:1 1 calc(50% - 8px) !important;
+    max-width:none !important;
+    padding:10px 9px !important;
+  }
+
+  #doganaSettingsButton{
+    flex:1 1 100% !important;
+  }
+
+  .extraLiveBadge{
+    flex:1 1 100% !important;
+    justify-content:center !important;
+  }
+}
+
+
+/* === REALTIME LOCK: contorno cella immediato e ben visibile === */
+#extraTable input.extraCellLockedByOther,
+#extraTable input.extraCellLockedByMe{
+  border:2px solid var(--lock-color, #2563eb) !important;
+  outline:3px solid color-mix(in srgb, var(--lock-color, #2563eb) 22%, transparent) !important;
+  outline-offset:-2px !important;
+  background:var(--surface) !important;
+  transition:border-color .08s linear, outline-color .08s linear !important;
+}
+
+#extraTable input.extraCellLockedByOther{
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--lock-color, #2563eb) 32%, transparent) inset !important;
+}
+
+#extraTable input.extraCellLockedByMe{
+  box-shadow:0 0 0 1px color-mix(in srgb, var(--lock-color, #16a34a) 28%, transparent) inset !important;
+}
+
+
+/* === LOCK CELLA FISSO E VISIBILE SU TUTTE LE SESSIONI === */
+#extraTable td.extraCellLockedByOtherTd,
+#extraTable td.extraCellLockedByMeTd{
+  position:relative !important;
+  overflow:visible !important;
+}
+
+#extraTable td.extraCellLockedByOtherTd::after,
+#extraTable td.extraCellLockedByMeTd::after{
+  content:"";
+  position:absolute;
+  inset:2px;
+  border:3px solid var(--lock-color, #2563eb);
+  border-radius:11px;
+  pointer-events:none;
+  z-index:20;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--lock-color, #2563eb) 20%, transparent);
+}
+
+#extraTable input.extraCellLockedByOther,
+#extraTable input.extraCellLockedByMe{
+  border:2px solid var(--lock-color, #2563eb) !important;
+  outline:none !important;
+  background:var(--surface) !important;
+  transition:none !important;
+}
+
+#extraTable input.extraCellLockedByOther:focus,
+#extraTable input.extraCellLockedByMe:focus{
+  border-color:var(--lock-color, #2563eb) !important;
+  box-shadow:none !important;
+}
+
+
+/* === LOCK MULTIUTENTE STILE GOOGLE SHEETS - PULITO / NO BLINK === */
+#extraTable td.extraCellLockedByOtherTd,
+#extraTable td.extraCellLockedByMeTd{
+  position:relative !important;
+  overflow:visible !important;
+  background:var(--surface) !important;
+}
+
+/* disattiva tutti i vecchi pseudo-contorni brutti */
+#extraTable td.extraCellLockedByOtherTd::after,
+#extraTable td.extraCellLockedByMeTd::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* cella in modifica: bordo pulito, fisso, senza animazioni */
+#extraTable input.extraCellLockedByOther,
+#extraTable input.extraCellLockedByMe{
+  border:2px solid var(--lock-color, #1a73e8) !important;
+  border-radius:6px !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background:var(--surface) !important;
+  transition:none !important;
+}
+
+/* stile focus: resta identico, niente lampeggio */
+#extraTable input.extraCellLockedByOther:focus,
+#extraTable input.extraCellLockedByMe:focus{
+  border-color:var(--lock-color, #1a73e8) !important;
+  outline:none !important;
+  box-shadow:none !important;
+}
+
+/* etichetta tipo Google Sheets sopra la cella */
+#extraTable td.extraCellLockedByOtherTd::before,
+#extraTable td.extraCellLockedByMeTd::before{
+  content:attr(data-lock-name);
+  position:absolute;
+  right:5px;
+  top:-18px;
+  z-index:40;
+  height:18px;
+  max-width:120px;
+  padding:2px 7px;
+  border-radius:6px 6px 0 0;
+  background:var(--lock-color, #1a73e8);
+  color:#fff;
+  font-size:10px;
+  line-height:14px;
+  font-weight:800;
+  letter-spacing:.01em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:none;
+  box-shadow:none !important;
+}
+
+/* chi sta modificando vede una label più discreta */
+#extraTable td.extraCellLockedByMeTd::before{
+  content:"Tu";
+}
+
+/* su mobile la label è più piccola */
+@media (max-width:700px){
+  #extraTable td.extraCellLockedByOtherTd::before,
+  #extraTable td.extraCellLockedByMeTd::before{
+    top:-17px;
+    height:17px;
+    max-width:88px;
+    padding:2px 6px;
+    font-size:9px;
+  }
+}
+
+
+/* === MULTIUTENTE: niente colori/outline, solo blocco cella === */
+#extraTable td.extraCellLockedByOtherTd,
+#extraTable td.extraCellLockedByMeTd{
+  position:static !important;
+  overflow:hidden !important;
+}
+
+#extraTable td.extraCellLockedByOtherTd::before,
+#extraTable td.extraCellLockedByMeTd::before,
+#extraTable td.extraCellLockedByOtherTd::after,
+#extraTable td.extraCellLockedByMeTd::after{
+  content:none !important;
+  display:none !important;
+}
+
+#extraTable input.extraCellLockedByOther,
+#extraTable input.extraCellLockedByMe{
+  border:0 !important;
+  outline:none !important;
+  box-shadow:none !important;
+  background:var(--input-bg) !important;
+}
+
+#extraTable input.extraCellLockedByOther:focus,
+#extraTable input.extraCellLockedByMe:focus{
+  border:0 !important;
+  outline:none !important;
+  box-shadow:inset 0 0 0 1px rgba(37,99,235,.18) !important;
+}
+
+/* Campo bloccato: si capisce dal cursore e dal title, non da colori */
+#extraTable input.extraCellLockedByOther{
+  cursor:not-allowed !important;
+}
+
+
+/* === FIX MODULO CONTENITORI - LAYOUT PULITO BACKUP === */
+.extraPanel{
+  border-radius:20px !important;
+  overflow:hidden !important;
+}
+
+.extraPanel .miniHead,
+.extraPanel .extraHead{
+  display:grid !important;
+  grid-template-columns:minmax(220px, 1fr) auto !important;
+  align-items:start !important;
+  gap:14px !important;
+  padding:16px !important;
+}
+
+.extraPanel .miniTitle{
+  font-size:15px !important;
+  letter-spacing:.07em !important;
+  line-height:1.2 !important;
+}
+
+.extraPanel .extraSubtitle{
+  margin-top:5px !important;
+  font-size:12px !important;
+  line-height:1.35 !important;
+}
+
+.extraPanel .miniToolbar,
+.extraPanel .extraTopToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  max-width:100% !important;
+}
+
+.extraPanel .extraBottomToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex-wrap:wrap !important;
+  gap:8px !important;
+  padding:12px 16px 16px !important;
+  border-top:1px solid var(--grid-soft) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.extraPanel .extraBottomToolbar::before{
+  content:"";
+  flex:1 1 auto;
+}
+
+.extraPanel .miniToolbar button,
+.extraPanel .extraTopToolbar button,
+.extraPanel .extraBottomToolbar button{
+  min-width:auto !important;
+  width:auto !important;
+  height:34px !important;
+  padding:8px 13px !important;
+  border-radius:11px !important;
+  font-size:12px !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+}
+
+.extraPanel .miniToolbar .primary,
+.extraPanel .extraTopToolbar .primary,
+.extraPanel .extraBottomToolbar .primary{
+  padding-left:14px !important;
+  padding-right:14px !important;
+}
+
+.extraPanel .miniToolbar .success,
+.extraPanel .extraTopToolbar .success,
+.extraPanel .extraBottomToolbar .success,
+.extraPanel .miniToolbar .danger,
+.extraPanel .extraTopToolbar .danger,
+.extraPanel .extraBottomToolbar .danger{
+  padding-left:14px !important;
+  padding-right:14px !important;
+}
+
+.extraPanel .autoCheckSwitch{
+  height:34px !important;
+  padding:5px 10px !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+}
+
+.extraPanel .autoCheckSlider{
+  width:40px !important;
+  height:22px !important;
+}
+
+.extraPanel .autoCheckSlider::after{
+  width:16px !important;
+  height:16px !important;
+}
+
+.extraPanel .autoCheckSwitch input:checked + .autoCheckSlider::after{
+  transform:translateX(18px) !important;
+}
+
+.extraPanel .autoCheckText{
+  font-size:12px !important;
+}
+
+.extraPanel .extraAutoStatus,
+.extraPanel #extraLiveBadge,
+.extraPanel .extraLiveBadge{
+  height:34px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  padding:7px 11px !important;
+  border-radius:999px !important;
+  border:1px solid var(--grid-soft) !important;
+  background:var(--surface) !important;
+  color:var(--muted) !important;
+  font-size:12px !important;
+  font-weight:800 !important;
+  white-space:nowrap !important;
+  flex:0 0 auto !important;
+}
+
+.extraPanel .extraTabs{
+  padding:10px 16px 14px !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+
+.extraPanel .extraTab{
+  height:42px !important;
+  min-width:92px !important;
+  padding:9px 13px !important;
+  border-radius:999px !important;
+}
+
+.extraPanel .miniWrap{
+  padding:12px !important;
+}
+
+#extraTable{
+  border-radius:16px !important;
+  overflow:hidden !important;
+}
+
+#extraTable th{
+  height:40px !important;
+  padding:11px 10px !important;
+}
+
+#extraTable td input{
+  min-height:40px !important;
+  padding:11px 10px !important;
+}
+
+@media (max-width:900px){
+  .extraPanel .miniHead,
+  .extraPanel .extraHead{
+    grid-template-columns:1fr !important;
+  }
+
+  .extraPanel .miniToolbar,
+  .extraPanel .extraTopToolbar,
+  .extraPanel .extraBottomToolbar{
+    justify-content:flex-start !important;
+  }
+
+  .extraPanel .extraBottomToolbar::before{
+    display:none !important;
+  }
+}
+
+
+/* === FIX NO BLINK PULSANTI MODULO CONTENITORI === */
+.extraPanel button,
+.extraPanel .autoCheckSwitch,
+.extraPanel .extraLiveBadge,
+.extraPanel .extraAutoStatus{
+  will-change:auto !important;
+  backface-visibility:hidden;
+}
+
+.extraPanel button:hover{
+  transform:none !important;
+}
+
+.extraPanel .miniToolbar,
+.extraPanel .extraTopToolbar,
+.extraPanel .extraBottomToolbar{
+  contain:layout style !important;
+}
+
+
+/* === MENU DOGANATOOLS: impostazioni + sessione sincronizzazione === */
+.appMenuSettingsBtn,
+.appSessionSync{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:36px;
+  border-radius:999px;
+  white-space:nowrap;
+}
+.appSessionSync{
+  --session-color:var(--accent-2);
+  border-color:color-mix(in srgb, var(--session-color) 34%, var(--btn-border));
+  background:color-mix(in srgb, var(--session-color) 10%, var(--surface));
+  color:var(--heading);
+}
+.appSessionDot{
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background:var(--session-color);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--session-color) 18%, transparent);
+  flex:0 0 auto;
+}
+.appSessionSync.is-syncing{ opacity:.72; pointer-events:none; }
+@media (max-width:700px){
+  .appQuickNav .appMenuSettingsBtn,
+  .appQuickNav .appSessionSync{
+    flex:1 1 calc(50% - 8px);
+  }
+}
+
+
+.doganaBottomToolbar{
+display:flex;
+justify-content:flex-end;
+gap:8px;
+flex-wrap:wrap;
+padding:12px 16px 16px;
+border-top:1px solid var(--grid-soft);
+background:var(--surface);
+}
+.doganaTopButtons{width:100%;justify-content:flex-end;}
+
+
+
+/* === MODULO TABELLA - scheda interna + pulsanti inferiori a destra === */
+.doganaTableTopToolbar{
+  justify-content:flex-end !important;
+  align-items:center !important;
+}
+
+.doganaTopButtons{
+  width:100% !important;
+  justify-content:flex-end !important;
+}
+
+.doganaTableCard{
+  width:calc(100% - 32px);
+  margin:16px auto 0;
+  padding:12px;
+  border:1px solid var(--grid-soft);
+  border-radius:18px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  overflow:auto;
+}
+
+.doganaTableCard #sheet{
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  overflow:hidden;
+  background:var(--surface);
+}
+
+.doganaBottomToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+  padding:12px 16px 16px !important;
+  border-top:1px solid var(--grid-soft) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.doganaBottomToolbar button{
+  flex:0 0 auto !important;
+}
+
+@media (max-width:700px){
+  .doganaTableCard{
+    width:calc(100% - 20px);
+    margin:12px auto 0;
+    padding:10px;
+  }
+  .doganaBottomToolbar{
+    justify-content:flex-end !important;
+  }
+  .doganaBottomToolbar button{
+    flex:0 1 auto !important;
+  }
+}
+
+
+/* === MODULO TABELLA - scheda unica: titolo + pulsanti + tabella === */
+#dogana-section{
+  padding:16px !important;
+  background:var(--panel) !important;
+  border:1px solid color-mix(in srgb, var(--grid) 75%, transparent) !important;
+  border-radius:var(--radius) !important;
+  box-shadow:var(--shadow) !important;
+  overflow:hidden !important;
+}
+
+.doganaTableModuleCard{
+  width:100%;
+  margin:0;
+  padding:0;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  overflow:hidden;
+}
+
+.doganaTableModuleCard .doganaTableTitleBar{
+  border-top:0 !important;
+  border-bottom:1px solid var(--grid-soft) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.doganaTableModuleCard .titleField{
+  grid-template-columns:260px minmax(0, 1fr) !important;
+}
+
+.doganaTableModuleCard .titleLabel{
+  justify-content:flex-start !important;
+  text-align:left !important;
+}
+
+.doganaTableModuleCard .doganaTableTopToolbar{
+  border-bottom:1px solid var(--grid-soft) !important;
+  padding:14px 16px !important;
+  justify-content:flex-end !important;
+  background:var(--surface) !important;
+}
+
+.doganaTableModuleCard .doganaTopButtons{
+  width:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+
+.doganaTableModuleCard .doganaTableGridCard{
+  width:calc(100% - 24px) !important;
+  margin:12px auto !important;
+  padding:0 !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:16px !important;
+  background:var(--surface) !important;
+  box-shadow:none !important;
+  overflow:auto !important;
+}
+
+.doganaTableModuleCard .doganaTableGridCard #sheet{
+  margin:0 !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:var(--surface) !important;
+}
+
+.doganaTableModuleCard .doganaBottomToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+  padding:12px 16px 16px !important;
+  border-top:1px solid var(--grid-soft) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.doganaTableModuleCard .doganaTopButtons button,
+.doganaTableModuleCard .doganaBottomToolbar button{
+  min-width:auto !important;
+  width:auto !important;
+  flex:0 1 auto !important;
+  padding:9px 11px !important;
+  font-size:12px !important;
+  line-height:1.15 !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:700px){
+  #dogana-section{
+    padding:12px !important;
+  }
+  .doganaTableModuleCard .titleField{
+    grid-template-columns:1fr !important;
+  }
+  .doganaTableModuleCard .titleLabel{
+    border-right:0 !important;
+    border-bottom:1px solid var(--grid-soft) !important;
+  }
+  .doganaTableModuleCard .doganaTopButtons,
+  .doganaTableModuleCard .doganaBottomToolbar{
+    justify-content:flex-start !important;
+  }
+  .doganaTableModuleCard .doganaTopButtons button,
+  .doganaTableModuleCard .doganaBottomToolbar button{
+    flex:1 1 calc(50% - 8px) !important;
+    max-width:none !important;
+    min-width:0 !important;
+    padding:10px 9px !important;
+  }
+}
+
+
+
+/* === MODULO TABELLA - rifinitura larghezza scheda + titolo centrato === */
+.doganaTableModuleCard{
+  width:calc(100% - 32px) !important;
+  margin:16px auto !important;
+}
+
+.doganaTableModuleCard .doganaTableTitleBar{
+  padding:14px 16px !important;
+  border-bottom:1px solid var(--grid-soft) !important;
+}
+
+.doganaTableModuleCard .titleField{
+  width:100% !important;
+  max-width:none !important;
+  margin:0 auto !important;
+  display:grid !important;
+  grid-template-columns:260px minmax(0, 1fr) !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:16px !important;
+  overflow:hidden !important;
+  background:var(--surface) !important;
+  box-shadow:0 6px 16px rgba(15,23,42,.035) !important;
+}
+
+.doganaTableModuleCard .titleLabel{
+  min-height:54px !important;
+  justify-content:center !important;
+  text-align:center !important;
+  padding:0 18px !important;
+  border-right:1px solid var(--grid-soft) !important;
+}
+
+.doganaTableModuleCard .titleInput{
+  min-height:54px !important;
+  padding:15px 18px !important;
+  text-align:left !important;
+}
+
+.doganaTableModuleCard .doganaTableTopToolbar,
+.doganaTableModuleCard .doganaBottomToolbar{
+  padding-left:16px !important;
+  padding-right:16px !important;
+}
+
+.doganaTableModuleCard .doganaTableGridCard{
+  width:calc(100% - 32px) !important;
+  margin:14px auto !important;
+}
+
+@media (max-width:700px){
+  .doganaTableModuleCard{
+    width:100% !important;
+    margin:12px 0 !important;
+  }
+
+  .doganaTableModuleCard .doganaTableTitleBar{
+    padding:12px !important;
+  }
+
+  .doganaTableModuleCard .titleField{
+    grid-template-columns:1fr !important;
+  }
+
+  .doganaTableModuleCard .titleLabel{
+    justify-content:flex-start !important;
+    text-align:left !important;
+    border-right:0 !important;
+    border-bottom:1px solid var(--grid-soft) !important;
+  }
+
+  .doganaTableModuleCard .doganaTableGridCard{
+    width:calc(100% - 24px) !important;
+    margin:12px auto !important;
+  }
+}
+
+
+/* === NAVI IN CHIUSURA - rimozione pills riepilogo doppie in alto === */
+.shipToolbar .shipSummary{
+  display:none !important;
+}
+
+.shipPanel .toolbar.shipToolbar{
+  justify-content:space-between !important;
+}
+
+.shipToolbarActions{
+  margin-left:auto !important;
+}
+
+
+/* NAVI COMPATTO: tabs nella stessa riga del titolo */
+.shipPanel .toolbar.shipToolbar{
+  display:flex !important;
+  align-items:center !important;
+}
+
+.shipTabs{
+  border-bottom:0 !important;
+  padding:0 !important;
+  margin-left:16px !important;
+  background:transparent !important;
+}
+
+.shipToolbarTitle{
+  flex:0 0 auto;
+}
+
+.shipToolbar .shipTabs{
+  display:flex !important;
+}
+
+.shipQuickSearch{
+  padding-top:8px !important;
+}
+
+
+/* === NAVI COMPATTO DEFINITIVO: pills nella stessa riga del titolo === */
+.shipPanel .toolbar.shipToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  flex-wrap:wrap !important;
+}
+
+.shipToolbarTitle{
+  flex:0 0 auto !important;
+}
+
+.shipToolbar > .shipTabs{
+  display:flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  padding:0 !important;
+  margin:0 0 0 8px !important;
+  border:0 !important;
+  background:transparent !important;
+  flex:1 1 auto !important;
+}
+
+.shipToolbarActions{
+  margin-left:auto !important;
+  flex:0 0 auto !important;
+}
+
+.shipPanel > .shipTabs{
+  display:none !important;
+}
+
+.shipQuickSearch{
+  padding-top:10px !important;
+}
+
+@media (max-width:800px){
+  .shipToolbar > .shipTabs{
+    order:3;
+    flex:1 1 100% !important;
+    margin-left:0 !important;
+  }
+  .shipToolbarActions{
+    margin-left:0 !important;
+  }
+}
+
+
+/* === CONTENITORI - auto controllo unico, senza sessione === */
+.extraPanel .doganaSessionChip,
+.extraPanel .extraLiveBadge,
+.extraPanel .extraLiveDot{
+  display:none !important;
+}
+
+.extraPanel .extraAutoStatus{
+  display:none !important;
+}
+
+.extraPanel .autoCheckSwitch{
+  display:none !important;
+}
+
+.extraAutoSingleButton{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:9px !important;
+  min-height:36px !important;
+  padding:7px 12px !important;
+  border:1px solid var(--btn-border) !important;
+  border-radius:999px !important;
+  background:var(--pill-bg) !important;
+  color:var(--text) !important;
+  box-shadow:var(--shadow-soft) !important;
+  cursor:pointer !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  white-space:nowrap !important;
+}
+
+.extraAutoSingleButton.is-on{
+  border-color:rgba(22,163,74,.45) !important;
+  background:color-mix(in srgb, var(--accent-2) 12%, var(--surface)) !important;
+}
+
+.extraAutoSingleButtonSwitch{
+  position:relative;
+  width:44px;
+  height:24px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--muted) 22%, var(--surface));
+  border:1px solid var(--btn-border);
+  flex:0 0 auto;
+}
+
+.extraAutoSingleButton.is-on .extraAutoSingleButtonSwitch{
+  background:linear-gradient(180deg, #22b35d, #16a34a);
+  border-color:#169447;
+}
+
+.extraAutoSingleButtonSwitch::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  left:2px;
+  width:18px;
+  height:18px;
+  border-radius:999px;
+  background:var(--surface);
+  box-shadow:0 3px 8px rgba(15,23,42,.2);
+  transition:.18s ease;
+}
+
+.extraAutoSingleButton.is-on .extraAutoSingleButtonSwitch::after{
+  transform:translateX(20px);
+}
+
+.extraAutoSingleButton input{
+  width:52px !important;
+  min-width:52px !important;
+  height:28px !important;
+  padding:4px 8px !important;
+  border:1px solid var(--btn-border) !important;
+  border-radius:999px !important;
+  background:var(--surface) !important;
+  color:var(--heading) !important;
+  text-align:center !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+}
+
+.extraAutoSingleButton span{
+  font-size:12px !important;
+  font-weight:900 !important;
+}
+
+
+/* === CONTENITORI - rimuovi solo nome/sessione === */
+.extraPanel .doganaSessionChip,
+.extraPanel .extraLiveBadge,
+.extraPanel .extraLiveDot,
+.extraPanel [data-session],
+.extraPanel [id*="session" i],
+.extraPanel [class*="session" i]:not(.sectionJumpTarget){
+  display:none !important;
+}
+
+
+/* RIMOZIONE BADGE SESSIONE PC-XXXX */
+#extraLiveBadge,
+.extraLiveBadge,
+#extraLiveBadge *,
+.extraLiveBadge *{
+  display:none !important;
+}
+
+
+
+/* === CONSOLE SERVER.JS - modulo isolato in fondo === */
+.serverConsolePanel{
+  width:calc(100% - 32px);
+  margin:18px auto;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.serverConsoleHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.serverConsoleTitle{
+  margin:0;
+  color:var(--heading);
+  font-size:15px;
+  font-weight:900;
+}
+.serverConsoleSubtitle{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+}
+.serverConsoleActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.serverConsoleStatus{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--pill-bg);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.serverConsoleStatus::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--danger);
+}
+.serverConsoleStatus.connected::before{ background:var(--accent-2); }
+.serverConsoleBody{ padding:12px 16px 16px; }
+.serverConsoleOutput{
+  height:320px;
+  overflow:auto;
+  margin:0;
+  padding:14px;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  background:#07111f;
+  color:#d7e7ff;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size:12px;
+  line-height:1.55;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+}
+.serverConsolePanel.is-minimized .serverConsoleBody{ display:none; }
+@media (max-width:700px){
+  .serverConsolePanel{ width:100%; margin:16px 0; }
+  .serverConsoleOutput{ height:260px; }
+  .serverConsoleActions{ width:100%; justify-content:flex-start; }
+}
+
+
+/* === FOOTER APP - compatto e coerente con i moduli === */
+.appFooter{
+  width:calc(100% - 32px);
+  margin:18px auto 0;
+  padding:14px 16px;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:12px;
+}
+.appFooterBrand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:220px;
+}
+.appFooterLogo{
+  width:32px;
+  height:32px;
+  border-radius:12px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.02em;
+  background:linear-gradient(180deg, #3374f0, #2563eb);
+  box-shadow:0 8px 18px rgba(37,99,235,.18);
+}
+.appFooterTitle{
+  color:var(--heading);
+  font-weight:900;
+  line-height:1.2;
+}
+.appFooterSub{
+  margin-top:2px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+.appFooterMeta{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.appFooterPill{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--pill-bg);
+  color:var(--muted);
+  font-weight:800;
+}
+.appFooterPill strong{ color:var(--heading); }
+.appFooterDot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--accent);
+  display:inline-block;
+}
+.appFooterDot.green{ background:var(--accent-2); }
+.appFooterLink{
+  color:var(--accent);
+  text-decoration:none;
+  font-weight:900;
+}
+.appFooterLink:hover{ text-decoration:underline; }
+@media (max-width:700px){
+  .appFooter{ width:100%; align-items:flex-start; }
+  .appFooterMeta{ justify-content:flex-start; }
+}
+
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
 
 
@@ -2291,6 +3613,720 @@ document.addEventListener("DOMContentLoaded", initApiBaseUi);
 if (window.pdfjsLib) {
     pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
   }
+
+
+/* === SETTINGS + MULTIUTENTE PROFESSIONALE === */
+(function(){
+  const PUBLIC_API = "https://dogana-api.reav.website";
+  const LOCK_REFRESH_MS = 900;
+  const STATE_REFRESH_MS = 1200;
+  const LOCK_HEARTBEAT_MS = 1200;
+
+  function apiBaseSafe(){
+    try {
+      if (typeof getApiBase === "function") return getApiBase() || "";
+    } catch {}
+    const host = String(location.hostname || "").toLowerCase();
+    if (host.includes("reav.website") || host.includes("vercel.app")) return PUBLIC_API;
+    return "";
+  }
+
+  function api(path){
+    const p = String(path || "");
+    const clean = p.startsWith("/") ? p : "/" + p;
+    const base = apiBaseSafe();
+    return base ? base + clean : clean;
+  }
+
+  function randomSuffix(){
+    return Math.random().toString(36).slice(2, 6).toUpperCase();
+  }
+
+  function makeClientId(){
+    try {
+      let id = localStorage.getItem("dogana_multi_client_id_v3");
+      if (!id) {
+        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
+        localStorage.setItem("dogana_multi_client_id_v3", id);
+      }
+      return id;
+    } catch {
+      return "pc-" + Math.random().toString(36).slice(2, 10);
+    }
+  }
+
+  function getAutoClientName(){
+    try {
+      let name = localStorage.getItem("dogana_multi_client_name_v3");
+      if (!name) {
+        const oldManual = localStorage.getItem("dogana_multi_client_name_v2");
+        if (oldManual && /^PC-[A-Z0-9]{4,}$/i.test(oldManual.trim())) {
+          name = oldManual.trim().toUpperCase();
+        } else {
+          name = "PC-" + randomSuffix();
+        }
+        localStorage.setItem("dogana_multi_client_name_v3", name);
+      }
+      return name;
+    } catch {
+      return "PC-" + randomSuffix();
+    }
+  }
+
+  function hashColor(str){
+    let h = 0;
+    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+    const hue = Math.abs(h) % 360;
+    return `hsl(${hue} 78% 44%)`;
+  }
+
+  function getClientColor(clientId, clientName){
+    try {
+      let color = localStorage.getItem("dogana_multi_client_color_v3");
+      if (!color) {
+        color = hashColor(clientName + clientId);
+        localStorage.setItem("dogana_multi_client_color_v3", color);
+      }
+      return color;
+    } catch {
+      return hashColor(clientName + clientId);
+    }
+  }
+
+  const clientId = makeClientId();
+  let clientName = getAutoClientName();
+  let clientColor = getClientColor(clientId, clientName);
+
+  window.DOGANA_MULTIUSER = { clientId, clientName, clientColor };
+
+  let activeCell = null;
+  let locks = new Map();
+  let lockTimer = null;
+  let stateTimer = null;
+  let heartbeatTimer = null;
+  let lastLocalEditAt = 0;
+
+  function ensureHint(){
+    let el = document.getElementById("extraLockHint");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "extraLockHint";
+      el.className = "extraLockHint";
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+
+  function showHint(text){
+    const el = ensureHint();
+    el.textContent = text;
+    el.classList.add("show");
+    clearTimeout(showHint._t);
+    showHint._t = setTimeout(() => el.classList.remove("show"), 2800);
+  }
+
+  function setThemeFromSettings(theme){
+    try {
+      if (theme === "dark" || theme === "light") {
+        localStorage.setItem("utility_theme_v1", theme);
+      }
+    } catch {}
+    try {
+      if (typeof applyTheme === "function") applyTheme(theme);
+      else document.body.setAttribute("data-theme", theme);
+    } catch {
+      document.body.setAttribute("data-theme", theme);
+    }
+  }
+
+  function currentTheme(){
+    return document.body.getAttribute("data-theme") === "dark" ? "dark" : "light";
+  }
+
+  function createSettings(){
+    if (document.getElementById("doganaSettingsPanel")) return;
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "doganaSettingsBackdrop";
+    backdrop.className = "doganaSettingsBackdrop";
+
+    const panel = document.createElement("div");
+    panel.id = "doganaSettingsPanel";
+    panel.className = "doganaSettingsPanel";
+    panel.innerHTML = `
+      <div class="doganaSettingsHead">
+        <div class="doganaSettingsTitle">
+          <strong>Impostazioni</strong>
+          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
+        </div>
+        <button type="button" id="doganaSettingsClose">Chiudi</button>
+      </div>
+      <div class="doganaSettingsBody">
+        <div class="doganaSettingCard">
+          <div class="doganaSettingInfo">
+            <strong>Sessione dispositivo</strong>
+            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
+          </div>
+          <span class="doganaSessionChip" style="--session-color:${clientColor}">
+            <span class="doganaSessionColor"></span>
+            <span id="doganaSessionName">${clientName}</span>
+          </span>
+        </div>
+        <div class="doganaSettingCard">
+          <div class="doganaSettingInfo">
+            <strong>Tema</strong>
+            <span>Cambia rapidamente tema chiaro/scuro.</span>
+          </div>
+          <button type="button" id="doganaThemeToggleSettings">Tema</button>
+        </div>
+        <div class="doganaSettingCard">
+          <div class="doganaSettingInfo">
+            <strong>Sincronizzazione</strong>
+            <span>Ricarica manualmente stato condiviso e lock celle.</span>
+          </div>
+          <button type="button" id="doganaSyncNow">Aggiorna</button>
+        </div>
+        <div class="doganaSettingCard">
+          <div class="doganaSettingInfo">
+            <strong>Reset postazione</strong>
+            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
+          </div>
+          <button type="button" id="doganaResetSession">Reset</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(backdrop);
+    document.body.appendChild(panel);
+
+    function close(){
+      panel.classList.remove("show");
+      backdrop.classList.remove("show");
+    }
+
+    backdrop.addEventListener("click", close);
+    panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
+    const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
+    function refreshThemeButton(){
+      if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
+    }
+    refreshThemeButton();
+    themeBtn?.addEventListener("click", () => {
+      setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
+      refreshThemeButton();
+    });
+    panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
+      await fetchLocks();
+      await safeRefreshSharedState(true);
+      showHint("Sincronizzazione completata.");
+    });
+    panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
+      try {
+        localStorage.removeItem("dogana_multi_client_id_v3");
+        localStorage.removeItem("dogana_multi_client_name_v3");
+        localStorage.removeItem("dogana_multi_client_color_v3");
+      } catch {}
+      showHint("Postazione rigenerata. Ricarico la pagina...");
+      setTimeout(() => location.reload(), 900);
+    });
+  }
+
+  function addSettingsButton(){
+    createSettings();
+
+    if (document.getElementById("doganaSettingsButton")) return;
+
+    const target =
+      Array.from(document.querySelectorAll("header .right, .headerRight, .toolbar .right, .toolbar"))
+        .find(el => !el.closest("#shipPanel")) ||
+      document.querySelector(".appQuickNav") ||
+      document.body;
+
+    const btn = document.createElement("button");
+    btn.id = "doganaSettingsButton";
+    btn.type = "button";
+    btn.className = "topSettingsButton";
+    btn.textContent = "⚙ Impostazioni";
+
+    btn.addEventListener("click", () => {
+      document.getElementById("doganaSettingsPanel")?.classList.add("show");
+      document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
+    });
+
+    target.appendChild(btn);
+  }
+
+  function addLiveBadge(){
+    const toolbars = document.querySelectorAll(".extraTopToolbar, .extraBottomToolbar, .miniToolbar");
+    const parent = toolbars[0];
+    if (!parent || document.getElementById("extraLiveBadge")) return;
+    const badge = document.createElement("span");
+    badge.id = "extraLiveBadge";
+    badge.className = "extraLiveBadge";
+    badge.style.setProperty("--session-color", clientColor);
+    badge.innerHTML = `<span class="extraLiveDot"></span><span>${clientName}</span>`;
+    parent.prepend(badge);
+  }
+
+  function findRowId(input){
+    const tr = input.closest("tr");
+    if (!tr) return "";
+    if (!tr.dataset.rowId) {
+      const index = Array.from(tr.parentElement?.children || []).indexOf(tr);
+      const value = input.value || tr.innerText || index;
+      tr.dataset.rowId = "row_" + index + "_" + String(value).replace(/[^A-Z0-9]/gi, "").slice(0, 12);
+    }
+    return tr.dataset.rowId;
+  }
+
+  function findField(input){
+    if (input.dataset.field) return input.dataset.field;
+    const td = input.closest("td");
+    const tr = input.closest("tr");
+    if (!td || !tr) return input.name || "container";
+    const col = Array.from(tr.children).indexOf(td);
+    const placeholder = input.placeholder || "";
+    const cls = input.className || "";
+    let field = "col_" + col;
+    if (/container|contenitore/i.test(cls + " " + placeholder + " " + input.name)) field = "container";
+    input.dataset.field = field;
+    return field;
+  }
+
+  function getCellKey(rowId, field){ return `${rowId}::${field}`; }
+
+  function applyLocksToInputs(){
+    document.querySelectorAll("#extraTable input").forEach(input => {
+      const rowId = findRowId(input);
+      const field = findField(input);
+      const key = getCellKey(rowId, field);
+      const lock = locks.get(key);
+
+      const td = input.closest("td");
+      input.classList.remove("extraCellLockedByOther", "extraCellLockedByMe");
+      td?.classList.remove("extraCellLockedByOtherTd", "extraCellLockedByMeTd");
+      td?.removeAttribute("data-lock-name");
+      input.readOnly = false;
+      input.disabled = false;
+      input.style.removeProperty("--lock-color");
+      td?.style.removeProperty("--lock-color");
+      input.title = "";
+
+      if (!lock) return;
+
+      input.style.setProperty("--lock-color", lock.color || "#2563eb");
+      td?.style.setProperty("--lock-color", lock.color || "#2563eb");
+
+      if (lock.clientId === clientId) {
+        input.classList.add("extraCellLockedByMe");
+        td?.classList.add("extraCellLockedByMeTd");
+        input.disabled = false;
+        input.readOnly = false;
+        input.title = `Stai modificando questa cella (${clientName})`;
+      } else {
+        input.classList.add("extraCellLockedByOther");
+        td?.classList.add("extraCellLockedByOtherTd");
+        input.readOnly = true;
+        input.title = `Cella bloccata: in modifica da ${lock.clientName || "altro dispositivo"}`;
+      }
+    });
+  }
+
+
+  function connectLocksRealtime(){
+    if (!("EventSource" in window)) return;
+    if (window.__doganaExtraEventSource) return;
+
+    try {
+      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
+      const es = new EventSource(url);
+      window.__doganaExtraEventSource = es;
+
+      es.addEventListener("hello", ev => {
+        try {
+          const data = JSON.parse(ev.data || "{}");
+          if (data?.locks) {
+            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+            applyLocksToInputs();
+          }
+        } catch {}
+      });
+
+      es.addEventListener("locks", ev => {
+        try {
+          const data = JSON.parse(ev.data || "{}");
+          if (data?.locks) {
+            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+            applyLocksToInputs();
+          }
+        } catch {}
+      });
+
+      es.addEventListener("shared-state", ev => {
+        try {
+          if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
+          safeRefreshSharedState(true);
+        } catch {}
+      });
+
+      es.onerror = () => {
+        try { es.close(); } catch {}
+        window.__doganaExtraEventSource = null;
+        setTimeout(connectLocksRealtime, 1800);
+      };
+    } catch (err) {
+      console.warn("Realtime lock SSE non disponibile:", err);
+    }
+  }
+
+  async function fetchLocks(){
+    try {
+      const res = await fetch(api(`/api/extra-locks?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
+      const data = await res.json().catch(() => null);
+      if (!data?.success) return;
+      locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+      applyLocksToInputs();
+    } catch (err) {
+      console.warn("Lock refresh fallito:", err);
+    }
+  }
+
+  async function acquireLock(input){
+    const rowId = findRowId(input);
+    const field = findField(input);
+    activeCell = { rowId, field };
+
+    // Feedback immediato sulla sessione corrente, senza attendere il round-trip.
+    const localKey = getCellKey(rowId, field);
+    locks.set(localKey, {
+      key: localKey,
+      rowId,
+      field,
+      clientId,
+      clientName,
+      color: clientColor,
+      updatedAt: Date.now()
+    });
+    applyLocksToInputs();
+
+    try {
+      const res = await fetch(api("/api/extra-lock"), {
+        method:"POST",
+        mode:"cors",
+        cache:"no-store",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body: JSON.stringify({ rowId, field, clientId, clientName, color: clientColor })
+      });
+      const data = await res.json().catch(() => null);
+
+      if (res.status === 409 || data?.locked) {
+        const l = data?.lock || {};
+        showHint(`Cella in modifica da ${l.clientName || "un altro dispositivo"}.`);
+        input.blur();
+        await fetchLocks();
+        return false;
+      }
+
+      if (data?.locks) {
+        locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+        applyLocksToInputs();
+      }
+      return true;
+    } catch (err) {
+      console.warn("Acquire lock fallito:", err);
+      return true;
+    }
+  }
+
+  async function releaseLock(rowId, field){
+    try {
+      await fetch(api(`/api/extra-lock?rowId=${encodeURIComponent(rowId)}&field=${encodeURIComponent(field)}&clientId=${encodeURIComponent(clientId)}`), {
+        method:"DELETE",
+        mode:"cors",
+        cache:"no-store"
+      });
+    } catch {}
+    await fetchLocks();
+  }
+
+  function heartbeat(){
+    if (!activeCell) return;
+    const input = document.activeElement;
+    if (!input || !input.matches || !input.matches("#extraTable input")) return;
+    acquireLock(input);
+  }
+
+  function hookInputs(){
+    addSettingsButton();
+    addLiveBadge();
+
+    document.querySelectorAll("#extraTable input").forEach(input => {
+      if (input.dataset.multiHookedV3 === "1") return;
+      input.dataset.multiHookedV3 = "1";
+
+      input.addEventListener("focus", async () => {
+        const rowId = findRowId(input);
+        const field = findField(input);
+        const existing = locks.get(getCellKey(rowId, field));
+        if (existing && existing.clientId !== clientId) {
+          showHint(`Cella bloccata: in modifica da ${existing.clientName || "altro dispositivo"}.`);
+          input.blur();
+          return;
+        }
+        await acquireLock(input);
+      });
+
+      input.addEventListener("keydown", () => {
+        lastLocalEditAt = Date.now();
+        acquireLock(input);
+      });
+
+      input.addEventListener("input", () => {
+        lastLocalEditAt = Date.now();
+        acquireLock(input);
+      });
+
+      input.addEventListener("blur", () => {
+        const rowId = findRowId(input);
+        const field = findField(input);
+        setTimeout(() => releaseLock(rowId, field), 2500);
+        activeCell = null;
+      });
+    });
+
+    applyLocksToInputs();
+  }
+
+  async function safeRefreshSharedState(force = false){
+    if (!force) {
+      if (Date.now() - lastLocalEditAt < 1600) return;
+      if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
+    }
+
+    try {
+      if (typeof loadExtraSharedState === "function") {
+        await loadExtraSharedState({ silent:true, preserveFocused:true });
+      } else if (typeof syncExtraSharedState === "function") {
+        await syncExtraSharedState();
+      } else {
+        const res = await fetch(api(`/api/shared-state?_=${Date.now()}`), { cache:"no-store", mode:"cors" });
+        await res.json().catch(() => null);
+      }
+    } catch (err) {
+      console.warn("Refresh stato condiviso fallito:", err);
+    }
+
+    hookInputs();
+  }
+
+  function boot(){
+    hookInputs();
+    connectLocksRealtime();
+    fetchLocks();
+
+    clearInterval(lockTimer);
+    clearInterval(stateTimer);
+    clearInterval(heartbeatTimer);
+
+    lockTimer = setInterval(fetchLocks, LOCK_REFRESH_MS);
+    stateTimer = setInterval(() => safeRefreshSharedState(false), STATE_REFRESH_MS);
+    heartbeatTimer = setInterval(heartbeat, LOCK_HEARTBEAT_MS);
+
+    const obs = new MutationObserver(() => hookInputs());
+    const table = document.getElementById("extraTable");
+    if (table) obs.observe(table, { childList:true, subtree:true });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
+
+  window.addEventListener("beforeunload", () => {
+    try {
+      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
+    } catch {}
+  });
+})();
+
+
+/* === FIX MODULO CONTENITORI - PULSANTI PULITI DA BACKUP === */
+(function(){
+  function txt(el){
+    return String(el?.dataset?.fullLabel || el?.title || el?.textContent || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .toLowerCase();
+  }
+
+  function shortenLabels(root){
+    const map = new Map([
+      ["controlla tutti", "Controlla ora"],
+      ["copia contenitori", "Copia container"],
+      ["copia container", "Copia container"],
+      ["pdf lista contenitori", "PDF lista container"],
+      ["pdf lista container", "PDF lista container"],
+      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
+      ["aggiungi riga", "+ Aggiungi riga"],
+      ["+ aggiungi riga", "+ Aggiungi riga"],
+      ["+10 righe", "+10 righe"],
+      ["svuota sezione", "Svuota sezione"],
+      ["riduci a icona", "Riduci a icona"]
+    ]);
+
+    root.querySelectorAll("button").forEach(btn => {
+      const raw = String(btn.textContent || "").trim().replace(/\s+/g, " ");
+      const key = raw.toLowerCase();
+      const next = map.get(key);
+      if (next) {
+        btn.dataset.fullLabel = raw;
+        btn.textContent = next;
+        btn.title = raw;
+      }
+    });
+  }
+
+  function isBottomAction(el){
+    const t = txt(el);
+    return (
+      t.includes("copia") ||
+      t.includes("pdf lista") ||
+      t.includes("zip") ||
+      t.includes("aggiungi") ||
+      t.includes("+10") ||
+      t.includes("svuota") ||
+      t.includes("importa") ||
+      t.includes("excel") ||
+      t.includes("esporta")
+    );
+  }
+
+  function isTopAction(el){
+    const t = txt(el);
+    return (
+      t.includes("controlla") ||
+      t.includes("riduci") ||
+      t.includes("suono") ||
+      t.includes("auto") ||
+      t.includes("pc-")
+    );
+  }
+
+  function ensureBottom(panel){
+    let bottom = panel.querySelector(".extraBottomToolbar");
+    if (!bottom) {
+      bottom = document.createElement("div");
+      bottom.className = "extraBottomToolbar";
+      const content = panel.querySelector(".extraContent") || panel;
+      content.appendChild(bottom);
+    }
+    return bottom;
+  }
+
+  function ensureTop(panel){
+    let top =
+      panel.querySelector(".extraTopToolbar") ||
+      panel.querySelector(".miniHead .miniToolbar") ||
+      panel.querySelector(".extraHead .miniToolbar") ||
+      panel.querySelector(".miniToolbar");
+
+    if (!top) {
+      top = document.createElement("div");
+      top.className = "miniToolbar extraTopToolbar";
+      const head = panel.querySelector(".miniHead, .extraHead") || panel;
+      head.appendChild(top);
+    }
+
+    top.classList.add("extraTopToolbar");
+    return top;
+  }
+
+  function move(el, target){
+    if (!el || !target || el.parentElement === target) return;
+    target.appendChild(el);
+  }
+
+  function organize(){
+    const panel = document.querySelector(".extraPanel");
+    if (!panel) return;
+
+    const top = ensureTop(panel);
+    const bottom = ensureBottom(panel);
+
+    shortenLabels(panel);
+
+    // Sposta elementi non-button legati al controllo in alto.
+    panel.querySelectorAll(".autoCheckSwitch, .extraAutoStatus, #extraLiveBadge, .extraLiveBadge").forEach(el => {
+      move(el, top);
+    });
+
+    // Sposta i pulsanti nella toolbar corretta.
+    Array.from(panel.querySelectorAll("button")).forEach(btn => {
+      if (btn.classList.contains("extraTab")) return;
+      if (btn.closest(".doganaSettingsPanel")) return;
+      if (btn.id === "doganaSettingsButton") return;
+
+      if (isBottomAction(btn)) {
+        move(btn, bottom);
+      } else if (isTopAction(btn)) {
+        move(btn, top);
+      }
+    });
+
+    // Rimuove duplicati esatti nella stessa toolbar.
+    [top, bottom].forEach(tb => {
+      const seen = new Set();
+      Array.from(tb.children).forEach(el => {
+        const key = (el.tagName + "|" + String(el.textContent || el.className || "").trim().toLowerCase());
+        if (seen.has(key) && el.matches("button")) el.remove();
+        else seen.add(key);
+      });
+    });
+
+    // Ordine superiore: PC, Auto, Suono, Controlla, Riduci.
+    const orderTop = [
+      el => el.matches?.("#extraLiveBadge, .extraLiveBadge") || txt(el).includes("pc-"),
+      el => el.matches?.(".autoCheckSwitch") || txt(el).includes("auto"),
+      el => txt(el).includes("suono"),
+      el => txt(el).includes("controlla"),
+      el => txt(el).includes("riduci")
+    ];
+
+    const topItems = Array.from(top.children);
+    orderTop.forEach(test => {
+      topItems.filter(test).forEach(el => top.appendChild(el));
+    });
+
+    // Ordine inferiore: copia, PDF lista, ZIP, aggiungi, +10, svuota.
+    const orderBottom = [
+      el => txt(el).includes("copia"),
+      el => txt(el).includes("pdf lista"),
+      el => txt(el).includes("zip"),
+      el => txt(el).includes("aggiungi"),
+      el => txt(el).includes("+10"),
+      el => txt(el).includes("svuota")
+    ];
+
+    const bottomItems = Array.from(bottom.children);
+    orderBottom.forEach(test => {
+      bottomItems.filter(test).forEach(el => bottom.appendChild(el));
+    });
+  }
+
+  function schedule(){
+    clearTimeout(schedule._t);
+    schedule._t = setTimeout(organize, 80);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", schedule);
+  } else {
+    schedule();
+  }
+  // Disposizione pulsanti eseguita solo al caricamento: niente blink su hover/click.
+})();
+
 </script>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -2342,6 +4378,9 @@ document.addEventListener("DOMContentLoaded", () => {
     observer.observe(table, { childList: true, subtree: true });
   }
 });
+
+
+
 </script>
 </head>
 <body>
@@ -2358,51 +4397,39 @@ document.addEventListener("DOMContentLoaded", () => {
   <nav class="appQuickNav" aria-label="Scorciatoie">
     <a href="#dogana-section">Tabella</a>
     <a href="#navi-section">Navi</a>
-    <a href="#container-section">Container</a>
-    <a href="#tools-section">Strumenti</a>
-    <button id="compactModeBtn" type="button">Compatta</button>
-    
+    <a href="#extraPanel" data-jump-focus="#extraTable input">Container</a>
+    <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">⚙ Impostazioni</button>
+    <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
+      <span class="appSessionDot"></span>
+      <span id="doganaMenuSessionName">Sessione</span>
+    </button>
   </nav>
 </div>
 
-<header>
-<div>
-<h1>UTILITY PER DOGANALISTA</h1>
-<p class="sub">Aggiungi righe come in Excel, incolla più valori, totali automatici.</p>
-</div>
-<div class="headerRight">
-<div class="themeToggle" title="Cambia tema">
-<span class="themeToggleLabel" id="themeLabel">Tema chiaro</span>
-<button aria-label="Cambia tema" class="themeSwitch" id="themeToggleBtn" type="button"></button>
-</div>
-<div class="pill" title="Suggerimenti">
-<span class="dot"></span> Incolla righe da Excel
-          <span class="kbd">Ctrl</span> + <span class="kbd">V</span>
-</div>
-</div>
-</header>
+
 
 
 <section class="panel sectionJumpTarget" id="dogana-section">
-<div class="toolbar">
-<div class="left">
-<button class="primary" id="addRowBtn">+ Aggiungi riga</button>
-<button class="success" id="add10Btn">+10 righe</button>
-<button id="mergeBtn">Unisci stessa descrizione / TARIC</button>
-<button id="sortValueBtn">Ordina per valore fattura ↓</button>
-<button id="exportPdfBtn">Esporta PDF tabella</button>
-<button id="copyColumnBtn">Copia colonna</button>
-<button id="exportExcelBtn">Esporta Excel</button>
-<button class="danger" id="clearBtn">Svuota tutto</button>
-</div>
-<div class="titleBar">
-<div class="titleField">
-<label class="titleLabel" for="pdfTitleInput">Titolo tabella / titolo PDF</label>
-<input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list export Canada - merce alimentare" type="text"/>
-<div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
-</div>
-</div>
-<div class="gridWrap">
+<div class="doganaTableModuleCard">
+  <div class="titleBar doganaTableTitleBar">
+    <div class="titleField">
+      <label class="titleLabel" for="pdfTitleInput">Titolo tabella / titolo PDF</label>
+      <input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list export Canada - merce alimentare" type="text"/>
+      <div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
+    </div>
+  </div>
+
+  <div class="toolbar doganaTableTopToolbar">
+    <div class="left doganaTopButtons">
+      <button id="mergeBtn">Unisci stessa descrizione / TARIC</button>
+      <button id="sortValueBtn">Ordina per valore fattura ↓</button>
+      <button id="exportPdfBtn">Esporta PDF tabella</button>
+      <button id="copyColumnBtn">Copia colonna</button>
+      <button id="exportExcelBtn">Esporta Excel</button>
+    </div>
+  </div>
+
+  <div class="gridWrap doganaTableGridCard">
 <table id="sheet">
 <thead>
 <tr>
@@ -2432,6 +4459,13 @@ document.addEventListener("DOMContentLoaded", () => {
 </tr>
 </tfoot>
 </table>
+  </div>
+
+  <div class="doganaBottomToolbar">
+    <button class="primary" id="addRowBtn">+ Aggiungi riga</button>
+    <button class="success" id="add10Btn">+10 righe</button>
+    <button class="danger" id="clearBtn">Svuota tutto</button>
+  </div>
 </div>
 
 <div class="calcPanel calcPanelEnhanced calcMainPanel" style="width:calc(100% - 32px); max-width:none; margin:16px auto; display:block;">
@@ -2489,6 +4523,11 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="left shipToolbarTitle">
       <h2>Navi in chiusura</h2>
     </div>
+    <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
+    <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
+    <button class="shipTab" data-terminal="conateco" type="button">CONATECO <span class="shipTabCount" id="shipTabCountConateco">0</span></button>
+    <button class="shipTab" data-terminal="tfg" type="button">TFG <span class="shipTabCount" id="shipTabCountTfg">0</span></button>
+  </div>
     <div class="right shipToolbarActions">
       <div class="shipSummary" id="shipSummary">
         <span class="shipBadge">SCT <strong id="shipCountSct">0</strong></span>
@@ -2500,13 +4539,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <button class="primary" id="refreshShipsBtn" type="button">Aggiorna navi</button>
     </div>
   </div>
-
-  <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
-    <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
-    <button class="shipTab" data-terminal="conateco" type="button">CONATECO <span class="shipTabCount" id="shipTabCountConateco">0</span></button>
-    <button class="shipTab" data-terminal="tfg" type="button">TFG <span class="shipTabCount" id="shipTabCountTfg">0</span></button>
-  </div>
-
   <div class="shipQuickSearch" id="shipQuickSearch">
     <input id="shipSearchInput" type="search" placeholder="Cerca nave su SCT, CONATECO e TFG anche se non è in chiusura..." autocomplete="off" />
     <button id="shipSearchBtn" type="button">Cerca</button>
@@ -2580,7 +4612,7 @@ document.addEventListener("DOMContentLoaded", () => {
             <div class="shipTerminalIcon">C</div>
             <div class="shipCardTitle">
               <strong>CONATECO</strong>
-              <span>Filtro: chiuse, oggi e domani. Le note evidenziano eventuale accettazione retroporto.</span>
+              <span>Filtro: navi CONATECO da Presenti, Previste, Ormeggiate e Partite. Le note evidenziano eventuale accettazione retroporto.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountConatecoHead">0</strong></span>
@@ -2719,12 +4751,38 @@ document.addEventListener("DOMContentLoaded", () => {
 <div class="rollHelp">Utile per packing list con formati tipo 281 rotoli da 1,5 × 100: inserisci rotoli, larghezza e lunghezza e ottieni i metri quadrati totali.</div>
 </div>
 </div>
-<div class="status">
-<span class="pill"><span class="dot"></span> Righe: <strong id="rowCount">0</strong></span>
-<span class="pill"><span class="dot green"></span> Salvataggio automatico: <strong>ON</strong></span>
-<span>Tip: premi <span class="kbd">Enter</span> per scendere, <span class="kbd">Tab</span> per passare alla colonna successiva.</span>
-</div>
-</div></section>
+<section class="serverConsolePanel" id="serverConsolePanel" aria-label="Console server.js">
+  <div class="serverConsoleHead">
+    <div>
+      <h2 class="serverConsoleTitle">Console</h2>
+      <div class="serverConsoleSubtitle">Output live di server.js</div>
+    </div>
+    <div class="serverConsoleActions">
+      <span class="serverConsoleStatus" id="serverConsoleStatus">Disconnessa</span>
+      <button type="button" id="serverConsoleReconnect">Riconnetti</button>
+      <button type="button" id="serverConsoleClear">Pulisci</button>
+      <button type="button" id="serverConsoleToggle">Riduci a icona</button>
+    </div>
+  </div>
+  <div class="serverConsoleBody">
+    <pre class="serverConsoleOutput" id="serverConsoleOutput">Console pronta. In attesa dell'output di server.js...</pre>
+  </div>
+</section>
+<footer class="appFooter" aria-label="Footer Utility Doganalista">
+  <div class="appFooterBrand">
+    <span class="appFooterLogo">UD</span>
+    <div>
+      <div class="appFooterTitle">DoganaTools</div>
+      <div class="appFooterSub">Utility operativa doganale</div>
+    </div>
+  </div>
+  <div class="appFooterMeta">
+    <span class="appFooterPill"><span class="appFooterDot"></span> Righe tabella: <strong id="rowCount">0</strong></span>
+    <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
+    <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
+  </div>
+</footer>
+</section>
 </div>
 <script>
     const LS_KEY = "peso_sheet_v3";
@@ -2814,7 +4872,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     
-	function exportTableToPdf(){
+
+    function exportTableToPdf(){
       const dataRows = getRowsForPdf().filter(r => [r.desc, r.colli, r.pezzi, r.gross, r.net, r.mq, r.value].some(Boolean));
       if (!dataRows.length){
         alert("La tabella è vuota. Inserisci almeno una riga prima di esportare il PDF.");
@@ -2832,17 +4891,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const pageHeight = doc.internal.pageSize.getHeight();
       const margin = 10;
       const usableWidth = pageWidth - (margin * 2);
-      const footerHeight = 9;
-      const rowLineHeight = 3.8;
-      const cellPadX = 1.8;
-      const cellPadY = 3.1;
+      const footerHeight = 8;
+      const rowLineHeight = 3.55;
+      const cellPadX = 1.7;
+      const cellPadY = 2.25;
       const pdfTitle = getPdfTitle() || "Tabella TARIC, pesi e valore";
-      const subtitle = "Riepilogo merce con colli, pezzi, pesi, metri quadrati e valore fattura";
-      const colWidths = [12, 95, 16, 16, 23, 23, 17, 23];
+      const colWidths = [11, 99, 15, 15, 22, 22, 16, 22];
       const headers = ["Riga", "Descrizione / TARIC", "Colli", "Pezzi", "Peso lordo", "Peso netto", "MQ", "Valore €"];
       let y = margin;
       let pageNumber = 1;
-      let currentHeaderHeight = 0;
       let currentTableHeaderHeight = 0;
 
       const totals = {
@@ -2854,98 +4911,95 @@ document.addEventListener("DOMContentLoaded", () => {
         value: document.getElementById("totalValue")?.textContent || "0,00"
       };
 
+      function isZeroPdfValue(value){
+        const clean = String(value ?? "")
+          .replace(/€/g, "")
+          .replace(/\s/g, "")
+          .replace(/\./g, "")
+          .replace(/,/g, ".")
+          .trim();
+        if (!clean) return true;
+        const n = Number(clean);
+        return Number.isFinite(n) && Math.abs(n) === 0;
+      }
+
+      const summaryItems = [
+        ["Colli", totals.colli],
+        ["Pezzi", totals.pezzi],
+        ["Peso lordo", totals.gross],
+        ["Peso netto", totals.net],
+        ["MQ", totals.mq],
+        ["Valore €", totals.value]
+      ].filter(([, value]) => !isZeroPdfValue(value));
+
       const now = new Date();
       const dateLabel = now.toLocaleDateString("it-IT") + " · " + now.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
 
       function splitCellText(value, width){
         const safe = String(value ?? "").trim();
         if (!safe) return [""];
-        return doc.splitTextToSize(safe, Math.max(3, width - (cellPadX * 2) - 0.8));
+        return doc.splitTextToSize(safe, Math.max(3, width - (cellPadX * 2)));
       }
 
       function drawCellText(lines, x, topY, width, height, align = "left", opts = {}){
         const arr = Array.isArray(lines) ? lines : [String(lines || "")];
-        const lineHeight = opts.lineHeight || rowLineHeight;
         const padX = opts.padX ?? cellPadX;
         const padY = opts.padY ?? cellPadY;
-        const textX = align === "right"
-          ? x + width - padX
-          : (align === "center" ? x + (width / 2) : x + padX);
-        const startY = topY + padY + 0.6;
-        doc.text(arr, textX, startY, { align, baseline: "top", maxWidth: Math.max(3, width - (padX * 2)) });
+        const textX = align === "right" ? x + width - padX : (align === "center" ? x + (width / 2) : x + padX);
+        doc.text(arr, textX, topY + padY + 0.45, { align, baseline: "top", maxWidth: Math.max(3, width - (padX * 2)) });
       }
 
       function drawFooter(){
-        doc.setDrawColor(219, 228, 239);
-        doc.setLineWidth(0.35);
+        doc.setDrawColor(226, 232, 240);
+        doc.setLineWidth(0.25);
         doc.line(margin, pageHeight - 7, pageWidth - margin, pageHeight - 7);
         doc.setTextColor(100, 116, 139);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.2);
-        doc.text("Documento generato da Utility per Doganalista", margin, pageHeight - 3.5);
+        doc.setFontSize(7.8);
+        doc.text("Utility per Doganalista", margin, pageHeight - 3.5);
         doc.text(`Pagina ${pageNumber}`, pageWidth - margin, pageHeight - 3.5, { align: "right" });
       }
 
       function drawPageHeader(){
-        const leftWidth = usableWidth - 55;
-        const rightWidth = 47;
-        const titleLines = doc.splitTextToSize(pdfTitle, leftWidth - 8);
-        const subtitleLines = doc.splitTextToSize(subtitle, leftWidth - 8);
-        const titleBlockHeight = Math.max(18, (titleLines.length * 6.2) + (subtitleLines.length * 3.8) + 8);
-        currentHeaderHeight = titleBlockHeight;
+        const titleLines = doc.splitTextToSize(pdfTitle, usableWidth - 55);
+        const headerHeight = Math.max(9, titleLines.length * 4.4 + 2.5);
 
-        doc.setFillColor(18, 25, 38);
-        doc.roundedRect(margin, y, leftWidth, titleBlockHeight, 2.4, 2.4, "F");
-
-        doc.setFillColor(244, 247, 251);
-        doc.setDrawColor(205, 214, 226);
-        doc.roundedRect(margin + leftWidth + 4, y, rightWidth, titleBlockHeight, 2.4, 2.4, "FD");
-
-        doc.setTextColor(255, 255, 255);
+        // Header meno invasivo: solo titolo + data, niente box grande/descrizione.
+        doc.setTextColor(15, 23, 42);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(16);
-        doc.text(titleLines, margin + 4, y + 4.8, { baseline: "top" });
+        doc.setFontSize(11.6);
+        doc.text(titleLines, margin, y + 1.2, { baseline: "top" });
 
-        doc.setTextColor(214, 223, 236);
+        doc.setTextColor(100, 116, 139);
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(9.1);
-        doc.text(subtitleLines, margin + 4, y + 11.8, { baseline: "top" });
+        doc.setFontSize(7.8);
+        doc.text(dateLabel, pageWidth - margin, y + 1.6, { align: "right", baseline: "top" });
 
-        doc.setTextColor(55, 65, 81);
-        doc.setFont("helvetica", "bold");
-        doc.setFontSize(8.8);
-        doc.text("DATA EXPORT", margin + leftWidth + 7, y + 5.8);
-        doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.7);
-        doc.text(dateLabel, margin + leftWidth + 7, y + 10.8);
-        doc.setFont("helvetica", "bold");
-        doc.text("RIGHE", margin + leftWidth + 7, y + 16.2);
-        doc.setFont("helvetica", "normal");
-        doc.text(String(dataRows.length), margin + leftWidth + 22.5, y + 16.2);
-        doc.setFont("helvetica", "bold");
-        doc.text("PAGINA", margin + leftWidth + 7, y + 21.6);
-        doc.setFont("helvetica", "normal");
-        doc.text(String(pageNumber), margin + leftWidth + 22.5, y + 21.6);
-
-        y += titleBlockHeight + 6;
+        y += headerHeight;
+        doc.setDrawColor(37, 99, 235);
+        doc.setLineWidth(0.45);
+        doc.line(margin, y, pageWidth - margin, y);
+        y += 4;
       }
 
       function drawTableHeader(){
         const preparedHeaders = headers.map((header, i) => splitCellText(header, colWidths[i]));
         const headerMaxLines = Math.max(...preparedHeaders.map(lines => Math.max(1, lines.length)));
-        currentTableHeaderHeight = Math.max(9.5, headerMaxLines * 3.6 + 4.2);
+        currentTableHeaderHeight = Math.max(8.3, headerMaxLines * 3.2 + 3.2);
 
         let x = margin;
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(8.4);
-        doc.setTextColor(51, 65, 85);
+        doc.setFontSize(7.9);
+        doc.setTextColor(255, 255, 255);
 
         preparedHeaders.forEach((lines, i) => {
-          doc.setFillColor(237, 242, 247);
-          doc.setDrawColor(194, 205, 218);
+          // Stile uniforme: celle rettangolari, nessun bordo arrotondato.
+          doc.setFillColor(37, 99, 235);
+          doc.setDrawColor(37, 99, 235);
+          doc.setLineWidth(0.25);
           doc.rect(x, y, colWidths[i], currentTableHeaderHeight, "FD");
           const align = i >= 2 ? "right" : "left";
-          drawCellText(lines, x, y, colWidths[i], currentTableHeaderHeight, align, { lineHeight: 3.5, padY: 2.7 });
+          drawCellText(lines, x, y, colWidths[i], currentTableHeaderHeight, align, { padY: 2.25 });
           x += colWidths[i];
         });
 
@@ -2961,6 +5015,56 @@ document.addEventListener("DOMContentLoaded", () => {
           drawPageHeader();
           drawTableHeader();
         }
+      }
+
+      function drawBottomSummary(){
+        if (!summaryItems.length) return;
+
+        const labelW = 34;
+        const valueW = 38;
+        const cols = Math.min(3, summaryItems.length);
+        const rowH = 8.2;
+        const rowsCount = Math.ceil(summaryItems.length / cols);
+        const summaryHeight = 8 + (rowsCount * rowH);
+
+        ensurePageSpace(summaryHeight + 6);
+        y += 5;
+
+        doc.setTextColor(15, 23, 42);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(9.2);
+        doc.text("Riepilogo", margin, y + 3.2);
+        y += 6;
+
+        let startX = margin;
+        const blockW = (usableWidth - ((cols - 1) * 4)) / cols;
+        summaryItems.forEach(([label, value], index) => {
+          const col = index % cols;
+          const row = Math.floor(index / cols);
+          const x = startX + (col * (blockW + 4));
+          const itemY = y + (row * rowH);
+
+          // Stesso linguaggio della tabella: rettangoli squadrati e lineari.
+          doc.setFillColor(248, 250, 252);
+          doc.setDrawColor(203, 213, 225);
+          doc.setLineWidth(0.25);
+          doc.rect(x, itemY, blockW, rowH, "FD");
+
+          doc.setFillColor(241, 245, 249);
+          doc.rect(x, itemY, labelW, rowH, "F");
+
+          doc.setTextColor(71, 85, 105);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(7.5);
+          doc.text(label.toUpperCase(), x + 2, itemY + 5.2);
+
+          doc.setTextColor(15, 23, 42);
+          doc.setFont("helvetica", "bold");
+          doc.setFontSize(8.8);
+          doc.text(String(value), x + blockW - 2, itemY + 5.2, { align: "right" });
+        });
+
+        y += rowsCount * rowH;
       }
 
       drawPageHeader();
@@ -2980,53 +5084,36 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const prepared = rowData.map((value, i) => splitCellText(value, colWidths[i]));
         const maxLines = Math.max(...prepared.map(lines => Math.max(1, lines.length)));
-        const currentRowHeight = Math.max(8.6, (maxLines * rowLineHeight) + (cellPadY * 2) + 0.8);
+        const currentRowHeight = Math.max(7.7, (maxLines * rowLineHeight) + (cellPadY * 2) + 0.3);
 
         ensurePageSpace(currentRowHeight);
 
         let x = margin;
         doc.setFont("helvetica", "normal");
-        doc.setFontSize(8.5);
+        doc.setFontSize(8.1);
         doc.setTextColor(20, 32, 51);
 
         prepared.forEach((lines, i) => {
-          const fill = rowIndex % 2 === 0 ? [255, 255, 255] : [249, 251, 253];
+          const fill = rowIndex % 2 === 0 ? [255, 255, 255] : [248, 250, 252];
           doc.setFillColor(...fill);
-          doc.setDrawColor(208, 216, 226);
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.2);
           doc.rect(x, y, colWidths[i], currentRowHeight, "FD");
           const align = i >= 2 ? "right" : "left";
-          drawCellText(lines, x, y, colWidths[i], currentRowHeight, align, { lineHeight: rowLineHeight, padY: cellPadY });
+          drawCellText(lines, x, y, colWidths[i], currentRowHeight, align);
           x += colWidths[i];
         });
 
         y += currentRowHeight;
       });
 
-      const totalRow = ["Totali", "", totals.colli, totals.pezzi, totals.gross, totals.net, totals.mq, totals.value];
-      const totalPrepared = totalRow.map((value, i) => splitCellText(value, colWidths[i]));
-      const totalMaxLines = Math.max(...totalPrepared.map(lines => Math.max(1, lines.length)));
-      const totalHeight = Math.max(9.2, (totalMaxLines * 3.8) + 6.2);
-
-      ensurePageSpace(totalHeight);
-
-      let x = margin;
-      doc.setFont("helvetica", "bold");
-      doc.setFontSize(8.7);
-
-      totalPrepared.forEach((lines, i) => {
-        doc.setFillColor(227, 233, 241);
-        doc.setDrawColor(171, 183, 198);
-        doc.rect(x, y, colWidths[i], totalHeight, "FD");
-        const align = i >= 2 ? "right" : "left";
-        drawCellText(lines, x, y, colWidths[i], totalHeight, align, { lineHeight: 3.8, padY: 3.0 });
-        x += colWidths[i];
-      });
-
+      drawBottomSummary();
       drawFooter();
 
       const fileBase = sanitizeFileName(pdfTitle) || "tabella_taric";
       doc.save(`${fileBase}_${now.toISOString().slice(0,10)}.pdf`);
     }
+
 
 
     function makeCellInput({ placeholder, value, className, dataset }) {
@@ -4019,6 +6106,45 @@ document.addEventListener("DOMContentLoaded", () => {
     let extraAutoCheckTimer = null;
     const EXTRA_CHECK_INTERVAL = 5 * 60 * 1000;
 
+    const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
+    const EXTRA_CLIENT_NAME_KEY = "peso_sheet_extra_client_name_v1";
+
+    function makeExtraId(){
+      return "row_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+    }
+
+    function getExtraClientId(){
+      try {
+        let id = localStorage.getItem(EXTRA_CLIENT_ID_KEY);
+        if (!id) {
+          id = "client_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+          localStorage.setItem(EXTRA_CLIENT_ID_KEY, id);
+        }
+        return id;
+      } catch {
+        return "client_" + Math.random().toString(36).slice(2, 10);
+      }
+    }
+
+    const EXTRA_CLIENT_ID = getExtraClientId();
+    const EXTRA_CLIENT_NAME = (() => {
+      try {
+        let name = localStorage.getItem(EXTRA_CLIENT_NAME_KEY);
+        if (!name) {
+          name = "PC-" + EXTRA_CLIENT_ID.slice(-5).toUpperCase();
+          localStorage.setItem(EXTRA_CLIENT_NAME_KEY, name);
+        }
+        return name;
+      } catch {
+        return "PC";
+      }
+    })();
+
+    const extraRowSaveTimers = new Map();
+    let extraLastRemoteState = null;
+    let extraLocalDirtyUntil = 0;
+
+
     const extraTbody = document.getElementById("extraTbody");
     const extraThead = document.getElementById("extraThead");
     const extraPanel = document.getElementById("extraPanel");
@@ -4072,6 +6198,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function emptyExtraRow(termKey = activeExtraTerminal){
       return {
+        __id: makeExtraId(),
+        __rev: 0,
+        __updatedAt: new Date().toISOString(),
+        __updatedBy: EXTRA_CLIENT_ID,
         __terminal: EXTRA_TERMINALS[termKey] ? termKey : "sct",
         clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
         clientConateco:"", conateco:"", conatecoStatus:"",
@@ -4092,6 +6222,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const term = inferExtraTerminal(r);
       return {
         ...emptyExtraRow(term),
+        __id: String(r?.__id || r?.id || "").trim() || makeExtraId(),
+        __rev: Number.isFinite(Number(r?.__rev)) ? Number(r.__rev) : 0,
+        __updatedAt: r?.__updatedAt || "",
+        __updatedBy: r?.__updatedBy || "",
         __terminal: term,
         clientSct: r?.clientSct ?? "",
         sct: r?.sct ?? "",
@@ -4126,7 +6260,53 @@ document.addEventListener("DOMContentLoaded", () => {
     let extraSharedSaveTimer = null;
     let extraSharedLastPull = 0;
 
-    function scheduleSharedExtraSave(){
+    function getFocusedExtraRowId(){
+      const active = document.activeElement;
+      if (active && active.matches && active.matches("#extraTable input[data-extra-field]")) {
+        const rowIndex = Number(active.dataset.extraRow);
+        return extraRows[rowIndex]?.__id || "";
+      }
+      return "";
+    }
+
+    function mergeRemoteExtraRows(remoteRows){
+      const focusedRowId = getFocusedExtraRowId();
+      const localById = new Map(extraRows.map(row => [String(row.__id || ""), normalizeExtraRow(row)]));
+      const remoteById = new Map((remoteRows || []).map(row => {
+        const normalized = normalizeExtraRow(row);
+        return [String(normalized.__id || ""), normalized];
+      }));
+
+      const merged = [];
+
+      for (const [id, remoteRow] of remoteById.entries()) {
+        // Non sovrascrive la riga su cui l'utente sta scrivendo.
+        // Verrà sincronizzata appena termina focus/blur o al salvataggio riga.
+        if (id && id === focusedRowId && localById.has(id)) {
+          merged.push(localById.get(id));
+        } else {
+          merged.push(remoteRow);
+        }
+      }
+
+      for (const [id, localRow] of localById.entries()) {
+        if (id && !remoteById.has(id)) {
+          // Se è una riga appena creata localmente, non perderla durante il refresh.
+          const isRecentLocal = String(localRow.__updatedBy || "") === EXTRA_CLIENT_ID;
+          if (isRecentLocal) merged.push(localRow);
+        }
+      }
+
+      return merged.map(normalizeExtraRow);
+    }
+
+    function saveExtraLocalOnly(){
+      try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
+      try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
+      try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+    }
+
+    function scheduleSharedMetaSave(){
       clearTimeout(extraSharedSaveTimer);
       extraSharedSaveTimer = setTimeout(async () => {
         try {
@@ -4134,7 +6314,6 @@ document.addEventListener("DOMContentLoaded", () => {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              extraRows,
               activeExtraTerminal,
               extraAutoCheckEnabled
             })
@@ -4145,6 +6324,121 @@ document.addEventListener("DOMContentLoaded", () => {
       }, 350);
     }
 
+    function scheduleSharedRowPatch(rowIndex, patch = null, delay = 250){
+      const row = extraRows[rowIndex] ? normalizeExtraRow(extraRows[rowIndex]) : null;
+      if (!row?.__id) return;
+
+      extraRows[rowIndex] = row;
+      row.__updatedAt = new Date().toISOString();
+      row.__updatedBy = EXTRA_CLIENT_ID;
+      extraLocalDirtyUntil = Date.now() + 1200;
+
+      const rowId = row.__id;
+      const payloadPatch = {
+        ...(patch || row),
+        __terminal: row.__terminal,
+        __updatedBy: EXTRA_CLIENT_ID
+      };
+
+      clearTimeout(extraRowSaveTimers.get(rowId));
+      extraRowSaveTimers.set(rowId, setTimeout(async () => {
+        try {
+          const res = await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              clientId: EXTRA_CLIENT_ID,
+              clientName: EXTRA_CLIENT_NAME,
+              patch: payloadPatch
+            })
+          });
+
+          const data = await res.json().catch(() => null);
+          if (res.ok && data?.row) {
+            const idx = extraRows.findIndex(r => String(r.__id || "") === rowId);
+            if (idx >= 0 && getFocusedExtraRowId() !== rowId) {
+              extraRows[idx] = normalizeExtraRow(data.row);
+              saveExtraLocalOnly();
+            }
+          }
+        } catch (err) {
+          console.warn("Salvataggio riga condivisa non riuscito", rowId, err);
+        }
+      }, delay));
+    }
+
+    async function addSharedExtraRows(rows){
+      try {
+        await fetch(apiUrl("/api/extra-rows"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rows })
+        });
+      } catch (err) {
+        console.warn("Aggiunta righe condivise non riuscita", err);
+      }
+    }
+
+    async function deleteSharedExtraRow(rowId){
+      if (!rowId) return;
+      try {
+        await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
+          method: "DELETE"
+        });
+      } catch (err) {
+        console.warn("Eliminazione riga condivisa non riuscita", err);
+      }
+    }
+
+    async function clearSharedExtraTerminal(termKey){
+      try {
+        await fetch(apiUrl("/api/extra-clear-terminal"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ terminal: termKey })
+        });
+      } catch (err) {
+        console.warn("Svuotamento sezione condivisa non riuscito", err);
+      }
+    }
+
+    async function lockSharedExtraCell(rowId, field){
+      if (!rowId || !field) return true;
+      try {
+        const res = await fetch(apiUrl("/api/extra-lock"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            rowId,
+            field,
+            clientId: EXTRA_CLIENT_ID,
+            clientName: EXTRA_CLIENT_NAME
+          })
+        });
+
+        if (res.status === 409) {
+          const data = await res.json().catch(() => null);
+          const who = data?.lock?.clientName || "un altro PC";
+          return confirm(`Questa cella risulta in modifica da ${who}.\nVuoi continuare comunque?`);
+        }
+
+        return true;
+      } catch {
+        return true;
+      }
+    }
+
+    async function unlockSharedExtraCell(rowId, field){
+      if (!rowId || !field) return;
+      try {
+        await fetch(apiUrl("/api/extra-unlock"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ rowId, field, clientId: EXTRA_CLIENT_ID })
+        });
+      } catch {}
+    }
+
     async function syncExtraFromBackend(forceRender = true){
       try {
         const res = await fetch(apiUrl("/api/shared-state?_=" + Date.now()));
@@ -4153,7 +6447,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!res.ok || !state) return false;
 
         if (Array.isArray(state.extraRows)) {
-          extraRows = state.extraRows.map(normalizeExtraRow);
+          extraRows = mergeRemoteExtraRows(state.extraRows);
+          extraLastRemoteState = state;
         }
 
         if (EXTRA_TERMINALS[state.activeExtraTerminal]) {
@@ -4163,9 +6458,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraAutoCheckEnabled = !!state.extraAutoCheckEnabled;
         extraSharedLastPull = Date.now();
 
-        try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
-        try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
-        try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+        saveExtraLocalOnly();
 
         if (forceRender) renderExtra();
         return true;
@@ -4176,10 +6469,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveExtra(){
-      try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
-      try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
-      try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
-      scheduleSharedExtraSave();
+      saveExtraLocalOnly();
+      scheduleSharedMetaSave();
     }
 
     function loadExtra(){
@@ -4199,9 +6490,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addExtraRows(count, focusLast=false){
-      for(let i=0; i<count; i++) extraRows.push(emptyExtraRow(activeExtraTerminal));
+      const created = [];
+      for(let i=0; i<count; i++) {
+        const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
+        row.__updatedBy = EXTRA_CLIENT_ID;
+        created.push(row);
+        extraRows.push(row);
+      }
+
       renderExtra();
-      saveExtra();
+      saveExtraLocalOnly();
+      addSharedExtraRows(created);
+
       if(focusLast){
         const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
         if(last) last.focus();
@@ -4211,9 +6511,12 @@ document.addEventListener("DOMContentLoaded", () => {
     function deleteExtraRow(index){
       if (index < 0 || index >= extraRows.length) return;
       if (!rowBelongsToTerminal(extraRows[index], activeExtraTerminal)) return;
+
+      const rowId = extraRows[index]?.__id || "";
       extraRows.splice(index, 1);
       renderExtra();
-      saveExtra();
+      saveExtraLocalOnly();
+      deleteSharedExtraRow(rowId);
     }
 
     function focusExtraCell(rowIndex, field){
@@ -4339,26 +6642,69 @@ document.addEventListener("DOMContentLoaded", () => {
           input.dataset.extraField = field;
           td.appendChild(input);
 
+          input.addEventListener("focus", async (e) => {
+            const rowIndex = Number(e.target.dataset.extraRow);
+            const key = e.target.dataset.extraField;
+            const rowId = extraRows[rowIndex]?.__id || "";
+            const ok = await lockSharedExtraCell(rowId, key);
+            if (!ok) e.target.blur();
+          });
+
           input.addEventListener("input", (e) => {
             const rowIndex = Number(e.target.dataset.extraRow);
             const key = e.target.dataset.extraField;
             if (!extraRows[rowIndex]) return;
+
+            extraRows[rowIndex] = normalizeExtraRow(extraRows[rowIndex]);
             extraRows[rowIndex].__terminal = activeExtraTerminal;
+            extraRows[rowIndex].__updatedBy = EXTRA_CLIENT_ID;
+            extraRows[rowIndex].__updatedAt = new Date().toISOString();
             extraRows[rowIndex][key] = e.target.value;
 
+            const patch = {
+              [key]: e.target.value,
+              __terminal: activeExtraTerminal
+            };
+
             if (key === "sct") {
-              extraRows[rowIndex].sctStatus = "";
-              extraRows[rowIndex].sctPdfUrl = "";
-              extraRows[rowIndex].StatoEsteso = "";
-              extraRows[rowIndex].DataIngresso = "";
-              extraRows[rowIndex].Ora = "";
-              extraRows[rowIndex].Causale = "";
+              Object.assign(extraRows[rowIndex], {
+                sctStatus: "",
+                sctPdfUrl: "",
+                StatoEsteso: "",
+                DataIngresso: "",
+                Ora: "",
+                Causale: ""
+              });
+              Object.assign(patch, {
+                sctStatus: "",
+                sctPdfUrl: "",
+                StatoEsteso: "",
+                DataIngresso: "",
+                Ora: "",
+                Causale: ""
+              });
             }
-            if (key === "conateco") extraRows[rowIndex].conatecoStatus = "";
-            if (key === "flavio") extraRows[rowIndex].flavioStatus = "";
+            if (key === "conateco") {
+              extraRows[rowIndex].conatecoStatus = "";
+              patch.conatecoStatus = "";
+            }
+            if (key === "flavio") {
+              extraRows[rowIndex].flavioStatus = "";
+              patch.flavioStatus = "";
+            }
 
             updateExtraTabs();
-            saveExtra();
+            saveExtraLocalOnly();
+            scheduleSharedRowPatch(rowIndex, patch);
+          });
+
+          input.addEventListener("blur", (e) => {
+            const rowIndex = Number(e.target.dataset.extraRow);
+            const key = e.target.dataset.extraField;
+            if (extraRows[rowIndex]) {
+              scheduleSharedRowPatch(rowIndex, null, 0);
+              unlockSharedExtraCell(extraRows[rowIndex].__id, key);
+            }
           });
 
           input.addEventListener("keydown", handleExtraEnterNavigation);
@@ -4396,10 +6742,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clearExtraSection(){
-      if(!confirm("Vuoi svuotare questa sezione?")) return;
-      extraRows = extraRows.filter(row => !rowBelongsToTerminal(row, activeExtraTerminal));
+      if(!confirm("Vuoi svuotare questa sezione per tutti gli utenti collegati?")) return;
+      const term = activeExtraTerminal;
+      extraRows = extraRows.filter(row => !rowBelongsToTerminal(row, term));
       renderExtra();
-      saveExtra();
+      saveExtraLocalOnly();
+      clearSharedExtraTerminal(term);
     }
 
 
@@ -4564,7 +6912,7 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(() => {
       const active = document.activeElement;
       const isEditingExtra = active && active.matches && active.matches("#extraTable input[data-extra-field]");
-      if (!isEditingExtra) syncExtraFromBackend(true);
+      if (!isEditingExtra && Date.now() > extraLocalDirtyUntil) syncExtraFromBackend(true);
     }, 30000);
     setExtraAutoCheck(extraAutoCheckEnabled);
 
@@ -4910,6 +7258,16 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     return rowData;
   };
 
+  const saveLiveRowStatus = () => {
+    const live = getLiveRow();
+    if (rowIndex >= 0 && live) {
+      saveExtraLocalOnly();
+      scheduleSharedRowPatch(rowIndex, normalizeExtraRow(live), 0);
+    } else {
+      saveLiveRowStatus();
+    }
+  };
+
   if (term === "conateco") {
     let liveRow = getLiveRow();
     const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
@@ -4925,7 +7283,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     liveRow.conateco = conatecoValue;
     liveRow.conatecoStatus = result;
 
-    saveExtra();
+    saveLiveRowStatus();
     if (activeExtraTerminal === "conateco") renderExtra();
     return;
   }
@@ -4945,7 +7303,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
     liveRow.sctStatus = "Controllo...";
     liveRow.sctPdfUrl = "";
-    saveExtra();
+    saveLiveRowStatus();
 
     if (activeExtraTerminal === "sct") renderExtra();
 
@@ -4977,7 +7335,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       console.log("PDF NON TROVATO/ERRORE:", sctValue, result);
     }
 
-    saveExtra();
+    saveLiveRowStatus();
 
     if (activeExtraTerminal === "sct") {
       renderExtra();
@@ -4989,7 +7347,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const liveRow = getLiveRow();
     if (String(liveRow.flavio || "").trim() && !liveRow.flavioStatus) {
       liveRow.flavioStatus = "DA COLLEGARE";
-      saveExtra();
+      saveLiveRowStatus();
       if (activeExtraTerminal === "flavio") renderExtra();
     }
   }
@@ -5287,7 +7645,22 @@ function getShipCloseValue(row){
 
 function isShipClosed(row){
   const stato = normalizeShipTerminalStatus(row?.stato || row?.status || row?.statoCarico);
-  return stato.includes("CHIUSA") || stato.includes("CLOSED") || stato.includes("NO_ACCETTA");
+  return stato.includes("CHIUSA") || stato.includes("CLOSED") || stato.includes("NO_ACCETTA") || stato.includes("PARTITA");
+}
+
+function isTfgAcceptaCarico(row){
+  const statusText = normalizeShipTerminalStatus([
+    row?.stato,
+    row?.status,
+    row?.statoCarico,
+    row?.note,
+    row?.terminal,
+    row?.terminalRicerca
+  ].filter(Boolean).join(" "));
+
+  return statusText.includes("ACCETTA CARICO") &&
+    !statusText.includes("NON ACCETTA CARICO") &&
+    !statusText.includes("NO_ACCETTA_CARICO");
 }
 
 function isShipVisibleInClosingModule(row){
@@ -5355,10 +7728,22 @@ function setShipLastUpdateSafe(value){
 }
 
 function getShipStatusClass(row) {
-  return isShipClosed(row) ? "closed" : "today";
+  const stato = normalizeShipTerminalStatus(row?.stato || row?.status || row?.statoCarico || row?.fonteConateco);
+  if (stato.includes("CHIUSA") || stato.includes("PARTITA") || stato.includes("ANNULLATA")) return "closed";
+  if (stato.includes("ORMEGGIATA") || stato.includes("PRESENTE")) return "tomorrow";
+  return "today";
 }
 
 function getShipStatusLabel(row) {
+  const stato = String(row?.stato || row?.status || row?.statoCarico || "").trim();
+  if (stato) return stato.toUpperCase();
+
+  const fonte = String(row?.fonteConateco || row?.categoriaConateco || "").trim().toUpperCase();
+  if (fonte === "PRESENTI") return "PRESENTE";
+  if (fonte === "PREVISTE") return "IN CHIUSURA";
+  if (fonte === "ORMEGGIATE") return "ORMEGGIATA";
+  if (fonte === "PARTITE") return "PARTITA";
+
   return isShipClosed(row) ? "CHIUSA" : "IN CHIUSURA";
 }
 
@@ -5477,7 +7862,7 @@ function renderShipsConateco(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO chiusa ieri/oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave CONATECO nel filtro corrente. La ricerca in alto controlla anche Presenti, Previste, Ormeggiate e Partite.</td></tr>`;
     return;
   }
 
@@ -5486,7 +7871,8 @@ function renderShipsConateco(data) {
     const statusLabel = getShipStatusLabel(row);
     const nave = row.nave || "-";
     const chiusura = row.chiusura || "-";
-    const note = row.note || "-";
+    const fonte = row.fonteConateco || row.categoriaConateco || "";
+    const note = [fonte, row.note].filter(Boolean).join(" · ") || "-";
     const hasRetroporto = !!row.retroporto || String(note).toUpperCase().includes("RETROPORTO");
 
     return `
@@ -5523,7 +7909,14 @@ async function loadShipsTfg() {
 
     const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
     console.log("TFG payload:", payload, "ships:", ships);
-    const visibleShips = filterShipsVisibleForClosingModule(ships);
+
+    // TFG: oltre al filtro data della chiusura doganale, mostra sempre
+    // le navi che accettano carico. Sono operative anche se non rientrano
+    // nella finestra oggi/domani/dopodomani.
+    const visibleShips = ships.filter(row =>
+      isShipVisibleInClosingModule(row) || isTfgAcceptaCarico(row)
+    );
+
     renderShipsTfg(visibleShips);
     setShipTfgCounts(visibleShips.length);
     setShipLastUpdateSafe(payload.updatedAt || payload.generatedAt || payload.lastUpdate);
@@ -5591,11 +7984,26 @@ function getShipRowName(row){
 }
 
 function getShipRowClose(row){
-  return row?.chiusura || row?.data || row?.customCloseTime || row?.stato || "-";
+  const fonteSct = String(row?.fonteSct || row?.section || "").toUpperCase();
+  if (fonteSct.includes("FORECAST")) {
+    return row?.eta || row?.data || row?.chiusura || row?.customCloseTime || row?.stato || "-";
+  }
+  return row?.chiusura || row?.data || row?.customCloseTime || row?.eta || row?.stato || "-";
 }
 
 function getShipRowNotes(row){
-  return row?.note || row?.statoCarico || row?.agenzia || row?.fonteConateco || row?.terminal || "";
+  const acceptance = [
+    row?.acceptanceDry ? `DRY: ${row.acceptanceDry}` : "",
+    row?.acceptanceReef ? `REEF: ${row.acceptanceReef}` : ""
+  ].filter(Boolean).join(" · ");
+
+  return [
+    row?.fonteConateco || row?.categoriaConateco || row?.fonteSct,
+    acceptance,
+    row?.note || row?.statoCarico || row?.agenzia || row?.terminal
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 async function searchShipsEverywhere(query){
@@ -5649,8 +8057,12 @@ async function searchShipsEverywhere(query){
       row.viaggio,
       row.arrVoy,
       row.depVoy,
+      row.eta,
+      row.etd,
       row.stato,
       row.statoCarico,
+      row.acceptanceDry,
+      row.acceptanceReef,
       getShipRowNotes(row)
     ].filter(Boolean).join(" "));
     return haystack.includes(q);
@@ -6272,28 +8684,55 @@ function installExtraTabClearOnClick(){
 
 /* === UX IMPROVEMENTS DOGANATOOLS JS === */
 (function initDoganaToolsUx(){
-  const compactBtn = document.getElementById("compactModeBtn");
   const apiToggleBtn = document.getElementById("apiPanelToggleBtn");
   const apiPanel = document.getElementById("apiConfigPanel");
   const backTop = document.getElementById("floatingBackTop");
   const saveIndicator = document.getElementById("appSaveIndicator");
 
-  try {
-    if (localStorage.getItem("doganatools_compact_mode") === "1") {
-      document.body.classList.add("compact-mode");
-      if (compactBtn) compactBtn.textContent = "Normale";
+  function doganaScrollToTarget(target, focusSelector){
+    if (!target) return;
+
+    const topBar = document.querySelector(".appTopBar");
+    const topBarHeight = topBar ? Math.ceil(topBar.getBoundingClientRect().height) : 0;
+    const extraGap = window.matchMedia("(max-width:800px)").matches ? 18 : 14;
+    const targetTop = target.getBoundingClientRect().top + window.pageYOffset - topBarHeight - extraGap;
+
+    window.scrollTo({
+      top: Math.max(0, targetTop),
+      behavior: "smooth"
+    });
+
+    if (focusSelector) {
+      const focusEl = target.querySelector(focusSelector) || document.querySelector(focusSelector);
+      if (focusEl) {
+        setTimeout(() => {
+          try { focusEl.focus({ preventScroll:true }); }
+          catch { focusEl.focus(); }
+        }, 360);
+      }
     }
+  }
+
+  document.querySelectorAll(".appQuickNav a[href^='#']").forEach(link => {
+    link.addEventListener("click", e => {
+      const hash = link.getAttribute("href");
+      if (!hash || hash === "#") return;
+
+      const target = document.querySelector(hash);
+      if (!target) return;
+
+      e.preventDefault();
+      doganaScrollToTarget(target, link.dataset.jumpFocus || "");
+      try { history.replaceState(null, "", hash); } catch {}
+    });
+  });
+
+
+  try {
     if (localStorage.getItem("doganatools_api_collapsed") === "1") {
       apiPanel?.classList.add("is-collapsed");
     }
   } catch {}
-
-  compactBtn?.addEventListener("click", () => {
-    const enabled = document.body.classList.toggle("compact-mode");
-    compactBtn.textContent = enabled ? "Normale" : "Compatta";
-    try { localStorage.setItem("doganatools_compact_mode", enabled ? "1" : "0"); } catch {}
-  });
-
   apiToggleBtn?.addEventListener("click", () => {
     if (!apiPanel) return;
     const collapsed = apiPanel.classList.toggle("is-collapsed");
@@ -6342,11 +8781,6 @@ function installExtraTabClearOnClick(){
         search.scrollIntoView({ behavior:"smooth", block:"center" });
         setTimeout(() => search.focus(), 250);
       }
-    }
-
-    if (ctrl && key === "b") {
-      e.preventDefault();
-      compactBtn?.click();
     }
 
     if (key === "escape") {
@@ -6811,7 +9245,11 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   install();
 })();
 
+
+
+
 </script>
+
 <div id="pdfExportContainer" style="position:absolute; left:-99999px; top:0;"></div>
 
 <button class="floatingBackTop" id="floatingBackTop" type="button" aria-label="Torna su">↑</button>
@@ -6851,13 +9289,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 
-/* === PDF EXPORT STILE SEMPLICE - COME LISTA CONTAINER ALLEGATA === */
-(function installSimpleTablePdfExports(){
-  if (window.__simpleTablePdfExportsInstalled) return;
+/* === PDF EXPORT PROFESSIONALE - TABELLA / CONTAINER === */
+(function installProfessionalTablePdfExports(){
+  if (window.__professionalTablePdfExportsInstalled) return;
+  window.__professionalTablePdfExportsInstalled = true;
   window.__simpleTablePdfExportsInstalled = true;
 
+  const PDF_COLORS = {
+    ink:[15, 23, 42],
+    muted:[100, 116, 139],
+    border:[203, 213, 225],
+    soft:[248, 250, 252],
+    stripe:[250, 252, 255],
+    blue:[37, 99, 235],
+    blueDark:[30, 64, 175],
+    green:[22, 163, 74],
+    amber:[217, 119, 6],
+    red:[220, 38, 38]
+  };
+
   function cleanPdfText(value){
-    return String(value ?? "").replace(/\s+/g, " ").trim();
+    return String(value ?? "")
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
   }
 
   function pdfDateTime(){
@@ -6883,111 +9338,178 @@ document.addEventListener("DOMContentLoaded", () => {
       .slice(0, 70) || fallback || "documento";
   }
 
-  function line(doc, x1, y1, x2, y2, width = 0.18, gray = 0){
-    doc.setDrawColor(gray, gray, gray);
-    doc.setLineWidth(width);
-    doc.line(x1, y1, x2, y2);
+  function applyColor(doc, key, type = "text"){
+    const color = Array.isArray(key) ? key : (PDF_COLORS[key] || PDF_COLORS.ink);
+    if (type === "draw") doc.setDrawColor(...color);
+    else if (type === "fill") doc.setFillColor(...color);
+    else doc.setTextColor(...color);
   }
 
-  function writeSimpleHeader(doc, title, subtitle, rowsCount, margin){
+  function drawHeader(doc, opts){
     const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = opts.margin;
     let y = margin;
 
-    doc.setTextColor(0, 0, 0);
+    applyColor(doc, "blue", "fill");
+    doc.roundedRect(margin, y, pageWidth - margin * 2, 21, 2.8, 2.8, "F");
+
+    doc.setTextColor(255, 255, 255);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text(cleanPdfText(title), margin, y);
-
-    y += 7;
+    doc.setFontSize(13.5);
+    doc.text(cleanPdfText(opts.title), margin + 6, y + 8.2, { maxWidth: pageWidth - margin * 2 - 70 });
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(cleanPdfText(subtitle), margin, y);
+    doc.setFontSize(8.3);
+    doc.text(cleanPdfText(opts.subtitle || ""), margin + 6, y + 15.2, { maxWidth: pageWidth - margin * 2 - 70 });
 
-    y += 6;
-
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(8.1);
+    doc.text(pdfDateTime(), pageWidth - margin - 6, y + 8.3, { align:"right" });
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("Righe: " + String(rowsCount || 0), margin, y);
-    doc.text(pdfDateTime(), pageWidth - margin, y, { align:"right" });
+    doc.text("Righe: " + String(opts.rowsCount || 0), pageWidth - margin - 6, y + 15.2, { align:"right" });
 
-    y += 4;
-    line(doc, margin, y, pageWidth - margin, y, 0.35, 0);
+    y += 27;
 
-    return y + 4;
+    if (Array.isArray(opts.cards) && opts.cards.length) {
+      const gap = 3;
+      const cardW = (pageWidth - margin * 2 - gap * (opts.cards.length - 1)) / opts.cards.length;
+      let x = margin;
+
+      opts.cards.forEach(card => {
+        applyColor(doc, "soft", "fill");
+        applyColor(doc, "border", "draw");
+        doc.roundedRect(x, y, cardW, 13, 2.2, 2.2, "FD");
+
+        applyColor(doc, "muted");
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(6.8);
+        doc.text(cleanPdfText(card.label).toUpperCase(), x + 3, y + 4.5, { maxWidth: cardW - 6 });
+
+        applyColor(doc, "ink");
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(8.4);
+        doc.text(cleanPdfText(card.value), x + 3, y + 9.8, { maxWidth: cardW - 6 });
+
+        x += cardW + gap;
+      });
+
+      y += 18;
+    }
+
+    return y;
   }
 
-  function writeSimpleFooter(doc, page, margin){
+  function drawFooter(doc, page, margin){
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
 
-    line(doc, margin, pageHeight - 11, pageWidth - margin, pageHeight - 11, 0.18, 120);
+    applyColor(doc, "border", "draw");
+    doc.setLineWidth(0.18);
+    doc.line(margin, pageHeight - 11, pageWidth - margin, pageHeight - 11);
 
-    doc.setTextColor(0, 0, 0);
+    applyColor(doc, "muted");
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.text("DoganaTools - " + pdfDateTime(), margin, pageHeight - 5);
+    doc.setFontSize(7.5);
+    doc.text("DoganaTools", margin, pageHeight - 5);
     doc.text("Pagina " + page, pageWidth - margin, pageHeight - 5, { align:"right" });
   }
 
   function tableHeader(doc, columns, x, y, height){
-    doc.setTextColor(0, 0, 0);
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(7.4);
-    doc.setDrawColor(0, 0, 0);
-    doc.setLineWidth(0.25);
-
-    let cx = x;
-    columns.forEach(col => {
-      doc.rect(cx, y, col.w, height, "S");
-      doc.text(col.label, cx + (col.align === "right" ? col.w - 1.4 : 1.4), y + 5.2, {
-        align: col.align || "left",
-        maxWidth: col.w - 2.8
-      });
-      cx += col.w;
-    });
-
-    return y + height;
-  }
-
-  function measureRow(doc, columns, values, minHeight = 7){
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(7.5);
-
-    let maxLines = 1;
-    values.forEach((value, index) => {
-      const col = columns[index];
-      const lines = doc.splitTextToSize(cleanPdfText(value) || "-", col.w - 2.8);
-      maxLines = Math.max(maxLines, lines.length);
-    });
-
-    return Math.max(minHeight, 3.4 + maxLines * 3.5);
-  }
-
-  function tableRow(doc, columns, values, x, y, height, bold = false){
-    doc.setTextColor(0, 0, 0);
-    doc.setFont("helvetica", bold ? "bold" : "normal");
-    doc.setFontSize(7.5);
-    doc.setDrawColor(70, 70, 70);
-    doc.setLineWidth(bold ? 0.28 : 0.14);
+    applyColor(doc, "blueDark", "fill");
+    applyColor(doc, "blueDark", "draw");
+    doc.setLineWidth(0.15);
+    doc.roundedRect(x, y, columns.reduce((s, c) => s + c.w, 0), height, 1.7, 1.7, "F");
 
     let cx = x;
     columns.forEach((col, index) => {
-      doc.rect(cx, y, col.w, height, "S");
-      const text = cleanPdfText(values[index]) || "-";
-      const lines = doc.splitTextToSize(text, col.w - 2.8);
-      doc.text(lines, cx + (col.align === "right" ? col.w - 1.4 : 1.4), y + 2.25, {
-        align: col.align || "left",
-        baseline:"top",
-        maxWidth: col.w - 2.8
-      });
+      if (index > 0) {
+        doc.setDrawColor(96, 165, 250);
+        doc.line(cx, y + 1.4, cx, y + height - 1.4);
+      }
+
+      doc.setTextColor(255, 255, 255);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(col.fontSize || 7.2);
+      doc.text(
+        cleanPdfText(col.label),
+        cx + (col.align === "right" ? col.w - 1.8 : 1.8),
+        y + height / 2 + 2.1,
+        { align: col.align || "left", maxWidth: col.w - 3.6 }
+      );
       cx += col.w;
     });
 
     return y + height;
   }
 
-  async function exportTaricSimplePdf(){
+  function measureRow(doc, columns, values, minHeight = 7.2){
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(7.2);
+    let maxLines = 1;
+
+    values.forEach((value, index) => {
+      const col = columns[index];
+      const lines = doc.splitTextToSize(cleanPdfText(value) || "-", col.w - 3.6);
+      maxLines = Math.max(maxLines, lines.length);
+    });
+
+    return Math.max(minHeight, 3.7 + maxLines * 3.45);
+  }
+
+  function statusColor(text){
+    const t = cleanPdfText(text).toLowerCase();
+    if (/(entrato|ok|presente|imbarcato|rilasciato|trovato)/.test(t)) return "green";
+    if (/(errore|disconnesso|negato|scaduto|non trovato|non entrato|assente)/.test(t)) return "red";
+    if (/(attesa|verifica|controllo|warning|avviso)/.test(t)) return "amber";
+    return "ink";
+  }
+
+  function tableRow(doc, columns, values, x, y, height, options = {}){
+    const tableWidth = columns.reduce((s, c) => s + c.w, 0);
+    const fill = options.total ? PDF_COLORS.soft : (options.index % 2 ? PDF_COLORS.stripe : [255,255,255]);
+
+    doc.setFillColor(...fill);
+    applyColor(doc, "border", "draw");
+    doc.setLineWidth(options.total ? 0.24 : 0.12);
+    doc.rect(x, y, tableWidth, height, "FD");
+
+    let cx = x;
+    columns.forEach((col, index) => {
+      if (index > 0) {
+        applyColor(doc, "border", "draw");
+        doc.line(cx, y, cx, y + height);
+      }
+
+      const raw = cleanPdfText(values[index]) || "-";
+      const lines = doc.splitTextToSize(raw, col.w - 3.6);
+
+      const colorKey = col.status ? statusColor(raw) : "ink";
+      applyColor(doc, colorKey);
+      doc.setFont("helvetica", options.total || col.bold ? "bold" : "normal");
+      doc.setFontSize(col.fontSize || 7.15);
+
+      doc.text(
+        lines,
+        cx + (col.align === "right" ? col.w - 1.8 : 1.8),
+        y + 2.2,
+        {
+          align: col.align || "left",
+          baseline:"top",
+          maxWidth: col.w - 3.6
+        }
+      );
+
+      cx += col.w;
+    });
+
+    return y + height;
+  }
+
+  function formatCardNumber(text){
+    return cleanPdfText(text || "0").replace(/\s+/g, " ");
+  }
+
+  function exportTaricSimplePdf(){
     const jsPDF = window.jspdf?.jsPDF;
     if (!jsPDF) {
       alert("Libreria PDF non disponibile.");
@@ -7002,13 +9524,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    const doc = new jsPDF({
-      orientation:"landscape",
-      unit:"mm",
-      format:"a4",
-      compress:true
-    });
-
+    const doc = new jsPDF({ orientation:"landscape", unit:"mm", format:"a4", compress:true });
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 9;
@@ -7016,17 +9532,17 @@ document.addEventListener("DOMContentLoaded", () => {
     let page = 1;
 
     const title = getPdfTitle() || "Tabella descrizione / TARIC";
-    const subtitle = "Colli, pezzi, peso lordo, peso netto, MQ e valore fattura";
+    const subtitle = "Riepilogo colli, pezzi, pesi, metri quadri e valore fattura";
 
     const columns = [
-      { label:"RIGA", w:12, align:"right" },
-      { label:"DESCRIZIONE / TARIC", w:116, align:"left" },
-      { label:"COLLI", w:17, align:"right" },
-      { label:"PEZZI", w:17, align:"right" },
+      { label:"RIGA", w:12, align:"right", fontSize:6.8 },
+      { label:"DESCRIZIONE / TARIC", w:111, align:"left" },
+      { label:"COLLI", w:18, align:"right" },
+      { label:"PEZZI", w:18, align:"right" },
       { label:"LORDO", w:27, align:"right" },
       { label:"NETTO", w:27, align:"right" },
-      { label:"MQ", w:17, align:"right" },
-      { label:"VALORE", w:30, align:"right" }
+      { label:"MQ", w:18, align:"right" },
+      { label:"VALORE", w:32, align:"right" }
     ];
 
     const tableWidth = columns.reduce((sum, col) => sum + col.w, 0);
@@ -7044,13 +9560,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
 
     function newPage(){
-      let y = writeSimpleHeader(doc, title, subtitle, rows.length, margin);
+      let y = drawHeader(doc, {
+        title,
+        subtitle,
+        rowsCount: rows.length,
+        margin,
+        cards:[
+          { label:"Colli", value:formatCardNumber(totals[2]) },
+          { label:"Pezzi", value:formatCardNumber(totals[3]) },
+          { label:"Peso lordo", value:formatCardNumber(totals[4]) },
+          { label:"Peso netto", value:formatCardNumber(totals[5]) },
+          { label:"MQ", value:formatCardNumber(totals[6]) },
+          { label:"Valore", value:formatCardNumber(totals[7]) }
+        ]
+      });
       return tableHeader(doc, columns, tableX, y, 8);
     }
 
     let y = newPage();
 
-    rows.forEach(rowData => {
+    rows.forEach((rowData, i) => {
       const values = [
         rowData.index,
         rowData.desc,
@@ -7062,34 +9591,33 @@ document.addEventListener("DOMContentLoaded", () => {
         rowData.value
       ];
 
-      const height = measureRow(doc, columns, values, 7);
+      const height = measureRow(doc, columns, values, 7.2);
 
       if (y + height + footerSpace > pageHeight) {
-        writeSimpleFooter(doc, page, margin);
+        drawFooter(doc, page, margin);
         doc.addPage("a4", "landscape");
         page += 1;
         y = newPage();
       }
 
-      y = tableRow(doc, columns, values, tableX, y, height, false);
+      y = tableRow(doc, columns, values, tableX, y, height, { index:i });
     });
 
     const totalHeight = 8;
-
     if (y + totalHeight + footerSpace > pageHeight) {
-      writeSimpleFooter(doc, page, margin);
+      drawFooter(doc, page, margin);
       doc.addPage("a4", "landscape");
       page += 1;
       y = newPage();
     }
 
-    tableRow(doc, columns, totals, tableX, y, totalHeight, true);
-    writeSimpleFooter(doc, page, margin);
+    tableRow(doc, columns, totals, tableX, y, totalHeight, { total:true });
+    drawFooter(doc, page, margin);
 
     doc.save(cleanFileName(title, "tabella_taric") + "_" + pdfFileDate() + ".pdf");
   }
 
-  async function exportContainerSimplePdf(){
+  function exportContainerSimplePdf(){
     const jsPDF = window.jspdf?.jsPDF;
     if (!jsPDF) {
       alert("Libreria PDF non disponibile.");
@@ -7105,25 +9633,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const terminal = extraGetActiveTerminalName();
-
-    const doc = new jsPDF({
-      orientation:"landscape",
-      unit:"mm",
-      format:"a4",
-      compress:true
-    });
-
+    const doc = new jsPDF({ orientation:"landscape", unit:"mm", format:"a4", compress:true });
+    const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const margin = 9;
     const footerSpace = 14;
     let page = 1;
 
     const columns = [
-      { label:"RIGA", w:12, align:"right" },
+      { label:"RIGA", w:13, align:"right", fontSize:6.8 },
       { label:"CLIENTE", w:60, align:"left" },
-      { label:"CONTAINER", w:44, align:"left" },
-      { label:String(terminal || "TERMINAL").toUpperCase() + " STATO", w:150, align:"left" }
+      { label:"CONTAINER", w:43, align:"left", bold:true },
+      { label:String(terminal || "TERMINAL").toUpperCase() + " - STATO", w:147, align:"left", status:true }
     ];
+
+    const tableWidth = columns.reduce((sum, col) => sum + col.w, 0);
+    const tableX = margin + Math.max(0, (pageWidth - margin * 2 - tableWidth) / 2);
 
     function normalizeContainerRow(row, index){
       const values = Object.keys(row)
@@ -7142,39 +9667,45 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const rows = sourceRows.map(normalizeContainerRow);
+    const okCount = rows.filter(r => /(entrato|ok|presente|trovato|imbarcato)/i.test(r[3])).length;
+    const koCount = rows.filter(r => /(non entrato|assente|errore|non trovato|disconnesso)/i.test(r[3])).length;
 
     function newPage(){
-      let y = writeSimpleHeader(
-        doc,
-        "Lista container non entrati",
-        "Terminal: " + terminal,
-        rows.length,
-        margin
-      );
-      return tableHeader(doc, columns, margin, y, 8);
+      let y = drawHeader(doc, {
+        title:"Lista container non entrati",
+        subtitle:"Terminal: " + (terminal || "-") + " · Esportazione tabella container",
+        rowsCount: rows.length,
+        margin,
+        cards:[
+          { label:"Terminal", value:terminal || "-" },
+          { label:"Container", value:String(rows.length) },
+          { label:"Entrati / OK", value:String(okCount) },
+          { label:"Da verificare", value:String(Math.max(0, rows.length - okCount - koCount)) },
+          { label:"Critici", value:String(koCount) }
+        ]
+      });
+      return tableHeader(doc, columns, tableX, y, 8);
     }
 
     let y = newPage();
 
-    rows.forEach(values => {
-      const height = measureRow(doc, columns, values, 7);
+    rows.forEach((values, i) => {
+      const height = measureRow(doc, columns, values, 7.2);
 
       if (y + height + footerSpace > pageHeight) {
-        writeSimpleFooter(doc, page, margin);
+        drawFooter(doc, page, margin);
         doc.addPage("a4", "landscape");
         page += 1;
         y = newPage();
       }
 
-      y = tableRow(doc, columns, values, margin, y, height, false);
+      y = tableRow(doc, columns, values, tableX, y, height, { index:i });
     });
 
-    writeSimpleFooter(doc, page, margin);
-
+    drawFooter(doc, page, margin);
     doc.save("lista_container_" + cleanFileName(terminal, "terminal") + "_" + pdfFileDate() + ".pdf");
   }
 
-  // Cattura i click prima dei vecchi listener: applica questo stile a entrambi.
   document.addEventListener("click", function(e){
     const taricBtn = e.target.closest("#exportPdfBtn");
     if (taricBtn) {
@@ -7199,6 +9730,382 @@ document.addEventListener("DOMContentLoaded", () => {
   window.exportContainerSimplePdf = exportContainerSimplePdf;
 })();
 
+
+
+
+</script>
+
+
+<script>
+/* === MENU DOGANATOOLS - impostazioni e sync sessione === */
+(function(){
+  function randomSuffix(){ return Math.random().toString(36).slice(2, 6).toUpperCase(); }
+  function hashColor(str){
+    let h = 0;
+    str = String(str || "");
+    for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+    return `hsl(${Math.abs(h) % 360} 78% 44%)`;
+  }
+  function getClientId(){
+    try {
+      let id = localStorage.getItem("dogana_multi_client_id_v3");
+      if (!id) {
+        id = "pc-" + Math.random().toString(36).slice(2, 10) + "-" + Date.now().toString(36);
+        localStorage.setItem("dogana_multi_client_id_v3", id);
+      }
+      return id;
+    } catch { return "pc-" + Math.random().toString(36).slice(2, 10); }
+  }
+  function getClientName(){
+    try {
+      let name = localStorage.getItem("dogana_multi_client_name_v3");
+      if (!name) {
+        name = "PC-" + randomSuffix();
+        localStorage.setItem("dogana_multi_client_name_v3", name);
+      }
+      return name;
+    } catch { return "PC-" + randomSuffix(); }
+  }
+  function getClientColor(id, name){
+    try {
+      let color = localStorage.getItem("dogana_multi_client_color_v3");
+      if (!color) {
+        color = hashColor(name + id);
+        localStorage.setItem("dogana_multi_client_color_v3", color);
+      }
+      return color;
+    } catch { return hashColor(name + id); }
+  }
+  function apiBase(){
+    const host = String(location.hostname || "").toLowerCase();
+    if (host.includes("reav.website") || host.includes("vercel.app")) return "https://dogana-api.reav.website";
+    return "";
+  }
+  function api(path){ return apiBase() + path; }
+  function toast(msg){
+    const existing = document.getElementById("extraLockHint");
+    if (existing) {
+      existing.textContent = msg;
+      existing.classList.add("show");
+      clearTimeout(toast._t);
+      toast._t = setTimeout(() => existing.classList.remove("show"), 2600);
+      return;
+    }
+    console.log(msg);
+  }
+  async function manualSync(){
+    const syncBtn = document.getElementById("doganaSyncNow");
+    if (syncBtn) { syncBtn.click(); return; }
+    await Promise.allSettled([
+      fetch(api("/api/shared-state"), { cache:"no-store", credentials:"include" }),
+      fetch(api("/api/extra-locks"), { cache:"no-store", credentials:"include" })
+    ]);
+    toast("Sincronizzazione stato condiviso e lock celle completata.");
+  }
+  function openSettings(){
+    const headerBtn = document.getElementById("doganaSettingsButton");
+    if (headerBtn) { headerBtn.click(); return; }
+    document.getElementById("doganaSettingsPanel")?.classList.add("show");
+    document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
+  }
+  function init(){
+    try {
+} catch {}
+const id = getClientId();
+    const name = getClientName();
+    const color = getClientColor(id, name);
+
+    const menuSettings = document.getElementById("doganaMenuSettingsBtn");
+    menuSettings?.addEventListener("click", openSettings);
+
+    const sessionBtn = document.getElementById("doganaMenuSessionSync");
+    const sessionName = document.getElementById("doganaMenuSessionName");
+    if (sessionName) sessionName.textContent = name;
+    if (sessionBtn) {
+      sessionBtn.style.setProperty("--session-color", color);
+      sessionBtn.addEventListener("click", async () => {
+        sessionBtn.classList.add("is-syncing");
+        const oldTitle = sessionBtn.title;
+        sessionBtn.title = "Sincronizzazione in corso...";
+        try { await manualSync(); }
+        finally {
+          sessionBtn.classList.remove("is-syncing");
+          sessionBtn.title = oldTitle || "Sincronizza stato condiviso e lock celle";
+        }
+      });
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  const MIN_KEY = "doganatools_extra_auto_minutes";
+  const ON_KEY = "doganatools_extra_auto_enabled";
+  let timer = null;
+
+  function panel(){
+    return document.querySelector(".extraPanel") || document.getElementById("extraPanel");
+  }
+
+  function toolbar(){
+    const p = panel();
+    if (!p) return null;
+    return p.querySelector(".extraTopToolbar, .miniToolbar, .right, .toolbar") || p.querySelector(".miniHead");
+  }
+
+  function minutes(){
+    const input = document.getElementById("extraAutoSingleMinutes");
+    let n = parseInt((input && input.value) || localStorage.getItem(MIN_KEY) || "5", 10);
+    if (!Number.isFinite(n) || n < 1) n = 5;
+    if (n > 1440) n = 1440;
+    localStorage.setItem(MIN_KEY, String(n));
+    if (input) input.value = String(n);
+    return n;
+  }
+
+  function runCheck(){
+    const names = [
+      "checkExtraRows",
+      "checkAllExtraRows",
+      "checkExtraContainers",
+      "checkVisibleExtraRows",
+      "checkExtraCurrentTerminal",
+      "checkExtraAllRows",
+      "runExtraAutoCheck"
+    ];
+
+    for (const name of names) {
+      if (typeof window[name] === "function") {
+        try { window[name](); return true; }
+        catch(e){ console.error("Errore controllo contenitori:", name, e); }
+      }
+    }
+
+    const p = panel();
+    const btn = p && Array.from(p.querySelectorAll("button")).find(b => {
+      const t = (b.textContent || "").trim();
+      return /controlla/i.test(t) && b.id !== "extraAutoSingleButton";
+    });
+
+    if (btn) {
+      btn.click();
+      return true;
+    }
+
+    return false;
+  }
+
+  function stop(){
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  function start(now){
+    stop();
+    const m = minutes();
+    if (now) setTimeout(runCheck, 200);
+    timer = setInterval(runCheck, m * 60 * 1000);
+  }
+
+  function setOn(on, now){
+    const btn = document.getElementById("extraAutoSingleButton");
+    const label = document.getElementById("extraAutoSingleState");
+    localStorage.setItem(ON_KEY, on ? "1" : "0");
+
+    if (btn) {
+      btn.classList.toggle("is-on", on);
+      btn.classList.toggle("is-off", !on);
+      btn.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+
+    if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
+
+    if (on) start(now);
+    else stop();
+  }
+
+  function build(){
+    const tb = toolbar();
+    if (!tb) return;
+
+    const p = panel();
+    if (p) {
+      p.querySelectorAll(".doganaSessionChip, .extraLiveBadge").forEach(el => el.remove());
+      p.querySelectorAll(".extraAutoStatus").forEach(el => el.style.display = "none");
+      p.querySelectorAll(".autoCheckSwitch").forEach(el => el.style.display = "none");
+    }
+
+    let btn = document.getElementById("extraAutoSingleButton");
+    if (!btn) {
+      btn = document.createElement("button");
+      btn.type = "button";
+      btn.id = "extraAutoSingleButton";
+      btn.className = "extraAutoSingleButton is-off";
+      btn.innerHTML = `
+        <span class="extraAutoSingleButtonSwitch" aria-hidden="true"></span>
+        <span id="extraAutoSingleState">Auto OFF</span>
+        <span>ogni</span>
+        <input id="extraAutoSingleMinutes" type="number" min="1" max="1440" step="1" value="${localStorage.getItem(MIN_KEY) || "5"}">
+        <span>min</span>
+      `;
+      tb.insertBefore(btn, tb.firstChild);
+    }
+
+    const input = document.getElementById("extraAutoSingleMinutes");
+
+    btn.onclick = function(e){
+      if (e.target === input) return;
+      setOn(!btn.classList.contains("is-on"), true);
+    };
+
+    input.onclick = function(e){ e.stopPropagation(); };
+    input.onchange = function(){
+      minutes();
+      if (btn.classList.contains("is-on")) start(false);
+    };
+    input.oninput = function(){
+      localStorage.setItem(MIN_KEY, String(input.value || 5));
+    };
+
+    setOn(localStorage.getItem(ON_KEY) === "1", false);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
+  else build();
+
+  window.doganaExtraAutoCheckNow = runCheck;
+})();
+</script>
+
+
+<script>
+(function(){
+  function removeExtraSessionName(){
+    const panel = document.querySelector(".extraPanel") || document.getElementById("extraPanel");
+    if (!panel) return;
+
+    panel.querySelectorAll(".doganaSessionChip, .extraLiveBadge, .extraLiveDot, [data-session]").forEach(el => el.remove());
+
+    Array.from(panel.querySelectorAll("span, div, button")).forEach(el => {
+      const txt = (el.textContent || "").replace(/\s+/g, " ").trim();
+      if (/^Sessione\s*:/i.test(txt) || /^Sessione\b/i.test(txt)) {
+        el.remove();
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", removeExtraSessionName);
+  } else {
+    removeExtraSessionName();
+  }
+
+  setTimeout(removeExtraSessionName, 300);
+  setTimeout(removeExtraSessionName, 1000);
+})();
+</script>
+
+
+
+<script>
+/* === CONSOLE SERVER.JS - solo lettura output backend === */
+(function(){
+  const MAX_LINES = 500;
+  let source = null;
+  let lines = [];
+
+  function $(id){ return document.getElementById(id); }
+
+  function api(path){
+    const base = (window.DOGANA_API_BASE || window.API_BASE || "").replace(/\/$/, "");
+    return base + path;
+  }
+
+  function setStatus(text, connected){
+    const el = $("serverConsoleStatus");
+    if (!el) return;
+    el.textContent = text;
+    el.classList.toggle("connected", !!connected);
+  }
+
+  function render(){
+    const out = $("serverConsoleOutput");
+    if (!out) return;
+    out.textContent = lines.length ? lines.join("\n") : "Console pronta. In attesa dell'output di server.js...";
+    out.scrollTop = out.scrollHeight;
+  }
+
+  function addLine(entry){
+    const time = entry && entry.time ? new Date(entry.time).toLocaleTimeString("it-IT", { hour12:false }) : new Date().toLocaleTimeString("it-IT", { hour12:false });
+    const prefix = entry && entry.source === "stderr" ? "ERR" : "LOG";
+    const text = entry && entry.line ? String(entry.line) : "";
+    if (!text) return;
+    lines.push(`[${time}] ${prefix} ${text}`);
+    while (lines.length > MAX_LINES) lines.shift();
+    render();
+  }
+
+  function connect(){
+    if (!$("serverConsoleOutput")) return;
+    if (source) {
+      try { source.close(); } catch {}
+      source = null;
+    }
+
+    if (!window.EventSource) {
+      setStatus("EventSource non supportato", false);
+      return;
+    }
+
+    setStatus("Connessione...", false);
+    source = new EventSource(api("/api/console-stream"));
+
+    source.addEventListener("ready", function(){
+      setStatus("Connessa", true);
+    });
+
+    source.addEventListener("line", function(event){
+      try { addLine(JSON.parse(event.data || "{}")); } catch {}
+    });
+
+    source.onerror = function(){
+      setStatus("Disconnessa", false);
+    };
+  }
+
+  function boot(){
+    const clearBtn = $("serverConsoleClear");
+    const reconnectBtn = $("serverConsoleReconnect");
+    const toggleBtn = $("serverConsoleToggle");
+    const panel = $("serverConsolePanel");
+
+    if (clearBtn) clearBtn.addEventListener("click", function(){
+      lines = [];
+      render();
+    });
+
+    if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
+
+    if (toggleBtn && panel) toggleBtn.addEventListener("click", function(){
+      const minimized = panel.classList.toggle("is-minimized");
+      toggleBtn.textContent = minimized ? "Mostra" : "Riduci a icona";
+    });
+
+    connect();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+
+  window.addEventListener("beforeunload", function(){
+    try { source && source.close(); } catch {}
+  });
+})();
 </script>
 
 </body>
