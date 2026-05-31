@@ -1540,6 +1540,37 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   box-shadow:0 0 0 3px rgba(37,99,235,.14);
 }
 
+#extraTable input.extraContainerInvalid{
+  box-shadow:inset 0 0 0 2px var(--danger), 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent) !important;
+  background:color-mix(in srgb, var(--danger) 7%, var(--surface)) !important;
+}
+
+#extraTable input.extraContainerInvalid:focus{
+  box-shadow:inset 0 0 0 2px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent) !important;
+}
+
+#extraTable input.extraContainerDuplicate{
+  outline:2px solid #f59e0b !important;
+  outline-offset:-2px !important;
+  box-shadow:inset 0 0 0 2px #f59e0b, 0 0 0 3px rgba(245, 158, 11, .18) !important;
+  background:color-mix(in srgb, #f59e0b 8%, var(--surface)) !important;
+}
+
+#extraTable input.extraContainerDuplicate:focus{
+  outline:2px solid #f59e0b !important;
+  outline-offset:-2px !important;
+  box-shadow:inset 0 0 0 2px #f59e0b, 0 0 0 4px rgba(245, 158, 11, .22) !important;
+}
+
+#extraTable input.extraContainerInvalid.extraContainerDuplicate{
+  box-shadow:inset 0 0 0 2px var(--danger), 0 0 0 3px color-mix(in srgb, var(--danger) 14%, transparent) !important;
+  background:color-mix(in srgb, var(--danger) 7%, var(--surface)) !important;
+}
+
+#extraTable input.extraContainerInvalid.extraContainerDuplicate:focus{
+  box-shadow:inset 0 0 0 2px var(--danger), 0 0 0 4px color-mix(in srgb, var(--danger) 18%, transparent) !important;
+}
+
 #extraTable td{
   font-size:13px;
   overflow:hidden;
@@ -5013,10 +5044,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const candidates = [
     "#extraContainerInput",
     "#containerListInput",
-    "#extraContainers",
-    "#extraTable input[data-extra-field='sct']",
-    "#extraTable input[data-extra-field='conateco']",
-    "#extraTable input[data-extra-field='flavio']"
+    "#extraContainers"
   ];
 
   const attachPasteFix = (input) => {
@@ -5263,7 +5291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   <div class="shipQuickSearch" id="shipQuickSearch">
-    <input id="shipSearchInput" type="search" placeholder="Ricerca Navi Globale..." autocomplete="off" />
+    <input id="shipSearchInput" type="search" placeholder="Cerca in tutte le navi..." autocomplete="off" />
     <button id="shipSearchBtn" type="button">Cerca</button>
     <button id="shipSearchClearBtn" type="button">Pulisci ricerca</button>
     <span class="shipQuickSearchStatus" id="shipSearchStatus">Ricerca su tutte le navi disponibili</span>
@@ -7235,6 +7263,152 @@ document.addEventListener("DOMContentLoaded", () => {
       return extraRows.filter(r => rowBelongsToTerminal(r, termKey) && String(r?.[cfg.containerField] || "").trim()).length;
     }
 
+    const EXTRA_CONTAINER_FIELDS = ["sct", "conateco", "flavio"];
+    const EXTRA_CONTAINER_CODE_RE = /^[A-Z]{4}\d{7}$/;
+
+    function isExtraContainerField(field){
+      return EXTRA_CONTAINER_FIELDS.includes(String(field || ""));
+    }
+
+    function normalizeExtraContainerValue(value){
+      return String(value || "")
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, "");
+    }
+
+    function isValidExtraContainerCode(value){
+      const clean = normalizeExtraContainerValue(value);
+      return !clean || EXTRA_CONTAINER_CODE_RE.test(clean);
+    }
+
+    function countExtraContainerOccurrences(field, value){
+      const clean = normalizeExtraContainerValue(value);
+      if (!clean || !isExtraContainerField(field)) return 0;
+
+      // Prima leggiamo gli input realmente presenti nel modulo visibile.
+      // In questo modo il controllo duplicati funziona subito anche mentre si digita,
+      // prima che extraRows venga aggiornato/salvato.
+      const visibleInputs = Array.from(document.querySelectorAll(`#extraTable input[data-extra-field="${field}"]`));
+      if (visibleInputs.length) {
+        return visibleInputs.filter(input => normalizeExtraContainerValue(input.value) === clean).length;
+      }
+
+      return extraRows.filter(row =>
+        rowBelongsToTerminal(row, activeExtraTerminal) &&
+        normalizeExtraContainerValue(row?.[field]) === clean
+      ).length;
+    }
+
+    function updateExtraContainerValidation(input){
+      if (!input || !isExtraContainerField(input.dataset.extraField)) return true;
+
+      const field = input.dataset.extraField;
+      const clean = normalizeExtraContainerValue(input.value);
+      const valid = !clean || EXTRA_CONTAINER_CODE_RE.test(clean);
+      const duplicate = valid && !!clean && countExtraContainerOccurrences(field, clean) > 1;
+
+      input.classList.toggle("extraContainerInvalid", !valid);
+      input.classList.toggle("extraContainerDuplicate", duplicate);
+      input.setAttribute("aria-invalid", valid ? "false" : "true");
+
+      if (!valid) {
+        input.title = "Formato container non valido. Usa ABCD1234567: 4 lettere + 7 numeri.";
+      } else if (duplicate) {
+        input.title = "Container duplicato nella lista.";
+      } else {
+        input.title = "";
+      }
+
+      return valid && !duplicate;
+    }
+
+    function refreshExtraContainerValidations(){
+      document.querySelectorAll('#extraTable input[data-extra-field]').forEach(input => {
+        if (isExtraContainerField(input.dataset.extraField)) updateExtraContainerValidation(input);
+      });
+    }
+
+    function parsePastedExtraContainers(text){
+      return String(text || "")
+        .replace(/\r/g, "\n")
+        .split(/[\n\t,; ]+/)
+        .map(normalizeExtraContainerValue)
+        .filter(Boolean);
+    }
+
+    function clearExtraStatusForContainerField(row, field){
+      if (!row) return;
+
+      if (field === "sct") {
+        Object.assign(row, {
+          sctStatus: "",
+          sctPdfUrl: "",
+          StatoEsteso: "",
+          DataIngresso: "",
+          Ora: "",
+          Causale: ""
+        });
+      }
+
+      if (field === "conateco") row.conatecoStatus = "";
+      if (field === "flavio") row.flavioStatus = "";
+    }
+
+    function handleExtraContainerPaste(e){
+      const input = e.target;
+      const field = input?.dataset?.extraField;
+      if (!isExtraContainerField(field)) return;
+
+      const raw = (e.clipboardData || window.clipboardData)?.getData("text") || "";
+      const containers = parsePastedExtraContainers(raw);
+      const hasListSeparators = /[\n\r\t,;]/.test(raw);
+
+      if (!containers.length || (containers.length === 1 && !hasListSeparators)) return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const currentRow = Number(input.dataset.extraRow);
+      const visible = getVisibleExtraEntries(activeExtraTerminal).map(entry => entry.index);
+      let pos = visible.indexOf(currentRow);
+      if (pos < 0) pos = visible.length;
+
+      const changedRows = [];
+
+      containers.forEach((container, offset) => {
+        let rowIndex = visible[pos + offset];
+
+        if (rowIndex === undefined) {
+          const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
+          row.__updatedBy = EXTRA_CLIENT_ID;
+          row.__updatedAt = new Date().toISOString();
+          extraRows.push(row);
+          rowIndex = extraRows.length - 1;
+          visible.push(rowIndex);
+        }
+
+        extraRows[rowIndex] = normalizeExtraRow(extraRows[rowIndex]);
+        extraRows[rowIndex].__terminal = activeExtraTerminal;
+        extraRows[rowIndex].__updatedBy = EXTRA_CLIENT_ID;
+        extraRows[rowIndex].__updatedAt = new Date().toISOString();
+        extraRows[rowIndex][field] = container;
+        clearExtraStatusForContainerField(extraRows[rowIndex], field);
+        changedRows.push(normalizeExtraRow(extraRows[rowIndex]));
+      });
+
+      renderExtra();
+      refreshExtraContainerValidations();
+      saveExtraLocalOnly();
+      addSharedExtraRows(changedRows);
+
+      const lastIndex = visible[pos + containers.length - 1];
+      setTimeout(() => {
+        refreshExtraContainerValidations();
+        focusExtraCell(lastIndex, field);
+      }, 0);
+    }
+
     function updateExtraTabs(){
       document.querySelectorAll(".extraTab").forEach(btn => {
         btn.classList.toggle("active", btn.dataset.extraTerminal === activeExtraTerminal);
@@ -7338,6 +7512,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const key = e.target.dataset.extraField;
             if (!extraRows[rowIndex]) return;
 
+            if (isExtraContainerField(key)) {
+              const normalized = normalizeExtraContainerValue(e.target.value);
+              if (e.target.value !== normalized) e.target.value = normalized;
+              updateExtraContainerValidation(e.target);
+            }
+
             extraRows[rowIndex] = normalizeExtraRow(extraRows[rowIndex]);
             extraRows[rowIndex].__terminal = activeExtraTerminal;
             extraRows[rowIndex].__updatedBy = EXTRA_CLIENT_ID;
@@ -7377,6 +7557,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             updateExtraTabs();
+            refreshExtraContainerValidations();
             saveExtraLocalOnly();
             scheduleSharedRowPatch(rowIndex, patch);
           });
@@ -7390,7 +7571,9 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
 
+          input.addEventListener("paste", handleExtraContainerPaste);
           input.addEventListener("keydown", handleExtraEnterNavigation);
+          updateExtraContainerValidation(input);
           return td;
         };
 
@@ -7414,6 +7597,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraTbody.appendChild(tr);
       });
       updateExtraTabs();
+      refreshExtraContainerValidations();
       updateAutoCheckUI();
     }
 
@@ -7498,10 +7682,18 @@ document.addEventListener("DOMContentLoaded", () => {
           extraAutoStatus.textContent = `Creo ZIP con ${containers.length} PDF già trovati...`;
         }
 
-        const response = await fetch(
+        let response = await fetch(
           apiUrl(`/api/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
           { method: "GET" }
         );
+
+        // Compatibilità con backend vecchi che esponevano la rotta senza prefisso /api.
+        if (response.status === 404) {
+          response = await fetch(
+            apiUrl(`/download-pdfs-zip?containers=${encodeURIComponent(containers.join(","))}`),
+            { method: "GET" }
+          );
+        }
 
         if (!response.ok) {
           let message = `Errore backend ${response.status}`;
@@ -10062,36 +10254,9 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 
 <script>
-/* === FIX INCOLLA EXCEL CONTAINER IN COLONNA - standalone === */
-document.addEventListener("DOMContentLoaded", () => {
-  const table = document.getElementById("extraTable");
-  if (!table || table.dataset.excelPasteFix === "1") return;
-
-  table.dataset.excelPasteFix = "1";
-
-  table.addEventListener("paste", (e) => {
-    const target = e.target;
-    if (!target || !target.matches("input, textarea")) return;
-
-    const text = (e.clipboardData || window.clipboardData)?.getData("text") || "";
-    if (!text || (!text.includes("\t") && !text.includes("\n") && !text.includes("\r"))) return;
-
-    const containers = text
-      .replace(/\r/g, "\n")
-      .replace(/\t/g, "\n")
-      .split("\n")
-      .map(x => (x.match(/[A-Z]{4}\d{7}/i) || [x.trim()])[0].toUpperCase())
-      .filter(Boolean);
-
-    if (containers.length <= 1) return;
-
-    e.preventDefault();
-    target.value = containers.join("\n");
-    target.dispatchEvent(new Event("input", { bubbles: true }));
-  }, true);
-});
-
-
+/* === INCOLLA CONTAINER: gestito dal modulo Contenitori non entrati ===
+   Nota: il vecchio fix standalone è stato rimosso perché inseriva più codici
+   nella stessa input e l'handler input li normalizzava concatenandoli. */
 
 
 /* === PDF EXPORT PROFESSIONALE - TABELLA / CONTAINER === */
