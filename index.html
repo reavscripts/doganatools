@@ -1793,6 +1793,91 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 /* === CONTENITORI NON ENTRATI - tab terminal + auto check === */
 .extraHead{ align-items:flex-start; }
 .extraTopToolbar{ gap:8px; }
+
+/* SCT BOOKING - menu a tendina sotto la tab SCT */
+.sctBookingPanel{
+  display:none;
+  margin:0 0 12px;
+  border:1px solid color-mix(in srgb, var(--grid-soft) 82%, transparent);
+  border-radius:18px;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 5%, var(--surface)) 0%, var(--surface-soft) 100%);
+  box-shadow:0 8px 22px rgba(15,23,42,.045);
+  overflow:hidden;
+}
+.sctBookingPanel.is-visible{ display:block; }
+.sctBookingPanel summary{
+  list-style:none;
+  cursor:pointer;
+  min-height:48px;
+  padding:12px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-weight:950;
+  color:var(--heading);
+  user-select:none;
+}
+.sctBookingPanel summary::-webkit-details-marker{ display:none; }
+.sctBookingPanel summary::before{
+  content:"📄";
+  width:30px;
+  height:30px;
+  border-radius:11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+  border:1px solid color-mix(in srgb, var(--accent) 18%, var(--grid-soft));
+  font-size:14px;
+  flex:0 0 auto;
+}
+.sctBookingPanel summary::after{
+  content:"▾";
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid var(--grid-soft);
+  background:var(--surface);
+  color:var(--muted);
+  transition:transform .18s ease;
+  margin-left:auto;
+  flex:0 0 auto;
+}
+.sctBookingPanel[open] summary::after{ transform:rotate(180deg); }
+.sctBookingForm{
+  display:grid;
+  grid-template-columns:minmax(220px, 1fr) auto auto;
+  gap:8px;
+  align-items:center;
+  padding:0 14px 14px;
+  border-top:0;
+}
+.sctBookingInput{
+  min-height:42px;
+  border:1px solid var(--btn-border);
+  border-radius:12px;
+  background:var(--surface);
+  padding:10px 12px;
+  font-weight:800;
+}
+.sctBookingStatus{
+  grid-column:1 / -1;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+  min-height:18px;
+  padding:2px 2px 0;
+}
+.sctBookingStatus.ok{ color:var(--accent-2); }
+.sctBookingStatus.error{ color:var(--danger); }
+@media (max-width:700px){
+  .sctBookingForm{ grid-template-columns:1fr; }
+}
+
 .extraTabs{
   display:flex;
   gap:8px;
@@ -5690,6 +5775,15 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="extraContent" id="extraContent">
+    <details class="sctBookingPanel" id="sctBookingPanel">
+      <summary>Ricerca booking SCT / VGM</summary>
+      <div class="sctBookingForm">
+        <input class="sctBookingInput" id="sctBookingInput" type="text" inputmode="numeric" placeholder="INSERISCI NUMERO BOOKING SCT" autocomplete="off" />
+        <button class="primary" id="sctBookingSearchBtn" type="button">Cerca booking</button>
+        <button class="success" id="sctBookingOpenBtn" type="button" disabled>Apri PDF</button>
+        <div class="sctBookingStatus" id="sctBookingStatus">Usa la stessa sessione JMT/SCT già collegata.</div>
+      </div>
+    </details>
     <div class="miniWrap">
       <table class="miniTable" id="extraTable">
         <thead id="extraThead"></thead>
@@ -7127,6 +7221,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
     const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
     const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
+    const sctBookingPanel = document.getElementById("sctBookingPanel");
+    const sctBookingInput = document.getElementById("sctBookingInput");
+    const sctBookingSearchBtn = document.getElementById("sctBookingSearchBtn");
+    const sctBookingOpenBtn = document.getElementById("sctBookingOpenBtn");
+    const sctBookingStatus = document.getElementById("sctBookingStatus");
+    let sctBookingPdfUrl = "";
 
     const EXTRA_TERMINALS = {
       sct: {
@@ -7203,7 +7303,7 @@ document.addEventListener("DOMContentLoaded", () => {
         clientConateco: r?.clientConateco ?? "",
         conateco: r?.conateco ?? "",
         conatecoStatus: r?.conatecoStatus ?? "",
-        conatecoPdfUrl: String(r?.conatecoPdfUrl || "").startsWith("blob:") ? "" : (r?.conatecoPdfUrl ?? ""),
+        conatecoPdfUrl: r?.conatecoPdfUrl ?? "",
         conatecoTracking: r?.conatecoTracking ?? null,
         clientFlavio: r?.clientFlavio ?? "",
         flavio: r?.flavio ?? "",
@@ -7607,7 +7707,11 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       }
 
-      if (field === "conateco") row.conatecoStatus = "";
+      if (field === "conateco") {
+        row.conatecoStatus = "";
+        row.conatecoPdfUrl = "";
+        row.conatecoTracking = null;
+      }
       if (field === "flavio") row.flavioStatus = "";
     }
 
@@ -7677,6 +7781,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (fla) fla.textContent = String(countFilledExtra("flavio"));
       const cfg = EXTRA_TERMINALS[activeExtraTerminal];
       if (extraTerminalSubtitle) extraTerminalSubtitle.textContent = cfg.subtitle;
+      if (sctBookingPanel) sctBookingPanel.classList.toggle("is-visible", activeExtraTerminal === "sct");
     }
 
     function renderExtraStatusCell(td, row, cfg, containerValue){
@@ -7935,6 +8040,87 @@ document.addEventListener("DOMContentLoaded", () => {
       )];
     }
 
+    function normalizeSctBookingValue(value){
+      return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
+    }
+
+    function setSctBookingStatus(message, type = ""){
+      if (!sctBookingStatus) return;
+      sctBookingStatus.textContent = message || "";
+      sctBookingStatus.classList.remove("ok", "error");
+      if (type) sctBookingStatus.classList.add(type);
+    }
+
+    async function searchSctBookingPdf(){
+      const booking = normalizeSctBookingValue(sctBookingInput?.value || "");
+      if (sctBookingInput && sctBookingInput.value !== booking) sctBookingInput.value = booking;
+
+      sctBookingPdfUrl = "";
+      if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = true;
+
+      if (!booking) {
+        setSctBookingStatus("Inserisci un numero booking SCT.", "error");
+        return;
+      }
+
+      if (sctBookingSearchBtn) {
+        sctBookingSearchBtn.disabled = true;
+        sctBookingSearchBtn.textContent = "Cerco...";
+      }
+      setSctBookingStatus("Cerco booking su SCT usando la sessione JMT già attiva...");
+
+      try {
+        const response = await fetch(
+          apiUrl(`/api/get-sct-booking-pdf?booking=${encodeURIComponent(booking)}&_=${Date.now()}`),
+          {
+            method: "GET",
+            mode: "cors",
+            credentials: "omit",
+            cache: "no-store",
+            headers: { "Accept": "application/json" }
+          }
+        );
+
+        const data = await response.json().catch(() => null);
+
+        if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
+          showJmtDisconnectedMessage(`booking ${booking}`);
+          return;
+        }
+
+        if (!response.ok || !data?.success || !data?.pdfUrl) {
+          throw new Error(data?.error || `Booking non trovato o report non disponibile (${response.status})`);
+        }
+
+        sctBookingPdfUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
+        if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = !sctBookingPdfUrl;
+        setSctBookingStatus(`PDF booking ${booking} pronto. Premi “Apri PDF”.`, "ok");
+
+        if (typeof showExtraToast === "function") {
+          showExtraToast("Booking SCT pronto", `PDF disponibile per booking ${booking}.`, "success");
+        }
+        try { playExtraNotifySound?.(); } catch {}
+
+      } catch (err) {
+        console.error("Errore ricerca booking SCT:", err);
+        setSctBookingStatus(err?.message || "Errore ricerca booking SCT", "error");
+      } finally {
+        if (sctBookingSearchBtn) {
+          sctBookingSearchBtn.disabled = false;
+          sctBookingSearchBtn.textContent = "Cerca booking";
+        }
+      }
+    }
+
+    function openSctBookingPdf(){
+      const url = normalizeJmtPdfUrl(sctBookingPdfUrl);
+      if (!url) {
+        setSctBookingStatus("Prima cerca un booking SCT valido.", "error");
+        return;
+      }
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+
     async function downloadAllFoundExtraPdfs(){
       if (activeExtraTerminal !== "sct") {
         alert("Il download PDF multiplo è disponibile nella scheda SCT.");
@@ -8081,7 +8267,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (extraAutoCheckEnabled) {
         extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
         extraAutoCheckTimer = setInterval(async () => {
-          await runAutoCheck(activeExtraTerminal);
+          await runAutoCheckAllTerminals();
         }, getExtraEffectiveCheckInterval());
       } else {
         extraNextCheckAt = null;
@@ -8097,9 +8283,24 @@ document.addEventListener("DOMContentLoaded", () => {
     addExtra10BtnBottom?.addEventListener("click", () => addExtraRows(10, true));
     clearExtraBtn?.addEventListener("click", clearExtraSection);
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
-    extraCheckNowBtn?.addEventListener("click", runAutoCheck);
+    extraCheckNowBtn?.addEventListener("click", () => runAutoCheckAllTerminals());
     downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
     downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
+    sctBookingSearchBtn?.addEventListener("click", searchSctBookingPdf);
+    sctBookingOpenBtn?.addEventListener("click", openSctBookingPdf);
+    sctBookingInput?.addEventListener("input", () => {
+      const normalized = normalizeSctBookingValue(sctBookingInput.value);
+      if (sctBookingInput.value !== normalized) sctBookingInput.value = normalized;
+      sctBookingPdfUrl = "";
+      if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = true;
+      setSctBookingStatus("Usa la stessa sessione JMT/SCT già collegata.");
+    });
+    sctBookingInput?.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        searchSctBookingPdf();
+      }
+    });
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     minimizeExtraBtn?.addEventListener("click", () => {
       extraPanel?.classList.toggle("minimized");
@@ -8725,6 +8926,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       liveRow.conatecoStatus = "PDF PRONTO";
       liveRow.conatecoPdfUrl = result.pdfUrl;
       liveRow.conatecoTracking = result.tracking || null;
+      notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
       console.log("PDF CONATECO PRONTO:", conatecoValue, result.pdfUrl);
     } else {
       liveRow.conatecoStatus = result?.status || result?.error || "NON ENTRATO";
@@ -8771,6 +8973,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       liveRow.DataIngresso = result.DataIngresso || "";
       liveRow.Ora = result.Ora || "";
       liveRow.Causale = result.Causale || "";
+      notifyExtraPdfReadyFromCheck("sct", sctValue);
 
       console.log("PDF TROVATO E SALVATO NELLA RIGA:", sctValue, pdfUrl);
     } else {
@@ -8835,6 +9038,30 @@ async function runAutoCheck(terminalKey = activeExtraTerminal) {
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 
   console.log("Check completato", terminalToCheck, new Date().toLocaleTimeString());
+}
+
+async function runAutoCheckAllTerminals(){
+  if (!Array.isArray(extraRows)) return;
+
+  const terminals = Object.keys(EXTRA_TERMINALS || {}).filter(term =>
+    getVisibleExtraEntries(term).some(entry => {
+      const row = normalizeExtraRow(extraRows[entry.index]);
+      const cfg = EXTRA_TERMINALS[term];
+      return String(row?.[cfg.containerField] || "").trim();
+    })
+  );
+
+  if (!terminals.length) {
+    await runAutoCheck(activeExtraTerminal);
+    return;
+  }
+
+  const originalTerminal = activeExtraTerminal;
+  for (const term of terminals) {
+    await runAutoCheck(term);
+  }
+  activeExtraTerminal = originalTerminal;
+  if (typeof renderExtra === "function") renderExtra();
 }
 
 async function downloadPDF(container) {
@@ -10030,6 +10257,82 @@ const EXTRA_NOTIFY_STATE = {
   conateco: new Set(),
   flavio: new Set()
 };
+window.EXTRA_NOTIFY_STATE = EXTRA_NOTIFY_STATE;
+
+function normalizeExtraNotifyTerminal(terminal){
+  const key = String(terminal || "").toLowerCase();
+  if (key === "tfg") return "flavio";
+  return EXTRA_NOTIFY_STATE[key] ? key : "sct";
+}
+
+function normalizeExtraNotifyContainer(container){
+  const match = String(container || "").toUpperCase().match(/[A-Z]{4}\d{7}/);
+  return match ? match[0] : String(container || "").trim().toUpperCase();
+}
+
+function hasExtraNotifyAlreadyFired(terminal, container){
+  const key = normalizeExtraNotifyTerminal(terminal);
+  const code = normalizeExtraNotifyContainer(container);
+  if (!code) return true;
+
+  try {
+    const raw = JSON.parse(sessionStorage.getItem("doganatools_notified_containers_v2") || "{}");
+    const list = Array.isArray(raw[key]) ? raw[key] : [];
+    if (list.map(v => String(v).toUpperCase()).includes(code)) return true;
+  } catch {}
+
+  return !!EXTRA_NOTIFY_STATE[key]?.has(code);
+}
+
+function markExtraNotifyFired(terminal, container){
+  const key = normalizeExtraNotifyTerminal(terminal);
+  const code = normalizeExtraNotifyContainer(container);
+  if (!code) return;
+
+  if (!EXTRA_NOTIFY_STATE[key]) EXTRA_NOTIFY_STATE[key] = new Set();
+  EXTRA_NOTIFY_STATE[key].add(code);
+  try { setExtraTabNotify?.(key, EXTRA_NOTIFY_STATE[key].size); } catch {}
+
+  try {
+    const raw = JSON.parse(sessionStorage.getItem("doganatools_notified_containers_v2") || "{}");
+    raw[key] = Array.isArray(raw[key]) ? raw[key] : [];
+    if (!raw[key].map(v => String(v).toUpperCase()).includes(code)) raw[key].push(code);
+    sessionStorage.setItem("doganatools_notified_containers_v2", JSON.stringify(raw));
+  } catch {}
+}
+
+function notifyExtraPdfReadyFromCheck(terminal, container){
+  const key = normalizeExtraNotifyTerminal(terminal);
+  const code = normalizeExtraNotifyContainer(container);
+  if (!/^[A-Z]{4}\d{7}$/.test(code)) return;
+  if (hasExtraNotifyAlreadyFired(key, code)) return;
+
+  const terminalLabel = EXTRA_TERMINALS?.[key]?.label || key.toUpperCase();
+  markExtraNotifyFired(key, code);
+
+  try {
+    showExtraToast?.("Container entrato", `${code} - PDF disponibile (${terminalLabel})`, "success");
+  } catch {}
+
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification("Container entrato", {
+        body: `${code} - PDF disponibile (${terminalLabel})`,
+        tag: `container-${key}-${code}`,
+        requireInteraction: false
+      });
+    }
+  } catch {}
+
+  try {
+    const soundOn =
+      localStorage.getItem("doganatools_container_sound") === "1" ||
+      document.getElementById("extraSoundNotifyBtn")?.classList.contains("sound-on");
+    if (soundOn && typeof playExtraContainerSound === "function") {
+      setTimeout(playExtraContainerSound, 80);
+    }
+  } catch {}
+}
 
 function ensureExtraToastStack(){
   let stack = document.getElementById("extraToastStack");
@@ -11586,8 +11889,30 @@ const id = getClientId();
   function $(id){ return document.getElementById(id); }
 
   function api(path){
-    const base = (window.DOGANA_API_BASE || window.API_BASE || "").replace(/\/$/, "");
-    return base + path;
+    const p = String(path || "");
+    const clean = p.startsWith("/") ? p : "/" + p;
+
+    // Usa la stessa configurazione API del resto dell'app.
+    // Su dogana.reav.website deve puntare a https://dogana-api.reav.website,
+    // non a /api sul dominio frontend.
+    try {
+      if (typeof apiUrl === "function") return apiUrl(clean);
+    } catch {}
+
+    try {
+      if (typeof getApiBase === "function") {
+        const base = String(getApiBase() || "").replace(/\/$/, "");
+        return base ? base + clean : clean;
+      }
+    } catch {}
+
+    const host = String(window.location.hostname || "").toLowerCase();
+    if (host.includes("reav.website") || host.includes("vercel.app")) {
+      return "https://dogana-api.reav.website" + clean;
+    }
+
+    const base = String(window.DOGANA_API_BASE || window.API_BASE || "").replace(/\/$/, "");
+    return base ? base + clean : clean;
   }
 
   function setStatus(text, connected){
