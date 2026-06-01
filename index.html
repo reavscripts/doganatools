@@ -7522,10 +7522,16 @@ document.addEventListener("DOMContentLoaded", () => {
           activeExtraTerminal = state.activeExtraTerminal;
         }
 
-        extraAutoCheckEnabled = !!state.extraAutoCheckEnabled;
+        const remoteAutoCheckEnabled = !!state.extraAutoCheckEnabled;
+        const autoChanged = remoteAutoCheckEnabled !== extraAutoCheckEnabled;
+        extraAutoCheckEnabled = remoteAutoCheckEnabled;
         extraSharedLastPull = Date.now();
 
         saveExtraLocalOnly();
+
+        if (autoChanged && typeof setExtraAutoCheck === "function") {
+          setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true, skipRender: true });
+        }
 
         if (forceRender) renderExtra();
         return true;
@@ -8258,23 +8264,27 @@ document.addEventListener("DOMContentLoaded", () => {
       extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
-    function setExtraAutoCheck(enabled){
+    function setExtraAutoCheck(enabled, options = {}){
       extraAutoCheckEnabled = !!enabled;
       if (extraAutoCheckTimer) {
         clearInterval(extraAutoCheckTimer);
         extraAutoCheckTimer = null;
       }
       if (extraAutoCheckEnabled) {
-        extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+        const interval = getExtraEffectiveCheckInterval();
+        extraNextCheckAt = Date.now() + interval;
         extraAutoCheckTimer = setInterval(async () => {
           await runAutoCheckAllTerminals();
-        }, getExtraEffectiveCheckInterval());
+        }, interval);
       } else {
         extraNextCheckAt = null;
       }
       restartExtraCountdownTimer();
       updateAutoCheckUI();
-      saveExtra();
+      if (!options.skipSave) saveExtra();
+      if (!options.skipRender && typeof updateExtraSingleAutoButton === "function") {
+        updateExtraSingleAutoButton(extraAutoCheckEnabled);
+      }
     }
 
     addExtraRowBtn?.addEventListener("click", () => addExtraRows(1, true));
@@ -9061,8 +9071,24 @@ async function runAutoCheckAllTerminals(){
     await runAutoCheck(term);
   }
   activeExtraTerminal = originalTerminal;
+  extraLastCheckAt = Date.now();
+  if (extraAutoCheckEnabled) {
+    extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+  }
   if (typeof renderExtra === "function") renderExtra();
+  if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 }
+
+/* API pubbliche usate dal pulsante Auto compatto aggiunto in fondo al file.
+   Senza questa esposizione il secondo script non può aggiornare "Ultimo controllo". */
+window.runAutoCheckAllTerminals = runAutoCheckAllTerminals;
+window.runExtraAutoCheck = runAutoCheckAllTerminals;
+window.checkExtraAllRows = runAutoCheckAllTerminals;
+window.checkExtraContainers = runAutoCheckAllTerminals;
+window.doganaSetExtraAutoCheck = setExtraAutoCheck;
+window.doganaGetExtraAutoCheckEnabled = () => !!extraAutoCheckEnabled;
+window.doganaGetExtraAutoIntervalMs = getExtraEffectiveCheckInterval;
+window.doganaUpdateExtraCheckInfo = updateExtraCheckInfo;
 
 async function downloadPDF(container) {
 
@@ -11688,7 +11714,6 @@ const id = getClientId();
 
   const MIN_KEY = "doganatools_extra_auto_minutes";
   const ON_KEY = "doganatools_extra_auto_enabled";
-  let timer = null;
 
   function panel(){
     return document.querySelector(".extraPanel") || document.getElementById("extraPanel");
@@ -11710,22 +11735,10 @@ const id = getClientId();
     return n;
   }
 
-  function runCheck(){
-    const names = [
-      "checkExtraRows",
-      "checkAllExtraRows",
-      "checkExtraContainers",
-      "checkVisibleExtraRows",
-      "checkExtraCurrentTerminal",
-      "checkExtraAllRows",
-      "runExtraAutoCheck"
-    ];
-
-    for (const name of names) {
-      if (typeof window[name] === "function") {
-        try { window[name](); return true; }
-        catch(e){ console.error("Errore controllo contenitori:", name, e); }
-      }
+  async function runCheck(){
+    if (typeof window.runAutoCheckAllTerminals === "function") {
+      await window.runAutoCheckAllTerminals();
+      return true;
     }
 
     const p = panel();
@@ -11742,54 +11755,39 @@ const id = getClientId();
     return false;
   }
 
-  function stop(){
-    if (timer) clearInterval(timer);
-    timer = null;
-  }
-
-  function start(now){
-    stop();
-    const m = minutes();
-    if (now) setTimeout(runCheck, 200);
-    timer = setInterval(runCheck, m * 60 * 1000);
-  }
-
-  function syncVisibleAutoWithInfo(on){
-    try {
-      if (typeof extraAutoCheckEnabled !== "undefined") extraAutoCheckEnabled = !!on;
-      if (typeof extraNextCheckAt !== "undefined") {
-        extraNextCheckAt = on ? Date.now() + (minutes() * 60 * 1000) : null;
-      }
-      const hiddenToggle = document.getElementById("extraAutoCheckToggle");
-      if (hiddenToggle) hiddenToggle.checked = !!on;
-      const hiddenLabel = document.getElementById("extraAutoCheckLabel");
-      if (hiddenLabel) hiddenLabel.textContent = on ? "ON" : "OFF";
-      if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
-      if (typeof saveExtraLocalOnly === "function") saveExtraLocalOnly();
-      if (typeof scheduleSharedMetaSave === "function") scheduleSharedMetaSave();
-    } catch (err) {
-      console.warn("Aggiornamento stato auto contenitori non riuscito", err);
-    }
-  }
-
-  function setOn(on, now){
+  function updateButton(on){
     const btn = document.getElementById("extraAutoSingleButton");
     const label = document.getElementById("extraAutoSingleState");
-    localStorage.setItem(ON_KEY, on ? "1" : "0");
 
     if (btn) {
-      btn.classList.toggle("is-on", on);
+      btn.classList.toggle("is-on", !!on);
       btn.classList.toggle("is-off", !on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
     }
 
     if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
-
-    syncVisibleAutoWithInfo(on);
-
-    if (on) start(now);
-    else stop();
   }
+
+  function setOn(on, runImmediately){
+    localStorage.setItem(ON_KEY, on ? "1" : "0");
+    updateButton(on);
+
+    if (typeof window.doganaSetExtraAutoCheck === "function") {
+      window.doganaSetExtraAutoCheck(!!on);
+    }
+
+    if (runImmediately && on) {
+      setTimeout(runCheck, 200);
+    }
+  }
+
+  window.updateExtraSingleAutoButton = function(on){
+    const realState = typeof window.doganaGetExtraAutoCheckEnabled === "function"
+      ? window.doganaGetExtraAutoCheckEnabled()
+      : !!on;
+    localStorage.setItem(ON_KEY, realState ? "1" : "0");
+    updateButton(realState);
+  };
 
   function build(){
     const tb = toolbar();
@@ -11822,24 +11820,28 @@ const id = getClientId();
 
     btn.onclick = function(e){
       if (e.target === input) return;
-      setOn(!btn.classList.contains("is-on"), true);
+      const nowOn = btn.classList.contains("is-on");
+      setOn(!nowOn, true);
     };
 
     input.onclick = function(e){ e.stopPropagation(); };
     input.onchange = function(){
       minutes();
-      if (btn.classList.contains("is-on")) {
-        syncVisibleAutoWithInfo(true);
-        start(false);
-      } else {
-        syncVisibleAutoWithInfo(false);
+      if (btn.classList.contains("is-on") && typeof window.doganaSetExtraAutoCheck === "function") {
+        window.doganaSetExtraAutoCheck(true);
+      } else if (typeof window.doganaUpdateExtraCheckInfo === "function") {
+        window.doganaUpdateExtraCheckInfo();
       }
     };
     input.oninput = function(){
       localStorage.setItem(MIN_KEY, String(input.value || 5));
     };
 
-    setOn(localStorage.getItem(ON_KEY) === "1", false);
+    const initialOn = typeof window.doganaGetExtraAutoCheckEnabled === "function"
+      ? window.doganaGetExtraAutoCheckEnabled()
+      : localStorage.getItem(ON_KEY) === "1";
+    updateButton(initialOn);
+    localStorage.setItem(ON_KEY, initialOn ? "1" : "0");
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
