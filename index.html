@@ -7169,7 +7169,7 @@ document.addEventListener("DOMContentLoaded", () => {
         __updatedBy: EXTRA_CLIENT_ID,
         __terminal: EXTRA_TERMINALS[termKey] ? termKey : "sct",
         clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
-        clientConateco:"", conateco:"", conatecoStatus:"",
+        clientConateco:"", conateco:"", conatecoStatus:"", conatecoPdfUrl:"", conatecoTracking:null,
         clientFlavio:"", flavio:"", flavioStatus:""
       };
     }
@@ -7203,6 +7203,8 @@ document.addEventListener("DOMContentLoaded", () => {
         clientConateco: r?.clientConateco ?? "",
         conateco: r?.conateco ?? "",
         conatecoStatus: r?.conatecoStatus ?? "",
+        conatecoPdfUrl: String(r?.conatecoPdfUrl || "").startsWith("blob:") ? "" : (r?.conatecoPdfUrl ?? ""),
+        conatecoTracking: r?.conatecoTracking ?? null,
         clientFlavio: r?.clientFlavio ?? "",
         flavio: r?.flavio ?? "",
         flavioStatus: r?.flavioStatus ?? ""
@@ -7682,13 +7684,30 @@ document.addEventListener("DOMContentLoaded", () => {
       const status = row?.[cfg.statusField] || "-";
       td.textContent = "";
 
-      if (activeExtraTerminal === "sct" && row.sctPdfUrl) {
-        const pdfUrl = normalizeJmtPdfUrl(row.sctPdfUrl || "");
+      const directPdfUrl = activeExtraTerminal === "sct"
+        ? normalizeJmtPdfUrl(row.sctPdfUrl || "")
+        : (activeExtraTerminal === "conateco" ? String(row.conatecoPdfUrl || "").trim() : "");
+
+      if (directPdfUrl) {
         const link = document.createElement("a");
-        link.href = pdfUrl;
-        link.target = "_blank";
-        link.rel = "noopener noreferrer";
+        link.href = activeExtraTerminal === "conateco" ? "#" : directPdfUrl;
         link.textContent = "📄 SCARICA PDF";
+        if (activeExtraTerminal === "conateco") {
+          const cleanContainer = String(containerValue || row?.conateco || "container").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+          link.download = `conateco_${cleanContainer || "tracking"}.pdf`;
+          link.addEventListener("click", async (event) => {
+            event.preventDefault();
+            try {
+              await saveConatecoPdfFile(cleanContainer, "E", row?.conatecoTracking || null);
+            } catch (err) {
+              console.error("Errore download PDF CONATECO:", err);
+              alert("Impossibile generare il PDF CONATECO. Riprova il controllo del container.");
+            }
+          });
+        } else {
+          link.target = "_blank";
+          link.rel = "noopener noreferrer";
+        }
         link.style.color = "#2563eb";
         link.style.fontWeight = "900";
         link.style.textDecoration = "underline";
@@ -7803,7 +7822,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             if (key === "conateco") {
               extraRows[rowIndex].conatecoStatus = "";
+              extraRows[rowIndex].conatecoPdfUrl = "";
+              extraRows[rowIndex].conatecoTracking = null;
               patch.conatecoStatus = "";
+              patch.conatecoPdfUrl = "";
+              patch.conatecoTracking = null;
             }
             if (key === "flavio") {
               extraRows[rowIndex].flavioStatus = "";
@@ -8380,29 +8403,242 @@ async function ottieniPdf(container) {
     }
 }
 
-async function checkContainerConateco(container) {
+let conatecoLogoDataUrlPromise = null;
+
+function safeConatecoPdfText(value) {
+  return String(value ?? "")
+    .replace(/[\r\n\t]+/g, " ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function conatecoPdfSetFontType(doc, type) {
   try {
-    const url = `https://api.conateco.it/ConatecoServicesApi/NewTrackingContainer?codice=${container}&tipo=E`;
-    const res = await fetch(url);
-    const data = await res.json();
+    if (typeof doc.setFontType === "function") doc.setFontType(type);
+    else doc.setFont("helvetica", type === "bold" ? "bold" : "normal");
+  } catch {
+    try { doc.setFont("helvetica", type === "bold" ? "bold" : "normal"); } catch {}
+  }
+}
 
-    // ❌ nessun risultato
-    if (!data || data.length === 0) {
-      return "NON ENTRATO";
+function conatecoPdfText(doc, x, y, text, options) {
+  // jsPDF 2.x usa doc.text(text, x, y), mentre il PDF originale CONATECO
+  // era scritto con jsPDF 1.5.3. Qui manteniamo le stesse coordinate.
+  const value = safeConatecoPdfText(text);
+  if (!value) return;
+  doc.text(value, x, y, options || undefined);
+}
+
+function readBlobAsDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(reader.error || new Error("Impossibile leggere il logo CONATECO"));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function loadConatecoLogoDataUrl() {
+  if (!conatecoLogoDataUrlPromise) {
+    conatecoLogoDataUrlPromise = (async () => {
+      const candidates = [
+        "./img/conateco.png",
+        "img/conateco.png",
+        "/img/conateco.png"
+      ];
+
+      for (const src of candidates) {
+        try {
+          const res = await fetch(src, { cache: "force-cache" });
+          if (!res.ok) continue;
+          const blob = await res.blob();
+          if (!blob || !String(blob.type || "").toLowerCase().includes("image")) continue;
+          return await readBlobAsDataUrl(blob);
+        } catch {}
+      }
+
+      return "";
+    })();
+  }
+
+  return conatecoLogoDataUrlPromise;
+}
+
+async function buildConatecoPdfDoc(container, tipo, tracking) {
+  const jsPDF = window.jspdf?.jsPDF;
+  if (!jsPDF || !tracking) return "";
+
+  const code = String(container || tracking.CodiceContainer || "CONATECO").trim().toUpperCase();
+  const pdfTipo = String(tipo || "E").toUpperCase();
+
+  const doc = new jsPDF("p", "mm", "a4");
+  const logoDataUrl = await loadConatecoLogoDataUrl();
+
+  // Layout identico alla funzione myMethodPDF della pagina ufficiale CONATECO.
+  if (logoDataUrl) {
+    try { doc.addImage(logoDataUrl, "PNG", 20, 14, 43, 19); } catch {}
+  } else {
+    // Fallback solo se manca img/conateco.png: evita PDF senza intestazione.
+    doc.setFontSize(10);
+    conatecoPdfSetFontType(doc, "bold");
+    conatecoPdfText(doc, 20, 24, "CO.NA.TE.CO.");
+    conatecoPdfSetFontType(doc, "normal");
+  }
+
+  doc.setFontSize(16);
+  conatecoPdfSetFontType(doc, "normal");
+  conatecoPdfText(doc, 120, 24, "Risultato Tracking Container");
+
+  doc.setDrawColor(0, 0, 0);
+  doc.setLineWidth(0.3);
+  doc.line(20, 40, 100, 40);
+
+  doc.setFontSize(14);
+  conatecoPdfSetFontType(doc, "normal");
+  conatecoPdfText(doc, 20, 50, "Codice Container:");
+  conatecoPdfSetFontType(doc, "bold");
+  conatecoPdfText(doc, 70, 50, tracking.CodiceContainer || code);
+
+  doc.setFontSize(14);
+  conatecoPdfSetFontType(doc, "normal");
+  conatecoPdfText(doc, 20, 60, "Nome nave:");
+  conatecoPdfText(doc, 70, 60, `${tracking.NomeNave || ""} ${tracking.IdViaggio || ""}`);
+
+  conatecoPdfText(doc, 20, 70, "Armatore:");
+  conatecoPdfText(doc, 70, 70, `${tracking.Armatore || ""} ${tracking.CodiceArmatore || ""}`);
+
+  conatecoPdfText(doc, 20, 80, "Dimensione:");
+  conatecoPdfText(doc, 70, 80, tracking.Dimensione);
+
+  conatecoPdfText(doc, 20, 90, "Tipo:");
+  conatecoPdfText(doc, 70, 90, tracking.Tipo);
+
+  if (pdfTipo === "E") {
+    conatecoPdfText(doc, 20, 100, "Sigillo:");
+    conatecoPdfText(doc, 70, 100, tracking.Sigillo);
+  }
+
+  conatecoPdfText(doc, 20, 110, "Stato:");
+  conatecoPdfText(doc, 70, 110, tracking.Stato);
+
+  if (tracking.Stato !== "Imbarcato") {
+    conatecoPdfText(doc, 110, 110, tracking.StatoEsteso);
+  }
+
+  if (tracking.Stato === "Imbarcato") {
+    conatecoPdfText(doc, 20, 120, "Data:");
+    conatecoPdfText(doc, 70, 120, tracking.Data);
+  }
+
+  if (tracking.Stato === "Uscito") {
+    conatecoPdfText(doc, 20, 120, "Data Uscita:");
+    conatecoPdfText(doc, 70, 120, tracking.DataUscita);
+  }
+
+  if (tracking.Stato !== "Uscito" && tracking.Stato !== "Imbarcato") {
+    conatecoPdfText(doc, 20, 120, "Data Ingresso:");
+    conatecoPdfText(doc, 70, 120, tracking.DataIngresso);
+  }
+
+  if (pdfTipo === "E") {
+    conatecoPdfText(doc, 20, 140, "Ora:");
+    conatecoPdfText(doc, 70, 140, tracking.Ora);
+    conatecoPdfText(doc, 20, 150, "Controlla Stato Bolla in area Export/Clearance");
+  }
+
+  if (pdfTipo !== "E") {
+    conatecoPdfText(doc, 20, 140, "Posizione CNTR:");
+
+    if (tracking.PosizioneContainer === "NESSUNA POSIZIONE" || tracking.PosizioneContainer === "NESSUNA AREA") {
+      conatecoPdfText(doc, 70, 140, "SBARCATO");
+    } else {
+      conatecoPdfText(doc, 70, 140, tracking.PosizioneContainer);
     }
 
-    const text = JSON.stringify(data).toUpperCase();
+    conatecoPdfText(doc, 20, 150, "Delega:");
+    conatecoPdfText(doc, 70, 150, tracking.Delega);
+  }
 
-    // 🟡 euristica retroporto
-    if (text.includes("EDP")) {
-      return "ENTRATO (RETROPORTO)";
+  if (tracking.Causale === "EDP") {
+    conatecoPdfText(doc, 20, 160, "Nota: LUOGO APPROVATO");
+  }
+
+  return doc;
+}
+
+async function saveConatecoPdfFile(container, tipo, tracking) {
+  const code = String(container || tracking?.CodiceContainer || "CONATECO").trim().toUpperCase().replace(/[^A-Z0-9]/g, "") || "CONATECO";
+  const doc = await buildConatecoPdfDoc(code, tipo, tracking);
+  if (!doc || typeof doc.save !== "function") throw new Error("jsPDF non disponibile");
+  doc.save(`conateco_${code}_tracking.pdf`);
+  return true;
+}
+
+async function checkContainerConateco(container) {
+  const code = String(container || "").trim().toUpperCase();
+  if (!code) {
+    return { success: false, found: false, status: "NON ENTRATO", error: "Container mancante" };
+  }
+
+  try {
+    const backendUrl = apiUrl(`/api/get-conateco-pdf?container=${encodeURIComponent(code)}&tipo=E&_=${Date.now()}`);
+    const res = await fetch(backendUrl, {
+      method: "GET",
+      mode: "cors",
+      credentials: "omit",
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data) {
+      return {
+        success: false,
+        found: false,
+        status: "ERRORE",
+        error: data?.error || `Errore backend CONATECO ${res.status}`
+      };
     }
 
-    // 🟢 default
-    return "ENTRATO";
+    const tracking = data.tracking || null;
+
+    return {
+      success: !!data.success,
+      found: !!data.found,
+      status: data.status || (data.found ? "ENTRATO" : "NON ENTRATO"),
+      // IMPORTANTE: non creiamo piu URL blob. Il click chiama doc.save(), come la pagina ufficiale CONATECO.
+      pdfUrl: data.found && tracking ? "conateco-browser-save" : "",
+      tracking,
+      error: data.error || ""
+    };
 
   } catch (e) {
-    return "ERRORE";
+    console.warn("Backend CONATECO non raggiungibile, provo API diretta:", e);
+
+    try {
+      const url = `https://api.conateco.it/ConatecoServicesApi/NewTrackingContainer?codice=${encodeURIComponent(code)}&tipo=E`;
+      const res = await fetch(url, { cache: "no-store" });
+      const data = await res.json();
+
+      if (!data || (Array.isArray(data) && data.length === 0)) {
+        return { success: true, found: false, status: "NON ENTRATO" };
+      }
+
+      const text = JSON.stringify(data).toUpperCase();
+      const invalid = text.includes('"STATO":"???"') || text.includes('"PIENOVUOTO":"0"');
+      if (invalid) return { success: true, found: false, status: "NON ENTRATO", tracking: data };
+
+      return {
+        success: true,
+        found: true,
+        status: text.includes("EDP") ? "ENTRATO (RETROPORTO)" : "ENTRATO",
+        pdfUrl: "conateco-browser-save",
+        tracking: data
+      };
+    } catch {
+      return { success: false, found: false, status: "ERRORE" };
+    }
   }
 }
 
@@ -8417,7 +8653,9 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const value = String(status || "").toUpperCase().trim();
 
   if (pdfUrl) {
-    const href = normalizeJmtPdfUrl(pdfUrl) || getPublicPdfUrl(container);
+    const href = terminal === "sct"
+      ? (normalizeJmtPdfUrl(pdfUrl) || getPublicPdfUrl(container))
+      : String(pdfUrl || "").trim();
     cell.innerHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
     cell.style.color = "#2563eb";
     return;
@@ -8466,15 +8704,34 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
     if (!conatecoValue) return;
 
+    const alreadyHasPdf =
+      liveRow.conatecoStatus === "PDF PRONTO" &&
+      String(liveRow.conatecoPdfUrl || "").trim();
+
+    if (alreadyHasPdf) return;
+
     liveRow.conateco = conatecoValue;
     liveRow.conatecoStatus = "Controllo...";
+    liveRow.conatecoPdfUrl = "";
+    saveLiveRowStatus();
     if (activeExtraTerminal === "conateco") renderExtra();
 
     const result = await checkContainerConateco(conatecoValue);
 
     liveRow = getLiveRow();
     liveRow.conateco = conatecoValue;
-    liveRow.conatecoStatus = result;
+
+    if (result && result.success && result.found && result.pdfUrl) {
+      liveRow.conatecoStatus = "PDF PRONTO";
+      liveRow.conatecoPdfUrl = result.pdfUrl;
+      liveRow.conatecoTracking = result.tracking || null;
+      console.log("PDF CONATECO PRONTO:", conatecoValue, result.pdfUrl);
+    } else {
+      liveRow.conatecoStatus = result?.status || result?.error || "NON ENTRATO";
+      liveRow.conatecoPdfUrl = "";
+      liveRow.conatecoTracking = null;
+      console.log("CONATECO esito:", conatecoValue, result);
+    }
 
     saveLiveRowStatus();
     if (activeExtraTerminal === "conateco") renderExtra();
