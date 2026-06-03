@@ -5590,11 +5590,15 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="left shipToolbarTitle">
       <h2>Previsione Navi</h2>
     </div>
-    <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
-    <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
-    <button class="shipTab" data-terminal="conateco" type="button">CONATECO <span class="shipTabCount" id="shipTabCountConateco">0</span></button>
-    <button class="shipTab" data-terminal="tfg" type="button">TFG <span class="shipTabCount" id="shipTabCountTfg">0</span></button>
-  </div>
+    <div class="shipTerminalTabsBlock" aria-label="Terminal navi in chiusura">
+      <div class="shipTerminalTabsTitle">TERMINALS:</div>
+      <div class="shipTabs" id="shipTabs" role="tablist" aria-label="Terminal navi in chiusura">
+        <button class="shipTab active" data-terminal="sct" type="button">SCT <span class="shipTabCount" id="shipTabCountSct">0</span></button>
+        <button class="shipTab" data-terminal="conateco" type="button">CONATECO <span class="shipTabCount" id="shipTabCountConateco">0</span></button>
+        <button class="shipTab" data-terminal="tfg" type="button">TFG <span class="shipTabCount" id="shipTabCountTfg">0</span></button>
+      </div>
+      <div class="shipTerminalTabsDescription" id="shipTerminalTabsDescription">Salerno Containers Terminal.</div>
+    </div>
     <div class="right shipToolbarActions">
       <div class="shipSummary" id="shipSummary">
         <span class="shipBadge">SCT <strong id="shipCountSct">0</strong></span>
@@ -7270,7 +7274,7 @@ document.addEventListener("DOMContentLoaded", () => {
         __terminal: EXTRA_TERMINALS[termKey] ? termKey : "sct",
         clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
         clientConateco:"", conateco:"", conatecoStatus:"", conatecoPdfUrl:"", conatecoTracking:null,
-        clientFlavio:"", flavio:"", flavioStatus:""
+        clientFlavio:"", flavio:"", flavioStatus:"", flavioPdfUrl:"", flavioTracking:null
       };
     }
 
@@ -7307,7 +7311,9 @@ document.addEventListener("DOMContentLoaded", () => {
         conatecoTracking: r?.conatecoTracking ?? null,
         clientFlavio: r?.clientFlavio ?? "",
         flavio: r?.flavio ?? "",
-        flavioStatus: r?.flavioStatus ?? ""
+        flavioStatus: r?.flavioStatus ?? "",
+        flavioPdfUrl: r?.flavioPdfUrl ?? "",
+        flavioTracking: r?.flavioTracking ?? null
       };
     }
 
@@ -7718,7 +7724,7 @@ document.addEventListener("DOMContentLoaded", () => {
         row.conatecoPdfUrl = "";
         row.conatecoTracking = null;
       }
-      if (field === "flavio") row.flavioStatus = "";
+      if (field === "flavio") { row.flavioStatus = ""; row.flavioPdfUrl = ""; row.flavioTracking = null; }
     }
 
     function handleExtraContainerPaste(e){
@@ -7797,11 +7803,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const directPdfUrl = activeExtraTerminal === "sct"
         ? normalizeJmtPdfUrl(row.sctPdfUrl || "")
-        : (activeExtraTerminal === "conateco" ? String(row.conatecoPdfUrl || "").trim() : "");
+        : (activeExtraTerminal === "conateco"
+          ? String(row.conatecoPdfUrl || "").trim()
+          : (activeExtraTerminal === "flavio" ? String(row.flavioPdfUrl || "").trim() : ""));
 
       if (directPdfUrl) {
         const link = document.createElement("a");
-        link.href = activeExtraTerminal === "conateco" ? "#" : directPdfUrl;
+        link.href = activeExtraTerminal === "conateco" ? "#" : apiUrl(directPdfUrl);
         link.textContent = "📄 SCARICA PDF";
         if (activeExtraTerminal === "conateco") {
           const cleanContainer = String(containerValue || row?.conateco || "container").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -8853,6 +8861,59 @@ async function checkContainerConateco(container) {
   }
 }
 
+
+async function checkContainerTfg(container) {
+  const code = String(container || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  if (!code) {
+    return { success: false, found: false, status: "NON TROVATO", error: "Container TFG mancante" };
+  }
+
+  try {
+    const res = await fetch(
+      apiUrl(`/api/get-tfg-pdf?container=${encodeURIComponent(code)}&_=${Date.now()}`),
+      {
+        method: "GET",
+        mode: "cors",
+        credentials: "omit",
+        cache: "no-store",
+        headers: { "Accept": "application/json" }
+      }
+    );
+
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data) {
+      return {
+        success: false,
+        found: false,
+        status: data?.status || "NON TROVATO",
+        error: data?.error || `Errore backend TFG ${res.status}`,
+        tracking: data?.tracking || null
+      };
+    }
+
+    const pdfUrl = data.cachedPdfUrl || data.pdfUrl || (data.found ? `/api/download-tfg-pdf?container=${encodeURIComponent(code)}` : "");
+
+    return {
+      success: !!data.success,
+      found: !!data.found,
+      status: data.status || data.tracking?.status || (data.found ? "TROVATO" : "NON TROVATO"),
+      pdfUrl,
+      tracking: data.tracking || null,
+      error: data.error || ""
+    };
+
+  } catch (err) {
+    console.error("Errore comunicazione TFG:", err, "API_BASE:", getApiBase(), "URL:", apiUrl(`/api/get-tfg-pdf?container=${encodeURIComponent(code)}`));
+    return {
+      success: false,
+      found: false,
+      status: "ERRORE",
+      error: "Backend TFG non raggiungibile"
+    };
+  }
+}
+
 function colorStatus(cell, status, container, terminal = activeExtraTerminal, pdfUrl = "") {
   if (!cell) return;
 
@@ -8862,6 +8923,13 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   cell.style.textDecoration = "none";
 
   const value = String(status || "").toUpperCase().trim();
+  const term = String(terminal || activeExtraTerminal || "").toLowerCase();
+  const cleanContainer = String(container || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+  // TFG: se lo stato è PDF PRONTO ma manca l'URL salvato, crea comunque il link cache backend.
+  if (!pdfUrl && (term === "flavio" || term === "tfg") && value.includes("PDF") && cleanContainer) {
+    pdfUrl = apiUrl(`/api/download-tfg-pdf?container=${encodeURIComponent(cleanContainer)}`);
+  }
 
   if (pdfUrl) {
     const href = terminal === "sct"
@@ -9007,12 +9075,49 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
   }
 
   if (term === "flavio") {
-    const liveRow = getLiveRow();
-    if (String(liveRow.flavio || "").trim() && !liveRow.flavioStatus) {
-      liveRow.flavioStatus = "DA COLLEGARE";
-      saveLiveRowStatus();
-      if (activeExtraTerminal === "flavio") renderExtra();
+    let liveRow = getLiveRow();
+    const flavioValue = String(liveRow.flavio || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+    if (!flavioValue) return;
+
+    if (String(liveRow.flavioStatus || "").trim().toUpperCase() === "DA COLLEGARE") {
+      liveRow.flavioStatus = "";
+      liveRow.flavioPdfUrl = "";
     }
+
+    const alreadyHasPdf =
+      liveRow.flavioStatus === "PDF PRONTO" &&
+      String(liveRow.flavioPdfUrl || "").trim();
+
+    if (alreadyHasPdf) return;
+
+    liveRow.flavio = flavioValue;
+    liveRow.flavioStatus = "Controllo...";
+    liveRow.flavioPdfUrl = "";
+    liveRow.flavioTracking = null;
+    saveLiveRowStatus();
+    if (activeExtraTerminal === "flavio") renderExtra();
+
+    const result = await checkContainerTfg(flavioValue);
+
+    liveRow = getLiveRow();
+    liveRow.flavio = flavioValue;
+
+    if (result && result.success && result.found && result.pdfUrl) {
+      liveRow.flavioStatus = "PDF PRONTO";
+      liveRow.flavioPdfUrl = result.pdfUrl;
+      liveRow.flavioTracking = result.tracking || null;
+      notifyExtraPdfReadyFromCheck("flavio", flavioValue);
+      console.log("PDF TFG PRONTO:", flavioValue, result.pdfUrl);
+    } else {
+      liveRow.flavioStatus = result?.status || result?.error || "NON TROVATO";
+      liveRow.flavioPdfUrl = "";
+      liveRow.flavioTracking = result?.tracking || null;
+      console.log("TFG esito:", flavioValue, result);
+    }
+
+    saveLiveRowStatus();
+    if (activeExtraTerminal === "flavio") renderExtra();
+    return;
   }
 }
 
@@ -9252,8 +9357,15 @@ function initShipTabs(){
   const cards = Array.from(document.querySelectorAll(".shipCard[data-terminal-card]"));
 
   function activateTerminal(terminal){
+    const terminalDescriptions = {
+      sct: "Salerno Containers Terminal.",
+      conateco: "Consorzio Napoletano Terminal Cnts",
+      tfg: "Terminal Flavio Gioia"
+    };
     tabs.forEach(tab => tab.classList.toggle("active", tab.dataset.terminal === terminal));
     cards.forEach(card => card.classList.toggle("active", card.dataset.terminalCard === terminal));
+    const terminalDesc = document.getElementById("shipTerminalTabsDescription");
+    if (terminalDesc) terminalDesc.textContent = terminalDescriptions[terminal] || "";
     if (panel?.classList.contains("is-minimized")) {
       panel.classList.remove("is-minimized");
       if (minimizeBtn) minimizeBtn.textContent = "Riduci a icona";
@@ -11662,8 +11774,39 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     console.log(msg);
   }
   async function manualSync(){
+    const active = document.activeElement;
+
+    // Prima forza il salvataggio della cella attualmente in modifica.
+    // Altrimenti, se scrivi un container e premi subito "sincronizza",
+    // l'altro client può leggere il backend prima che la PATCH della riga sia partita.
+    if (active && active.matches && active.matches("#extraTable input[data-extra-field]")) {
+      try {
+        active.dispatchEvent(new Event("input", { bubbles: true }));
+        const rowIndex = Number(active.dataset.extraRow);
+        if (Number.isFinite(rowIndex) && typeof window.scheduleSharedRowPatch === "function") {
+          window.scheduleSharedRowPatch(rowIndex, null, 0);
+        }
+      } catch {}
+      await new Promise(resolve => setTimeout(resolve, 180));
+    }
+
+    // Usa la vera funzione di sincronizzazione della tabella contenitori.
+    // La vecchia versione faceva solo fetch("/api/shared-state") ma non applicava i dati al frontend.
+    if (typeof window.syncExtraFromBackend === "function") {
+      const ok = await window.syncExtraFromBackend(true);
+      if (typeof window.fetchLocks === "function") {
+        try { await window.fetchLocks(); } catch {}
+      }
+      toast(ok
+        ? "Sincronizzazione completata: stato condiviso applicato."
+        : "Sincronizzazione non riuscita: backend non raggiungibile."
+      );
+      return;
+    }
+
     const syncBtn = document.getElementById("doganaSyncNow");
     if (syncBtn) { syncBtn.click(); return; }
+
     await Promise.allSettled([
       fetch(api("/api/shared-state"), { cache:"no-store", credentials:"include" }),
       fetch(api("/api/extra-locks"), { cache:"no-store", credentials:"include" })
@@ -12570,6 +12713,65 @@ const id = getClientId();
 
   .shipPanel .shipToolbarActions{
     justify-content:flex-start !important;
+  }
+}
+
+
+/* === PREVISIONE NAVI: titolo e descrizione terminal centrali === */
+.shipPanel .shipTerminalTabsBlock{
+  grid-column:2 !important;
+  justify-self:center !important;
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-width:0 !important;
+}
+
+.shipPanel .shipTerminalTabsTitle{
+  color:var(--muted) !important;
+  font-size:10px !important;
+  font-weight:950 !important;
+  line-height:1 !important;
+  letter-spacing:.12em !important;
+}
+
+.shipPanel .shipTerminalTabsDescription{
+  color:var(--muted) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  text-align:center !important;
+  min-height:14px !important;
+}
+
+.shipPanel .toolbar.shipToolbar > .shipTerminalTabsBlock > .shipTabs{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  width:auto !important;
+  max-width:100% !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  flex:none !important;
+}
+
+.shipPanel .toolbar.shipToolbar > .shipTabs{
+  display:none !important;
+}
+
+@media (max-width:900px){
+  .shipPanel .shipTerminalTabsBlock{
+    grid-column:1 !important;
+    justify-self:stretch !important;
+    width:100% !important;
+  }
+  .shipPanel .toolbar.shipToolbar > .shipTerminalTabsBlock > .shipTabs{
+    flex-wrap:wrap !important;
   }
 }
 </style>
