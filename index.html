@@ -5746,6 +5746,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
       </label>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
+      <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
       <button id="extraCheckNowBtn" type="button">Controlla ora</button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
@@ -5796,6 +5797,7 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
     <div class="extraBottomToolbar">
       <span class="extraAutoStatus" id="extraAutoStatus">Controllo automatico disattivato.</span>
+      <button id="jmtReconnectBtnBottom" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
       <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
       <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
       <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP PDF trovati</button>
@@ -7214,6 +7216,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const clearExtraBtnBottom = document.getElementById("clearExtraBtnBottom");
     const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
     const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
+    const jmtReconnectBtn = document.getElementById("jmtReconnectBtn");
+    const jmtReconnectBtnBottom = document.getElementById("jmtReconnectBtnBottom");
     const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
@@ -8272,6 +8276,73 @@ document.addEventListener("DOMContentLoaded", () => {
       extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
+    async function reconnectJmtManual(){
+      const buttons = [jmtReconnectBtn, jmtReconnectBtnBottom].filter(Boolean);
+      const oldLabels = new Map(buttons.map(btn => [btn, btn.textContent]));
+
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.textContent = "Ricollego JMT...";
+      });
+
+      if (extraAutoStatus) {
+        extraAutoStatus.textContent = "Riconnessione JMT/SCT in corso...";
+        extraAutoStatus.style.color = "";
+        extraAutoStatus.style.fontWeight = "900";
+      }
+
+      try {
+        const response = await fetch(apiUrl(`/api/jmt-reconnect?_=${Date.now()}`), {
+          method: "POST",
+          mode: "cors",
+          credentials: "omit",
+          cache: "no-store",
+          headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ reason: "manuale da frontend" })
+        });
+
+        const data = await response.json().catch(() => null);
+
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
+        }
+
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = "JMT ricollegato correttamente.";
+          extraAutoStatus.style.color = "var(--accent-2)";
+          extraAutoStatus.style.fontWeight = "900";
+        }
+
+        if (typeof showExtraToast === "function") {
+          showExtraToast("JMT ricollegato", "La sessione JMT/SCT è stata ricreata correttamente.", "success");
+        }
+
+        if (typeof checkBackend === "function") {
+          try { await checkBackend(); } catch {}
+        }
+      } catch (err) {
+        const message = "Riconnessione JMT fallita: " + (err?.message || err);
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = message;
+          extraAutoStatus.style.color = "var(--danger)";
+          extraAutoStatus.style.fontWeight = "900";
+        }
+        if (typeof showExtraToast === "function") {
+          showExtraToast("Errore JMT", message, "error");
+        } else {
+          alert(message);
+        }
+      } finally {
+        buttons.forEach(btn => {
+          btn.disabled = false;
+          btn.textContent = oldLabels.get(btn) || "Ricollega JMT";
+        });
+      }
+    }
+
     function setExtraAutoCheck(enabled, options = {}){
       extraAutoCheckEnabled = !!enabled;
       if (extraAutoCheckTimer) {
@@ -8302,6 +8373,8 @@ document.addEventListener("DOMContentLoaded", () => {
     clearExtraBtn?.addEventListener("click", clearExtraSection);
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
     extraCheckNowBtn?.addEventListener("click", () => runAutoCheckAllTerminals());
+    jmtReconnectBtn?.addEventListener("click", reconnectJmtManual);
+    jmtReconnectBtnBottom?.addEventListener("click", reconnectJmtManual);
     downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
     downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
     sctBookingSearchBtn?.addEventListener("click", searchSctBookingPdf);
@@ -8503,7 +8576,7 @@ function showJmtDisconnectedMessage(container = "") {
   const msg =
     "Sessione JMT scaduta o utente disconnesso" +
     (code ? ` per il container ${code}` : "") +
-    ". Riprova il controllo; se continua, riavvia il backend per rifare il login JMT.";
+    ". Riconnessione automatica pianificata tra 5 minuti. Puoi anche premere Ricollega JMT.";
 
   if (typeof showExtraToast === "function") {
     showExtraToast("JMT disconnesso", msg, "error");
@@ -10966,7 +11039,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
   install();
   document.addEventListener("click", e => {
-    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom")) {
+    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom, #jmtReconnectBtn, #jmtReconnectBtnBottom")) {
       setTimeout(cleanConatecoBadge, 800);
       setTimeout(cleanConatecoBadge, 2000);
     }
