@@ -4582,6 +4582,14 @@ function normalizeJmtPdfUrl(url){
   let clean = String(url || "").trim().replace(/\\/g, "/");
   if (!clean) return "";
 
+  // Se per errore è stato salvato come:
+  // https://dogana-api.reav.website/https://jmt.salernocontainerterminal.com/...
+  // ripulisco e tengo solo il link originale JMT.
+  const embeddedJmt = clean.match(/https?:\/\/jmt\.salernocontainerterminal\.com\/downloads\/[^\s"'<>]+/i);
+  if (embeddedJmt) {
+    clean = embeddedJmt[0];
+  }
+
   // Alcune risposte JMT possono arrivare come percorso relativo.
   if (clean.startsWith("/downloads/")) {
     clean = "https://jmt.salernocontainerterminal.com" + clean;
@@ -4593,7 +4601,12 @@ function normalizeJmtPdfUrl(url){
 }
 
 function apiUrl(path){
-  const cleanPath = String(path || "");
+  const cleanPath = String(path || "").trim();
+  if (!cleanPath) return "";
+
+  // Se è già un URL assoluto, non aggiungere il dominio dogana-api.
+  if (/^https?:\/\//i.test(cleanPath)) return cleanPath;
+
   const normalizedPath = cleanPath.startsWith("/") ? cleanPath : "/" + cleanPath;
   const base = getApiBase();
   return base ? base + normalizedPath : normalizedPath;
@@ -9005,9 +9018,9 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   }
 
   if (pdfUrl) {
-    const href = terminal === "sct"
+    const href = term === "sct"
       ? (normalizeJmtPdfUrl(pdfUrl) || getPublicPdfUrl(container))
-      : String(pdfUrl || "").trim();
+      : apiUrl(String(pdfUrl || "").trim());
     cell.innerHTML = `<a href="${href}" target="_blank" rel="noopener noreferrer">📄 PDF PRONTO</a>`;
     cell.style.color = "#2563eb";
     return;
