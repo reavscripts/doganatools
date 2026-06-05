@@ -7565,6 +7565,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveExtra(){
+      // Salva in locale e aggiorna solo i metadati condivisi.
+      // Le righe si salvano con PATCH /api/extra-row/:rowId, mai come tabella intera.
       saveExtraLocalOnly();
       scheduleSharedMetaSave();
     }
@@ -7597,6 +7599,25 @@ document.addEventListener("DOMContentLoaded", () => {
       renderExtra();
       saveExtraLocalOnly();
       addSharedExtraRows(created);
+
+      if(focusLast){
+        const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
+        if(last) last.focus();
+      }
+    }
+
+    // Usato solo come fallback locale quando il backend non risponde.
+    // Non invia nulla allo stato condiviso, quindi una cache vecchia del browser
+    // non può sovrascrivere la tabella degli altri utenti.
+    function addExtraRowsLocalOnly(count, focusLast=false){
+      for(let i=0; i<count; i++) {
+        const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
+        row.__updatedBy = EXTRA_CLIENT_ID;
+        extraRows.push(row);
+      }
+
+      renderExtra();
+      saveExtraLocalOnly();
 
       if(focusLast){
         const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
@@ -8415,14 +8436,27 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     const extraLoaded = loadExtra();
-    if(!extraLoaded || extraRows.length === 0) addExtraRows(3, false);
-    else renderExtra();
+    if (extraLoaded) renderExtra();
 
-    // Stato condiviso: appena il backend risponde, sostituisce la copia locale.
-    // Così tutti i PC vedono la stessa tabella contenitori e gli stessi risultati.
-    syncExtraFromBackend(true).then((ok) => {
-      if (!ok && (!extraLoaded || extraRows.length === 0)) saveExtra();
-    });
+    // AVVIO MULTIUTENTE SICURO:
+    // 1) il backend è la fonte ufficiale;
+    // 2) localStorage serve solo come copia temporanea/fallback offline;
+    // 3) una cache vecchia del browser non viene mai inviata automaticamente al backend.
+    (async function initExtraSharedState(){
+      const ok = await syncExtraFromBackend(true);
+
+      if (ok) {
+        // Se anche il backend è vuoto, crea le 3 righe iniziali condivise.
+        // Questo avviene solo dopo aver verificato lo stato ufficiale.
+        if (extraRows.length === 0) addExtraRows(3, false);
+      } else {
+        // Backend non raggiungibile: mostra solo una copia locale, senza salvarla nello stato condiviso.
+        if (!extraLoaded || extraRows.length === 0) addExtraRowsLocalOnly(3, false);
+        else renderExtra();
+      }
+
+      setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true });
+    })();
 
     // Aggiorna periodicamente dagli altri client, senza scaricare nuovamente i dati dai terminal.
     setInterval(() => {
@@ -8430,7 +8464,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const isEditingExtra = active && active.matches && active.matches("#extraTable input[data-extra-field]");
       if (!isEditingExtra && Date.now() > extraLocalDirtyUntil) syncExtraFromBackend(true);
     }, 30000);
-    setExtraAutoCheck(extraAutoCheckEnabled);
 
   
 
