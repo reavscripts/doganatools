@@ -12957,5 +12957,60 @@ const id = getClientId();
 })();
 </script>
 
+
+<style id="dogana-table-minimized-toolbar-fix">
+/* === FIX MODULO TABELLA RIDOTTO: titolo e pulsanti sulla stessa riga === */
+.doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  flex-wrap:nowrap !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTableHeaderGroup{
+  width:auto !important;
+  min-width:0 !important;
+  flex:0 0 auto !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTitleSeparator{
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons{
+  width:auto !important;
+  flex:0 1 auto !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:nowrap !important;
+  min-width:0 !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons button{
+  flex:0 0 auto !important;
+}
+
+@media (max-width:900px){
+  .doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
+    flex-wrap:wrap !important;
+  }
+
+  .doganaTableModuleCard.is-minimized .doganaTableHeaderGroup{
+    width:auto !important;
+    flex:0 0 auto !important;
+  }
+
+  .doganaTableModuleCard.is-minimized .doganaTopButtons{
+    width:auto !important;
+    flex:1 1 auto !important;
+    justify-content:flex-end !important;
+    flex-wrap:wrap !important;
+  }
+}
+</style>
+
 </body>
 </html>
