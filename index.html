@@ -1890,8 +1890,90 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 }
 .sctBookingStatus.ok{ color:var(--accent-2); }
 .sctBookingStatus.error{ color:var(--danger); }
+.bookingLookupResultBox{
+  grid-column:1 / -1;
+  display:none;
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  overflow:hidden;
+  box-shadow:0 6px 16px rgba(15,23,42,.04);
+}
+.bookingLookupResultBox.is-visible{ display:block; }
+.bookingLookupResultHead{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid var(--grid-soft);
+}
+.bookingLookupResultTitle{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+}
+.bookingLookupResultTitle strong{
+  color:var(--heading);
+  font-size:13px;
+  font-weight:900;
+}
+.bookingLookupResultTitle span{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:800;
+}
+.bookingLookupResultBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 9px;
+  border-radius:999px;
+  border:1px solid color-mix(in srgb, var(--accent-2) 35%, var(--grid-soft));
+  background:color-mix(in srgb, var(--accent-2) 10%, var(--surface));
+  color:var(--accent-2);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.bookingLookupResultTableWrap{ overflow:auto; }
+.bookingLookupResultTable{
+  width:100%;
+  min-width:760px;
+  border-collapse:separate;
+  border-spacing:0;
+}
+.bookingLookupResultTable th{
+  background:var(--thead-bg);
+  color:var(--muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  padding:11px 10px;
+  border-bottom:1px solid var(--grid);
+  text-align:left;
+  white-space:nowrap;
+}
+.bookingLookupResultTable td{
+  background:var(--surface);
+  color:var(--text);
+  font-size:13px;
+  font-weight:750;
+  padding:11px 10px;
+  border-bottom:1px solid var(--grid-soft);
+  vertical-align:top;
+}
+.bookingLookupResultTable tr:hover td{ background:var(--tbody-hover); }
+.bookingLookupResultEmpty{
+  padding:12px 14px;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:800;
+}
 @media (max-width:700px){
   .sctBookingForm{ grid-template-columns:1fr; }
+  .bookingLookupResultHead{ flex-direction:column; }
 }
 
 .extraTabs{
@@ -5844,6 +5926,7 @@ document.addEventListener("DOMContentLoaded", () => {
         <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
         <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri risultato</button>
         <div class="sctBookingStatus" id="bookingLookupStatus">Scegli il sito e inserisci il booking da controllare.</div>
+        <div class="bookingLookupResultBox" id="bookingLookupResultBox" aria-live="polite"></div>
       </div>
     </details>
     <div class="miniWrap">
@@ -7293,6 +7376,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const bookingLookupSearchBtn = document.getElementById("bookingLookupSearchBtn");
     const bookingLookupOpenBtn = document.getElementById("bookingLookupOpenBtn");
     const bookingLookupStatus = document.getElementById("bookingLookupStatus");
+    const bookingLookupResultBox = document.getElementById("bookingLookupResultBox");
     let bookingLookupResultUrl = "";
 
     const EXTRA_TERMINALS = {
@@ -8155,6 +8239,67 @@ document.addEventListener("DOMContentLoaded", () => {
       if (type) bookingLookupStatus.classList.add(type);
     }
 
+    function escapeBookingLookupHtml(value){
+      return String(value ?? "").replace(/[&<>'"]/g, ch => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        "'":"&#39;",
+        "\"":"&quot;"
+      }[ch] || ch));
+    }
+
+    function clearBookingLookupResult(){
+      if (!bookingLookupResultBox) return;
+      bookingLookupResultBox.classList.remove("is-visible");
+      bookingLookupResultBox.innerHTML = "";
+    }
+
+    function renderBookingLookupResult(data, provider, booking){
+      if (!bookingLookupResultBox) return;
+      clearBookingLookupResult();
+
+      if (provider !== "akkon") return;
+
+      const rows = Array.isArray(data?.rows) ? data.rows : [];
+      const headers = Array.isArray(data?.headers) && data.headers.length
+        ? data.headers
+        : Array.from(rows.reduce((set, row) => {
+            Object.keys(row || {}).forEach(key => set.add(key));
+            return set;
+          }, new Set()));
+      const country = data?.country ? String(data.country).split("|")[0] : "";
+
+      const headHtml = `
+        <div class="bookingLookupResultHead">
+          <div class="bookingLookupResultTitle">
+            <strong>Risultato AKKONLINES - ${escapeBookingLookupHtml(booking)}</strong>
+            <span>${escapeBookingLookupHtml(country || "Country non indicato")} · ${rows.length} riga${rows.length === 1 ? "" : "he"} trovata${rows.length === 1 ? "" : "e"}</span>
+          </div>
+          <span class="bookingLookupResultBadge">${rows.length ? "TROVATO" : "NESSUN DATO"}</span>
+        </div>`;
+
+      if (!rows.length || !headers.length) {
+        const text = data?.text ? String(data.text).slice(0, 500) : "AKKON ha risposto ma non ha restituito una tabella leggibile.";
+        bookingLookupResultBox.innerHTML = headHtml + `<div class="bookingLookupResultEmpty">${escapeBookingLookupHtml(text)}</div>`;
+        bookingLookupResultBox.classList.add("is-visible");
+        return;
+      }
+
+      const tableHtml = `
+        <div class="bookingLookupResultTableWrap">
+          <table class="bookingLookupResultTable">
+            <thead><tr>${headers.map(h => `<th>${escapeBookingLookupHtml(h)}</th>`).join("")}</tr></thead>
+            <tbody>
+              ${rows.map(row => `<tr>${headers.map(h => `<td>${escapeBookingLookupHtml(row?.[h] || "")}</td>`).join("")}</tr>`).join("")}
+            </tbody>
+          </table>
+        </div>`;
+
+      bookingLookupResultBox.innerHTML = headHtml + tableHtml;
+      bookingLookupResultBox.classList.add("is-visible");
+    }
+
     function updateBookingProviderUi(){
       const provider = bookingProviderSelect?.value || "sct";
       const form = bookingLookupPanel?.querySelector(".bookingLookupForm");
@@ -8169,6 +8314,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       bookingLookupResultUrl = "";
+      clearBookingLookupResult();
       if (bookingLookupOpenBtn) {
         bookingLookupOpenBtn.disabled = true;
         bookingLookupOpenBtn.textContent = provider === "sct" ? "Apri PDF" : "Apri risultato";
@@ -8188,6 +8334,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (bookingLookupInput && bookingLookupInput.value !== booking) bookingLookupInput.value = booking;
 
       bookingLookupResultUrl = "";
+      clearBookingLookupResult();
       if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
 
       if (!booking) {
@@ -8256,13 +8403,14 @@ document.addEventListener("DOMContentLoaded", () => {
           const vessel = first["Vessel Name"] || first.vesselName || "";
           const voyage = first["Voyage"] || first.voyage || "";
           const eta = first["ETA"] || first.eta || "";
+          renderBookingLookupResult(data, provider, booking);
           if (bookingLookupOpenBtn) {
             bookingLookupOpenBtn.disabled = false;
-            bookingLookupOpenBtn.textContent = "Apri AKKON";
+            bookingLookupOpenBtn.textContent = "Apri sito AKKON";
           }
           setBookingLookupStatus(
             rows.length
-              ? `AKKON trovato: ${vessel || "nave n/d"}${voyage ? " / " + voyage : ""}${eta ? " - ETA " + eta : ""}.`
+              ? `AKKON trovato: ${vessel || "nave n/d"}${voyage ? " / " + voyage : ""}${eta ? " - ETA " + eta : ""}. Dettagli mostrati qui sotto.`
               : `AKKON ha risposto ma non ha restituito righe per ${booking}.`,
             rows.length ? "ok" : "error"
           );
