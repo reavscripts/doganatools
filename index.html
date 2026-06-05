@@ -1850,7 +1850,7 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 .sctBookingPanel[open] summary::after{ transform:rotate(180deg); }
 .sctBookingForm{
   display:grid;
-  grid-template-columns:minmax(220px, 1fr) auto auto;
+  grid-template-columns:minmax(150px, 180px) minmax(150px, 190px) minmax(220px, 1fr) auto auto;
   gap:8px;
   align-items:center;
   padding:0 14px 14px;
@@ -1864,6 +1864,22 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   padding:10px 12px;
   font-weight:800;
 }
+
+.bookingProviderSelect,
+.bookingCountrySelect{
+  cursor:pointer;
+  appearance:auto;
+}
+.bookingCountrySelect.is-hidden{
+  display:none;
+}
+.bookingLookupForm:not(.is-akkon){
+  grid-template-columns:minmax(150px, 180px) minmax(220px, 1fr) auto auto;
+}
+.bookingLookupForm:not(.is-akkon) .bookingCountrySelect{
+  display:none;
+}
+
 .sctBookingStatus{
   grid-column:1 / -1;
   color:var(--muted);
@@ -5793,13 +5809,41 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="extraContent" id="extraContent">
-    <details class="sctBookingPanel" id="sctBookingPanel">
-      <summary>Ricerca booking SCT / VGM</summary>
-      <div class="sctBookingForm">
-        <input class="sctBookingInput" id="sctBookingInput" type="text" inputmode="numeric" placeholder="INSERISCI NUMERO BOOKING SCT" autocomplete="off" />
-        <button class="primary" id="sctBookingSearchBtn" type="button">Cerca booking</button>
-        <button class="success" id="sctBookingOpenBtn" type="button" disabled>Apri PDF</button>
-        <div class="sctBookingStatus" id="sctBookingStatus">Usa la stessa sessione JMT/SCT già collegata.</div>
+    <details class="sctBookingPanel is-visible" id="bookingLookupPanel">
+      <summary>Ricerca booking</summary>
+      <div class="sctBookingForm bookingLookupForm">
+        <select class="sctBookingInput bookingProviderSelect" id="bookingProviderSelect" aria-label="Sito ricerca booking">
+          <option value="sct" selected>SCT / JMT</option>
+          <option value="hapag">HAPAG-LLOYD</option>
+          <option value="akkon">AKKONLINES</option>
+        </select>
+        <select class="sctBookingInput bookingCountrySelect" id="bookingCountrySelect" aria-label="Country AKKONLINES">
+          <option value="TURKEY|SBOAKKON">TURKEY</option>
+          <option value="ALGERIA|SBOAKKONALGERIA">ALGERIA</option>
+          <option value="BELGIUM|SBOAKKONBELGIUM">BELGIUM</option>
+          <option value="BULGARIA|SBOAKKONBULGARIA">BULGARIA</option>
+          <option value="CHINA|SBOAKKONCHINA">CHINA</option>
+          <option value="DJIBOUTI|SBOAKKON">DJIBOUTI</option>
+          <option value="IBERIA / SPAIN|SBOIBERIALIVE">IBERIA / SPAIN</option>
+          <option value="INDIA|AKKONINDIAINT">INDIA</option>
+          <option value="ITALY|SBOAKKONITALY" selected>ITALY</option>
+          <option value="JORDAN|SBOAKKON">JORDAN</option>
+          <option value="KENYA|SBOAKKON">KENYA</option>
+          <option value="LIBYA|SBOAKKON">LIBYA</option>
+          <option value="MOROCCO|SBOAKKONMOROCCO">MOROCCO</option>
+          <option value="PAKISTAN|SBOAKKON">PAKISTAN</option>
+          <option value="ROMANIA|SBOAKKONROMANIA">ROMANIA</option>
+          <option value="SAUDI ARABIA|SBOAKKON">SAUDI ARABIA</option>
+          <option value="TANZANIA|SBOAKKON">TANZANIA</option>
+          <option value="TUNISIA|SBOAKKONTUNISIA">TUNISIA</option>
+          <option value="UKRAINE|SBOAKKONUKRAINE">UKRAINE</option>
+          <option value="UNITED ARAB EMIRATES|SBOAKKON">UNITED ARAB EMIRATES</option>
+          <option value="UNITED KINGDOM|SBOAKKONUK">UNITED KINGDOM</option>
+        </select>
+        <input class="sctBookingInput" id="bookingLookupInput" type="text" inputmode="text" placeholder="INSERISCI NUMERO BOOKING" autocomplete="off" />
+        <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
+        <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri risultato</button>
+        <div class="sctBookingStatus" id="bookingLookupStatus">Scegli il sito e inserisci il booking da controllare.</div>
       </div>
     </details>
     <div class="miniWrap">
@@ -7242,12 +7286,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraTerminalSubtitle = document.getElementById("extraTerminalSubtitle");
     const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
     const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
-    const sctBookingPanel = document.getElementById("sctBookingPanel");
-    const sctBookingInput = document.getElementById("sctBookingInput");
-    const sctBookingSearchBtn = document.getElementById("sctBookingSearchBtn");
-    const sctBookingOpenBtn = document.getElementById("sctBookingOpenBtn");
-    const sctBookingStatus = document.getElementById("sctBookingStatus");
-    let sctBookingPdfUrl = "";
+    const bookingLookupPanel = document.getElementById("bookingLookupPanel");
+    const bookingProviderSelect = document.getElementById("bookingProviderSelect");
+    const bookingCountrySelect = document.getElementById("bookingCountrySelect");
+    const bookingLookupInput = document.getElementById("bookingLookupInput");
+    const bookingLookupSearchBtn = document.getElementById("bookingLookupSearchBtn");
+    const bookingLookupOpenBtn = document.getElementById("bookingLookupOpenBtn");
+    const bookingLookupStatus = document.getElementById("bookingLookupStatus");
+    let bookingLookupResultUrl = "";
 
     const EXTRA_TERMINALS = {
       sct: {
@@ -7831,7 +7877,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (fla) fla.textContent = String(countFilledExtra("flavio"));
       const cfg = EXTRA_TERMINALS[activeExtraTerminal];
       if (extraTerminalSubtitle) extraTerminalSubtitle.textContent = cfg.subtitle;
-      if (sctBookingPanel) sctBookingPanel.classList.toggle("is-visible", activeExtraTerminal === "sct");
+      if (bookingLookupPanel) bookingLookupPanel.classList.add("is-visible");
     }
 
     function renderExtraStatusCell(td, row, cfg, containerValue){
@@ -8092,82 +8138,157 @@ document.addEventListener("DOMContentLoaded", () => {
       )];
     }
 
-    function normalizeSctBookingValue(value){
+    function normalizeBookingLookupValue(value){
       return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
     }
 
-    function setSctBookingStatus(message, type = ""){
-      if (!sctBookingStatus) return;
-      sctBookingStatus.textContent = message || "";
-      sctBookingStatus.classList.remove("ok", "error");
-      if (type) sctBookingStatus.classList.add(type);
+    function getBookingProviderLabel(provider){
+      if (provider === "hapag") return "HAPAG-LLOYD";
+      if (provider === "akkon") return "AKKONLINES";
+      return "SCT";
     }
 
-    async function searchSctBookingPdf(){
-      const booking = normalizeSctBookingValue(sctBookingInput?.value || "");
-      if (sctBookingInput && sctBookingInput.value !== booking) sctBookingInput.value = booking;
+    function setBookingLookupStatus(message, type = ""){
+      if (!bookingLookupStatus) return;
+      bookingLookupStatus.textContent = message || "";
+      bookingLookupStatus.classList.remove("ok", "error");
+      if (type) bookingLookupStatus.classList.add(type);
+    }
 
-      sctBookingPdfUrl = "";
-      if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = true;
+    function updateBookingProviderUi(){
+      const provider = bookingProviderSelect?.value || "sct";
+      const form = bookingLookupPanel?.querySelector(".bookingLookupForm");
+      form?.classList.toggle("is-akkon", provider === "akkon");
+
+      if (bookingLookupInput) {
+        bookingLookupInput.placeholder = provider === "sct"
+          ? "INSERISCI NUMERO BOOKING SCT"
+          : provider === "hapag"
+            ? "INSERISCI BOOKING HAPAG-LLOYD"
+            : "INSERISCI BL/BOOKING AKKONLINES";
+      }
+
+      bookingLookupResultUrl = "";
+      if (bookingLookupOpenBtn) {
+        bookingLookupOpenBtn.disabled = true;
+        bookingLookupOpenBtn.textContent = provider === "sct" ? "Apri PDF" : "Apri risultato";
+      }
+
+      const msg = provider === "sct"
+        ? "Usa la stessa sessione JMT/SCT già collegata."
+        : provider === "hapag"
+          ? "Controllo booking HAPAG-LLOYD: apre il tracking ufficiale con il booking inserito."
+          : "Controllo AKKONLINES: usa Italy come country predefinito, modificabile dal menu.";
+      setBookingLookupStatus(msg);
+    }
+
+    async function searchBookingLookup(){
+      const provider = bookingProviderSelect?.value || "sct";
+      const booking = normalizeBookingLookupValue(bookingLookupInput?.value || "");
+      if (bookingLookupInput && bookingLookupInput.value !== booking) bookingLookupInput.value = booking;
+
+      bookingLookupResultUrl = "";
+      if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
 
       if (!booking) {
-        setSctBookingStatus("Inserisci un numero booking SCT.", "error");
+        setBookingLookupStatus(`Inserisci un numero booking ${getBookingProviderLabel(provider)}.`, "error");
         return;
       }
 
-      if (sctBookingSearchBtn) {
-        sctBookingSearchBtn.disabled = true;
-        sctBookingSearchBtn.textContent = "Cerco...";
+      if (bookingLookupSearchBtn) {
+        bookingLookupSearchBtn.disabled = true;
+        bookingLookupSearchBtn.textContent = "Cerco...";
       }
-      setSctBookingStatus("Cerco booking su SCT usando la sessione JMT già attiva...");
+
+      const providerLabel = getBookingProviderLabel(provider);
+      setBookingLookupStatus(`Cerco booking su ${providerLabel}...`);
 
       try {
-        const response = await fetch(
-          apiUrl(`/api/get-sct-booking-pdf?booking=${encodeURIComponent(booking)}&_=${Date.now()}`),
-          {
-            method: "GET",
-            mode: "cors",
-            credentials: "omit",
-            cache: "no-store",
-            headers: { "Accept": "application/json" }
-          }
-        );
+        let endpoint = "";
+        if (provider === "sct") {
+          endpoint = `/api/get-sct-booking-pdf?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
+        } else if (provider === "hapag") {
+          endpoint = `/api/get-hapag-booking?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
+        } else {
+          const country = bookingCountrySelect?.value || "ITALY|SBOAKKONITALY";
+          endpoint = `/api/get-akkon-booking?booking=${encodeURIComponent(booking)}&country=${encodeURIComponent(country)}&_=${Date.now()}`;
+        }
+
+        const response = await fetch(apiUrl(endpoint), {
+          method: "GET",
+          mode: "cors",
+          credentials: "omit",
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        });
 
         const data = await response.json().catch(() => null);
 
-        if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
+        if (provider === "sct" && (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired)) {
           showJmtDisconnectedMessage(`booking ${booking}`);
           return;
         }
 
-        if (!response.ok || !data?.success || !data?.pdfUrl) {
-          throw new Error(data?.error || `Booking non trovato o report non disponibile (${response.status})`);
+        if (!response.ok || !data?.success) {
+          throw new Error(data?.error || `Booking non trovato o servizio non disponibile (${response.status})`);
         }
 
-        sctBookingPdfUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
-        if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = !sctBookingPdfUrl;
-        setSctBookingStatus(`PDF booking ${booking} pronto. Premi “Apri PDF”.`, "ok");
+        if (provider === "sct") {
+          bookingLookupResultUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
+          if (!bookingLookupResultUrl) throw new Error("PDF booking SCT non trovato");
+          if (bookingLookupOpenBtn) {
+            bookingLookupOpenBtn.disabled = false;
+            bookingLookupOpenBtn.textContent = "Apri PDF";
+          }
+          setBookingLookupStatus(`PDF booking ${booking} pronto. Premi “Apri PDF”.`, "ok");
+        } else if (provider === "hapag") {
+          bookingLookupResultUrl = data.trackingUrl || data.url || "";
+          if (!bookingLookupResultUrl) throw new Error("Link HAPAG-LLOYD non generato");
+          if (bookingLookupOpenBtn) {
+            bookingLookupOpenBtn.disabled = false;
+            bookingLookupOpenBtn.textContent = "Apri tracking";
+          }
+          setBookingLookupStatus(`Tracking HAPAG-LLOYD pronto per booking ${booking}.`, "ok");
+        } else {
+          bookingLookupResultUrl = data.externalUrl || "https://sap.akkonlines.com/index.aspx";
+          const rows = Array.isArray(data.rows) ? data.rows : [];
+          const first = rows[0] || {};
+          const vessel = first["Vessel Name"] || first.vesselName || "";
+          const voyage = first["Voyage"] || first.voyage || "";
+          const eta = first["ETA"] || first.eta || "";
+          if (bookingLookupOpenBtn) {
+            bookingLookupOpenBtn.disabled = false;
+            bookingLookupOpenBtn.textContent = "Apri AKKON";
+          }
+          setBookingLookupStatus(
+            rows.length
+              ? `AKKON trovato: ${vessel || "nave n/d"}${voyage ? " / " + voyage : ""}${eta ? " - ETA " + eta : ""}.`
+              : `AKKON ha risposto ma non ha restituito righe per ${booking}.`,
+            rows.length ? "ok" : "error"
+          );
+        }
 
         if (typeof showExtraToast === "function") {
-          showExtraToast("Booking SCT pronto", `PDF disponibile per booking ${booking}.`, "success");
+          showExtraToast(`${providerLabel} booking`, `Controllo completato per ${booking}.`, "success");
         }
         try { playExtraNotifySound?.(); } catch {}
 
       } catch (err) {
-        console.error("Errore ricerca booking SCT:", err);
-        setSctBookingStatus(err?.message || "Errore ricerca booking SCT", "error");
+        console.error(`Errore ricerca booking ${providerLabel}:`, err);
+        setBookingLookupStatus(err?.message || `Errore ricerca booking ${providerLabel}`, "error");
       } finally {
-        if (sctBookingSearchBtn) {
-          sctBookingSearchBtn.disabled = false;
-          sctBookingSearchBtn.textContent = "Cerca booking";
+        if (bookingLookupSearchBtn) {
+          bookingLookupSearchBtn.disabled = false;
+          bookingLookupSearchBtn.textContent = "Cerca booking";
         }
       }
     }
 
-    function openSctBookingPdf(){
-      const url = normalizeJmtPdfUrl(sctBookingPdfUrl);
+    function openBookingLookupResult(){
+      const provider = bookingProviderSelect?.value || "sct";
+      const url = provider === "sct" ? normalizeJmtPdfUrl(bookingLookupResultUrl) : bookingLookupResultUrl;
       if (!url) {
-        setSctBookingStatus("Prima cerca un booking SCT valido.", "error");
+        setBookingLookupStatus(`Prima cerca un booking ${getBookingProviderLabel(provider)} valido.`, "error");
         return;
       }
       window.open(url, "_blank", "noopener,noreferrer");
@@ -8411,21 +8532,28 @@ document.addEventListener("DOMContentLoaded", () => {
     jmtReconnectBtnBottom?.addEventListener("click", reconnectJmtManual);
     downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
     downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
-    sctBookingSearchBtn?.addEventListener("click", searchSctBookingPdf);
-    sctBookingOpenBtn?.addEventListener("click", openSctBookingPdf);
-    sctBookingInput?.addEventListener("input", () => {
-      const normalized = normalizeSctBookingValue(sctBookingInput.value);
-      if (sctBookingInput.value !== normalized) sctBookingInput.value = normalized;
-      sctBookingPdfUrl = "";
-      if (sctBookingOpenBtn) sctBookingOpenBtn.disabled = true;
-      setSctBookingStatus("Usa la stessa sessione JMT/SCT già collegata.");
+    bookingLookupSearchBtn?.addEventListener("click", searchBookingLookup);
+    bookingLookupOpenBtn?.addEventListener("click", openBookingLookupResult);
+    bookingProviderSelect?.addEventListener("change", updateBookingProviderUi);
+    bookingCountrySelect?.addEventListener("change", () => {
+      bookingLookupResultUrl = "";
+      if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
+      updateBookingProviderUi();
     });
-    sctBookingInput?.addEventListener("keydown", (event) => {
+    bookingLookupInput?.addEventListener("input", () => {
+      const normalized = normalizeBookingLookupValue(bookingLookupInput.value);
+      if (bookingLookupInput.value !== normalized) bookingLookupInput.value = normalized;
+      bookingLookupResultUrl = "";
+      if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
+      updateBookingProviderUi();
+    });
+    bookingLookupInput?.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
         event.preventDefault();
-        searchSctBookingPdf();
+        searchBookingLookup();
       }
     });
+    updateBookingProviderUi();
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     minimizeExtraBtn?.addEventListener("click", () => {
       extraPanel?.classList.toggle("minimized");
