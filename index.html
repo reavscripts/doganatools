@@ -8375,9 +8375,12 @@ document.addEventListener("DOMContentLoaded", () => {
       const columns = Array.from(colSet).filter(key => safeRows.some(row => String(row?.[key] ?? "").trim()));
 
       const first = safeRows[0] || {};
+      const allContainers = Array.from(new Set(safeRows
+        .map(row => pickBookingValue(row, ["Nr contenitore", "Container No", "Container", "ContainerReference", "Container reference", "containerReference"]))
+        .filter(Boolean)));
       const cards = [
         ["Booking / BL", pickBookingValue(first, ["Akkon BL No", "Booking reference", "Booking", "BL", "Shipment Ref", "Reference", "reference"])],
-        ["Container", pickBookingValue(first, ["Container No", "Container", "ContainerReference", "Container reference", "containerReference"])],
+        [allContainers.length > 1 ? "Nr contenitori" : "Nr contenitore", allContainers.length ? allContainers.join(", ") : pickBookingValue(first, ["Nr contenitore", "Container No", "Container", "ContainerReference", "Container reference", "containerReference"])],
         ["Nave / Voyage", [
           pickBookingValue(first, ["Vessel Name", "Vessel", "vesselName", "Vessel name"]),
           pickBookingValue(first, ["Voyage", "voyageReference", "Voyage reference"])
@@ -8510,17 +8513,21 @@ document.addEventListener("DOMContentLoaded", () => {
             bookingLookupOpenBtn.disabled = false;
             bookingLookupOpenBtn.textContent = "Apri CMA CGM";
           }
+          const containers = Array.isArray(data.containers) ? data.containers.filter(Boolean) : [];
+          const displayRows = rows.length ? rows : (containers.length ? containers.map(container => ({ Reference: booking, "Nr contenitore": container })) : (Object.keys(summary).length ? [summary] : []));
           renderBookingLookupTable(
             `Risultato CMA CGM - ${booking}`,
-            rows.length ? `${rows.length} evento/i tracking recuperati.` : (data.text || "Nessun dettaglio trovato."),
-            rows.length ? rows : (Object.keys(summary).length ? [summary] : []),
-            ["Container", "Status", "Location", "Terminal", "Date", "Vessel", "Voyage", "Mode", "POL", "POD", "ETA POD"]
+            containers.length
+              ? `Container trovati: ${containers.join(", ")}`
+              : (rows.length ? `${rows.length} evento/i tracking recuperati.` : (data.text || "Nessun dettaglio trovato.")),
+            displayRows,
+            ["Nr contenitore", "Status", "Location", "Terminal", "Date", "Time", "Vessel", "Voyage", "Mode", "POL", "POD", "ETA POD"]
           );
           setBookingLookupStatus(
-            rows.length
-              ? `CMA CGM trovato: ${summary.container || booking}${summary.pod ? " - POD " + summary.pod : ""}${summary.eta ? " - ETA " + summary.eta : ""}. Dettagli mostrati qui sotto.`
+            containers.length || rows.length
+              ? `CMA CGM trovato: ${containers.length ? containers.join(", ") : (summary.container || booking)}${summary.pod ? " - POD " + summary.pod : ""}${summary.eta ? " - ETA " + summary.eta : ""}. Dettagli mostrati qui sotto.`
               : `CMA CGM ha risposto ma non ha restituito dettagli per ${booking}.`,
-            rows.length ? "ok" : "error"
+            (containers.length || rows.length) ? "ok" : "error"
           );
         } else {
           bookingLookupResultUrl = data.externalUrl || "https://sap.akkonlines.com/index.aspx";
