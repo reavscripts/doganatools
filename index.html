@@ -7499,6 +7499,72 @@ document.addEventListener("DOMContentLoaded", () => {
       return rowTerm === term;
     }
 
+    function getExtraRowContainer(row, termKey = null){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : inferExtraTerminal(row);
+      const cfg = EXTRA_TERMINALS[term] || EXTRA_TERMINALS.sct;
+      return normalizeExtraContainerValue(row?.[cfg.containerField] || "");
+    }
+
+    function getExtraRowDedupKey(row){
+      const normalized = normalizeExtraRow(row);
+      const term = inferExtraTerminal(normalized);
+      const container = getExtraRowContainer(normalized, term);
+      if (!container) return "id:" + String(normalized.__id || makeExtraId());
+      return `container:${term}:${container}`;
+    }
+
+    function getExtraRowTime(row){
+      const t = Date.parse(row?.__updatedAt || "");
+      return Number.isFinite(t) ? t : 0;
+    }
+
+    function mergeExtraRowData(baseRow, incomingRow){
+      const base = normalizeExtraRow(baseRow);
+      const incoming = normalizeExtraRow(incomingRow);
+      const baseTime = getExtraRowTime(base);
+      const incomingTime = getExtraRowTime(incoming);
+      const newer = incomingTime >= baseTime ? incoming : base;
+      const older = newer === incoming ? base : incoming;
+      const merged = { ...older, ...newer };
+
+      // Mantiene stabile l'ID della prima riga incontrata: quando arrivano dati dal backend
+      // restano quindi validi gli ID ufficiali e la cache locale vecchia non crea nuove righe.
+      merged.__id = base.__id || incoming.__id || makeExtraId();
+      merged.__rev = Math.max(Number(base.__rev || 0), Number(incoming.__rev || 0));
+      merged.__updatedAt = newer.__updatedAt || older.__updatedAt || new Date().toISOString();
+      merged.__updatedBy = newer.__updatedBy || older.__updatedBy || "";
+      merged.__terminal = inferExtraTerminal(newer);
+
+      for (const [key, value] of Object.entries(older)) {
+        if ((merged[key] === "" || merged[key] == null) && value !== "" && value != null) {
+          merged[key] = value;
+        }
+      }
+
+      return normalizeExtraRow(merged);
+    }
+
+    function dedupeExtraRows(rows){
+      const byKey = new Map();
+      const out = [];
+
+      for (const raw of Array.isArray(rows) ? rows : []) {
+        const row = normalizeExtraRow(raw);
+        const key = getExtraRowDedupKey(row);
+
+        if (!byKey.has(key)) {
+          byKey.set(key, out.length);
+          out.push(row);
+          continue;
+        }
+
+        const index = byKey.get(key);
+        out[index] = mergeExtraRowData(out[index], row);
+      }
+
+      return out;
+    }
+
     function getVisibleExtraEntries(termKey = activeExtraTerminal){
       const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
       return extraRows
@@ -7520,11 +7586,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function mergeRemoteExtraRows(remoteRows){
       const focusedRowId = getFocusedExtraRowId();
-      const localById = new Map(extraRows.map(row => [String(row.__id || ""), normalizeExtraRow(row)]));
-      const remoteById = new Map((remoteRows || []).map(row => {
-        const normalized = normalizeExtraRow(row);
-        return [String(normalized.__id || ""), normalized];
-      }));
+      const localById = new Map(dedupeExtraRows(extraRows).map(row => [String(row.__id || ""), row]));
+      const remoteById = new Map(dedupeExtraRows(remoteRows || []).map(row => [String(row.__id || ""), row]));
 
       const merged = [];
 
@@ -7540,13 +7603,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
       for (const [id, localRow] of localById.entries()) {
         if (id && !remoteById.has(id)) {
-          // Se è una riga appena creata localmente, non perderla durante il refresh.
+          // Mantiene solo righe locali davvero nuove. Le vecchie copie con lo stesso
+          // container vengono eliminate da dedupeExtraRows() e non rientrano più in cache.
           const isRecentLocal = String(localRow.__updatedBy || "") === EXTRA_CLIENT_ID;
-          if (isRecentLocal) merged.push(localRow);
+          const isStillDirty = Date.now() < extraLocalDirtyUntil;
+          if (isRecentLocal && isStillDirty) merged.push(localRow);
         }
       }
 
-      return merged.map(normalizeExtraRow);
+      return dedupeExtraRows(merged);
     }
 
     function saveExtraLocalOnly(){
@@ -7618,11 +7683,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function addSharedExtraRows(rows){
       try {
-        await fetch(apiUrl("/api/extra-rows"), {
+        const cleanRows = dedupeExtraRows(rows || []);
+        const res = await fetch(apiUrl("/api/extra-rows"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ rows })
+          body: JSON.stringify({ rows: cleanRows })
         });
+        const data = await res.json().catch(() => null);
+        if (res.ok && data?.state?.extraRows) {
+          extraRows = mergeRemoteExtraRows(data.state.extraRows);
+          saveExtraLocalOnly();
+        }
       } catch (err) {
         console.warn("Aggiunta righe condivise non riuscita", err);
       }
@@ -7739,7 +7810,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if(!raw) return false;
         const parsed = JSON.parse(raw);
         if(!Array.isArray(parsed)) return false;
-        extraRows = parsed.map(normalizeExtraRow);
+        extraRows = dedupeExtraRows(parsed);
+        saveExtraLocalOnly();
         return true;
       }catch{
         return false;
@@ -7755,6 +7827,7 @@ document.addEventListener("DOMContentLoaded", () => {
         extraRows.push(row);
       }
 
+      extraRows = dedupeExtraRows(extraRows);
       renderExtra();
       saveExtraLocalOnly();
       addSharedExtraRows(created);
@@ -7966,6 +8039,7 @@ document.addEventListener("DOMContentLoaded", () => {
         changedRows.push(normalizeExtraRow(extraRows[rowIndex]));
       });
 
+      extraRows = dedupeExtraRows(extraRows);
       renderExtra();
       refreshExtraContainerValidations();
       saveExtraLocalOnly();
