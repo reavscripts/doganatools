@@ -7614,10 +7614,19 @@ document.addEventListener("DOMContentLoaded", () => {
       return dedupeExtraRows(merged);
     }
 
+    function clearExtraLocalCache(){
+      // La ricerca contenitori deve usare SOLO lo stato condiviso del backend.
+      // Rimuove le vecchie copie locali che potevano ripresentarsi e sovrascrivere
+      // contenitori già segnati da altri client.
+      try { localStorage.removeItem(EXTRA_LS_KEY); } catch {}
+      try { localStorage.removeItem(EXTRA_ACTIVE_TERMINAL_KEY); } catch {}
+      try { localStorage.removeItem(EXTRA_AUTOCHECK_KEY); } catch {}
+    }
+
     function saveExtraLocalOnly(){
-      try { localStorage.setItem(EXTRA_LS_KEY, JSON.stringify(extraRows)); } catch {}
-      try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
-      try { localStorage.setItem(EXTRA_AUTOCHECK_KEY, extraAutoCheckEnabled ? "1" : "0"); } catch {}
+      // Disattivato volutamente: nessuna riga contenitore viene più salvata
+      // nel browser. La fonte ufficiale resta /api/shared-state.
+      clearExtraLocalCache();
     }
 
     function scheduleSharedMetaSave(){
@@ -7802,20 +7811,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function loadExtra(){
-      try{
-        const savedTerminal = localStorage.getItem(EXTRA_ACTIVE_TERMINAL_KEY);
-        if (EXTRA_TERMINALS[savedTerminal]) activeExtraTerminal = savedTerminal;
-        extraAutoCheckEnabled = localStorage.getItem(EXTRA_AUTOCHECK_KEY) === "1";
-        const raw = localStorage.getItem(EXTRA_LS_KEY);
-        if(!raw) return false;
-        const parsed = JSON.parse(raw);
-        if(!Array.isArray(parsed)) return false;
-        extraRows = dedupeExtraRows(parsed);
-        saveExtraLocalOnly();
-        return true;
-      }catch{
-        return false;
-      }
+      // Cache locale dismessa per la ricerca contenitori.
+      // Non leggiamo più localStorage: al caricamento conta solo lo stato condiviso.
+      clearExtraLocalCache();
+      extraRows = [];
+      return false;
     }
 
     function addExtraRows(count, focusLast=false){
@@ -7838,20 +7838,12 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // Usato solo come fallback locale quando il backend non risponde.
-    // Non invia nulla allo stato condiviso, quindi una cache vecchia del browser
-    // non può sovrascrivere la tabella degli altri utenti.
     function addExtraRowsLocalOnly(count, focusLast=false){
-      for(let i=0; i<count; i++) {
-        const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
-        row.__updatedBy = EXTRA_CLIENT_ID;
-        extraRows.push(row);
-      }
-
+      // Fallback locale disattivato: senza backend condiviso non creiamo righe
+      // che potrebbero poi rientrare come dati vecchi.
+      clearExtraLocalCache();
       renderExtra();
-      saveExtraLocalOnly();
-
-      if(focusLast){
+      if (focusLast) {
         const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
         if(last) last.focus();
       }
@@ -7886,10 +7878,12 @@ document.addEventListener("DOMContentLoaded", () => {
       if (nextIndex === undefined) {
         if (e.shiftKey) nextIndex = visible[0] ?? currentRow;
         else {
-          extraRows.push(emptyExtraRow(activeExtraTerminal));
+          const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
+          row.__updatedBy = EXTRA_CLIENT_ID;
+          extraRows.push(row);
           nextIndex = extraRows.length - 1;
           renderExtra();
-          saveExtra();
+          addSharedExtraRows([row]);
         }
       }
 
@@ -8853,10 +8847,11 @@ document.addEventListener("DOMContentLoaded", () => {
     if (extraLoaded) renderExtra();
 
     // AVVIO MULTIUTENTE SICURO:
-    // 1) il backend è la fonte ufficiale;
-    // 2) localStorage serve solo come copia temporanea/fallback offline;
-    // 3) una cache vecchia del browser non viene mai inviata automaticamente al backend.
+    // 1) il backend è l'unica fonte ufficiale;
+    // 2) localStorage non viene più letto né scritto per le righe contenitori;
+    // 3) se il backend non risponde, non viene mostrata una copia locale vecchia.
     (async function initExtraSharedState(){
+      clearExtraLocalCache();
       const ok = await syncExtraFromBackend(true);
 
       if (ok) {
@@ -8864,9 +8859,10 @@ document.addEventListener("DOMContentLoaded", () => {
         // Questo avviene solo dopo aver verificato lo stato ufficiale.
         if (extraRows.length === 0) addExtraRows(3, false);
       } else {
-        // Backend non raggiungibile: mostra solo una copia locale, senza salvarla nello stato condiviso.
-        if (!extraLoaded || extraRows.length === 0) addExtraRowsLocalOnly(3, false);
-        else renderExtra();
+        extraRows = [];
+        extraLastRemoteState = null;
+        renderExtra();
+        showExtraToast("Backend condiviso non raggiungibile: cache locale contenitori disattivata.");
       }
 
       setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true });
