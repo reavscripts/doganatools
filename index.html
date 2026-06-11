@@ -9307,7 +9307,7 @@ async function buildConatecoPdfDoc(container, tipo, tracking) {
     conatecoPdfText(doc, 70, 150, tracking.Delega);
   }
 
-  if (tracking.Causale === "EDP") {
+  if (isConatecoLuogoApprovatoOrRetroporto(tracking)) {
     conatecoPdfText(doc, 20, 160, "Nota: LUOGO APPROVATO");
   }
 
@@ -9320,6 +9320,39 @@ async function saveConatecoPdfFile(container, tipo, tracking) {
   if (!doc || typeof doc.save !== "function") throw new Error("jsPDF non disponibile");
   doc.save(`conateco_${code}_tracking.pdf`);
   return true;
+}
+
+function normalizeConatecoText(value) {
+  return String(value ?? "")
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isConatecoLuogoApprovatoOrRetroporto(tracking) {
+  const text = normalizeConatecoText(JSON.stringify(tracking || {}));
+  const causale = normalizeConatecoText(tracking?.Causale || tracking?.causale);
+
+  return (
+    causale === "EDP" ||
+    text.includes("CAUSALE EDP") ||
+    text.includes("LUOGO APPROVATO") ||
+    text.includes("NOTA LUOGO") ||
+    text.includes("NOTA LUOGO APPROVATO") ||
+    text.includes("GIACENTE A RETROPORTO") ||
+    text.includes("RETROPORTO")
+  );
+}
+
+function getConatecoTrackingStatus(tracking) {
+  return isConatecoLuogoApprovatoOrRetroporto(tracking) ? "ENTRATO (RETROPORTO)" : "ENTRATO";
+}
+
+function getConatecoTrackingNote(tracking) {
+  return isConatecoLuogoApprovatoOrRetroporto(tracking) ? "LUOGO APPROVATO / RETROPORTO" : "";
 }
 
 async function checkContainerConateco(container) {
@@ -9354,7 +9387,7 @@ async function checkContainerConateco(container) {
     return {
       success: !!data.success,
       found: !!data.found,
-      status: data.status || (data.found ? "ENTRATO" : "NON ENTRATO"),
+      status: data.status || (data.found ? getConatecoTrackingStatus(tracking) : "NON ENTRATO"),
       // IMPORTANTE: non creiamo piu URL blob. Il click chiama doc.save(), come la pagina ufficiale CONATECO.
       pdfUrl: data.found && tracking ? "conateco-browser-save" : "",
       tracking,
@@ -9380,7 +9413,7 @@ async function checkContainerConateco(container) {
       return {
         success: true,
         found: true,
-        status: text.includes("EDP") ? "ENTRATO (RETROPORTO)" : "ENTRATO",
+        status: getConatecoTrackingStatus(data),
         pdfUrl: "conateco-browser-save",
         tracking: data
       };
@@ -9834,7 +9867,7 @@ async function downloadPDF(container) {
           </div>
 
           ${
-            data.Causale === "EDP"
+            isConatecoLuogoApprovatoOrRetroporto(data)
             ? `
             <div class="pdfInfoRow">
               <div class="pdfInfoLabel">Nota</div>
