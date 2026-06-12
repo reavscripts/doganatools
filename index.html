@@ -8075,9 +8075,20 @@ document.addEventListener("DOMContentLoaded", () => {
       if (directPdfUrl) {
         const link = document.createElement("a");
         link.href = activeExtraTerminal === "conateco" ? "#" : apiUrl(directPdfUrl);
-        link.textContent = "📄 SCARICA PDF";
+
         if (activeExtraTerminal === "conateco") {
+          // Per CONATECO lo stato deve rimanere visibile/colorato:
+          // - ENTRATO = verde
+          // - ENTRATO (LUOGO APPROVATO) / ENTRATO (RETROPORTO) = arancione
+          // Il PDF resta disponibile come link secondario.
+          const statusSpan = document.createElement("span");
+          statusSpan.textContent = status || "ENTRATO";
+          colorStatus(statusSpan, status, containerValue, activeExtraTerminal);
+          td.appendChild(statusSpan);
+          td.appendChild(document.createTextNode(" "));
+
           const cleanContainer = String(containerValue || row?.conateco || "container").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+          link.textContent = "📄 PDF";
           link.download = `conateco_${cleanContainer || "tracking"}.pdf`;
           link.addEventListener("click", async (event) => {
             event.preventDefault();
@@ -8089,6 +8100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
         } else {
+          link.textContent = "📄 SCARICA PDF";
           link.target = "_blank";
           link.rel = "noopener noreferrer";
         }
@@ -9332,27 +9344,40 @@ function normalizeConatecoText(value) {
     .trim();
 }
 
-function isConatecoLuogoApprovatoOrRetroporto(tracking) {
+function getConatecoNotaTipo(tracking) {
   const text = normalizeConatecoText(JSON.stringify(tracking || {}));
   const causale = normalizeConatecoText(tracking?.Causale || tracking?.causale);
 
-  return (
+  // CONATECO ufficiale: Causale = EDP viene mostrata come "Nota: LUOGO APPROVATO".
+  // La nota deve essere trattata come eccezione arancione, come RETROPORTO.
+  if (
     causale === "EDP" ||
     text.includes("CAUSALE EDP") ||
     text.includes("LUOGO APPROVATO") ||
     text.includes("NOTA LUOGO") ||
-    text.includes("NOTA LUOGO APPROVATO") ||
-    text.includes("GIACENTE A RETROPORTO") ||
-    text.includes("RETROPORTO")
-  );
+    text.includes("NOTA LUOGO APPROVATO")
+  ) {
+    return "LUOGO APPROVATO";
+  }
+
+  if (text.includes("GIACENTE A RETROPORTO") || text.includes("RETROPORTO")) {
+    return "RETROPORTO";
+  }
+
+  return "";
+}
+
+function isConatecoLuogoApprovatoOrRetroporto(tracking) {
+  return !!getConatecoNotaTipo(tracking);
 }
 
 function getConatecoTrackingStatus(tracking) {
-  return isConatecoLuogoApprovatoOrRetroporto(tracking) ? "ENTRATO (RETROPORTO)" : "ENTRATO";
+  const notaTipo = getConatecoNotaTipo(tracking);
+  return notaTipo ? `ENTRATO (${notaTipo})` : "ENTRATO";
 }
 
 function getConatecoTrackingNote(tracking) {
-  return isConatecoLuogoApprovatoOrRetroporto(tracking) ? "LUOGO APPROVATO / RETROPORTO" : "";
+  return getConatecoNotaTipo(tracking);
 }
 
 async function checkContainerConateco(container) {
@@ -9506,7 +9531,7 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
 
   if (value.includes("NON ENTRATO")) {
     cell.style.color = "#dc2626";
-  } else if (value.includes("RETROPORTO")) {
+  } else if (value.includes("RETROPORTO") || value.includes("LUOGO APPROVATO")) {
     cell.style.color = "#f59e0b";
   } else if (value === "ENTRATO") {
     cell.style.color = "#16a34a";
@@ -9545,11 +9570,11 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
     if (!conatecoValue) return;
 
-    const alreadyHasPdf =
-      liveRow.conatecoStatus === "PDF PRONTO" &&
+    const alreadyChecked =
+      String(liveRow.conatecoStatus || "").trim().toUpperCase().startsWith("ENTRATO") &&
       String(liveRow.conatecoPdfUrl || "").trim();
 
-    if (alreadyHasPdf) return;
+    if (alreadyChecked) return;
 
     liveRow.conateco = conatecoValue;
     liveRow.conatecoStatus = "Controllo...";
@@ -9562,16 +9587,16 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     liveRow = getLiveRow();
     liveRow.conateco = conatecoValue;
 
-    if (result && result.success && result.found && result.pdfUrl) {
-      liveRow.conatecoStatus = "PDF PRONTO";
-      liveRow.conatecoPdfUrl = result.pdfUrl;
+    if (result && result.success && result.found) {
+      liveRow.conatecoStatus = result.status || getConatecoTrackingStatus(result.tracking || null);
+      liveRow.conatecoPdfUrl = result.pdfUrl || "";
       liveRow.conatecoTracking = result.tracking || null;
-      notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
-      console.log("PDF CONATECO PRONTO:", conatecoValue, result.pdfUrl);
+      if (result.pdfUrl) notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
+      console.log("CONATECO trovato:", conatecoValue, liveRow.conatecoStatus, result.pdfUrl || "");
     } else {
       liveRow.conatecoStatus = result?.status || result?.error || "NON ENTRATO";
       liveRow.conatecoPdfUrl = "";
-      liveRow.conatecoTracking = null;
+      liveRow.conatecoTracking = result?.tracking || null;
       console.log("CONATECO esito:", conatecoValue, result);
     }
 
