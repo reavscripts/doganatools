@@ -7592,8 +7592,10 @@ document.addEventListener("DOMContentLoaded", () => {
       const merged = [];
 
       for (const [id, remoteRow] of remoteById.entries()) {
-        // Non sovrascrive la riga su cui l'utente sta scrivendo.
-        // Verrà sincronizzata appena termina focus/blur o al salvataggio riga.
+        // Fonte ufficiale: server.js.
+        // Teniamo temporaneamente solo la riga in focus per non cancellare caratteri
+        // mentre l'utente sta scrivendo; appena la cella perde focus viene inviata
+        // con PATCH /api/extra-row/:rowId e poi ricaricata dal server.
         if (id && id === focusedRowId && localById.has(id)) {
           merged.push(localById.get(id));
         } else {
@@ -7601,16 +7603,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
 
-      for (const [id, localRow] of localById.entries()) {
-        if (id && !remoteById.has(id)) {
-          // Mantiene solo righe locali davvero nuove. Le vecchie copie con lo stesso
-          // container vengono eliminate da dedupeExtraRows() e non rientrano più in cache.
-          const isRecentLocal = String(localRow.__updatedBy || "") === EXTRA_CLIENT_ID;
-          const isStillDirty = Date.now() < extraLocalDirtyUntil;
-          if (isRecentLocal && isStillDirty) merged.push(localRow);
-        }
-      }
-
+      // Nessuna riga locale non presente sul backend viene mantenuta.
+      // Questo evita che copie vecchie nel browser facciano ricomparire o sparire container.
       return dedupeExtraRows(merged);
     }
 
@@ -7702,32 +7696,38 @@ document.addEventListener("DOMContentLoaded", () => {
         if (res.ok && data?.state?.extraRows) {
           extraRows = mergeRemoteExtraRows(data.state.extraRows);
           saveExtraLocalOnly();
+          return true;
         }
       } catch (err) {
         console.warn("Aggiunta righe condivise non riuscita", err);
       }
+      return false;
     }
 
     async function deleteSharedExtraRow(rowId){
-      if (!rowId) return;
+      if (!rowId) return false;
       try {
-        await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
+        const res = await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
           method: "DELETE"
         });
+        return res.ok;
       } catch (err) {
         console.warn("Eliminazione riga condivisa non riuscita", err);
+        return false;
       }
     }
 
     async function clearSharedExtraTerminal(termKey){
       try {
-        await fetch(apiUrl("/api/extra-clear-terminal"), {
+        const res = await fetch(apiUrl("/api/extra-clear-terminal"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ terminal: termKey })
         });
+        return res.ok;
       } catch (err) {
         console.warn("Svuotamento sezione condivisa non riuscito", err);
+        return false;
       }
     }
 
@@ -7804,8 +7804,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function saveExtra(){
-      // Salva in locale e aggiorna solo i metadati condivisi.
-      // Le righe si salvano con PATCH /api/extra-row/:rowId, mai come tabella intera.
+      // Ricerca Contenitori: nessuna cache locale delle righe.
+      // Salva sul backend solo i metadati; le righe viaggiano sempre via
+      // PATCH /api/extra-row/:rowId o POST /api/extra-rows.
       saveExtraLocalOnly();
       scheduleSharedMetaSave();
     }
@@ -7818,7 +7819,7 @@ document.addEventListener("DOMContentLoaded", () => {
       return false;
     }
 
-    function addExtraRows(count, focusLast=false){
+    async function addExtraRows(count, focusLast=false){
       const created = [];
       for(let i=0; i<count; i++) {
         const row = normalizeExtraRow(emptyExtraRow(activeExtraTerminal));
@@ -7830,11 +7831,18 @@ document.addEventListener("DOMContentLoaded", () => {
       extraRows = dedupeExtraRows(extraRows);
       renderExtra();
       saveExtraLocalOnly();
-      addSharedExtraRows(created);
 
       if(focusLast){
         const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
         if(last) last.focus();
+      }
+
+      const ok = await addSharedExtraRows(created);
+      if (!ok) {
+        const createdIds = new Set(created.map(row => String(row.__id || "")));
+        extraRows = extraRows.filter(row => !createdIds.has(String(row.__id || "")));
+        renderExtra();
+        showExtraToast("Backend condiviso non raggiungibile: riga non salvata.");
       }
     }
 
@@ -7849,15 +7857,24 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    function deleteExtraRow(index){
+    async function deleteExtraRow(index){
       if (index < 0 || index >= extraRows.length) return;
       if (!rowBelongsToTerminal(extraRows[index], activeExtraTerminal)) return;
 
       const rowId = extraRows[index]?.__id || "";
+      const snapshot = extraRows.slice();
       extraRows.splice(index, 1);
       renderExtra();
       saveExtraLocalOnly();
-      deleteSharedExtraRow(rowId);
+
+      const ok = await deleteSharedExtraRow(rowId);
+      if (!ok) {
+        extraRows = snapshot;
+        renderExtra();
+        showExtraToast("Backend condiviso non raggiungibile: eliminazione annullata.");
+      } else {
+        await syncExtraFromBackend(true);
+      }
     }
 
     function focusExtraCell(rowIndex, field){
@@ -8281,13 +8298,16 @@ document.addEventListener("DOMContentLoaded", () => {
       saveExtra();
     }
 
-    function clearExtraSection(){
+    async function clearExtraSection(){
       if(!confirm("Vuoi svuotare questa sezione per tutti gli utenti collegati?")) return;
       const term = activeExtraTerminal;
-      extraRows = extraRows.filter(row => !rowBelongsToTerminal(row, term));
-      renderExtra();
-      saveExtraLocalOnly();
-      clearSharedExtraTerminal(term);
+      const ok = await clearSharedExtraTerminal(term);
+      if (!ok) {
+        showExtraToast("Backend condiviso non raggiungibile: sezione non svuotata.");
+        await syncExtraFromBackend(true);
+        return;
+      }
+      await syncExtraFromBackend(true);
     }
 
 
