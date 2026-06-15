@@ -424,6 +424,39 @@
       transform:translateY(-1px);
     }
 
+    .extraRowIndexWrap{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .extraDragHandle{
+      width:26px;
+      height:26px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--grid-soft);
+      border-radius:9px;
+      background:var(--surface);
+      color:var(--muted);
+      cursor:grab;
+      user-select:none;
+      font-size:14px;
+      font-weight:900;
+      line-height:1;
+    }
+
+    .extraDragHandle:active{ cursor:grabbing; }
+
+    #extraTable tr.extraDragging td{
+      opacity:.45;
+    }
+
+    #extraTable tr.extraDropTarget td{
+      box-shadow:inset 0 2px 0 rgba(37,99,235,.55);
+    }
+
     tfoot td{
       background:var(--panel-2);
       border-top:1px solid var(--grid);
@@ -7372,6 +7405,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraRowSaveTimers = new Map();
     let extraLastRemoteState = null;
     let extraLocalDirtyUntil = 0;
+    let extraDraggedRowId = "";
 
 
     const extraTbody = document.getElementById("extraTbody");
@@ -7717,6 +7751,31 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    async function saveSharedExtraOrder(termKey){
+      try {
+        const rowIds = extraRows
+          .filter(row => rowBelongsToTerminal(row, termKey))
+          .map(row => String(row?.__id || ""))
+          .filter(Boolean);
+
+        const res = await fetch(apiUrl("/api/extra-reorder"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ terminal: termKey, rowIds, clientId: EXTRA_CLIENT_ID })
+        });
+
+        const data = await res.json().catch(() => null);
+        if (res.ok && data?.state?.extraRows) {
+          extraRows = mergeRemoteExtraRows(data.state.extraRows);
+          saveExtraLocalOnly();
+          return true;
+        }
+      } catch (err) {
+        console.warn("Salvataggio ordine righe non riuscito", err);
+      }
+      return false;
+    }
+
     async function clearSharedExtraTerminal(termKey){
       try {
         const res = await fetch(apiUrl("/api/extra-clear-terminal"), {
@@ -7874,6 +7933,36 @@ document.addEventListener("DOMContentLoaded", () => {
         showExtraToast("Backend condiviso non raggiungibile: eliminazione annullata.");
       } else {
         await syncExtraFromBackend(true);
+      }
+    }
+
+    async function moveExtraRowBefore(draggedRowId, targetRowId){
+      draggedRowId = String(draggedRowId || "");
+      targetRowId = String(targetRowId || "");
+      if (!draggedRowId || !targetRowId || draggedRowId === targetRowId) return;
+
+      const snapshot = extraRows.slice();
+      const termKey = activeExtraTerminal;
+      const visibleRows = extraRows.filter(row => rowBelongsToTerminal(row, termKey));
+      const draggedRow = visibleRows.find(row => String(row?.__id || "") === draggedRowId);
+      const targetIndex = visibleRows.findIndex(row => String(row?.__id || "") === targetRowId);
+      if (!draggedRow || targetIndex < 0) return;
+
+      const reorderedVisible = visibleRows.filter(row => String(row?.__id || "") !== draggedRowId);
+      const insertAt = reorderedVisible.findIndex(row => String(row?.__id || "") === targetRowId);
+      reorderedVisible.splice(insertAt < 0 ? reorderedVisible.length : insertAt, 0, draggedRow);
+
+      const queue = reorderedVisible.slice();
+      extraRows = extraRows.map(row => rowBelongsToTerminal(row, termKey) ? queue.shift() : row);
+      extraLocalDirtyUntil = Date.now() + 1200;
+      renderExtra();
+      saveExtraLocalOnly();
+
+      const ok = await saveSharedExtraOrder(termKey);
+      if (!ok) {
+        extraRows = snapshot;
+        renderExtra();
+        showExtraToast("Backend condiviso non raggiungibile: ordine non salvato.");
       }
     }
 
@@ -8083,10 +8172,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const status = row?.[cfg.statusField] || "-";
       td.textContent = "";
 
+      const conatecoHasNota = activeExtraTerminal === "conateco" && (
+        getConatecoNotaTipo(row?.conatecoTracking || null) ||
+        String(row?.conatecoStatus || "").toUpperCase().includes("LUOGO APPROVATO") ||
+        String(row?.conatecoStatus || "").toUpperCase().includes("RETROPORTO") ||
+        String(row?.conatecoStatus || "").toUpperCase().includes("NOTA")
+      );
+
       const directPdfUrl = activeExtraTerminal === "sct"
         ? normalizeJmtPdfUrl(row.sctPdfUrl || "")
         : (activeExtraTerminal === "conateco"
-          ? String(row.conatecoPdfUrl || "").trim()
+          ? (conatecoHasNota ? "" : String(row.conatecoPdfUrl || "").trim())
           : (activeExtraTerminal === "flavio" ? String(row.flavioPdfUrl || "").trim() : ""));
 
       if (directPdfUrl) {
@@ -8167,12 +8263,58 @@ document.addEventListener("DOMContentLoaded", () => {
         row.__terminal = activeExtraTerminal;
         extraRows[idx] = row;
         const tr = document.createElement("tr");
+        tr.dataset.extraRowId = row.__id || "";
+
+        tr.addEventListener("dragover", (event) => {
+          if (!extraDraggedRowId || extraDraggedRowId === tr.dataset.extraRowId) return;
+          event.preventDefault();
+          tr.classList.add("extraDropTarget");
+        });
+
+        tr.addEventListener("dragleave", () => {
+          tr.classList.remove("extraDropTarget");
+        });
+
+        tr.addEventListener("drop", async (event) => {
+          event.preventDefault();
+          tr.classList.remove("extraDropTarget");
+          const draggedId = event.dataTransfer?.getData("text/plain") || extraDraggedRowId;
+          extraDraggedRowId = "";
+          await moveExtraRowBefore(draggedId, tr.dataset.extraRowId);
+        });
 
         const tdIndex = document.createElement("td");
         tdIndex.className = "cell";
         tdIndex.style.color = "var(--muted)";
         tdIndex.style.padding = "12px 10px";
-        tdIndex.textContent = String(visibleIdx + 1);
+
+        const indexWrap = document.createElement("div");
+        indexWrap.className = "extraRowIndexWrap";
+
+        const dragHandle = document.createElement("span");
+        dragHandle.className = "extraDragHandle";
+        dragHandle.draggable = true;
+        dragHandle.title = "Trascina per cambiare posizione";
+        dragHandle.textContent = "☰";
+        dragHandle.addEventListener("dragstart", (event) => {
+          extraDraggedRowId = row.__id || "";
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", extraDraggedRowId);
+          tr.classList.add("extraDragging");
+        });
+        dragHandle.addEventListener("dragend", () => {
+          extraDraggedRowId = "";
+          document.querySelectorAll("#extraTable tr.extraDragging, #extraTable tr.extraDropTarget").forEach(el => {
+            el.classList.remove("extraDragging", "extraDropTarget");
+          });
+        });
+
+        const rowNumber = document.createElement("span");
+        rowNumber.textContent = String(visibleIdx + 1);
+
+        indexWrap.appendChild(dragHandle);
+        indexWrap.appendChild(rowNumber);
+        tdIndex.appendChild(indexWrap);
         tr.appendChild(tdIndex);
 
         const makeExtraInput = (value, field, placeholder="") => {
@@ -9429,12 +9571,15 @@ async function checkContainerConateco(container) {
 
     const tracking = data.tracking || null;
 
+    const notaTipo = getConatecoNotaTipo(tracking);
+
     return {
       success: !!data.success,
       found: !!data.found,
       status: data.status || (data.found ? getConatecoTrackingStatus(tracking) : "NON ENTRATO"),
-      // IMPORTANTE: non creiamo piu URL blob. Il click chiama doc.save(), come la pagina ufficiale CONATECO.
-      pdfUrl: data.found && tracking ? "conateco-browser-save" : "",
+      // Se CONATECO restituisce una Nota (LUOGO APPROVATO / RETROPORTO) NON mostriamo download PDF:
+      // il PDF in cache farebbe rimanere la riga su LUOGO APPROVATO anche quando poi diventa ENTRATO.
+      pdfUrl: data.found && tracking && !notaTipo ? "conateco-browser-save" : "",
       tracking,
       error: data.error || ""
     };
@@ -9455,11 +9600,13 @@ async function checkContainerConateco(container) {
       const invalid = text.includes('"STATO":"???"') || text.includes('"PIENOVUOTO":"0"');
       if (invalid) return { success: true, found: false, status: "NON ENTRATO", tracking: data };
 
+      const notaTipo = getConatecoNotaTipo(data);
+
       return {
         success: true,
         found: true,
         status: getConatecoTrackingStatus(data),
-        pdfUrl: "conateco-browser-save",
+        pdfUrl: notaTipo ? "" : "conateco-browser-save",
         tracking: data
       };
     } catch {
@@ -9590,11 +9737,19 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
     if (!conatecoValue) return;
 
+    const currentConatecoStatus = String(liveRow.conatecoStatus || "").trim().toUpperCase();
+    const currentConatecoHasNota =
+      currentConatecoStatus.includes("LUOGO APPROVATO") ||
+      currentConatecoStatus.includes("RETROPORTO") ||
+      currentConatecoStatus.includes("NOTA") ||
+      !!getConatecoNotaTipo(liveRow.conatecoTracking || null);
+
     const alreadyChecked =
-      String(liveRow.conatecoStatus || "").trim().toUpperCase().startsWith("ENTRATO") &&
+      currentConatecoStatus === "ENTRATO" &&
       String(liveRow.conatecoPdfUrl || "").trim();
 
-    if (alreadyChecked) return;
+    // Le righe con Nota vanno sempre ricontrollate: quando la Nota sparisce devono diventare ENTRATO + DOWNLOAD.
+    if (alreadyChecked && !currentConatecoHasNota) return;
 
     liveRow.conateco = conatecoValue;
     liveRow.conatecoStatus = "Controllo...";
@@ -9609,10 +9764,18 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
     if (result && result.success && result.found) {
       liveRow.conatecoStatus = result.status || getConatecoTrackingStatus(result.tracking || null);
-      liveRow.conatecoPdfUrl = result.pdfUrl || "";
       liveRow.conatecoTracking = result.tracking || null;
-      if (result.pdfUrl) notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
-      console.log("CONATECO trovato:", conatecoValue, liveRow.conatecoStatus, result.pdfUrl || "");
+
+      const resultHasNota =
+        !!getConatecoNotaTipo(result.tracking || null) ||
+        String(liveRow.conatecoStatus || "").toUpperCase().includes("LUOGO APPROVATO") ||
+        String(liveRow.conatecoStatus || "").toUpperCase().includes("RETROPORTO") ||
+        String(liveRow.conatecoStatus || "").toUpperCase().includes("NOTA");
+
+      // Nota presente = arancione e nessun download. Nota assente = ENTRATO e download PDF.
+      liveRow.conatecoPdfUrl = resultHasNota ? "" : (result.pdfUrl || "");
+      if (!resultHasNota && result.pdfUrl) notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
+      console.log("CONATECO trovato:", conatecoValue, liveRow.conatecoStatus, liveRow.conatecoPdfUrl || "NO PDF PER NOTA");
     } else {
       liveRow.conatecoStatus = result?.status || result?.error || "NON ENTRATO";
       liveRow.conatecoPdfUrl = "";
