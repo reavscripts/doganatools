@@ -14004,5 +14004,463 @@ const id = getClientId();
   }
 }
 </style>
+
+<style id="doganatools-mobile-only-ux-fix">
+/* === DOGANATOOLS - MIGLIORIA MOBILE ONLY ===
+   Tutte le regole sono limitate a schermi piccoli: desktop invariato. */
+@media (max-width: 768px){
+  html{
+    -webkit-text-size-adjust:100%;
+    scroll-padding-top:12px;
+  }
+
+  body{
+    padding:10px !important;
+    overflow-x:hidden !important;
+  }
+
+  .wrap{
+    width:100% !important;
+    max-width:none !important;
+    margin:0 !important;
+  }
+
+  .panel,
+  .miniPanel,
+  .calcPanel,
+  .shipPanel,
+  .extraPanel,
+  .doganaTableModuleCard,
+  .apiConfigPanel{
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    border-radius:16px !important;
+  }
+
+  button,
+  .rowBtn,
+  select,
+  input,
+  textarea{
+    font-size:16px !important;
+  }
+
+  button,
+  .rowBtn,
+  .shipTab,
+  .extraTab,
+  .autoCheckSwitch,
+  .extraLiveBadge,
+  .backendStatusBadge,
+  .appMenuSettingsBtn,
+  .appSessionSync{
+    min-height:44px !important;
+    touch-action:manipulation !important;
+  }
+
+  input,
+  select,
+  textarea{
+    min-height:44px !important;
+  }
+
+  .appTopBar{
+    position:sticky !important;
+    top:0 !important;
+    z-index:9999 !important;
+    padding:10px !important;
+    gap:10px !important;
+    border-radius:16px !important;
+    backdrop-filter:blur(14px) !important;
+  }
+
+  .appBrand{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .appBrandTitle,
+  .appBrandSubtitle{
+    min-width:0 !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .appQuickNav{
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    gap:8px !important;
+    padding-bottom:4px !important;
+    scrollbar-width:thin !important;
+  }
+
+  .appQuickNav a,
+  .appQuickNav button{
+    flex:0 0 auto !important;
+    white-space:nowrap !important;
+  }
+
+  .toolbar,
+  .miniHead,
+  .extraHead,
+  .doganaTableTopToolbar,
+  .shipToolbar{
+    padding:12px !important;
+  }
+
+  /* Tabelle: nessuna modifica ai dati, solo scorrimento più comodo su mobile */
+  .gridWrap,
+  .miniWrap,
+  .shipTableWrap,
+  .bookingLookupTableWrap{
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-x:contain !important;
+  }
+
+  .gridWrap::after,
+  .miniWrap::after,
+  .shipTableWrap::after{
+    content:"Scorri lateralmente per vedere tutte le colonne";
+    display:block;
+    padding:8px 10px 2px;
+    color:var(--muted);
+    font-size:12px;
+    font-weight:800;
+    text-align:center;
+  }
+
+  /* Modulo Tabella */
+  .doganaTableModuleCard .doganaTableTopToolbar{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:10px !important;
+  }
+
+  .doganaTableModuleCard .doganaTableHeaderGroup{
+    width:100% !important;
+    justify-content:space-between !important;
+  }
+
+  .doganaTableModuleCard .doganaTopButtons{
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    justify-content:flex-start !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    gap:8px !important;
+    padding-bottom:4px !important;
+  }
+
+  .doganaTableModuleCard .doganaTopButtons button{
+    flex:0 0 auto !important;
+    white-space:nowrap !important;
+  }
+
+  .doganaBottomToolbar{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    gap:8px !important;
+    padding:12px !important;
+  }
+
+  .doganaBottomToolbar button{
+    width:100% !important;
+  }
+
+  .titleField{
+    grid-template-columns:1fr !important;
+  }
+
+  .titleLabel{
+    min-height:auto !important;
+    padding:10px 12px !important;
+    border-right:0 !important;
+    border-bottom:1px solid var(--grid-soft) !important;
+  }
+
+  .titleInput{
+    min-height:48px !important;
+    padding:12px !important;
+  }
+
+  .calcMainPanel{
+    width:100% !important;
+    margin:12px 0 !important;
+    padding:12px !important;
+  }
+
+  .calcMainGrid,
+  .utilityGrid,
+  .importPanelGrid{
+    grid-template-columns:1fr !important;
+  }
+
+  .calcKeypad{
+    grid-template-columns:repeat(4, minmax(0, 1fr)) !important;
+    gap:7px !important;
+  }
+
+  .calcKey{
+    min-height:46px !important;
+    padding:8px 6px !important;
+  }
+
+  #calcExpr{
+    min-height:62px !important;
+    font-size:22px !important;
+    padding:13px 14px !important;
+  }
+
+  /* Modulo Previsioni Navi */
+  .shipPanel .toolbar.shipToolbar{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:12px !important;
+  }
+
+  .shipPanel .shipToolbarTitle,
+  .shipPanel .shipTerminalTabsBlock,
+  .shipPanel .shipToolbarActions{
+    width:100% !important;
+    justify-self:stretch !important;
+  }
+
+  .shipPanel .shipToolbarActions{
+    display:flex !important;
+    justify-content:flex-start !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    flex-wrap:nowrap !important;
+    padding-bottom:4px !important;
+  }
+
+  .shipPanel .shipToolbarActions > *{
+    flex:0 0 auto !important;
+  }
+
+  .shipSummary{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    width:100% !important;
+    margin-left:0 !important;
+    padding-bottom:4px !important;
+  }
+
+  .shipPanel .shipTerminalTabsBlock > .shipTabs,
+  .shipTabs{
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    justify-content:flex-start !important;
+    padding-bottom:4px !important;
+  }
+
+  .shipTab{
+    flex:0 0 auto !important;
+    min-width:118px !important;
+    justify-content:center !important;
+  }
+
+  .shipQuickSearch{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    padding:12px !important;
+  }
+
+  .shipQuickSearch input,
+  .shipQuickSearch button{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .shipGrid{
+    padding:12px !important;
+    gap:12px !important;
+  }
+
+  .shipCardHead,
+  .shipSearchCard,
+  .shipClosingCard{
+    grid-template-columns:1fr !important;
+    flex-direction:column !important;
+  }
+
+  .shipSearchInfoGrid,
+  .shipClosingInfoGrid{
+    grid-template-columns:1fr !important;
+  }
+
+  .shipSearchName,
+  .shipClosingName{
+    font-size:16px !important;
+  }
+
+  /* Modulo Ricerca Contenitori */
+  .extraPanel .miniHead,
+  .extraPanel .extraHead{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:12px !important;
+    padding:12px !important;
+  }
+
+  .extraPanel .extraTopToolbar,
+  .extraPanel .miniToolbar{
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    padding-bottom:4px !important;
+  }
+
+  .extraPanel .extraTopToolbar > *,
+  .extraPanel .miniToolbar > *{
+    flex:0 0 auto !important;
+    white-space:nowrap !important;
+  }
+
+  .extraTabs{
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding:10px 12px !important;
+  }
+
+  .extraTab{
+    flex:0 0 auto !important;
+    min-width:132px !important;
+  }
+
+  .extraCheckInfoBar{
+    grid-template-columns:1fr !important;
+    padding:10px 12px !important;
+    gap:8px !important;
+  }
+
+  .extraCheckInfoText{
+    white-space:normal !important;
+  }
+
+  .sctBookingForm,
+  .bookingLookupForm,
+  .bookingLookupForm:not(.is-akkon){
+    grid-template-columns:1fr !important;
+    padding:0 12px 12px !important;
+  }
+
+  .sctBookingInput,
+  .bookingProviderSelect,
+  .bookingCountrySelect,
+  .bookingLookupForm button{
+    width:100% !important;
+  }
+
+  .bookingLookupCards{
+    grid-template-columns:1fr !important;
+    padding:12px !important;
+  }
+
+  .extraBottomToolbar{
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    padding:12px !important;
+  }
+
+  .extraBottomToolbar::before{
+    display:none !important;
+  }
+
+  .extraBottomToolbar button{
+    width:100% !important;
+  }
+
+  #extraTable{
+    min-width:680px !important;
+  }
+
+  #extraTable input:focus{
+    min-width:0 !important;
+    width:100% !important;
+  }
+
+  /* Moduli ridotti: su mobile restano compatti ma leggibili */
+  .doganaTableModuleCard.is-minimized .doganaTableTopToolbar,
+  #shipPanel.is-minimized .shipToolbar,
+  .shipPanel.is-minimized .shipToolbar,
+  #extraPanel.is-minimized .miniHead,
+  #extraPanel.minimized .miniHead,
+  .extraPanel.is-minimized .miniHead,
+  .extraPanel.minimized .miniHead{
+    min-height:54px !important;
+    padding:10px 12px !important;
+    flex-direction:row !important;
+    align-items:center !important;
+  }
+
+  .doganaTableModuleCard.is-minimized .doganaModuleTitle,
+  #shipPanel.is-minimized .shipToolbarTitle h2,
+  .shipPanel.is-minimized .shipToolbarTitle h2,
+  #extraPanel.is-minimized .miniTitle,
+  #extraPanel.minimized .miniTitle{
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  .floatingBackTop{
+    right:max(10px, env(safe-area-inset-right)) !important;
+    bottom:max(10px, env(safe-area-inset-bottom)) !important;
+    width:44px !important;
+    height:44px !important;
+  }
+
+  .extraToastStack,
+  .appSaveIndicator{
+    left:10px !important;
+    right:10px !important;
+    max-width:none !important;
+  }
+}
+
+@media (max-width: 420px){
+  body{ padding:8px !important; }
+
+  .appBrandLogo{
+    width:38px !important;
+    height:38px !important;
+  }
+
+  .shipBadge,
+  .pill,
+  .extraCheckInfoItem,
+  .bookingLookupCard,
+  .shipSearchInfoItem,
+  .shipClosingInfoItem{
+    padding:9px 10px !important;
+  }
+
+  #extraTable{ min-width:640px !important; }
+  #sheet{ min-width:860px !important; }
+}
+</style>
 </body>
 </html>
