@@ -10204,10 +10204,24 @@ function initShipTabs(){
     });
   });
 
-  minimizeBtn?.addEventListener("click", () => {
-    panel?.classList.toggle("is-minimized");
-    const minimized = panel?.classList.contains("is-minimized");
+  function applyShipMinimizedState(minimized){
+    if (!panel || !minimizeBtn) return;
+    panel.classList.toggle("is-minimized", !!minimized);
     minimizeBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+    minimizeBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+    minimizeBtn.setAttribute("aria-label", minimized ? "Mostra modulo Previsione Navi" : "Riduci a icona Previsione Navi");
+    minimizeBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+    try { localStorage.setItem("doganatools_ship_panel_minimized", minimized ? "1" : "0"); } catch {}
+  }
+
+  try {
+    applyShipMinimizedState(localStorage.getItem("doganatools_ship_panel_minimized") === "1");
+  } catch {
+    applyShipMinimizedState(false);
+  }
+
+  minimizeBtn?.addEventListener("click", () => {
+    applyShipMinimizedState(!panel?.classList.contains("is-minimized"));
   });
 }
 
@@ -13713,6 +13727,85 @@ const id = getClientId();
 </style>
 
 
+
+<style id="ship-panel-minimize-complete-fix">
+/* === PREVISIONE NAVI - riduzione completa ad icona === */
+#shipPanel.is-minimized,
+.shipPanel.is-minimized{
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+#shipPanel.is-minimized .shipQuickSearch,
+.shipPanel.is-minimized .shipQuickSearch,
+#shipPanel.is-minimized .shipSearchResults,
+.shipPanel.is-minimized .shipSearchResults,
+#shipPanel.is-minimized .shipContent,
+.shipPanel.is-minimized .shipContent,
+#shipPanel.is-minimized .shipTerminalTabsBlock,
+.shipPanel.is-minimized .shipTerminalTabsBlock,
+#shipPanel.is-minimized .shipSummary,
+.shipPanel.is-minimized .shipSummary,
+#shipPanel.is-minimized #refreshShipsBtn,
+.shipPanel.is-minimized #refreshShipsBtn{
+  display:none !important;
+}
+
+#shipPanel.is-minimized .toolbar.shipToolbar,
+.shipPanel.is-minimized .toolbar.shipToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  grid-template-columns:none !important;
+  gap:12px !important;
+  padding:12px 16px !important;
+  min-height:58px !important;
+  border-bottom:0 !important;
+}
+
+#shipPanel.is-minimized .shipToolbarTitle,
+.shipPanel.is-minimized .shipToolbarTitle{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  grid-column:auto !important;
+  margin:0 !important;
+  min-width:0 !important;
+}
+
+#shipPanel.is-minimized .shipToolbarTitle h2,
+.shipPanel.is-minimized .shipToolbarTitle h2{
+  margin:0 !important;
+  line-height:1.1 !important;
+}
+
+#shipPanel.is-minimized .shipToolbarActions,
+.shipPanel.is-minimized .shipToolbarActions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  grid-column:auto !important;
+  justify-self:auto !important;
+  margin-left:auto !important;
+  gap:0 !important;
+  flex:0 0 auto !important;
+}
+
+#shipPanel.is-minimized #minimizeShipsBtn,
+.shipPanel.is-minimized #minimizeShipsBtn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:700px){
+  #shipPanel.is-minimized .toolbar.shipToolbar,
+  .shipPanel.is-minimized .toolbar.shipToolbar{
+    padding:11px 12px !important;
+  }
+}
+</style>
 <style id="extra-panel-minimize-complete-fix">
 /* === RICERCA CONTENITORI - riduzione completa ad icona === */
 #extraPanel.minimized,
