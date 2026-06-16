@@ -7751,8 +7751,40 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    async function flushExtraRowsBeforeReorder(termKey){
+      const rowsToFlush = extraRows
+        .filter(row => rowBelongsToTerminal(row, termKey))
+        .map(row => normalizeExtraRow(row))
+        .filter(row => row.__id);
+
+      for (const row of rowsToFlush) {
+        const rowId = String(row.__id || "");
+        try {
+          clearTimeout(extraRowSaveTimers.get(rowId));
+          extraRowSaveTimers.delete(rowId);
+
+          row.__updatedAt = new Date().toISOString();
+          row.__updatedBy = EXTRA_CLIENT_ID;
+
+          await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              clientId: EXTRA_CLIENT_ID,
+              clientName: EXTRA_CLIENT_NAME,
+              patch: row
+            })
+          });
+        } catch (err) {
+          console.warn("Flush riga prima del riordino non riuscito", rowId, err);
+        }
+      }
+    }
+
     async function saveSharedExtraOrder(termKey){
       try {
+        await flushExtraRowsBeforeReorder(termKey);
+
         const rowIds = extraRows
           .filter(row => rowBelongsToTerminal(row, termKey))
           .map(row => String(row?.__id || ""))
