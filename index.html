@@ -9041,9 +9041,26 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     updateBookingProviderUi();
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
+    function applyExtraMinimizedState(minimized){
+      if (!extraPanel || !minimizeExtraBtn) return;
+      extraPanel.classList.toggle("minimized", !!minimized);
+      extraPanel.classList.toggle("is-minimized", !!minimized);
+      minimizeExtraBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      minimizeExtraBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      minimizeExtraBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Contenitori" : "Riduci a icona Ricerca Contenitori");
+      minimizeExtraBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+      try { localStorage.setItem("doganatools_extra_panel_minimized", minimized ? "1" : "0"); } catch {}
+    }
+
+    try {
+      applyExtraMinimizedState(localStorage.getItem("doganatools_extra_panel_minimized") === "1");
+    } catch {
+      applyExtraMinimizedState(false);
+    }
+
     minimizeExtraBtn?.addEventListener("click", () => {
-      extraPanel?.classList.toggle("minimized");
-      minimizeExtraBtn.textContent = extraPanel?.classList.contains("minimized") ? "Mostra modulo" : "Riduci a icona";
+      const nextMinimized = !extraPanel?.classList.contains("is-minimized");
+      applyExtraMinimizedState(nextMinimized);
     });
     document.querySelectorAll(".extraTab").forEach(btn => {
       btn.addEventListener("click", () => setActiveExtraTerminal(btn.dataset.extraTerminal));
@@ -13695,5 +13712,106 @@ const id = getClientId();
 }
 </style>
 
+
+<style id="extra-panel-minimize-complete-fix">
+/* === RICERCA CONTENITORI - riduzione completa ad icona === */
+#extraPanel.minimized,
+#extraPanel.is-minimized,
+.extraPanel.minimized,
+.extraPanel.is-minimized{
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+#extraPanel.minimized .extraTabs,
+#extraPanel.is-minimized .extraTabs,
+.extraPanel.minimized .extraTabs,
+.extraPanel.is-minimized .extraTabs,
+#extraPanel.minimized .extraContent,
+#extraPanel.is-minimized .extraContent,
+.extraPanel.minimized .extraContent,
+.extraPanel.is-minimized .extraContent,
+#extraPanel.minimized .miniWrap,
+#extraPanel.is-minimized .miniWrap,
+.extraPanel.minimized .miniWrap,
+.extraPanel.is-minimized .miniWrap,
+#extraPanel.minimized .extraBottomToolbar,
+#extraPanel.is-minimized .extraBottomToolbar,
+.extraPanel.minimized .extraBottomToolbar,
+.extraPanel.is-minimized .extraBottomToolbar{
+  display:none !important;
+}
+
+#extraPanel.minimized .miniHead,
+#extraPanel.is-minimized .miniHead,
+.extraPanel.minimized .miniHead,
+.extraPanel.is-minimized .miniHead,
+#extraPanel.minimized .extraHead,
+#extraPanel.is-minimized .extraHead,
+.extraPanel.minimized .extraHead,
+.extraPanel.is-minimized .extraHead{
+  position:static !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  grid-template-columns:none !important;
+  gap:12px !important;
+  padding:12px 16px !important;
+  margin:0 !important;
+  border-bottom:0 !important;
+  min-height:58px !important;
+}
+
+#extraPanel.minimized .extraSubtitle,
+#extraPanel.is-minimized .extraSubtitle,
+.extraPanel.minimized .extraSubtitle,
+.extraPanel.is-minimized .extraSubtitle{
+  display:none !important;
+}
+
+#extraPanel.minimized .extraTopToolbar,
+#extraPanel.is-minimized .extraTopToolbar,
+.extraPanel.minimized .extraTopToolbar,
+.extraPanel.is-minimized .extraTopToolbar{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  flex:0 0 auto !important;
+  gap:0 !important;
+  contain:none !important;
+}
+
+#extraPanel.minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
+#extraPanel.is-minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
+.extraPanel.minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
+.extraPanel.is-minimized .extraTopToolbar > *:not(#minimizeExtraBtn){
+  display:none !important;
+}
+
+#extraPanel.minimized #minimizeExtraBtn,
+#extraPanel.is-minimized #minimizeExtraBtn,
+.extraPanel.minimized #minimizeExtraBtn,
+.extraPanel.is-minimized #minimizeExtraBtn{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+}
+
+#extraPanel.minimized .miniTitle,
+#extraPanel.is-minimized .miniTitle,
+.extraPanel.minimized .miniTitle,
+.extraPanel.is-minimized .miniTitle{
+  margin:0 !important;
+}
+
+@media (max-width:700px){
+  #extraPanel.minimized .miniHead,
+  #extraPanel.is-minimized .miniHead,
+  .extraPanel.minimized .miniHead,
+  .extraPanel.is-minimized .miniHead{
+    padding:11px 12px !important;
+  }
+}
+</style>
 </body>
 </html>
