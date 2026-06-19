@@ -7540,11 +7540,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getExtraRowDedupKey(row){
+      // IMPORTANTE: la riga deve essere identificata SOLO dal suo __id.
+      // Prima veniva usato anche il numero container come chiave di deduplica;
+      // durante il drag & drop questo poteva fondere due righe e far sparire dati.
       const normalized = normalizeExtraRow(row);
-      const term = inferExtraTerminal(normalized);
-      const container = getExtraRowContainer(normalized, term);
-      if (!container) return "id:" + String(normalized.__id || makeExtraId());
-      return `container:${term}:${container}`;
+      return "id:" + String(normalized.__id || makeExtraId());
     }
 
     function getExtraRowTime(row){
@@ -7783,8 +7783,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function saveSharedExtraOrder(termKey){
       try {
-        await flushExtraRowsBeforeReorder(termKey);
-
+        // Il riordino deve cambiare SOLO l'ordine degli ID.
+        // Non facciamo più PATCH di tutte le righe prima del drag/drop: quel flush
+        // poteva inviare snapshot vecchi e sovrascrivere container già presenti.
         const rowIds = extraRows
           .filter(row => rowBelongsToTerminal(row, termKey))
           .map(row => String(row?.__id || ""))
@@ -7973,16 +7974,24 @@ document.addEventListener("DOMContentLoaded", () => {
       targetRowId = String(targetRowId || "");
       if (!draggedRowId || !targetRowId || draggedRowId === targetRowId) return;
 
-      const snapshot = extraRows.slice();
+      const snapshot = extraRows.map(row => ({ ...row }));
       const termKey = activeExtraTerminal;
       const visibleRows = extraRows.filter(row => rowBelongsToTerminal(row, termKey));
       const draggedRow = visibleRows.find(row => String(row?.__id || "") === draggedRowId);
       const targetIndex = visibleRows.findIndex(row => String(row?.__id || "") === targetRowId);
       if (!draggedRow || targetIndex < 0) return;
 
+      const beforeIds = visibleRows.map(row => String(row?.__id || "")).filter(Boolean);
       const reorderedVisible = visibleRows.filter(row => String(row?.__id || "") !== draggedRowId);
       const insertAt = reorderedVisible.findIndex(row => String(row?.__id || "") === targetRowId);
       reorderedVisible.splice(insertAt < 0 ? reorderedVisible.length : insertAt, 0, draggedRow);
+      const afterIds = reorderedVisible.map(row => String(row?.__id || "")).filter(Boolean);
+
+      // Paracadute anti-perdita: dopo il drag devono esserci esattamente gli stessi ID.
+      if (beforeIds.length !== afterIds.length || new Set(afterIds).size !== beforeIds.length || beforeIds.some(id => !afterIds.includes(id))) {
+        showExtraToast("Riordino annullato: controllo sicurezza righe non superato.");
+        return;
+      }
 
       const queue = reorderedVisible.slice();
       extraRows = extraRows.map(row => rowBelongsToTerminal(row, termKey) ? queue.shift() : row);
@@ -7995,6 +8004,8 @@ document.addEventListener("DOMContentLoaded", () => {
         extraRows = snapshot;
         renderExtra();
         showExtraToast("Backend condiviso non raggiungibile: ordine non salvato.");
+      } else {
+        await syncExtraFromBackend(true);
       }
     }
 
@@ -8257,7 +8268,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       td.textContent = status;
-      if (activeExtraTerminal !== "flavio") colorStatus(td, status, containerValue, activeExtraTerminal);
+      colorStatus(td, status, containerValue, activeExtraTerminal);
       if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
     }
 
@@ -9665,6 +9676,62 @@ async function checkContainerConateco(container) {
 }
 
 
+function getTfgResultText(status, tracking) {
+  const parts = [
+    status,
+    tracking?.status,
+    tracking?.terminal,
+    tracking?.mrnImportazione,
+    ...(Array.isArray(tracking?.headers) ? tracking.headers : []),
+    ...(Array.isArray(tracking?.messages) ? tracking.messages : []),
+    ...(Array.isArray(tracking?.history)
+      ? tracking.history.flatMap(row => [row?.status, row?.terminal, row?.customsDoc, row?.mrnImportazione, row?.container])
+      : [])
+  ];
+
+  return parts
+    .filter(value => value !== undefined && value !== null)
+    .map(value => String(value).toUpperCase())
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isTfgEnteredResult(status, tracking) {
+  const text = getTfgResultText(status, tracking);
+  if (!text) return false;
+
+  return (
+    text.includes("ARRIVATO PIENO") ||
+    text.includes("ENTRATO PIENO") ||
+    text.includes("GATE IN") ||
+    text.includes("IN TERMINAL")
+  );
+}
+
+function isTfgNoDownloadResult(status, tracking, data = null) {
+  // Stato valido TFG: il PDF deve essere disponibile anche se la tabella contiene altri testi.
+  if (isTfgEnteredResult(status, tracking)) return false;
+
+  if (data?.pdfAvailable === false) return true;
+  const text = getTfgResultText(status, tracking);
+  if (!text) return false;
+
+  const hasImportMarkers =
+    text.includes("MRN IMPORTAZIONE") ||
+    text.includes("DELIVERY ORDER") ||
+    text.includes("DELEGA PER IL RITIRO") ||
+    text.includes("SBARCATO");
+
+  const hasNotEnteredStatus =
+    text.includes("NON ENTRATO") ||
+    text.includes("SBARCATO PIENO") ||
+    text.includes("USCITO PIENO") ||
+    /\bUSCITO\b/.test(text);
+
+  return hasImportMarkers && hasNotEnteredStatus;
+}
+
 async function checkContainerTfg(container) {
   const code = String(container || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
   if (!code) {
@@ -9695,15 +9762,20 @@ async function checkContainerTfg(container) {
       };
     }
 
-    const pdfUrl = data.cachedPdfUrl || data.pdfUrl || (data.found ? `/api/download-tfg-pdf?container=${encodeURIComponent(code)}` : "");
+    const tracking = data.tracking || null;
+    const status = data.status || tracking?.status || (data.found ? "TROVATO" : "NON TROVATO");
+    const noDownload = isTfgNoDownloadResult(status, tracking, data);
+    const pdfUrl = noDownload
+      ? ""
+      : (data.cachedPdfUrl || data.pdfUrl || (data.found && data.pdfAvailable !== false ? `/api/download-tfg-pdf?container=${encodeURIComponent(code)}` : ""));
 
     return {
       success: !!data.success,
-      found: !!data.found,
-      status: data.status || data.tracking?.status || (data.found ? "TROVATO" : "NON TROVATO"),
+      found: !!data.found && !noDownload,
+      status: noDownload ? "NON ENTRATO" : status,
       pdfUrl,
-      tracking: data.tracking || null,
-      error: data.error || ""
+      tracking,
+      error: data.error || data.noPdfReason || ""
     };
 
   } catch (err) {
@@ -9729,10 +9801,8 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const term = String(terminal || activeExtraTerminal || "").toLowerCase();
   const cleanContainer = String(container || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
 
-  // TFG: se lo stato è PDF PRONTO ma manca l'URL salvato, crea comunque il link cache backend.
-  if (!pdfUrl && (term === "flavio" || term === "tfg") && value.includes("PDF") && cleanContainer) {
-    pdfUrl = apiUrl(`/api/download-tfg-pdf?container=${encodeURIComponent(cleanContainer)}`);
-  }
+  // Non inventiamo più link PDF per TFG: il backend decide quando il PDF è davvero disponibile.
+  // Questo evita download su risposte import/sbarco/uscita come "SBARCATO PIENO" o "USCITO PIENO".
 
   if (pdfUrl) {
     const href = term === "sct"
@@ -9907,7 +9977,8 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       liveRow.flavioStatus === "PDF PRONTO" &&
       String(liveRow.flavioPdfUrl || "").trim();
 
-    if (alreadyHasPdf) return;
+    // TFG va ricontrollato anche se prima risultava PDF PRONTO:
+    // vecchie cache possono riferirsi a risposte import/sbarco/uscita, che ora devono diventare NON ENTRATO.
 
     liveRow.flavio = flavioValue;
     liveRow.flavioStatus = "Controllo...";
