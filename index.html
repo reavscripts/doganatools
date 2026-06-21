@@ -4225,6 +4225,19 @@ background:var(--surface);
   font-weight:900;
 }
 .appFooterLink:hover{ text-decoration:underline; }
+.appFooterPill.appFooterVersion{
+  cursor:pointer;
+  text-decoration:none;
+  color:var(--muted);
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.appFooterPill.appFooterVersion:hover{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--accent) 30%, var(--grid-soft));
+  box-shadow:0 8px 18px rgba(15,23,42,.06);
+}
+.appFooterPill.appFooterVersion strong{ color:var(--heading); }
+
 @media (max-width:700px){
   .appFooter{ width:100%; align-items:flex-start; }
   .appFooterMeta{ justify-content:flex-start; }
@@ -4668,6 +4681,166 @@ button.appSessionSync{
   }
 }
 
+
+
+/* === CHECKLIST OPERATIVA MULTIUTENTE === */
+.operativeChecklistPanel{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.operativeChecklistHead{
+  display:grid;
+  grid-template-columns:minmax(220px, 1fr) auto;
+  align-items:start;
+  gap:14px;
+  padding:16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.operativeChecklistTitle{
+  color:var(--heading);
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.07em;
+  line-height:1.2;
+  text-transform:uppercase;
+}
+.operativeChecklistSubtitle{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.35;
+  margin-top:5px;
+}
+.operativeChecklistActions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  align-items:center;
+}
+.operativeChecklistStats{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  min-height:36px;
+  padding:8px 11px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.operativeChecklistStats::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--accent-2);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--accent-2) 16%, transparent);
+}
+.operativeChecklistBody{ padding:16px; }
+.operativeChecklistForm{
+  display:grid;
+  grid-template-columns:minmax(240px, 1fr) auto;
+  gap:10px;
+  align-items:center;
+  margin-bottom:14px;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  background:var(--hint-bg);
+  padding:10px;
+}
+.operativeChecklistInput{
+  width:100%;
+  min-height:42px;
+  border:1px solid var(--btn-border);
+  border-radius:13px;
+  background:var(--surface);
+  color:var(--text);
+  padding:11px 13px;
+  font-weight:750;
+}
+.operativeChecklistInput:focus{
+  background:var(--surface);
+  box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.operativeChecklistList{ display:flex; flex-direction:column; gap:9px; }
+.operativeChecklistTask{
+  display:grid;
+  grid-template-columns:auto minmax(0, 1fr) auto;
+  gap:11px;
+  align-items:center;
+  border:1px solid var(--grid-soft);
+  border-radius:16px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  padding:12px;
+  box-shadow:0 6px 14px rgba(15,23,42,.035);
+  transition:transform .16s ease, border-color .16s ease, background .16s ease;
+}
+.operativeChecklistTask:hover{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--accent) 22%, var(--grid-soft));
+}
+.operativeChecklistTask.done{ opacity:.78; }
+.operativeChecklistTask.done .operativeChecklistText{ text-decoration:line-through; color:var(--muted); }
+.operativeChecklistCheck{
+  width:22px;
+  height:22px;
+  cursor:pointer;
+  accent-color:var(--accent-2);
+}
+.operativeChecklistText{
+  color:var(--heading);
+  font-size:14px;
+  font-weight:850;
+  line-height:1.28;
+  overflow-wrap:anywhere;
+}
+.operativeChecklistMeta{ color:var(--muted); font-size:11px; font-weight:800; margin-top:4px; }
+.operativeChecklistBadge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  padding:7px 10px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.operativeChecklistTask.done .operativeChecklistBadge{
+  background:color-mix(in srgb, var(--accent-2) 10%, var(--surface));
+  color:var(--accent-2);
+}
+.operativeChecklistEmpty{
+  color:var(--muted);
+  text-align:center;
+  padding:18px;
+  border:1px dashed var(--grid);
+  border-radius:16px;
+  background:var(--hint-bg);
+  font-weight:800;
+}
+@media (max-width:900px){
+  .operativeChecklistHead{ grid-template-columns:1fr; }
+  .operativeChecklistActions{ justify-content:flex-start; }
+}
+@media (max-width:700px){
+  .operativeChecklistPanel{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+  .operativeChecklistForm{ grid-template-columns:1fr; }
+  .operativeChecklistTask{ grid-template-columns:auto minmax(0,1fr); }
+  .operativeChecklistBadge{ grid-column:2; justify-self:start; }
+}
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>
@@ -5586,6 +5759,7 @@ document.addEventListener("DOMContentLoaded", () => {
     <a href="#dogana-section">Tabella</a>
     <a href="#navi-section">Previsione Navi</a>
     <a href="#extraPanel" data-jump-focus="#extraTable input">Ricerca Contenitori</a>
+    <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">⚙ Impostazioni</button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
@@ -6010,6 +6184,29 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
+<section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
+  <div class="operativeChecklistHead">
+    <div>
+      <div class="operativeChecklistTitle">Checklist Operativa</div>
+      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni. I task completati restano barrati e vengono rimossi gradualmente quando la lista cresce.</div>
+    </div>
+    <div class="operativeChecklistActions">
+      <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
+      <button type="button" id="operativeChecklistRefreshBtn">Aggiorna</button>
+      <button type="button" id="operativeChecklistToggleBtn">Riduci a icona</button>
+    </div>
+  </div>
+  <div class="operativeChecklistBody">
+    <div class="operativeChecklistForm">
+      <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
+      <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
+    </div>
+    <div class="operativeChecklistList" id="operativeChecklistList">
+      <div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>
+    </div>
+  </div>
+</section>
+
 <section class="serverConsolePanel" id="serverConsolePanel" aria-label="Console server.js">
   <div class="serverConsoleHead">
     <div>
@@ -6037,6 +6234,7 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
+    <a class="appFooterPill appFooterVersion" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Apri gli ultimi commit su GitHub"><span class="appFooterDot"></span> Versione <strong>v2026.06.21</strong></a>
     <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
     <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
@@ -7389,18 +7587,81 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const EXTRA_CLIENT_ID = getExtraClientId();
-    const EXTRA_CLIENT_NAME = (() => {
+    let EXTRA_CLIENT_NAME = (() => {
       try {
-        let name = localStorage.getItem(EXTRA_CLIENT_NAME_KEY);
+        let name = localStorage.getItem(EXTRA_CLIENT_NAME_KEY) || localStorage.getItem("dogana_multi_client_name_v3");
         if (!name) {
           name = "PC-" + EXTRA_CLIENT_ID.slice(-5).toUpperCase();
-          localStorage.setItem(EXTRA_CLIENT_NAME_KEY, name);
         }
+        localStorage.setItem(EXTRA_CLIENT_NAME_KEY, name);
         return name;
       } catch {
         return "PC";
       }
     })();
+
+    function sanitizeExtraStationName(value){
+      return String(value || "")
+        .trim()
+        .replace(/\s+/g, " ")
+        .replace(/[<>"'`\\]/g, "")
+        .slice(0, 32);
+    }
+
+    function updateExtraStationUi(){
+      try { localStorage.setItem(EXTRA_CLIENT_NAME_KEY, EXTRA_CLIENT_NAME); } catch {}
+      if (renameExtraStationBtn) renameExtraStationBtn.textContent = `Postazione: ${EXTRA_CLIENT_NAME}`;
+      document.querySelectorAll("#extraLiveBadge span:last-child, .extraLiveBadge span:last-child").forEach(el => {
+        if (el) el.textContent = EXTRA_CLIENT_NAME;
+      });
+    }
+
+    async function loadExtraStationNameFromServer(){
+      try {
+        const res = await fetch(apiUrl(`/api/station-name?clientId=${encodeURIComponent(EXTRA_CLIENT_ID)}&_=${Date.now()}`), {
+          cache: "no-store",
+          headers: { "Accept": "application/json" }
+        });
+        const data = await res.json().catch(() => null);
+        const serverName = sanitizeExtraStationName(data?.clientName || "");
+        if (res.ok && serverName) {
+          EXTRA_CLIENT_NAME = serverName;
+          updateExtraStationUi();
+          return true;
+        }
+      } catch (err) {
+        console.warn("Nome postazione non caricato dal server", err);
+      }
+      updateExtraStationUi();
+      return false;
+    }
+
+    async function saveExtraStationNameToServer(name){
+      const cleanName = sanitizeExtraStationName(name);
+      if (!cleanName) return false;
+
+      EXTRA_CLIENT_NAME = cleanName;
+      updateExtraStationUi();
+
+      try {
+        const res = await fetch(apiUrl("/api/station-name"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ clientId: EXTRA_CLIENT_ID, clientName: cleanName })
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.success) throw new Error(data?.error || "Salvataggio non riuscito");
+        showExtraToast(`Postazione rinominata: ${cleanName}`);
+        return true;
+      } catch (err) {
+        console.warn("Nome postazione non salvato sul server", err);
+        showExtraToast("Nome postazione salvato localmente, ma non sul server.");
+        return false;
+      }
+    }
+
+    window.DOGANA_EXTRA_SET_STATION_NAME = saveExtraStationNameToServer;
+    window.DOGANA_EXTRA_GET_STATION_NAME = () => EXTRA_CLIENT_NAME;
 
     const extraRowSaveTimers = new Map();
     let extraLastRemoteState = null;
@@ -7424,6 +7685,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
+    const renameExtraStationBtn = document.getElementById("renameExtraStationBtn");
     const extraLastCheckText = document.getElementById("extraLastCheckText");
     const extraNextCheckText = document.getElementById("extraNextCheckText");
     const extraCheckTerminalText = document.getElementById("extraCheckTerminalText");
@@ -7540,11 +7802,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getExtraRowDedupKey(row){
-      // IMPORTANTE: la riga deve essere identificata SOLO dal suo __id.
-      // Prima veniva usato anche il numero container come chiave di deduplica;
-      // durante il drag & drop questo poteva fondere due righe e far sparire dati.
       const normalized = normalizeExtraRow(row);
-      return "id:" + String(normalized.__id || makeExtraId());
+      const term = inferExtraTerminal(normalized);
+      const container = getExtraRowContainer(normalized, term);
+      if (!container) return "id:" + String(normalized.__id || makeExtraId());
+      return `container:${term}:${container}`;
     }
 
     function getExtraRowTime(row){
@@ -7783,9 +8045,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function saveSharedExtraOrder(termKey){
       try {
-        // Il riordino deve cambiare SOLO l'ordine degli ID.
-        // Non facciamo più PATCH di tutte le righe prima del drag/drop: quel flush
-        // poteva inviare snapshot vecchi e sovrascrivere container già presenti.
+        await flushExtraRowsBeforeReorder(termKey);
+
         const rowIds = extraRows
           .filter(row => rowBelongsToTerminal(row, termKey))
           .map(row => String(row?.__id || ""))
@@ -7974,24 +8235,16 @@ document.addEventListener("DOMContentLoaded", () => {
       targetRowId = String(targetRowId || "");
       if (!draggedRowId || !targetRowId || draggedRowId === targetRowId) return;
 
-      const snapshot = extraRows.map(row => ({ ...row }));
+      const snapshot = extraRows.slice();
       const termKey = activeExtraTerminal;
       const visibleRows = extraRows.filter(row => rowBelongsToTerminal(row, termKey));
       const draggedRow = visibleRows.find(row => String(row?.__id || "") === draggedRowId);
       const targetIndex = visibleRows.findIndex(row => String(row?.__id || "") === targetRowId);
       if (!draggedRow || targetIndex < 0) return;
 
-      const beforeIds = visibleRows.map(row => String(row?.__id || "")).filter(Boolean);
       const reorderedVisible = visibleRows.filter(row => String(row?.__id || "") !== draggedRowId);
       const insertAt = reorderedVisible.findIndex(row => String(row?.__id || "") === targetRowId);
       reorderedVisible.splice(insertAt < 0 ? reorderedVisible.length : insertAt, 0, draggedRow);
-      const afterIds = reorderedVisible.map(row => String(row?.__id || "")).filter(Boolean);
-
-      // Paracadute anti-perdita: dopo il drag devono esserci esattamente gli stessi ID.
-      if (beforeIds.length !== afterIds.length || new Set(afterIds).size !== beforeIds.length || beforeIds.some(id => !afterIds.includes(id))) {
-        showExtraToast("Riordino annullato: controllo sicurezza righe non superato.");
-        return;
-      }
 
       const queue = reorderedVisible.slice();
       extraRows = extraRows.map(row => rowBelongsToTerminal(row, termKey) ? queue.shift() : row);
@@ -8004,8 +8257,6 @@ document.addEventListener("DOMContentLoaded", () => {
         extraRows = snapshot;
         renderExtra();
         showExtraToast("Backend condiviso non raggiungibile: ordine non salvato.");
-      } else {
-        await syncExtraFromBackend(true);
       }
     }
 
@@ -9052,6 +9303,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     updateBookingProviderUi();
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
+    renameExtraStationBtn?.addEventListener("click", async () => {
+      const current = sanitizeExtraStationName(EXTRA_CLIENT_NAME);
+      const next = sanitizeExtraStationName(prompt("Nome postazione:", current) || "");
+      if (!next || next === current) return;
+      await saveExtraStationNameToServer(next);
+    });
+    updateExtraStationUi();
     function applyExtraMinimizedState(minimized){
       if (!extraPanel || !minimizeExtraBtn) return;
       extraPanel.classList.toggle("minimized", !!minimized);
@@ -9086,6 +9344,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3) se il backend non risponde, non viene mostrata una copia locale vecchia.
     (async function initExtraSharedState(){
       clearExtraLocalCache();
+      await loadExtraStationNameFromServer();
       const ok = await syncExtraFromBackend(true);
 
       if (ok) {
@@ -9697,22 +9956,7 @@ function getTfgResultText(status, tracking) {
     .trim();
 }
 
-function isTfgEnteredResult(status, tracking) {
-  const text = getTfgResultText(status, tracking);
-  if (!text) return false;
-
-  return (
-    text.includes("ARRIVATO PIENO") ||
-    text.includes("ENTRATO PIENO") ||
-    text.includes("GATE IN") ||
-    text.includes("IN TERMINAL")
-  );
-}
-
 function isTfgNoDownloadResult(status, tracking, data = null) {
-  // Stato valido TFG: il PDF deve essere disponibile anche se la tabella contiene altri testi.
-  if (isTfgEnteredResult(status, tracking)) return false;
-
   if (data?.pdfAvailable === false) return true;
   const text = getTfgResultText(status, tracking);
   if (!text) return false;
@@ -12607,7 +12851,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 
 <script>
-/* === MENU DOGANATOOLS - impostazioni e sync sessione === */
+/* === MENU DOGANATOOLS - postazione nella barra superiore + sync === */
 (function(){
   function randomSuffix(){ return Math.random().toString(36).slice(2, 6).toUpperCase(); }
   function hashColor(str){
@@ -12615,6 +12859,13 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     str = String(str || "");
     for (let i = 0; i < str.length; i++) h = ((h << 5) - h + str.charCodeAt(i)) | 0;
     return `hsl(${Math.abs(h) % 360} 78% 44%)`;
+  }
+  function sanitizeName(value){
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, " ")
+      .replace(/[<>"'`\\]/g, "")
+      .slice(0, 32);
   }
   function getClientId(){
     try {
@@ -12628,13 +12879,22 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   }
   function getClientName(){
     try {
-      let name = localStorage.getItem("dogana_multi_client_name_v3");
+      let name = sanitizeName(localStorage.getItem("dogana_multi_client_name_v3"));
       if (!name) {
         name = "PC-" + randomSuffix();
         localStorage.setItem("dogana_multi_client_name_v3", name);
       }
       return name;
     } catch { return "PC-" + randomSuffix(); }
+  }
+  function setClientName(name){
+    const clean = sanitizeName(name);
+    if (!clean) return "";
+    try {
+      localStorage.setItem("dogana_multi_client_name_v3", clean);
+      localStorage.setItem("peso_sheet_extra_client_name_v1", clean);
+    } catch {}
+    return clean;
   }
   function getClientColor(id, name){
     try {
@@ -12647,11 +12907,17 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     } catch { return hashColor(name + id); }
   }
   function apiBase(){
+    try { if (typeof getApiBase === "function") return getApiBase() || ""; } catch {}
     const host = String(location.hostname || "").toLowerCase();
     if (host.includes("reav.website") || host.includes("vercel.app")) return "https://dogana-api.reav.website";
     return "";
   }
-  function api(path){ return apiBase() + path; }
+  function api(path){
+    const p = String(path || "");
+    const clean = p.startsWith("/") ? p : "/" + p;
+    try { if (typeof apiUrl === "function") return apiUrl(clean); } catch {}
+    return apiBase() + clean;
+  }
   function toast(msg){
     const existing = document.getElementById("extraLockHint");
     if (existing) {
@@ -12663,12 +12929,48 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     }
     console.log(msg);
   }
+  function updateTopStationUi(name, color){
+    const sessionName = document.getElementById("doganaMenuSessionName");
+    const sessionBtn = document.getElementById("doganaMenuSessionSync");
+    if (sessionName) sessionName.textContent = name;
+    if (sessionBtn) {
+      sessionBtn.style.setProperty("--session-color", color);
+      sessionBtn.title = "Rinomina postazione";
+      sessionBtn.setAttribute("aria-label", `Rinomina postazione ${name}`);
+    }
+    const settingsName = document.getElementById("doganaSessionName");
+    if (settingsName) settingsName.textContent = name;
+  }
+  async function saveStationName(id, name){
+    const clean = setClientName(name);
+    if (!clean) return false;
+    try {
+      const res = await fetch(api("/api/station-name"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ clientId: id, clientName: clean })
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.success) throw new Error(data?.error || "Salvataggio non riuscito");
+      return true;
+    } catch (err) {
+      console.warn("Salvataggio nome postazione non riuscito", err);
+      return false;
+    }
+  }
+  async function loadStationName(id){
+    try {
+      const res = await fetch(api(`/api/station-name?clientId=${encodeURIComponent(id)}&_=${Date.now()}`), { cache:"no-store" });
+      const data = await res.json().catch(() => null);
+      const name = sanitizeName(data?.clientName || "");
+      if (res.ok && name) return name;
+    } catch (err) {
+      console.warn("Caricamento nome postazione non riuscito", err);
+    }
+    return "";
+  }
   async function manualSync(){
     const active = document.activeElement;
-
-    // Prima forza il salvataggio della cella attualmente in modifica.
-    // Altrimenti, se scrivi un container e premi subito "sincronizza",
-    // l'altro client può leggere il backend prima che la PATCH della riga sia partita.
     if (active && active.matches && active.matches("#extraTable input[data-extra-field]")) {
       try {
         active.dispatchEvent(new Event("input", { bubbles: true }));
@@ -12679,24 +12981,14 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       } catch {}
       await new Promise(resolve => setTimeout(resolve, 180));
     }
-
-    // Usa la vera funzione di sincronizzazione della tabella contenitori.
-    // La vecchia versione faceva solo fetch("/api/shared-state") ma non applicava i dati al frontend.
     if (typeof window.syncExtraFromBackend === "function") {
       const ok = await window.syncExtraFromBackend(true);
       if (typeof window.fetchLocks === "function") {
         try { await window.fetchLocks(); } catch {}
       }
-      toast(ok
-        ? "Sincronizzazione completata: stato condiviso applicato."
-        : "Sincronizzazione non riuscita: backend non raggiungibile."
-      );
+      toast(ok ? "Sincronizzazione completata." : "Sincronizzazione non riuscita: backend non raggiungibile.");
       return;
     }
-
-    const syncBtn = document.getElementById("doganaSyncNow");
-    if (syncBtn) { syncBtn.click(); return; }
-
     await Promise.allSettled([
       fetch(api("/api/shared-state"), { cache:"no-store", credentials:"include" }),
       fetch(api("/api/extra-locks"), { cache:"no-store", credentials:"include" })
@@ -12709,32 +13001,47 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     document.getElementById("doganaSettingsPanel")?.classList.add("show");
     document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
   }
-  function init(){
-    try {
-} catch {}
-const id = getClientId();
-    const name = getClientName();
+  async function init(){
+    const id = getClientId();
+    let name = getClientName();
+    const serverName = await loadStationName(id);
+    if (serverName) name = setClientName(serverName) || name;
     const color = getClientColor(id, name);
+
+    window.DOGANA_TOP_STATION = { clientId: id, getName: () => getClientName() };
+    updateTopStationUi(name, color);
 
     const menuSettings = document.getElementById("doganaMenuSettingsBtn");
     menuSettings?.addEventListener("click", openSettings);
 
     const sessionBtn = document.getElementById("doganaMenuSessionSync");
-    const sessionName = document.getElementById("doganaMenuSessionName");
-    if (sessionName) sessionName.textContent = name;
-    if (sessionBtn) {
-      sessionBtn.style.setProperty("--session-color", color);
-      sessionBtn.addEventListener("click", async () => {
-        sessionBtn.classList.add("is-syncing");
-        const oldTitle = sessionBtn.title;
-        sessionBtn.title = "Sincronizzazione in corso...";
-        try { await manualSync(); }
-        finally {
-          sessionBtn.classList.remove("is-syncing");
-          sessionBtn.title = oldTitle || "Sincronizza stato condiviso e lock celle";
-        }
-      });
-    }
+    sessionBtn?.addEventListener("click", async () => {
+      const current = getClientName();
+      const next = sanitizeName(prompt("Nome postazione:", current) || "");
+      if (!next || next === current) return;
+
+      const newColor = getClientColor(id, next);
+      setClientName(next);
+      updateTopStationUi(next, newColor);
+
+      const ok = await saveStationName(id, next);
+      if (typeof window.DOGANA_EXTRA_SET_STATION_NAME === "function") {
+        try { await window.DOGANA_EXTRA_SET_STATION_NAME(next); } catch {}
+      }
+      toast(ok ? `Postazione rinominata: ${next}` : "Nome postazione salvato localmente, ma non sul server.");
+    });
+
+    // Sincronizzazione manuale resta disponibile con CTRL + click sul nome postazione.
+    sessionBtn?.addEventListener("contextmenu", async (event) => {
+      event.preventDefault();
+      await manualSync();
+    });
+    sessionBtn?.addEventListener("click", async (event) => {
+      if (!event.ctrlKey) return;
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      await manualSync();
+    }, true);
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
@@ -13025,10 +13332,24 @@ const id = getClientId();
 
     if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
 
-    if (toggleBtn && panel) toggleBtn.addEventListener("click", function(){
-      const minimized = panel.classList.toggle("is-minimized");
-      toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
-    });
+    if (toggleBtn && panel && toggleBtn.dataset.minimizeReady !== "1") {
+      toggleBtn.dataset.minimizeReady = "1";
+      const storageKey = "doganaServerConsoleMinimized";
+      const applyState = function(minimized){
+        panel.classList.toggle("is-minimized", !!minimized);
+        toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+        toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+        toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Console" : "Riduci a icona Console");
+        toggleBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+        try { localStorage.setItem(storageKey, minimized ? "1" : "0"); } catch {}
+      };
+      let saved = "0";
+      try { saved = localStorage.getItem(storageKey) || "0"; } catch {}
+      applyState(saved === "1");
+      toggleBtn.addEventListener("click", function(){
+        applyState(!panel.classList.contains("is-minimized"));
+      });
+    }
 
     connect();
   }
@@ -14847,5 +15168,302 @@ const id = getClientId();
   }
 }
 </style>
+
+<style id="dogana-final-minimized-font-and-actions-lock">
+/* === FONT UNICO E RIDUZIONE MODULI - ultimo override === */
+.doganaTableModuleCard.is-minimized .doganaModuleTitle,
+.doganaTableModuleCard.is-minimized .miniTitle,
+#extraPanel.is-minimized .miniTitle,
+#extraPanel.minimized .miniTitle,
+.extraPanel.is-minimized .miniTitle,
+.extraPanel.minimized .miniTitle,
+#shipPanel.is-minimized .shipToolbarTitle h2,
+.shipPanel.is-minimized .shipToolbarTitle h2,
+.operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+.serverConsolePanel.is-minimized .serverConsoleTitle{
+  font-family:var(--font) !important;
+  font-size:17px !important;
+  font-weight:800 !important;
+  letter-spacing:normal !important;
+  line-height:1 !important;
+  text-transform:none !important;
+  color:var(--heading) !important;
+}
+
+.doganaTableModuleCard.is-minimized button,
+#extraPanel.is-minimized button,
+#extraPanel.minimized button,
+.extraPanel.is-minimized button,
+.extraPanel.minimized button,
+#shipPanel.is-minimized button,
+.shipPanel.is-minimized button,
+.operativeChecklistPanel.is-minimized button,
+.serverConsolePanel.is-minimized button{
+  font-family:var(--font) !important;
+}
+
+.operativeChecklistPanel.is-minimized .operativeChecklistBody,
+.serverConsolePanel.is-minimized .serverConsoleBody{
+  display:none !important;
+}
+
+.operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
+.operativeChecklistPanel.is-minimized .operativeChecklistStats,
+.operativeChecklistPanel.is-minimized #operativeChecklistRefreshBtn,
+.serverConsolePanel.is-minimized .serverConsoleSubtitle,
+.serverConsolePanel.is-minimized .serverConsoleActions > :not(#serverConsoleToggle){
+  display:none !important;
+}
+
+.operativeChecklistPanel.is-minimized,
+.serverConsolePanel.is-minimized{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  border-radius:20px !important;
+}
+
+.operativeChecklistPanel.is-minimized .operativeChecklistHead,
+.serverConsolePanel.is-minimized .serverConsoleHead{
+  min-height:58px !important;
+  padding:12px 16px !important;
+  border-bottom:0 !important;
+  align-items:center !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) auto !important;
+  gap:12px !important;
+}
+
+.operativeChecklistPanel.is-minimized .operativeChecklistHead > div:first-child,
+.serverConsolePanel.is-minimized .serverConsoleHead > div:first-child{
+  min-width:0 !important;
+}
+
+.operativeChecklistPanel.is-minimized .operativeChecklistActions,
+.serverConsolePanel.is-minimized .serverConsoleActions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:0 !important;
+  flex-wrap:nowrap !important;
+  min-width:0 !important;
+}
+
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:34px !important;
+  height:34px !important;
+  padding:8px 13px !important;
+  border-radius:11px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:768px){
+  .doganaTableModuleCard.is-minimized .doganaModuleTitle,
+  .doganaTableModuleCard.is-minimized .miniTitle,
+  #extraPanel.is-minimized .miniTitle,
+  #extraPanel.minimized .miniTitle,
+  .extraPanel.is-minimized .miniTitle,
+  .extraPanel.minimized .miniTitle,
+  #shipPanel.is-minimized .shipToolbarTitle h2,
+  .shipPanel.is-minimized .shipToolbarTitle h2,
+  .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+  .serverConsolePanel.is-minimized .serverConsoleTitle{
+    font-size:16px !important;
+  }
+  .operativeChecklistPanel.is-minimized,
+  .serverConsolePanel.is-minimized{
+    width:100% !important;
+    margin:12px 0 !important;
+  }
+}
+</style>
+
+
+<script id="operative-checklist-minimize-script">
+(function(){
+  function initOperativeChecklistMinimize(){
+    const panel = document.getElementById('operativeChecklistPanel');
+    const btn = document.getElementById('operativeChecklistToggleBtn');
+    if (!panel || !btn || btn.dataset.minimizeReady === '1') return;
+    btn.dataset.minimizeReady = '1';
+    const storageKey = 'doganaOperativeChecklistMinimized';
+    const applyState = (minimized) => {
+      panel.classList.toggle('is-minimized', !!minimized);
+      btn.textContent = minimized ? 'Mostra modulo' : 'Riduci a icona';
+      btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
+      btn.setAttribute('aria-label', minimized ? 'Mostra modulo Checklist Operativa' : 'Riduci a icona Checklist Operativa');
+      btn.setAttribute('title', minimized ? 'Mostra modulo' : 'Riduci a icona');
+      try { localStorage.setItem(storageKey, minimized ? '1' : '0'); } catch(e) {}
+    };
+    let saved = '0';
+    try { saved = localStorage.getItem(storageKey) || '0'; } catch(e) {}
+    applyState(saved === '1');
+    btn.addEventListener('click', function(){
+      applyState(!panel.classList.contains('is-minimized'));
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initOperativeChecklistMinimize);
+  else initOperativeChecklistMinimize();
+})();
+</script>
+
+<script>
+/* === CHECKLIST OPERATIVA MULTIUTENTE === */
+(function(){
+  const input = document.getElementById("operativeChecklistInput");
+  const addBtn = document.getElementById("operativeChecklistAddBtn");
+  const refreshBtn = document.getElementById("operativeChecklistRefreshBtn");
+  const listEl = document.getElementById("operativeChecklistList");
+  const statsEl = document.getElementById("operativeChecklistStats");
+  if (!input || !addBtn || !listEl) return;
+
+  let checklistTasks = [];
+  let checklistBusy = false;
+
+  function api(path){
+    const p = String(path || "");
+    const clean = p.startsWith("/") ? p : "/" + p;
+    try { if (typeof apiUrl === "function") return apiUrl(clean); } catch {}
+    try {
+      if (typeof getApiBase === "function") {
+        const base = getApiBase() || "";
+        return base ? base + clean : clean;
+      }
+    } catch {}
+    const host = String(location.hostname || "").toLowerCase();
+    const base = (host.includes("reav.website") || host.includes("vercel.app")) ? "https://dogana-api.reav.website" : "";
+    return base + clean;
+  }
+
+  function stationName(){
+    try {
+      if (typeof window.DOGANA_EXTRA_GET_STATION_NAME === "function") return window.DOGANA_EXTRA_GET_STATION_NAME() || "Postazione";
+      if (window.DOGANA_TOP_STATION?.getName) return window.DOGANA_TOP_STATION.getName() || "Postazione";
+      return localStorage.getItem("dogana_multi_client_name_v3") || localStorage.getItem("peso_sheet_extra_client_name_v1") || "Postazione";
+    } catch { return "Postazione"; }
+  }
+  function stationId(){
+    try {
+      return localStorage.getItem("dogana_multi_client_id_v3") || localStorage.getItem("peso_sheet_extra_client_id_v1") || "";
+    } catch { return ""; }
+  }
+  function esc(value){
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
+  }
+  function formatDateShort(value){
+    const d = new Date(value || "");
+    if (!Number.isFinite(d.getTime())) return "";
+    return d.toLocaleString("it-IT", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }
+  function render(){
+    const openCount = checklistTasks.filter(t => !t.done).length;
+    const doneCount = checklistTasks.filter(t => t.done).length;
+    if (statsEl) statsEl.textContent = `${openCount} aperti · ${doneCount} completati`;
+    if (!checklistTasks.length) {
+      listEl.innerHTML = '<div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>';
+      return;
+    }
+
+    const open = checklistTasks.filter(t => !t.done);
+    const done = checklistTasks.filter(t => t.done);
+    const ordered = open.concat(done);
+
+    listEl.innerHTML = ordered.map(task => {
+      const meta = task.done
+        ? `Inserito da ${esc(task.createdByName || "Postazione")} · completato da ${esc(task.completedByName || "Postazione")} ${esc(formatDateShort(task.completedAt))}`
+        : `Inserito da ${esc(task.createdByName || "Postazione")} ${esc(formatDateShort(task.createdAt))}`;
+      return `
+        <div class="operativeChecklistTask ${task.done ? "done" : ""}" data-task-id="${esc(task.id)}">
+          <input class="operativeChecklistCheck" type="checkbox" ${task.done ? "checked" : ""} aria-label="Completa task">
+          <div>
+            <div class="operativeChecklistText">${esc(task.text)}</div>
+            <div class="operativeChecklistMeta">${meta}</div>
+          </div>
+          <span class="operativeChecklistBadge">${task.done ? "Completato" : esc(task.createdByName || "Postazione")}</span>
+        </div>`;
+    }).join("");
+  }
+  async function loadChecklist(){
+    try {
+      const res = await fetch(api(`/api/operative-checklist?_=${Date.now()}`), { cache:"no-store" });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.state) throw new Error(data?.error || "Checklist non disponibile");
+      checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
+      render();
+      return true;
+    } catch (err) {
+      console.warn("Caricamento checklist non riuscito", err);
+      return false;
+    }
+  }
+  async function addTask(){
+    const text = String(input.value || "").trim();
+    if (!text || checklistBusy) return;
+    checklistBusy = true;
+    addBtn.disabled = true;
+    try {
+      const res = await fetch(api("/api/operative-checklist"), {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ text, clientId: stationId(), clientName: stationName() })
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.state) throw new Error(data?.error || "Inserimento non riuscito");
+      input.value = "";
+      checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
+      render();
+    } catch (err) {
+      console.warn("Aggiunta task non riuscita", err);
+      alert("Task non salvato sul server. Controlla che server.js sia aggiornato e raggiungibile.");
+    } finally {
+      checklistBusy = false;
+      addBtn.disabled = false;
+      input.focus();
+    }
+  }
+  async function toggleTask(taskId, done){
+    try {
+      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), {
+        method:"PATCH",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ done, clientId: stationId(), clientName: stationName() })
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.state) throw new Error(data?.error || "Aggiornamento non riuscito");
+      checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
+      render();
+    } catch (err) {
+      console.warn("Aggiornamento task non riuscito", err);
+      await loadChecklist();
+    }
+  }
+
+  addBtn.addEventListener("click", addTask);
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addTask();
+    }
+  });
+  refreshBtn?.addEventListener("click", loadChecklist);
+  listEl.addEventListener("change", event => {
+    const check = event.target.closest?.(".operativeChecklistCheck");
+    if (!check) return;
+    const row = check.closest(".operativeChecklistTask");
+    const taskId = row?.dataset?.taskId || "";
+    if (taskId) toggleTask(taskId, check.checked);
+  });
+
+  loadChecklist();
+  setInterval(loadChecklist, 15000);
+})();
+</script>
+
 </body>
 </html>
