@@ -5289,21 +5289,28 @@ if (window.pdfjsLib) {
       <div class="doganaSettingsHead">
         <div class="doganaSettingsTitle">
           <strong>Impostazioni</strong>
-          <span>Preferenze locali e strumenti per lavoro condiviso.</span>
+          <span>Preferenze essenziali della postazione e sincronizzazione.</span>
         </div>
         <button type="button" id="doganaSettingsClose">Chiudi</button>
       </div>
-      <div class="doganaSettingsBody">
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sessione dispositivo</strong>
-            <span>Nome e colore generati automaticamente e ricordati da questo dispositivo.</span>
+      <div class="doganaSettingsBody doganaSettingsBodyCompact">
+        <div class="doganaSettingCard doganaSettingCardColumn">
+          <div class="doganaSettingRow">
+            <div class="doganaSettingInfo">
+              <strong>Postazione</strong>
+              <span>Nome sessione usato nel lavoro condiviso e nei lock celle.</span>
+            </div>
+            <span class="doganaSessionChip" style="--session-color:${clientColor}">
+              <span class="doganaSessionColor"></span>
+              <span id="doganaSessionName">${clientName}</span>
+            </span>
           </div>
-          <span class="doganaSessionChip" style="--session-color:${clientColor}">
-            <span class="doganaSessionColor"></span>
-            <span id="doganaSessionName">${clientName}</span>
-          </span>
+          <div class="doganaSettingActions">
+            <button type="button" id="doganaRenameSession">Rinomina</button>
+            <button type="button" id="doganaResetSession">Reset postazione</button>
+          </div>
         </div>
+
         <div class="doganaSettingCard">
           <div class="doganaSettingInfo">
             <strong>Tema</strong>
@@ -5311,19 +5318,18 @@ if (window.pdfjsLib) {
           </div>
           <button type="button" id="doganaThemeToggleSettings">Tema</button>
         </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Sincronizzazione</strong>
-            <span>Ricarica manualmente stato condiviso e lock celle.</span>
+
+        <div class="doganaSettingCard doganaSettingCardColumn">
+          <div class="doganaSettingRow">
+            <div class="doganaSettingInfo">
+              <strong>Sincronizzazione condivisa</strong>
+              <span>Ricarica stato contenitori e lock celle senza ricaricare la pagina.</span>
+            </div>
+            <span class="doganaSettingBadge">multiutente</span>
           </div>
-          <button type="button" id="doganaSyncNow">Aggiorna</button>
-        </div>
-        <div class="doganaSettingCard">
-          <div class="doganaSettingInfo">
-            <strong>Reset postazione</strong>
-            <span>Genera un nuovo nome e colore per questo dispositivo.</span>
+          <div class="doganaSettingActions">
+            <button type="button" id="doganaSyncNow">Sincronizza ora</button>
           </div>
-          <button type="button" id="doganaResetSession">Reset</button>
         </div>
       </div>
     `;
@@ -5338,20 +5344,70 @@ if (window.pdfjsLib) {
 
     backdrop.addEventListener("click", close);
     panel.querySelector("#doganaSettingsClose")?.addEventListener("click", close);
+
+    function clickIfExists(selector){
+      const el = document.querySelector(selector);
+      if (!el) {
+        showHint("Comando non disponibile in questo momento.");
+        return false;
+      }
+      el.click();
+      return true;
+    }
+
+    function jumpTo(selector, focusSelector){
+      const targetEl = document.querySelector(selector);
+      if (!targetEl) {
+        showHint("Modulo non trovato.");
+        return;
+      }
+      close();
+      targetEl.scrollIntoView({ behavior:"smooth", block:"start" });
+      if (focusSelector) {
+        setTimeout(() => document.querySelector(focusSelector)?.focus(), 280);
+      }
+    }
+
     const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
     function refreshThemeButton(){
       if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
     }
-    refreshThemeButton();
+
+    function refreshSettingsButtons(){
+      refreshThemeButton();
+      const sessionName = document.getElementById("doganaSessionName");
+      const topName = document.getElementById("doganaMenuSessionName")?.textContent?.trim();
+      if (sessionName && topName) sessionName.textContent = topName;
+    }
+
+    refreshSettingsButtons();
+    window.doganaRefreshSettingsPanel = refreshSettingsButtons;
+
     themeBtn?.addEventListener("click", () => {
       setThemeFromSettings(currentTheme() === "dark" ? "light" : "dark");
-      refreshThemeButton();
+      refreshSettingsButtons();
     });
+
+    panel.querySelector("#doganaRenameSession")?.addEventListener("click", () => {
+      clickIfExists("#doganaMenuSessionSync");
+      setTimeout(refreshSettingsButtons, 200);
+    });
+
     panel.querySelector("#doganaSyncNow")?.addEventListener("click", async () => {
       await fetchLocks();
       await safeRefreshSharedState(true);
       showHint("Sincronizzazione completata.");
+      refreshSettingsButtons();
     });
+
+
+
+
+
+
+
+
+
     panel.querySelector("#doganaResetSession")?.addEventListener("click", async () => {
       try {
         localStorage.removeItem("dogana_multi_client_id_v3");
@@ -5382,6 +5438,7 @@ if (window.pdfjsLib) {
     btn.addEventListener("click", () => {
       document.getElementById("doganaSettingsPanel")?.classList.add("show");
       document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
+      if (typeof window.doganaRefreshSettingsPanel === "function") window.doganaRefreshSettingsPanel();
     });
 
     target.appendChild(btn);
@@ -6167,11 +6224,11 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
     <a href="#dogana-section">TABELLA</a>
-    <a href="#navi-section">NAVI</a>
     <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
-    <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
     <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">CHECKLIST</a>
-    <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">IMPOSTAZIONI</button>
+    <a href="#navi-section">NAVI</a>
+    <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
+    <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn settingsIconOnly" aria-label="Impostazioni" title="Impostazioni"><span aria-hidden="true">⚙</span></button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
       <span id="doganaMenuSessionName">NOME-SESSIONE</span>
@@ -6195,7 +6252,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       <button id="copyColumnBtn">Copia colonna</button>	  
       <button id="exportPdfBtn">Esporta PDF</button>
       <button id="exportExcelBtn">Esporta Excel</button>
-	  <button id="doganaMinimizeBtn" type="button">Riduci a icona</button>
+	  <button id="doganaMinimizeBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Tabella" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
 
@@ -6341,6 +6398,101 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
 </div>
 </div>
 
+<div id="container-section" class="sectionJumpTarget"></div>
+<div class="miniPanel extraPanel" id="extraPanel">
+  <div class="miniHead extraHead">
+    <div>
+      <div class="miniTitle">Ricerca Contenitori</div>
+      <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
+    </div>
+    <div class="miniToolbar extraTopToolbar">
+      <label class="autoCheckSwitch" title="Attiva o disattiva il controllo automatico ogni 5 minuti">
+        <input id="extraAutoCheckToggle" type="checkbox" />
+        <span class="autoCheckSlider"></span>
+        <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
+      </label>
+      <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
+      <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
+      <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button">Controlla ora</button>
+      <button id="minimizeExtraBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Contenitori" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+      <button id="copyExtraColumnBtn" type="button">Copia container</button>
+      <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP</button>
+      <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
+      <button class="success" id="addExtra10Btn">+10 righe</button>
+      <button class="danger" id="clearExtraBtn">Svuota sezione</button>
+    </div>
+  </div>
+
+  <div class="extraTabs" id="extraTabs" role="tablist" aria-label="Terminal contenitori non entrati">
+    <button class="extraTab active" data-extra-terminal="sct" type="button">SCT <span class="extraTabCount" id="extraTabCountSct">0</span><span class="extraTabNotify" id="extraNotifySct">0</span></button>
+    <button class="extraTab" data-extra-terminal="conateco" type="button">CONATECO <span class="extraTabCount" id="extraTabCountConateco">0</span><span class="extraTabNotify" id="extraNotifyConateco">0</span></button>
+    <button class="extraTab" data-extra-terminal="flavio" type="button">TFG <span class="extraTabCount" id="extraTabCountFlavio">0</span><span class="extraTabNotify" id="extraNotifyFlavio">0</span></button>
+
+    <div class="extraCheckInfoBar" id="extraCheckInfoBar" aria-live="polite">
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot" id="extraLastCheckDot"></span>
+        <span class="extraCheckInfoText">Ultimo controllo: <strong id="extraLastCheckText">mai eseguito</strong></span>
+      </div>
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot wait" id="extraNextCheckDot"></span>
+        <span class="extraCheckInfoText">Prossimo: <strong id="extraNextCheckText">disattivato</strong></span>
+      </div>
+      <div class="extraCheckInfoItem">
+        <span class="extraCheckInfoDot ok"></span>
+        <span class="extraCheckInfoText">Terminal: <strong id="extraCheckTerminalText">SCT</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="extraContent" id="extraContent">
+    <div class="miniWrap">
+      <table class="miniTable" id="extraTable">
+        <thead id="extraThead"></thead>
+        <tbody id="extraTbody"></tbody>
+      </table>
+    </div>
+    <div class="extraBottomToolbar">
+      <span class="extraAutoStatus" id="extraAutoStatus">disattivato.</span>
+      <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
+      <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
+      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP</button>
+      <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
+      <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
+      <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
+    </div>
+  </div>
+</div>
+
+<section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
+  <div class="operativeChecklistHead">
+    <div>
+      <div class="operativeChecklistTitle">Checklist Operativa</div>
+      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
+    </div>
+    <div class="operativeChecklistActions">
+      <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
+      <button type="button" id="operativeChecklistRefreshBtn">Aggiorna</button>
+      <button type="button" id="operativeChecklistToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Checklist Operativa" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+  </div>
+  <div class="operativeChecklistBody">
+    <div class="operativeChecklistForm">
+      <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
+      <div class="operativeChecklistAttachmentBox">
+        <label class="operativeChecklistFileBtn" for="operativeChecklistFileInput">Allega</label>
+        <input class="operativeChecklistFileInput" id="operativeChecklistFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.xml,.txt,.csv,.xls,.xlsx,.doc,.docx" />
+        <span class="operativeChecklistFileName" id="operativeChecklistFileName">Nessun allegato</span>
+        <button class="operativeChecklistFileClear" type="button" id="operativeChecklistFileClearBtn" title="Rimuovi allegato selezionato">×</button>
+      </div>
+      <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
+    </div>
+    <div class="operativeChecklistList" id="operativeChecklistList">
+      <div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>
+    </div>
+  </div>
+</section>
+
 <div id="navi-section" class="sectionJumpTarget"></div>
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
   <div class="toolbar shipToolbar">
@@ -6364,7 +6516,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
         <span class="shipBadge">Aggiornamento <strong id="shipLastUpdate">-</strong></span>
       </div>    
       <button class="primary" id="refreshShipsBtn" type="button">Aggiorna navi</button>
-	  <button id="minimizeShipsBtn" type="button">Riduci a icona</button>
+	  <button id="minimizeShipsBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Previsione Navi" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
   <div class="shipQuickSearch" id="shipQuickSearch">
@@ -6489,72 +6641,6 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
     </div>
   </div>
 </div>
-<div id="container-section" class="sectionJumpTarget"></div>
-<div class="miniPanel extraPanel" id="extraPanel">
-  <div class="miniHead extraHead">
-    <div>
-      <div class="miniTitle">Ricerca Contenitori</div>
-      <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
-    </div>
-    <div class="miniToolbar extraTopToolbar">
-      <label class="autoCheckSwitch" title="Attiva o disattiva il controllo automatico ogni 5 minuti">
-        <input id="extraAutoCheckToggle" type="checkbox" />
-        <span class="autoCheckSlider"></span>
-        <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
-      </label>
-      <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
-      <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
-      <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button">Controlla ora</button>
-      <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
-      <button id="copyExtraColumnBtn" type="button">Copia container</button>
-      <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
-      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP</button>
-      <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
-      <button class="success" id="addExtra10Btn">+10 righe</button>
-      <button class="danger" id="clearExtraBtn">Svuota sezione</button>
-    </div>
-  </div>
-
-  <div class="extraTabs" id="extraTabs" role="tablist" aria-label="Terminal contenitori non entrati">
-    <button class="extraTab active" data-extra-terminal="sct" type="button">SCT <span class="extraTabCount" id="extraTabCountSct">0</span><span class="extraTabNotify" id="extraNotifySct">0</span></button>
-    <button class="extraTab" data-extra-terminal="conateco" type="button">CONATECO <span class="extraTabCount" id="extraTabCountConateco">0</span><span class="extraTabNotify" id="extraNotifyConateco">0</span></button>
-    <button class="extraTab" data-extra-terminal="flavio" type="button">TFG <span class="extraTabCount" id="extraTabCountFlavio">0</span><span class="extraTabNotify" id="extraNotifyFlavio">0</span></button>
-
-    <div class="extraCheckInfoBar" id="extraCheckInfoBar" aria-live="polite">
-      <div class="extraCheckInfoItem">
-        <span class="extraCheckInfoDot" id="extraLastCheckDot"></span>
-        <span class="extraCheckInfoText">Ultimo controllo: <strong id="extraLastCheckText">mai eseguito</strong></span>
-      </div>
-      <div class="extraCheckInfoItem">
-        <span class="extraCheckInfoDot wait" id="extraNextCheckDot"></span>
-        <span class="extraCheckInfoText">Prossimo: <strong id="extraNextCheckText">disattivato</strong></span>
-      </div>
-      <div class="extraCheckInfoItem">
-        <span class="extraCheckInfoDot ok"></span>
-        <span class="extraCheckInfoText">Terminal: <strong id="extraCheckTerminalText">SCT</strong></span>
-      </div>
-    </div>
-  </div>
-
-  <div class="extraContent" id="extraContent">
-    <div class="miniWrap">
-      <table class="miniTable" id="extraTable">
-        <thead id="extraThead"></thead>
-        <tbody id="extraTbody"></tbody>
-      </table>
-    </div>
-    <div class="extraBottomToolbar">
-      <span class="extraAutoStatus" id="extraAutoStatus">disattivato.</span>
-      <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
-      <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
-      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP</button>
-      <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
-      <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
-      <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
-    </div>
-  </div>
-</div>
-
 <section class="miniPanel sctBookingPanel bookingStandalonePanel sectionJumpTarget is-visible" id="bookingLookupPanel" aria-label="Ricerca booking SCT">
   <div class="bookingModuleHead">
     <div class="bookingModuleTitleWrap">
@@ -6562,7 +6648,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       <div class="bookingModuleSubtitle">Usa la stessa sessione JMT/SCT già collegata.</div>
     </div>
     <div class="bookingModuleActions">
-      <button id="minimizeBookingLookupBtn" type="button" aria-expanded="true">Riduci a icona</button>
+      <button id="minimizeBookingLookupBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Booking" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
   <div class="sctBookingForm bookingLookupForm bookingModuleBody">
@@ -6571,35 +6657,6 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
     <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri PDF</button>
     <div class="sctBookingStatus" id="bookingLookupStatus">Inserisci il booking SCT da controllare tramite JMT.</div>
     <div class="bookingLookupResult" id="bookingLookupResult" aria-live="polite"></div>
-  </div>
-</section>
-
-<section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
-  <div class="operativeChecklistHead">
-    <div>
-      <div class="operativeChecklistTitle">Checklist Operativa</div>
-      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
-    </div>
-    <div class="operativeChecklistActions">
-      <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
-      <button type="button" id="operativeChecklistRefreshBtn">Aggiorna</button>
-      <button type="button" id="operativeChecklistToggleBtn">Riduci a icona</button>
-    </div>
-  </div>
-  <div class="operativeChecklistBody">
-    <div class="operativeChecklistForm">
-      <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
-      <div class="operativeChecklistAttachmentBox">
-        <label class="operativeChecklistFileBtn" for="operativeChecklistFileInput">Allega</label>
-        <input class="operativeChecklistFileInput" id="operativeChecklistFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.xml,.txt,.csv,.xls,.xlsx,.doc,.docx" />
-        <span class="operativeChecklistFileName" id="operativeChecklistFileName">Nessun allegato</span>
-        <button class="operativeChecklistFileClear" type="button" id="operativeChecklistFileClearBtn" title="Rimuovi allegato selezionato">×</button>
-      </div>
-      <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
-    </div>
-    <div class="operativeChecklistList" id="operativeChecklistList">
-      <div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>
-    </div>
   </div>
 </section>
 
@@ -6613,7 +6670,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       <span class="serverConsoleStatus" id="serverConsoleStatus">Disconnessa</span>
       <button type="button" id="serverConsoleReconnect">Riconnetti</button>
       <button type="button" id="serverConsoleClear">Pulisci</button>
-      <button type="button" id="serverConsoleToggle">Riduci a icona</button>
+      <button type="button" id="serverConsoleToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Console" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
   <div class="serverConsoleBody">
@@ -6635,6 +6692,92 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
 </footer>
 </section>
 </div>
+
+<style id="dogana-module-svg-toggle-base-style">
+/* === Pulsanti riduci/mostra modulo: SVG inline diagonale, uniforme per tutti i moduli === */
+button.doganaModuleSvgToggleBtn,
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+#serverConsoleToggle.doganaModuleSvgToggleBtn{
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  padding:0 !important;
+  border-radius:13px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  flex:0 0 auto !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  overflow:hidden !important;
+  color:var(--accent) !important;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 11%, var(--surface)) 0%, var(--surface) 100%) !important;
+  border:1px solid color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.70), 0 4px 12px rgba(15,23,42,.05) !important;
+}
+
+button.doganaModuleSvgToggleBtn:hover,
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn:hover,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
+#serverConsoleToggle.doganaModuleSvgToggleBtn:hover{
+  transform:translateY(-1px) !important;
+  border-color:color-mix(in srgb, var(--accent) 46%, var(--btn-border)) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+button.doganaModuleSvgToggleBtn:active,
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn:active,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn:active,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:active,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn:active,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:active,
+#serverConsoleToggle.doganaModuleSvgToggleBtn:active{
+  transform:translateY(0) !important;
+}
+
+.doganaModuleToggleSvg{
+  width:20px !important;
+  height:20px !important;
+  display:block !important;
+  flex:0 0 auto !important;
+}
+
+.doganaModuleToggleSvg path{
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.15 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+</style>
+<script id="dogana-module-svg-toggle-helper">
+(function(){
+  const SVG_REDUCE = `<svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg>`;
+  const SVG_SHOW = `<svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg>`;
+
+  window.setDoganaModuleToggleIcon = function(btn, minimized){
+    if (!btn) return;
+    const isMinimized = !!minimized;
+    const state = isMinimized ? "show" : "reduce";
+    const nextSvg = isMinimized ? SVG_SHOW : SVG_REDUCE;
+    btn.classList.add("doganaModuleSvgToggleBtn");
+    if (btn.dataset.moduleToggleState !== state || !btn.querySelector("svg.doganaModuleToggleSvg")) {
+      btn.dataset.moduleToggleState = state;
+      btn.innerHTML = nextSvg;
+    }
+  };
+})();
+</script>
+
 <script>
     const LS_KEY = "peso_sheet_v3";
     const PDF_TITLE_KEY = "peso_sheet_pdf_title_v1";
@@ -9562,6 +9705,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       bookingLookupPanel.classList.toggle("minimized", !!minimized);
       bookingLookupPanel.classList.toggle("is-minimized", !!minimized);
       minimizeBookingLookupBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(minimizeBookingLookupBtn, minimized);
       minimizeBookingLookupBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
       minimizeBookingLookupBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Booking" : "Riduci a icona Ricerca Booking");
       minimizeBookingLookupBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -9607,6 +9751,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       }
 
       minimizeExtraBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(minimizeExtraBtn, minimized);
       minimizeExtraBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
       minimizeExtraBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Contenitori" : "Riduci a icona Ricerca Contenitori");
       minimizeExtraBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -10788,6 +10933,7 @@ function initShipTabs(){
     panel.classList.toggle("is-minimized", !!minimized);
     if (minimizeBtn) {
       minimizeBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(minimizeBtn, minimized);
       minimizeBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
       minimizeBtn.setAttribute("aria-label", minimized ? "Mostra modulo Previsione Navi" : "Riduci a icona Previsione Navi");
       minimizeBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -13304,6 +13450,16 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     if (headerBtn) { headerBtn.click(); return; }
     document.getElementById("doganaSettingsPanel")?.classList.add("show");
     document.getElementById("doganaSettingsBackdrop")?.classList.add("show");
+    setTimeout(() => {
+      if (typeof window.doganaRefreshSettingsPanel === "function") {
+        window.doganaRefreshSettingsPanel();
+        return;
+      }
+      const panel = document.getElementById("doganaSettingsPanel");
+      const sessionName = panel?.querySelector("#doganaSessionName");
+      const topName = document.getElementById("doganaMenuSessionName")?.textContent?.trim();
+      if (sessionName && topName) sessionName.textContent = topName;
+    }, 0);
   }
   async function init(){
     const id = getClientId();
@@ -13640,6 +13796,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       const applyState = function(minimized){
         panel.classList.toggle("is-minimized", !!minimized);
         toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(toggleBtn, minimized);
         toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
         toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Console" : "Riduci a icona Console");
         toggleBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -14079,6 +14236,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const applyState = (minimized) => {
       module.classList.toggle('is-minimized', minimized);
       btn.textContent = minimized ? 'Mostra modulo' : 'Riduci a icona';
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(btn, minimized);
       btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
       btn.setAttribute('aria-label', minimized ? 'Mostra modulo' : 'Riduci a icona');
       btn.setAttribute('title', minimized ? 'Mostra modulo' : 'Riduci a icona');
@@ -15595,6 +15753,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const applyState = (minimized) => {
       panel.classList.toggle('is-minimized', !!minimized);
       btn.textContent = minimized ? 'Mostra modulo' : 'Riduci a icona';
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(btn, minimized);
       btn.setAttribute('aria-expanded', minimized ? 'false' : 'true');
       btn.setAttribute('aria-label', minimized ? 'Mostra modulo Checklist Operativa' : 'Riduci a icona Checklist Operativa');
       btn.setAttribute('title', minimized ? 'Mostra modulo' : 'Riduci a icona');
@@ -16892,6 +17051,297 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 }
 
 </style>
+
+
+
+<style id="dogana-settings-menu-refresh-final">
+/* === IMPOSTAZIONI: icona in barra superiore + pannello aggiornato === */
+.appQuickNav .appMenuSettingsBtn.settingsIconOnly{
+  width:42px !important;
+  min-width:42px !important;
+  max-width:42px !important;
+  flex:0 0 42px !important;
+  padding:0 !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  font-size:18px !important;
+  border-radius:13px !important;
+}
+
+.appQuickNav .appMenuSettingsBtn.settingsIconOnly span{
+  letter-spacing:0 !important;
+  text-transform:none !important;
+  font-size:18px !important;
+  line-height:1 !important;
+}
+
+.doganaSettingsPanel{
+  width:min(540px, calc(100vw - 32px)) !important;
+}
+
+.doganaSettingsBody{
+  max-height:calc(100vh - 126px) !important;
+  overflow:auto !important;
+  gap:13px !important;
+}
+
+.doganaSettingCardColumn{
+  align-items:stretch !important;
+  flex-direction:column !important;
+}
+
+.doganaSettingRow{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  width:100%;
+}
+
+.doganaSettingActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+  gap:8px;
+  width:100%;
+}
+
+.doganaSettingActionsGrid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+}
+
+.doganaSettingActions button{
+  min-height:34px !important;
+  padding:8px 10px !important;
+  border-radius:11px !important;
+  font-size:11px !important;
+  white-space:nowrap !important;
+}
+
+.doganaSettingActionsGrid button{
+  width:100% !important;
+  min-width:0 !important;
+}
+
+.doganaSettingBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:7px 10px;
+  border-radius:999px;
+  border:1px solid var(--grid-soft);
+  background:var(--hint-bg);
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  white-space:nowrap;
+}
+
+.doganaSettingsPanel .doganaSessionChip{
+  max-width:180px;
+  overflow:hidden;
+}
+
+.doganaSettingsPanel .doganaSessionChip #doganaSessionName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+@media (max-width:700px){
+  .appQuickNav .appMenuSettingsBtn.settingsIconOnly{
+    width:42px !important;
+    min-width:42px !important;
+    max-width:42px !important;
+    flex:0 0 42px !important;
+  }
+  .doganaSettingRow{
+    flex-direction:column;
+  }
+  .doganaSettingActions{
+    justify-content:flex-start;
+  }
+  .doganaSettingActionsGrid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+  .doganaSettingsPanel .doganaSessionChip{
+    max-width:100%;
+  }
+}
+</style>
+
+
+
+<style id="dogana-settings-compact-only-final">
+/* === IMPOSTAZIONI: pannello ridotto alle sole funzioni utili === */
+.doganaSettingsBodyCompact{
+  gap:11px !important;
+}
+
+.doganaSettingsBodyCompact .doganaSettingCard{
+  padding:12px !important;
+}
+
+.doganaSettingsBodyCompact .doganaSettingActions button{
+  min-width:auto !important;
+}
+</style>
+
+
+<style id="dogana-module-svg-toggle-final-style">
+/* === Override finale: tutti i pulsanti riduci/mostra solo icona SVG, anche a modulo ridotto === */
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+#serverConsoleToggle.doganaModuleSvgToggleBtn,
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+.extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+.extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  padding:0 !important;
+  border-radius:13px !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  letter-spacing:0 !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  flex:0 0 38px !important;
+  background:linear-gradient(180deg, color-mix(in srgb, var(--accent) 11%, var(--surface)) 0%, var(--surface) 100%) !important;
+  color:var(--accent) !important;
+  border:1px solid color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.70), 0 4px 12px rgba(15,23,42,.05) !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+.extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+.extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  background:linear-gradient(180deg, #3374f0 0%, #2563eb 100%) !important;
+  color:#fff !important;
+  border-color:#2563eb !important;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg{
+  width:20px !important;
+  height:20px !important;
+  display:block !important;
+  margin:0 !important;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path{
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.15 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+</style>
+<script id="dogana-module-svg-toggle-final-script">
+(function(){
+  const configs = [
+    { id:"doganaMinimizeBtn", panel:".doganaTableModuleCard", reduce:"Riduci a icona Tabella", show:"Mostra modulo Tabella" },
+    { id:"minimizeExtraBtn", panel:"#extraPanel,.extraPanel", reduce:"Riduci a icona Ricerca Contenitori", show:"Mostra modulo Ricerca Contenitori" },
+    { id:"operativeChecklistToggleBtn", panel:"#operativeChecklistPanel,.operativeChecklistPanel", reduce:"Riduci a icona Checklist Operativa", show:"Mostra modulo Checklist Operativa" },
+    { id:"minimizeShipsBtn", panel:"#shipPanel,.shipPanel", reduce:"Riduci a icona Previsione Navi", show:"Mostra modulo Previsione Navi" },
+    { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Ricerca Booking", show:"Mostra modulo Ricerca Booking" },
+    { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" }
+  ];
+
+  function isMinimized(btn, cfg){
+    const panel = cfg.panel ? btn.closest(cfg.panel) || document.querySelector(cfg.panel) : null;
+    if (panel && (panel.classList.contains("is-minimized") || panel.classList.contains("minimized"))) return true;
+    if (btn.getAttribute("aria-expanded") === "false") return true;
+    const label = `${btn.getAttribute("aria-label") || ""} ${btn.getAttribute("title") || ""} ${btn.textContent || ""}`;
+    return /mostra\s+modulo/i.test(label);
+  }
+
+  function normalizeOne(cfg){
+    const btn = document.getElementById(cfg.id);
+    if (!btn || typeof window.setDoganaModuleToggleIcon !== "function") return;
+    const minimized = isMinimized(btn, cfg);
+    window.setDoganaModuleToggleIcon(btn, minimized);
+    const expanded = minimized ? "false" : "true";
+    const label = minimized ? cfg.show : cfg.reduce;
+    const title = minimized ? "Mostra modulo" : "Riduci a icona";
+    if (btn.getAttribute("aria-expanded") !== expanded) btn.setAttribute("aria-expanded", expanded);
+    if (btn.getAttribute("aria-label") !== label) btn.setAttribute("aria-label", label);
+    if (btn.getAttribute("title") !== title) btn.setAttribute("title", title);
+  }
+
+  function normalizeAll(){
+    configs.forEach(normalizeOne);
+  }
+
+  let scheduled = false;
+  function scheduleNormalize(){
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      normalizeAll();
+    });
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", normalizeAll);
+  else normalizeAll();
+
+  document.addEventListener("click", (event) => {
+    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
+      setTimeout(normalizeAll, 0);
+      setTimeout(normalizeAll, 80);
+    }
+  }, true);
+
+  const observer = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      const node = m.target;
+      if (!node) continue;
+      if (node.id && configs.some(c => c.id === node.id)) { scheduleNormalize(); return; }
+      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
+    }
+  });
+  if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["class","aria-expanded","title","aria-label"] });
+})();
+</script>
 
 </body>
 </html>
