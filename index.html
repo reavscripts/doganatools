@@ -6235,6 +6235,8 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
     <a class="appFooterPill appFooterVersion" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Apri gli ultimi commit su GitHub"><span class="appFooterDot"></span> Versione <strong>v2026.06.21</strong></a>
+    <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
+    <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
 </footer>
 </section>
@@ -15463,56 +15465,243 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 })();
 </script>
 
+<style id="dogana-minimized-title-font-like-open-v3">
+/* === TITOLO RIDOTTO: stesso font/stile del titolo modulo aperto === */
+.doganaTableModuleCard.is-minimized,
+#extraPanel.is-minimized,
+#extraPanel.minimized,
+.extraPanel.is-minimized,
+.extraPanel.minimized,
+#shipPanel.is-minimized,
+.shipPanel.is-minimized,
+.operativeChecklistPanel.is-minimized,
+.serverConsolePanel.is-minimized{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  overflow:hidden !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+  color:var(--text) !important;
+}
 
-<style id="dogana-footer-layout-final">
-/* === FOOTER FINALE: brand sinistra, copyright centro, versione destra === */
-.appFooter{
-  position:relative !important;
+.doganaTableModuleCard.is-minimized .doganaTableTopToolbar,
+#extraPanel.is-minimized .miniHead,
+#extraPanel.minimized .miniHead,
+.extraPanel.is-minimized .miniHead,
+.extraPanel.minimized .miniHead,
+#extraPanel.is-minimized .extraHead,
+#extraPanel.minimized .extraHead,
+.extraPanel.is-minimized .extraHead,
+.extraPanel.minimized .extraHead,
+#shipPanel.is-minimized .shipToolbar,
+.shipPanel.is-minimized .shipToolbar,
+#shipPanel.is-minimized .toolbar.shipToolbar,
+.shipPanel.is-minimized .toolbar.shipToolbar,
+.operativeChecklistPanel.is-minimized .operativeChecklistHead,
+.serverConsolePanel.is-minimized .serverConsoleHead{
+  min-height:58px !important;
+  height:auto !important;
+  padding:12px 16px !important;
+  border-bottom:0 !important;
+  border-radius:0 !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) auto !important;
+  align-items:center !important;
+  gap:12px !important;
+  flex-wrap:nowrap !important;
 }
-.appFooterMeta{
-  margin-left:auto !important;
+
+.doganaTableModuleCard.is-minimized .doganaTableHeaderGroup,
+#extraPanel.is-minimized .miniHead > div:first-child,
+#extraPanel.minimized .miniHead > div:first-child,
+.extraPanel.is-minimized .miniHead > div:first-child,
+.extraPanel.minimized .miniHead > div:first-child,
+#extraPanel.is-minimized .extraHead > div:first-child,
+#extraPanel.minimized .extraHead > div:first-child,
+.extraPanel.is-minimized .extraHead > div:first-child,
+.extraPanel.minimized .extraHead > div:first-child,
+#shipPanel.is-minimized .shipToolbarTitle,
+.shipPanel.is-minimized .shipToolbarTitle,
+.operativeChecklistPanel.is-minimized .operativeChecklistHead > div:first-child,
+.serverConsolePanel.is-minimized .serverConsoleHead > div:first-child{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  min-width:0 !important;
+  height:34px !important;
+  min-height:34px !important;
+  margin:0 !important;
+  padding:0 !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaModuleTitle,
+.doganaTableModuleCard.is-minimized .miniTitle,
+#extraPanel.is-minimized .miniTitle,
+#extraPanel.minimized .miniTitle,
+.extraPanel.is-minimized .miniTitle,
+.extraPanel.minimized .miniTitle,
+#shipPanel.is-minimized .shipToolbarTitle h2,
+.shipPanel.is-minimized .shipToolbarTitle h2,
+.operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+.serverConsolePanel.is-minimized .serverConsoleTitle{
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  height:34px !important;
+  min-height:34px !important;
+  margin:0 !important;
+  padding:0 !important;
+  color:var(--heading) !important;
+  font-size:15px !important;
+  font-weight:800 !important;
+  line-height:1.2 !important;
+  letter-spacing:.08em !important;
+  text-transform:uppercase !important;
+  text-align:left !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons,
+#extraPanel.is-minimized .extraTopToolbar,
+#extraPanel.minimized .extraTopToolbar,
+.extraPanel.is-minimized .extraTopToolbar,
+.extraPanel.minimized .extraTopToolbar,
+#extraPanel.is-minimized .miniToolbar,
+#extraPanel.minimized .miniToolbar,
+.extraPanel.is-minimized .miniToolbar,
+.extraPanel.minimized .miniToolbar,
+#shipPanel.is-minimized .shipToolbarActions,
+.shipPanel.is-minimized .shipToolbarActions,
+.operativeChecklistPanel.is-minimized .operativeChecklistActions,
+.serverConsolePanel.is-minimized .serverConsoleActions{
+  display:flex !important;
+  align-items:center !important;
   justify-content:flex-end !important;
-}
-.appFooterCopyright{
-  position:absolute !important;
-  left:50% !important;
-  top:50% !important;
-  transform:translate(-50%, -50%) !important;
+  flex:0 0 auto !important;
   width:auto !important;
-  order:0 !important;
-  z-index:1 !important;
-}
-.appFooterVersion{
+  min-width:0 !important;
   margin-left:auto !important;
-  z-index:2 !important;
+  gap:0 !important;
+  flex-wrap:nowrap !important;
+  overflow:visible !important;
+  padding:0 !important;
+  contain:none !important;
 }
-@media (max-width:900px){
-  .appFooter{
-    align-items:flex-start !important;
-  }
-  .appFooterMeta{
-    width:100% !important;
-    justify-content:space-between !important;
-  }
-  .appFooterCopyright{
-    position:static !important;
-    transform:none !important;
-    order:1 !important;
-  }
-  .appFooterVersion{
-    order:2 !important;
-    margin-left:auto !important;
-  }
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons > :not(#doganaMinimizeBtn),
+#extraPanel.is-minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+#extraPanel.minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+.extraPanel.is-minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+.extraPanel.minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+#extraPanel.is-minimized .miniToolbar > :not(#minimizeExtraBtn),
+#extraPanel.minimized .miniToolbar > :not(#minimizeExtraBtn),
+.extraPanel.is-minimized .miniToolbar > :not(#minimizeExtraBtn),
+.extraPanel.minimized .miniToolbar > :not(#minimizeExtraBtn),
+#shipPanel.is-minimized .shipToolbarActions > :not(#minimizeShipsBtn),
+.shipPanel.is-minimized .shipToolbarActions > :not(#minimizeShipsBtn),
+.operativeChecklistPanel.is-minimized .operativeChecklistActions > :not(#operativeChecklistToggleBtn),
+.serverConsolePanel.is-minimized .serverConsoleActions > :not(#serverConsoleToggle){
+  display:none !important;
 }
-@media (max-width:640px){
-  .appFooterMeta{
-    justify-content:center !important;
-  }
-  .appFooterCopyright,
-  .appFooterVersion{
+
+.doganaTableModuleCard.is-minimized .doganaTitleSeparator,
+.doganaTableModuleCard.is-minimized .doganaModuleMiniInfo,
+#extraPanel.is-minimized .extraSubtitle,
+#extraPanel.minimized .extraSubtitle,
+.extraPanel.is-minimized .extraSubtitle,
+.extraPanel.minimized .extraSubtitle,
+#shipPanel.is-minimized .shipTerminalTabsBlock,
+.shipPanel.is-minimized .shipTerminalTabsBlock,
+.operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
+.operativeChecklistPanel.is-minimized .operativeChecklistStats,
+.operativeChecklistPanel.is-minimized #operativeChecklistRefreshBtn,
+.serverConsolePanel.is-minimized .serverConsoleSubtitle,
+.serverConsolePanel.is-minimized .serverConsoleActions > :not(#serverConsoleToggle),
+.doganaTableModuleCard.is-minimized .doganaTableBodyWrap,
+.doganaTableModuleCard.is-minimized .calcPanel,
+.doganaTableModuleCard.is-minimized .calcExtraTools,
+#extraPanel.is-minimized .extraTabs,
+#extraPanel.minimized .extraTabs,
+.extraPanel.is-minimized .extraTabs,
+.extraPanel.minimized .extraTabs,
+#extraPanel.is-minimized .extraContent,
+#extraPanel.minimized .extraContent,
+.extraPanel.is-minimized .extraContent,
+.extraPanel.minimized .extraContent,
+#shipPanel.is-minimized .shipGrid,
+.shipPanel.is-minimized .shipGrid,
+.operativeChecklistPanel.is-minimized .operativeChecklistBody,
+.serverConsolePanel.is-minimized .serverConsoleBody{
+  display:none !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn,
+#extraPanel.is-minimized #minimizeExtraBtn,
+#extraPanel.minimized #minimizeExtraBtn,
+.extraPanel.is-minimized #minimizeExtraBtn,
+.extraPanel.minimized #minimizeExtraBtn,
+#shipPanel.is-minimized #minimizeShipsBtn,
+.shipPanel.is-minimized #minimizeShipsBtn,
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle{
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-width:auto !important;
+  min-height:34px !important;
+  height:34px !important;
+  padding:8px 13px !important;
+  border-radius:11px !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  letter-spacing:normal !important;
+  white-space:nowrap !important;
+  background:var(--btn-bg) !important;
+  color:var(--btn-text) !important;
+  border:1px solid var(--btn-border) !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.55), 0 3px 10px rgba(15,23,42,.03) !important;
+  transform:none !important;
+}
+
+@media (max-width:768px){
+  .doganaTableModuleCard.is-minimized,
+  #extraPanel.is-minimized,
+  #extraPanel.minimized,
+  .extraPanel.is-minimized,
+  .extraPanel.minimized,
+  #shipPanel.is-minimized,
+  .shipPanel.is-minimized,
+  .operativeChecklistPanel.is-minimized,
+  .serverConsolePanel.is-minimized{
     width:100% !important;
-    justify-content:center !important;
-    margin-left:0 !important;
+    margin:12px 0 !important;
+    border-radius:18px !important;
+  }
+  .doganaTableModuleCard.is-minimized .doganaTableTopToolbar,
+  #extraPanel.is-minimized .miniHead,
+  #extraPanel.minimized .miniHead,
+  .extraPanel.is-minimized .miniHead,
+  .extraPanel.minimized .miniHead,
+  #extraPanel.is-minimized .extraHead,
+  #extraPanel.minimized .extraHead,
+  .extraPanel.is-minimized .extraHead,
+  .extraPanel.minimized .extraHead,
+  #shipPanel.is-minimized .shipToolbar,
+  .shipPanel.is-minimized .shipToolbar,
+  #shipPanel.is-minimized .toolbar.shipToolbar,
+  .shipPanel.is-minimized .toolbar.shipToolbar,
+  .operativeChecklistPanel.is-minimized .operativeChecklistHead,
+  .serverConsolePanel.is-minimized .serverConsoleHead{
+    min-height:54px !important;
+    padding:10px 12px !important;
   }
 }
 </style>
