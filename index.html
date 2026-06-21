@@ -6235,8 +6235,6 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
     <a class="appFooterPill appFooterVersion" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Apri gli ultimi commit su GitHub"><span class="appFooterDot"></span> Versione <strong>v2026.06.21</strong></a>
-    <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
-    <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
 </footer>
 </section>
@@ -10489,6 +10487,19 @@ function initShipTabs(){
   const minimizeBtn = document.getElementById("minimizeShipsBtn");
   const tabs = Array.from(document.querySelectorAll(".shipTab[data-terminal]"));
   const cards = Array.from(document.querySelectorAll(".shipCard[data-terminal-card]"));
+  const shipMinimizeStorageKey = "doganaShipsPanelMinimized";
+
+  function applyShipMinimized(minimized){
+    if (!panel) return;
+    panel.classList.toggle("is-minimized", !!minimized);
+    if (minimizeBtn) {
+      minimizeBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      minimizeBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      minimizeBtn.setAttribute("aria-label", minimized ? "Mostra modulo Previsione Navi" : "Riduci a icona Previsione Navi");
+      minimizeBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+    }
+    try { localStorage.setItem(shipMinimizeStorageKey, minimized ? "1" : "0"); } catch {}
+  }
 
   function activateTerminal(terminal){
     const terminalDescriptions = {
@@ -10500,10 +10511,7 @@ function initShipTabs(){
     cards.forEach(card => card.classList.toggle("active", card.dataset.terminalCard === terminal));
     const terminalDesc = document.getElementById("shipTerminalTabsDescription");
     if (terminalDesc) terminalDesc.textContent = terminalDescriptions[terminal] || "";
-    if (panel?.classList.contains("is-minimized")) {
-      panel.classList.remove("is-minimized");
-      if (minimizeBtn) minimizeBtn.textContent = "Riduci a icona";
-    }
+    if (panel?.classList.contains("is-minimized")) applyShipMinimized(false);
   }
 
   tabs.forEach(tab => {
@@ -10519,10 +10527,12 @@ function initShipTabs(){
     });
   });
 
+  let savedMinimized = "0";
+  try { savedMinimized = localStorage.getItem(shipMinimizeStorageKey) || "0"; } catch {}
+  applyShipMinimized(savedMinimized === "1");
+
   minimizeBtn?.addEventListener("click", () => {
-    panel?.classList.toggle("is-minimized");
-    const minimized = panel?.classList.contains("is-minimized");
-    minimizeBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+    applyShipMinimized(!panel?.classList.contains("is-minimized"));
   });
 }
 
@@ -15702,6 +15712,169 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   .serverConsolePanel.is-minimized .serverConsoleHead{
     min-height:54px !important;
     padding:10px 12px !important;
+  }
+}
+</style>
+
+
+<style id="dogana-topnav-uniform-final-v2">
+/* === BARRA SUPERIORE MODULI - pulsanti uniformi e più evidenti === */
+.appTopBar{
+  gap:14px !important;
+  align-items:center !important;
+}
+.appQuickNav{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex-wrap:wrap !important;
+}
+.appQuickNav > a,
+.appQuickNav > button{
+  flex:0 0 158px !important;
+  width:158px !important;
+  min-width:158px !important;
+  max-width:158px !important;
+  height:40px !important;
+  min-height:40px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:0 12px !important;
+  border-radius:14px !important;
+  border:1px solid var(--btn-border) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  color:var(--heading) !important;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  font-size:12px !important;
+  font-weight:850 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+  text-align:center !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.045) !important;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease !important;
+  appearance:none !important;
+}
+.appQuickNav > a:hover,
+.appQuickNav > button:hover{
+  transform:translateY(-1px) !important;
+  border-color:color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%) !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.075) !important;
+}
+.appQuickNav > a:active,
+.appQuickNav > button:active{
+  transform:translateY(0) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.055) !important;
+}
+.appQuickNav > a:focus-visible,
+.appQuickNav > button:focus-visible{
+  outline:none !important;
+  border-color:color-mix(in srgb, var(--accent) 55%, var(--btn-border)) !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
+}
+.appQuickNav .appSessionSync{
+  justify-content:center !important;
+}
+.appQuickNav .appSessionSync #doganaMenuSessionName{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+.appQuickNav .appSessionDot{
+  width:8px !important;
+  height:8px !important;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--session-color) 16%, transparent) !important;
+}
+@media (max-width:1100px){
+  .appTopBar{
+    align-items:flex-start !important;
+    flex-direction:column !important;
+  }
+  .appQuickNav{
+    width:100% !important;
+    justify-content:flex-start !important;
+  }
+}
+@media (max-width:700px){
+  .appQuickNav{
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding-bottom:4px !important;
+  }
+  .appQuickNav > a,
+  .appQuickNav > button,
+  .appQuickNav .appMenuSettingsBtn,
+  .appQuickNav .appSessionSync{
+    flex:0 0 158px !important;
+    width:158px !important;
+    min-width:158px !important;
+    max-width:158px !important;
+  }
+}
+</style>
+
+
+<style id="dogana-footer-layout-final-v2">
+/* === FOOTER FINALE: copyright centro, versione destra === */
+.appFooter{
+  position:relative !important;
+}
+.appFooterMeta{
+  margin-left:auto !important;
+  justify-content:flex-end !important;
+  min-width:220px !important;
+}
+.appFooterCopyright{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:auto !important;
+  order:0 !important;
+  z-index:1 !important;
+}
+.appFooterVersion{
+  margin-left:auto !important;
+  z-index:2 !important;
+}
+@media (max-width:900px){
+  .appFooter{
+    align-items:flex-start !important;
+  }
+  .appFooterMeta{
+    width:100% !important;
+    min-width:0 !important;
+    justify-content:space-between !important;
+  }
+  .appFooterCopyright{
+    position:static !important;
+    transform:none !important;
+    order:1 !important;
+  }
+  .appFooterVersion{
+    order:2 !important;
+    margin-left:auto !important;
+  }
+}
+@media (max-width:640px){
+  .appFooterMeta{
+    justify-content:center !important;
+    gap:8px !important;
+  }
+  .appFooterCopyright,
+  .appFooterVersion{
+    width:100% !important;
+    justify-content:center !important;
+    margin-left:0 !important;
   }
 }
 </style>
