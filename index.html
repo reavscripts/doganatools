@@ -4749,28 +4749,131 @@ button.appSessionSync{
 .operativeChecklistBody{ padding:16px; }
 .operativeChecklistForm{
   display:grid;
-  grid-template-columns:minmax(240px, 1fr) auto;
-  gap:10px;
+  grid-template-columns:minmax(260px, 1fr) minmax(240px, 300px) auto;
+  gap:8px;
   align-items:center;
   margin-bottom:14px;
   border:1px solid var(--grid-soft);
-  border-radius:16px;
+  border-radius:14px;
   background:var(--hint-bg);
-  padding:10px;
+  padding:8px;
 }
 .operativeChecklistInput{
   width:100%;
-  min-height:42px;
+  min-height:38px;
   border:1px solid var(--btn-border);
-  border-radius:13px;
+  border-radius:10px;
   background:var(--surface);
   color:var(--text);
-  padding:11px 13px;
+  padding:9px 11px;
   font-weight:750;
 }
 .operativeChecklistInput:focus{
   background:var(--surface);
   box-shadow:0 0 0 3px rgba(37,99,235,.12);
+}
+.operativeChecklistAttachmentBox{
+  min-width:0;
+  min-height:38px;
+  display:grid;
+  grid-template-columns:auto minmax(0, 1fr) 24px;
+  align-items:center;
+  gap:6px;
+  border:1px solid var(--btn-border);
+  border-radius:10px;
+  background:var(--surface);
+  padding:6px 7px;
+}
+.operativeChecklistFileInput{ display:none; }
+.operativeChecklistFileBtn{
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  height:26px;
+  min-height:26px;
+  padding:5px 9px;
+  border:1px solid color-mix(in srgb, var(--accent) 24%, var(--grid-soft));
+  border-radius:8px;
+  background:color-mix(in srgb, var(--accent) 7%, var(--surface));
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  cursor:pointer;
+  user-select:none;
+  white-space:nowrap;
+}
+.operativeChecklistFileName{
+  min-width:0;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.operativeChecklistFileClear{
+  flex:0 0 24px !important;
+  width:24px !important;
+  height:24px !important;
+  min-width:24px !important;
+  min-height:24px !important;
+  max-width:24px !important;
+  max-height:24px !important;
+  padding:0 !important;
+  border-radius:7px !important;
+  border:1px solid var(--grid-soft) !important;
+  background:var(--hint-bg) !important;
+  color:var(--muted) !important;
+  font-size:12px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+}
+.operativeChecklistFileClear:hover{
+  color:var(--danger);
+  border-color:color-mix(in srgb, var(--danger) 28%, var(--grid-soft));
+  background:color-mix(in srgb, var(--danger) 8%, var(--surface));
+}
+.operativeChecklistAttachmentLink{
+  margin-top:7px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  max-width:100%;
+  padding:5px 8px;
+  border:1px solid color-mix(in srgb, var(--accent) 20%, var(--grid-soft));
+  border-radius:8px;
+  background:color-mix(in srgb, var(--accent) 6%, var(--surface));
+  color:var(--accent);
+  font-size:11px;
+  font-weight:900;
+  text-decoration:none;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.operativeChecklistAttachmentLink:hover{
+  border-color:color-mix(in srgb, var(--accent) 42%, var(--grid-soft));
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+.operativeChecklistAttachmentLink span{
+  color:var(--muted);
+  font-weight:900;
+}
+#operativeChecklistAddBtn{
+  min-width:138px;
+  min-height:38px;
+  height:38px;
+  padding:9px 13px;
+  border-radius:10px;
+  white-space:nowrap;
+  box-shadow:none;
+}
+.operativeChecklistFileBtn:hover,
+.operativeChecklistFileClear:hover,
+.operativeChecklistAttachmentLink:hover{
+  transform:none !important;
 }
 .operativeChecklistList{ display:flex; flex-direction:column; gap:9px; }
 .operativeChecklistTask{
@@ -4779,7 +4882,7 @@ button.appSessionSync{
   gap:11px;
   align-items:center;
   border:1px solid var(--grid-soft);
-  border-radius:16px;
+  border-radius:12px;
   background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
   padding:12px;
   box-shadow:0 6px 14px rgba(15,23,42,.035);
@@ -4810,8 +4913,8 @@ button.appSessionSync{
   align-items:center;
   gap:6px;
   border:1px solid var(--grid-soft);
-  border-radius:999px;
-  padding:7px 10px;
+  border-radius:8px;
+  padding:6px 9px;
   background:var(--surface);
   color:var(--muted);
   font-size:11px;
@@ -4827,21 +4930,27 @@ button.appSessionSync{
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  min-height:32px;
-  padding:7px 10px;
-  border-radius:11px;
-  border:1px solid color-mix(in srgb, var(--danger) 24%, var(--grid-soft));
-  background:color-mix(in srgb, var(--danger) 8%, var(--surface));
-  color:var(--danger);
-  font-size:11px;
-  font-weight:900;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  max-width:30px !important;
+  max-height:30px !important;
+  padding:0 !important;
+  border-radius:8px !important;
+  border:1px solid color-mix(in srgb, var(--danger) 24%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--danger) 7%, var(--surface)) !important;
+  color:var(--danger) !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
   white-space:nowrap;
-  box-shadow:none;
+  box-shadow:none !important;
 }
 .operativeChecklistDeleteBtn:hover{
-  transform:translateY(-1px);
-  border-color:color-mix(in srgb, var(--danger) 42%, var(--grid-soft));
-  background:color-mix(in srgb, var(--danger) 13%, var(--surface));
+  transform:none !important;
+  border-color:color-mix(in srgb, var(--danger) 42%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--danger) 12%, var(--surface)) !important;
 }
 .operativeChecklistTask.done .operativeChecklistDeleteBtn{
   background:color-mix(in srgb, var(--danger) 9%, var(--surface));
@@ -6213,7 +6322,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="operativeChecklistHead">
     <div>
       <div class="operativeChecklistTitle">Checklist Operativa</div>
-      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni. I task completati restano barrati e vengono rimossi gradualmente quando la lista cresce.</div>
+      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
     </div>
     <div class="operativeChecklistActions">
       <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
@@ -6224,6 +6333,12 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="operativeChecklistBody">
     <div class="operativeChecklistForm">
       <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
+      <div class="operativeChecklistAttachmentBox">
+        <label class="operativeChecklistFileBtn" for="operativeChecklistFileInput">Allega</label>
+        <input class="operativeChecklistFileInput" id="operativeChecklistFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.xml,.txt,.csv,.xls,.xlsx,.doc,.docx" />
+        <span class="operativeChecklistFileName" id="operativeChecklistFileName">Nessun allegato</span>
+        <button class="operativeChecklistFileClear" type="button" id="operativeChecklistFileClearBtn" title="Rimuovi allegato selezionato">×</button>
+      </div>
       <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
     </div>
     <div class="operativeChecklistList" id="operativeChecklistList">
@@ -15352,12 +15467,18 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 /* === CHECKLIST OPERATIVA MULTIUTENTE === */
 (function(){
   const input = document.getElementById("operativeChecklistInput");
+  const fileInput = document.getElementById("operativeChecklistFileInput");
+  const fileNameEl = document.getElementById("operativeChecklistFileName");
+  const fileClearBtn = document.getElementById("operativeChecklistFileClearBtn");
   const addBtn = document.getElementById("operativeChecklistAddBtn");
   const refreshBtn = document.getElementById("operativeChecklistRefreshBtn");
   const listEl = document.getElementById("operativeChecklistList");
   const statsEl = document.getElementById("operativeChecklistStats");
   if (!input || !addBtn || !listEl) return;
 
+  const MAX_ATTACHMENT_BYTES = 15 * 1024 * 1024;
+  const ALLOWED_ATTACHMENT_EXTENSIONS = new Set([".pdf", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".bmp", ".xml", ".txt", ".csv", ".xls", ".xlsx", ".doc", ".docx"]);
+  const BLOCKED_ATTACHMENT_EXTENSIONS = new Set([".php", ".phtml", ".phar", ".js", ".mjs", ".cjs", ".html", ".htm", ".svg", ".exe", ".bat", ".cmd", ".sh", ".ps1", ".vbs", ".jar", ".com", ".scr", ".msi"]);
   let checklistTasks = [];
   let checklistBusy = false;
 
@@ -15376,6 +15497,33 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     return base + clean;
   }
 
+  function getFileExtension(name){
+    const clean = String(name || "").toLowerCase().split(/[?#]/)[0];
+    const dot = clean.lastIndexOf(".");
+    return dot >= 0 ? clean.slice(dot) : "";
+  }
+  function validateAttachmentFile(file){
+    if (!file) return true;
+    const name = String(file.name || "");
+    const lowerName = name.toLowerCase();
+    const ext = getFileExtension(name);
+    if (!ext) throw new Error("Allegato senza estensione non consentito.");
+    if (file.size > MAX_ATTACHMENT_BYTES) throw new Error(`Allegato troppo grande. Limite ${Math.round(MAX_ATTACHMENT_BYTES / 1024 / 1024)} MB.`);
+    if (BLOCKED_ATTACHMENT_EXTENSIONS.has(ext)) throw new Error(`Formato allegato bloccato: ${ext}`);
+    for (const blocked of BLOCKED_ATTACHMENT_EXTENSIONS) {
+      if (lowerName.includes(blocked + ".")) throw new Error(`Nome allegato sospetto: contiene ${blocked}`);
+    }
+    if (!ALLOWED_ATTACHMENT_EXTENSIONS.has(ext)) {
+      throw new Error("Formato allegato non consentito. Usa PDF, immagini, XML, TXT, CSV, Excel o Word.");
+    }
+    return true;
+  }
+  async function readChecklistWriteResponse(res){
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.error || "Operazione checklist non riuscita");
+    return data;
+  }
+
   function stationName(){
     try {
       if (typeof window.DOGANA_EXTRA_GET_STATION_NAME === "function") return window.DOGANA_EXTRA_GET_STATION_NAME() || "Postazione";
@@ -15384,44 +15532,65 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     } catch { return "Postazione"; }
   }
   function stationId(){
-    try {
-      return localStorage.getItem("dogana_multi_client_id_v3") || localStorage.getItem("peso_sheet_extra_client_id_v1") || "";
-    } catch { return ""; }
+    try { return localStorage.getItem("dogana_multi_client_id_v3") || localStorage.getItem("peso_sheet_extra_client_id_v1") || ""; } catch { return ""; }
   }
-  function esc(value){
-    return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
-  }
+  function esc(value){ return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch])); }
   function formatDateShort(value){
     const d = new Date(value || "");
     if (!Number.isFinite(d.getTime())) return "";
     return d.toLocaleString("it-IT", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
   }
+  function formatBytes(value){
+    const size = Number(value || 0);
+    if (!Number.isFinite(size) || size <= 0) return "";
+    if (size < 1024) return `${size} B`;
+    if (size < 1024 * 1024) return `${(size / 1024).toFixed(size < 10 * 1024 ? 1 : 0)} KB`;
+    return `${(size / 1024 / 1024).toFixed(1)} MB`;
+  }
+  function selectedFile(){ return fileInput?.files && fileInput.files.length ? fileInput.files[0] : null; }
+  function updateAttachmentLabel(){
+    const file = selectedFile();
+    if (fileNameEl) fileNameEl.textContent = file ? `${file.name}${file.size ? " · " + formatBytes(file.size) : ""}` : "Nessun allegato";
+    if (fileClearBtn) fileClearBtn.style.display = file ? "" : "none";
+  }
+  function clearSelectedAttachment(){ if (fileInput) fileInput.value = ""; updateAttachmentLabel(); }
+  function readFileAsDataUrl(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || ""));
+      reader.onerror = () => reject(reader.error || new Error("Lettura allegato non riuscita"));
+      reader.readAsDataURL(file);
+    });
+  }
+  function attachmentHtml(task){
+    const attachment = task?.attachment && typeof task.attachment === "object" ? task.attachment : null;
+    if (!attachment?.fileName && !attachment?.originalName) return "";
+    const url = api(`/api/operative-checklist/${encodeURIComponent(task.id)}/attachment`);
+    const name = attachment.originalName || attachment.name || "Allegato";
+    const size = formatBytes(attachment.size || attachment.sizeBytes || 0);
+    return `<a class="operativeChecklistAttachmentLink" href="${esc(url)}" target="_blank" rel="noopener" download="${esc(name)}" title="Scarica allegato: ${esc(name)}">📎 ${esc(name)}${size ? ` <span>${esc(size)}</span>` : ""}</a>`;
+  }
   function render(){
     const openCount = checklistTasks.filter(t => !t.done).length;
     const doneCount = checklistTasks.filter(t => t.done).length;
     if (statsEl) statsEl.textContent = `${openCount} aperti · ${doneCount} completati`;
-    if (!checklistTasks.length) {
-      listEl.innerHTML = '<div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>';
-      return;
-    }
-
-    const open = checklistTasks.filter(t => !t.done);
-    const done = checklistTasks.filter(t => t.done);
-    const ordered = open.concat(done);
-
+    if (!checklistTasks.length) { listEl.innerHTML = '<div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>'; return; }
+    const ordered = checklistTasks.filter(t => !t.done).concat(checklistTasks.filter(t => t.done));
     listEl.innerHTML = ordered.map(task => {
       const meta = task.done
         ? `Inserito da ${esc(task.createdByName || "Postazione")} · completato da ${esc(task.completedByName || "Postazione")} ${esc(formatDateShort(task.completedAt))}`
         : `Inserito da ${esc(task.createdByName || "Postazione")} ${esc(formatDateShort(task.createdAt))}`;
+      const deleteLabel = task.done ? "Elimina task completato" : "Elimina task";
       return `
         <div class="operativeChecklistTask ${task.done ? "done" : ""}" data-task-id="${esc(task.id)}">
           <input class="operativeChecklistCheck" type="checkbox" ${task.done ? "checked" : ""} aria-label="Completa task">
           <div>
             <div class="operativeChecklistText">${esc(task.text)}</div>
             <div class="operativeChecklistMeta">${meta}</div>
+            ${attachmentHtml(task)}
           </div>
           <span class="operativeChecklistBadge">${task.done ? "Completato" : esc(task.createdByName || "Postazione")}</span>
-          <button type="button" class="operativeChecklistDeleteBtn" data-delete-task="${esc(task.id)}" title="${task.done ? "Elimina task completato" : "Elimina task"}">${task.done ? "Elimina completato" : "Elimina"}</button>
+          <button type="button" class="operativeChecklistDeleteBtn" data-delete-task="${esc(task.id)}" title="${deleteLabel}" aria-label="${deleteLabel}">×</button>
         </div>`;
     }).join("");
   }
@@ -15433,97 +15602,61 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
       render();
       return true;
-    } catch (err) {
-      console.warn("Caricamento checklist non riuscito", err);
-      return false;
-    }
+    } catch (err) { console.warn("Caricamento checklist non riuscito", err); return false; }
   }
   async function addTask(){
     const text = String(input.value || "").trim();
+    const file = selectedFile();
     if (!text || checklistBusy) return;
+    try { if (file) validateAttachmentFile(file); } catch (err) { alert(err?.message || "Allegato non consentito."); clearSelectedAttachment(); return; }
     checklistBusy = true;
     addBtn.disabled = true;
     try {
-      const res = await fetch(api("/api/operative-checklist"), {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ text, clientId: stationId(), clientName: stationName() })
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.state) throw new Error(data?.error || "Inserimento non riuscito");
+      const payload = { text, clientId: stationId(), clientName: stationName() };
+      if (file) payload.attachment = { name: file.name || "allegato", type: file.type || "application/octet-stream", size: file.size || 0, dataUrl: await readFileAsDataUrl(file) };
+      const res = await fetch(api("/api/operative-checklist"), { method:"POST", headers:{ "Content-Type":"application/json" }, body: JSON.stringify(payload) });
+      const data = await readChecklistWriteResponse(res);
+      if (!data?.state) throw new Error(data?.error || "Inserimento non riuscito");
       input.value = "";
+      clearSelectedAttachment();
       checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
       render();
-    } catch (err) {
-      console.warn("Aggiunta task non riuscita", err);
-      alert("Task non salvato sul server. Controlla che server.js sia aggiornato e raggiungibile.");
-    } finally {
-      checklistBusy = false;
-      addBtn.disabled = false;
-      input.focus();
-    }
+    } catch (err) { console.warn("Aggiunta task non riuscita", err); alert(err?.message || "Task non salvato sul server. Controlla che server.js sia aggiornato e raggiungibile."); }
+    finally { checklistBusy = false; addBtn.disabled = false; input.focus(); }
   }
   async function toggleTask(taskId, done){
     try {
-      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), {
-        method:"PATCH",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ done, clientId: stationId(), clientName: stationName() })
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.state) throw new Error(data?.error || "Aggiornamento non riuscito");
+      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), { method:"PATCH", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ done, clientId: stationId(), clientName: stationName() }) });
+      const data = await readChecklistWriteResponse(res);
+      if (!data?.state) throw new Error(data?.error || "Aggiornamento non riuscito");
       checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
       render();
-    } catch (err) {
-      console.warn("Aggiornamento task non riuscito", err);
-      await loadChecklist();
-    }
+    } catch (err) { console.warn("Aggiornamento task non riuscito", err); alert(err?.message || "Aggiornamento task non riuscito."); await loadChecklist(); }
   }
-
   async function deleteTask(taskId){
     const task = checklistTasks.find(item => String(item.id || "") === String(taskId || ""));
     if (!taskId || !task) return;
     if (!task.done && !confirm("Eliminare questo task non completato?")) return;
-
     try {
-      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), {
-        method:"DELETE",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ clientId: stationId(), clientName: stationName() })
-      });
-      const data = await res.json().catch(() => null);
-      if (!res.ok || !data?.state) throw new Error(data?.error || "Eliminazione non riuscita");
+      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), { method:"DELETE", headers:{ "Content-Type":"application/json" }, body: JSON.stringify({ clientId: stationId(), clientName: stationName() }) });
+      const data = await readChecklistWriteResponse(res);
+      if (!data?.state) throw new Error(data?.error || "Eliminazione non riuscita");
       checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
       render();
-    } catch (err) {
-      console.warn("Eliminazione task non riuscita", err);
-      alert("Task non eliminato. Controlla che server.js sia aggiornato e raggiungibile.");
-      await loadChecklist();
-    }
+    } catch (err) { console.warn("Eliminazione task non riuscita", err); alert(err?.message || "Task non eliminato. Controlla che server.js sia aggiornato e raggiungibile."); await loadChecklist(); }
   }
 
   addBtn.addEventListener("click", addTask);
-  input.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      addTask();
-    }
+  input.addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); addTask(); } });
+  fileInput?.addEventListener("change", () => {
+    try { const file = selectedFile(); if (file) validateAttachmentFile(file); updateAttachmentLabel(); }
+    catch (err) { alert(err?.message || "Allegato non consentito."); clearSelectedAttachment(); }
   });
+  fileClearBtn?.addEventListener("click", clearSelectedAttachment);
   refreshBtn?.addEventListener("click", loadChecklist);
-  listEl.addEventListener("click", event => {
-    const deleteBtn = event.target.closest?.(".operativeChecklistDeleteBtn");
-    if (!deleteBtn) return;
-    const taskId = deleteBtn.dataset?.deleteTask || "";
-    deleteTask(taskId);
-  });
-  listEl.addEventListener("change", event => {
-    const check = event.target.closest?.(".operativeChecklistCheck");
-    if (!check) return;
-    const row = check.closest(".operativeChecklistTask");
-    const taskId = row?.dataset?.taskId || "";
-    if (taskId) toggleTask(taskId, check.checked);
-  });
-
+  listEl.addEventListener("click", event => { const deleteBtn = event.target.closest?.(".operativeChecklistDeleteBtn"); if (!deleteBtn) return; deleteTask(deleteBtn.dataset?.deleteTask || ""); });
+  listEl.addEventListener("change", event => { const check = event.target.closest?.(".operativeChecklistCheck"); if (!check) return; const row = check.closest(".operativeChecklistTask"); const taskId = row?.dataset?.taskId || ""; if (taskId) toggleTask(taskId, check.checked); });
+  updateAttachmentLabel();
   loadChecklist();
   setInterval(loadChecklist, 15000);
 })();
@@ -16087,5 +16220,70 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 .extraPanel .extraTopToolbar #addExtra10Btn{ order:100 !important; }
 .extraPanel .extraTopToolbar #clearExtraBtn{ order:110 !important; }
 </style>
+
+
+<style id="dogana-ship-search-uniform-final">
+/* === PREVISIONE NAVI: barra ricerca uniformata alle altre barre utility === */
+.shipPanel #shipQuickSearch.shipQuickSearch{
+  width:calc(100% - 32px) !important;
+  margin:14px auto 0 !important;
+  padding:8px !important;
+  display:grid !important;
+  grid-template-columns:minmax(260px, 1fr) auto auto !important;
+  gap:8px !important;
+  align-items:center !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:14px !important;
+  background:var(--hint-bg) !important;
+  box-shadow:none !important;
+}
+.shipPanel #shipSearchInput{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:42px !important;
+  height:42px !important;
+  border:1px solid var(--btn-border) !important;
+  border-radius:12px !important;
+  background:var(--surface) !important;
+  color:var(--text) !important;
+  padding:10px 12px !important;
+  font-size:13px !important;
+  font-weight:800 !important;
+  box-shadow:none !important;
+}
+.shipPanel #shipSearchInput:focus{
+  background:var(--surface) !important;
+  border-color:rgba(37,99,235,.55) !important;
+  box-shadow:0 0 0 3px rgba(37,99,235,.12) !important;
+}
+.shipPanel #shipQuickSearch button{
+  min-height:42px !important;
+  height:42px !important;
+  padding:0 14px !important;
+  border-radius:12px !important;
+  white-space:nowrap !important;
+}
+
+/* Stato ridotto: la ricerca navi deve scomparire come il resto del contenuto */
+#shipPanel.is-minimized #shipQuickSearch,
+.shipPanel.is-minimized #shipQuickSearch,
+#shipPanel.is-minimized #shipSearchResults,
+.shipPanel.is-minimized #shipSearchResults{
+  display:none !important;
+}
+
+@media (max-width:700px){
+  .shipPanel #shipQuickSearch.shipQuickSearch{
+    width:calc(100% - 24px) !important;
+    margin:12px auto 0 !important;
+    grid-template-columns:1fr !important;
+    padding:8px !important;
+  }
+  .shipPanel #shipQuickSearch button{
+    width:100% !important;
+  }
+}
+</style>
+
 </body>
 </html>
