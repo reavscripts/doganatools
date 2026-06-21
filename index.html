@@ -4775,7 +4775,7 @@ button.appSessionSync{
 .operativeChecklistList{ display:flex; flex-direction:column; gap:9px; }
 .operativeChecklistTask{
   display:grid;
-  grid-template-columns:auto minmax(0, 1fr) auto;
+  grid-template-columns:auto minmax(0, 1fr) auto auto;
   gap:11px;
   align-items:center;
   border:1px solid var(--grid-soft);
@@ -4822,6 +4822,30 @@ button.appSessionSync{
   background:color-mix(in srgb, var(--accent-2) 10%, var(--surface));
   color:var(--accent-2);
 }
+
+.operativeChecklistDeleteBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:32px;
+  padding:7px 10px;
+  border-radius:11px;
+  border:1px solid color-mix(in srgb, var(--danger) 24%, var(--grid-soft));
+  background:color-mix(in srgb, var(--danger) 8%, var(--surface));
+  color:var(--danger);
+  font-size:11px;
+  font-weight:900;
+  white-space:nowrap;
+  box-shadow:none;
+}
+.operativeChecklistDeleteBtn:hover{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--danger) 42%, var(--grid-soft));
+  background:color-mix(in srgb, var(--danger) 13%, var(--surface));
+}
+.operativeChecklistTask.done .operativeChecklistDeleteBtn{
+  background:color-mix(in srgb, var(--danger) 9%, var(--surface));
+}
 .operativeChecklistEmpty{
   color:var(--muted);
   text-align:center;
@@ -4840,6 +4864,7 @@ button.appSessionSync{
   .operativeChecklistForm{ grid-template-columns:1fr; }
   .operativeChecklistTask{ grid-template-columns:auto minmax(0,1fr); }
   .operativeChecklistBadge{ grid-column:2; justify-self:start; }
+  .operativeChecklistDeleteBtn{ grid-column:2; justify-self:start; }
 }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -6094,10 +6119,10 @@ document.addEventListener("DOMContentLoaded", () => {
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
       <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
       <button id="extraCheckNowBtn" type="button">Controlla ora</button>
+      <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
       <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP PDF trovati</button>
-      <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
       <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
       <button class="success" id="addExtra10Btn">+10 righe</button>
       <button class="danger" id="clearExtraBtn">Svuota sezione</button>
@@ -15396,6 +15421,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
             <div class="operativeChecklistMeta">${meta}</div>
           </div>
           <span class="operativeChecklistBadge">${task.done ? "Completato" : esc(task.createdByName || "Postazione")}</span>
+          <button type="button" class="operativeChecklistDeleteBtn" data-delete-task="${esc(task.id)}" title="${task.done ? "Elimina task completato" : "Elimina task"}">${task.done ? "Elimina completato" : "Elimina"}</button>
         </div>`;
     }).join("");
   }
@@ -15454,6 +15480,28 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     }
   }
 
+  async function deleteTask(taskId){
+    const task = checklistTasks.find(item => String(item.id || "") === String(taskId || ""));
+    if (!taskId || !task) return;
+    if (!task.done && !confirm("Eliminare questo task non completato?")) return;
+
+    try {
+      const res = await fetch(api(`/api/operative-checklist/${encodeURIComponent(taskId)}`), {
+        method:"DELETE",
+        headers:{ "Content-Type":"application/json" },
+        body: JSON.stringify({ clientId: stationId(), clientName: stationName() })
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.state) throw new Error(data?.error || "Eliminazione non riuscita");
+      checklistTasks = Array.isArray(data.state.tasks) ? data.state.tasks : [];
+      render();
+    } catch (err) {
+      console.warn("Eliminazione task non riuscita", err);
+      alert("Task non eliminato. Controlla che server.js sia aggiornato e raggiungibile.");
+      await loadChecklist();
+    }
+  }
+
   addBtn.addEventListener("click", addTask);
   input.addEventListener("keydown", event => {
     if (event.key === "Enter") {
@@ -15462,6 +15510,12 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     }
   });
   refreshBtn?.addEventListener("click", loadChecklist);
+  listEl.addEventListener("click", event => {
+    const deleteBtn = event.target.closest?.(".operativeChecklistDeleteBtn");
+    if (!deleteBtn) return;
+    const taskId = deleteBtn.dataset?.deleteTask || "";
+    deleteTask(taskId);
+  });
   listEl.addEventListener("change", event => {
     const check = event.target.closest?.(".operativeChecklistCheck");
     if (!check) return;
@@ -15716,13 +15770,13 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 }
 </style>
 
-
-<style id="dogana-topnav-uniform-final-v2">
-/* === BARRA SUPERIORE MODULI - pulsanti uniformi e più evidenti === */
+<style id="dogana-topnav-uniform-final">
+/* === BARRA SUPERIORE MODULI - pulsanti uniformi e più leggibili === */
 .appTopBar{
   gap:14px !important;
   align-items:center !important;
 }
+
 .appQuickNav{
   display:flex !important;
   align-items:center !important;
@@ -15730,14 +15784,14 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   gap:8px !important;
   flex-wrap:wrap !important;
 }
+
 .appQuickNav > a,
 .appQuickNav > button{
-  flex:0 0 158px !important;
-  width:158px !important;
-  min-width:158px !important;
-  max-width:158px !important;
-  height:40px !important;
-  min-height:40px !important;
+  width:156px !important;
+  min-width:156px !important;
+  max-width:156px !important;
+  height:38px !important;
+  min-height:38px !important;
   display:inline-flex !important;
   align-items:center !important;
   justify-content:center !important;
@@ -15757,43 +15811,50 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   white-space:nowrap !important;
   overflow:hidden !important;
   text-overflow:ellipsis !important;
-  box-shadow:0 4px 12px rgba(15,23,42,.045) !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.04) !important;
   transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease !important;
   appearance:none !important;
 }
+
 .appQuickNav > a:hover,
 .appQuickNav > button:hover{
   transform:translateY(-1px) !important;
-  border-color:color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  border-color:color-mix(in srgb, var(--accent) 28%, var(--btn-border)) !important;
   background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%) !important;
-  box-shadow:0 8px 18px rgba(15,23,42,.075) !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.07) !important;
 }
+
 .appQuickNav > a:active,
 .appQuickNav > button:active{
   transform:translateY(0) !important;
-  box-shadow:0 3px 10px rgba(15,23,42,.055) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.05) !important;
 }
+
 .appQuickNav > a:focus-visible,
 .appQuickNav > button:focus-visible{
   outline:none !important;
   border-color:color-mix(in srgb, var(--accent) 55%, var(--btn-border)) !important;
   box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
 }
+
 .appQuickNav .appSessionSync{
   justify-content:center !important;
 }
+
 .appQuickNav .appSessionSync #doganaMenuSessionName{
   min-width:0 !important;
   overflow:hidden !important;
   text-overflow:ellipsis !important;
   white-space:nowrap !important;
 }
+
 .appQuickNav .appSessionDot{
   width:8px !important;
   height:8px !important;
   box-shadow:0 0 0 3px color-mix(in srgb, var(--session-color) 16%, transparent) !important;
 }
-@media (max-width:1100px){
+
+@media (max-width:1060px){
   .appTopBar{
     align-items:flex-start !important;
     flex-direction:column !important;
@@ -15803,6 +15864,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     justify-content:flex-start !important;
   }
 }
+
 @media (max-width:700px){
   .appQuickNav{
     flex-wrap:nowrap !important;
@@ -15814,10 +15876,10 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   .appQuickNav > button,
   .appQuickNav .appMenuSettingsBtn,
   .appQuickNav .appSessionSync{
-    flex:0 0 158px !important;
-    width:158px !important;
-    min-width:158px !important;
-    max-width:158px !important;
+    flex:0 0 156px !important;
+    width:156px !important;
+    min-width:156px !important;
+    max-width:156px !important;
   }
 }
 </style>
@@ -15825,9 +15887,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 <style id="dogana-footer-layout-final-v2">
 /* === FOOTER FINALE: copyright centro, versione destra === */
-.appFooter{
-  position:relative !important;
-}
+.appFooter{ position:relative !important; }
 .appFooterMeta{
   margin-left:auto !important;
   justify-content:flex-end !important;
@@ -15847,9 +15907,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   z-index:2 !important;
 }
 @media (max-width:900px){
-  .appFooter{
-    align-items:flex-start !important;
-  }
+  .appFooter{ align-items:flex-start !important; }
   .appFooterMeta{
     width:100% !important;
     min-width:0 !important;
@@ -15879,5 +15937,155 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 }
 </style>
 
+
+<style id="dogana-topnav-uniform-final-v2">
+/* === BARRA SUPERIORE MODULI - compatta, uniforme e leggibile === */
+.appTopBar{ gap:14px !important; align-items:center !important; }
+.appQuickNav{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:7px !important;
+  flex-wrap:wrap !important;
+}
+.appQuickNav > a,
+.appQuickNav > button{
+  flex:0 0 auto !important;
+  width:auto !important;
+  min-width:104px !important;
+  max-width:174px !important;
+  height:38px !important;
+  min-height:38px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  padding:0 13px !important;
+  border-radius:13px !important;
+  border:1px solid var(--btn-border) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  color:var(--heading) !important;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  font-size:12px !important;
+  font-weight:850 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+  text-align:center !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.04) !important;
+  transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease !important;
+  appearance:none !important;
+}
+.appQuickNav > a[href="#extraPanel"]{ min-width:142px !important; }
+.appQuickNav .appSessionSync{
+  min-width:118px !important;
+  max-width:184px !important;
+  justify-content:center !important;
+}
+.appQuickNav > a:hover,
+.appQuickNav > button:hover{
+  transform:translateY(-1px) !important;
+  border-color:color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%) !important;
+  box-shadow:0 7px 16px rgba(15,23,42,.07) !important;
+}
+.appQuickNav > a:active,
+.appQuickNav > button:active{
+  transform:translateY(0) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.045) !important;
+}
+.appQuickNav > a:focus-visible,
+.appQuickNav > button:focus-visible{
+  outline:none !important;
+  border-color:color-mix(in srgb, var(--accent) 55%, var(--btn-border)) !important;
+  box-shadow:0 0 0 4px rgba(37,99,235,.12) !important;
+}
+.appQuickNav .appSessionSync #doganaMenuSessionName{
+  min-width:0 !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  white-space:nowrap !important;
+}
+.appQuickNav .appSessionDot{
+  width:8px !important;
+  height:8px !important;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--session-color) 16%, transparent) !important;
+}
+@media (max-width:1100px){
+  .appTopBar{ align-items:flex-start !important; flex-direction:column !important; }
+  .appQuickNav{ width:100% !important; justify-content:flex-start !important; }
+}
+@media (max-width:700px){
+  .appQuickNav{
+    flex-wrap:nowrap !important;
+    overflow-x:auto !important;
+    -webkit-overflow-scrolling:touch !important;
+    padding-bottom:4px !important;
+  }
+  .appQuickNav > a,
+  .appQuickNav > button,
+  .appQuickNav .appMenuSettingsBtn,
+  .appQuickNav .appSessionSync{
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:112px !important;
+    max-width:174px !important;
+  }
+  .appQuickNav > a[href="#extraPanel"]{ min-width:142px !important; }
+}
+</style>
+
+
+<style id="dogana-extra-toolbar-final-no-backend">
+/* === RICERCA CONTENITORI: niente backend pill, Riduci a icona in alto === */
+#extraLiveBadge,
+.extraLiveBadge,
+.backendStatusBadge,
+.extraPanel #extraLiveBadge,
+.extraPanel .extraLiveBadge,
+.extraPanel .backendStatusBadge,
+#extraLiveBadge *,
+.extraLiveBadge *,
+.backendStatusBadge *{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
+.extraPanel .extraTopToolbar,
+#extraPanel .extraTopToolbar{
+  align-items:center !important;
+  row-gap:8px !important;
+}
+.extraPanel .extraTopToolbar .autoCheckSwitch{ order:10 !important; }
+.extraPanel .extraTopToolbar #extraAutoSingleButton{ order:10 !important; }
+.extraPanel .extraTopToolbar #extraSoundNotifyBtn{ order:20 !important; }
+.extraPanel .extraTopToolbar #jmtReconnectBtn{ order:30 !important; }
+.extraPanel .extraTopToolbar #extraCheckNowBtn{ order:40 !important; }
+.extraPanel .extraTopToolbar #minimizeExtraBtn{
+  order:45 !important;
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+.extraPanel .extraTopToolbar #copyExtraColumnBtn{ order:60 !important; }
+.extraPanel .extraTopToolbar #exportExtraPdfBtn{ order:70 !important; }
+.extraPanel .extraTopToolbar #downloadAllExtraPdfsBtn{ order:80 !important; }
+.extraPanel .extraTopToolbar #addExtraRowBtn{ order:90 !important; }
+.extraPanel .extraTopToolbar #addExtra10Btn{ order:100 !important; }
+.extraPanel .extraTopToolbar #clearExtraBtn{ order:110 !important; }
+</style>
 </body>
 </html>
