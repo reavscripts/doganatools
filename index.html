@@ -6322,7 +6322,7 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="operativeChecklistHead">
     <div>
       <div class="operativeChecklistTitle">Checklist Operativa</div>
-      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
+      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni. I task completati restano barrati e vengono rimossi gradualmente quando la lista cresce.</div>
     </div>
     <div class="operativeChecklistActions">
       <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
@@ -16282,6 +16282,106 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   .shipPanel #shipQuickSearch button{
     width:100% !important;
   }
+}
+</style>
+
+
+
+<style id="dogana-square-pills-final">
+/* === PILLS SQUADRATE UNIFORMI === */
+:root{
+  --dogana-square-pill-radius:10px;
+  --dogana-square-pill-radius-inner:7px;
+}
+
+/* Terminal Previsione Navi + Terminal Ricerca Contenitori */
+.shipPanel .shipTab,
+.extraPanel .extraTab,
+button.shipTab,
+button.extraTab{
+  border-radius:var(--dogana-square-pill-radius) !important;
+}
+
+.shipPanel .shipTab:not(.active),
+.extraPanel .extraTab:not(.active){
+  background:var(--surface) !important;
+  border-color:var(--btn-border) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
+}
+
+.shipPanel .shipTab.active,
+.extraPanel .extraTab.active{
+  border-radius:var(--dogana-square-pill-radius) !important;
+  background:linear-gradient(180deg, #3374f0, #2563eb) !important;
+  border-color:#2563eb !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+.shipPanel .shipTabCount,
+.extraPanel .extraTabCount{
+  border-radius:var(--dogana-square-pill-radius-inner) !important;
+}
+
+/* Checklist Operativa: task aperti/completati */
+.operativeChecklistStats{
+  border-radius:var(--dogana-square-pill-radius) !important;
+  background:var(--surface) !important;
+  border-color:var(--btn-border) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
+}
+
+/* Console: stato Connessa/Disconnessa */
+.serverConsoleStatus{
+  border-radius:var(--dogana-square-pill-radius) !important;
+  background:var(--surface) !important;
+  border-color:var(--btn-border) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
+}
+
+/* Footer: copyright e versione */
+.appFooterPill,
+.appFooterCopyright,
+.appFooterVersion{
+  border-radius:var(--dogana-square-pill-radius) !important;
+  background:var(--surface) !important;
+  border-color:var(--btn-border) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
+}
+
+.appFooterPill.appFooterVersion:hover{
+  border-color:color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
+  box-shadow:0 8px 18px rgba(15,23,42,.06) !important;
+}
+</style>
+
+
+
+<style id="dogana-ship-secondary-pills-square-final">
+/* === PREVISIONE NAVI: badge riepilogo e terminali squadrati === */
+.shipPanel .shipBadge,
+.shipPanel .shipClosingTerminal,
+.shipPanel .shipClosingTerminalPill,
+.shipPanel .shipSearchHitTerminal,
+.shipPanel .shipClosingWindow,
+.shipPanel .shipClosingBadge,
+.shipPanel .shipSearchBadge,
+.shipPanel .shipStatus{
+  border-radius:var(--dogana-square-pill-radius, 10px) !important;
+}
+
+.shipPanel .shipBadge{
+  background:var(--surface) !important;
+  border-color:var(--btn-border) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
+}
+
+.shipPanel .shipClosingTerminal,
+.shipPanel .shipClosingTerminalPill,
+.shipPanel .shipSearchHitTerminal{
+  border:1px solid color-mix(in srgb, var(--accent) 22%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--accent) 12%, var(--surface)) !important;
+  color:var(--accent) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
 }
 </style>
 
