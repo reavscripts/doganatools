@@ -6235,8 +6235,6 @@ document.addEventListener("DOMContentLoaded", () => {
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
     <a class="appFooterPill appFooterVersion" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Apri gli ultimi commit su GitHub"><span class="appFooterDot"></span> Versione <strong>v2026.06.21</strong></a>
-    <span class="appFooterPill"><span class="appFooterDot green"></span> Autosave <strong>ON</strong></span>
-    <span class="appFooterPill">Console <a class="appFooterLink" href="#serverConsolePanel">server.js</a></span>
   </div>
 </footer>
 </section>
@@ -15464,6 +15462,60 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   setInterval(loadChecklist, 15000);
 })();
 </script>
+
+
+<style id="dogana-footer-layout-final">
+/* === FOOTER FINALE: brand sinistra, copyright centro, versione destra === */
+.appFooter{
+  position:relative !important;
+}
+.appFooterMeta{
+  margin-left:auto !important;
+  justify-content:flex-end !important;
+}
+.appFooterCopyright{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  transform:translate(-50%, -50%) !important;
+  width:auto !important;
+  order:0 !important;
+  z-index:1 !important;
+}
+.appFooterVersion{
+  margin-left:auto !important;
+  z-index:2 !important;
+}
+@media (max-width:900px){
+  .appFooter{
+    align-items:flex-start !important;
+  }
+  .appFooterMeta{
+    width:100% !important;
+    justify-content:space-between !important;
+  }
+  .appFooterCopyright{
+    position:static !important;
+    transform:none !important;
+    order:1 !important;
+  }
+  .appFooterVersion{
+    order:2 !important;
+    margin-left:auto !important;
+  }
+}
+@media (max-width:640px){
+  .appFooterMeta{
+    justify-content:center !important;
+  }
+  .appFooterCopyright,
+  .appFooterVersion{
+    width:100% !important;
+    justify-content:center !important;
+    margin-left:0 !important;
+  }
+}
+</style>
 
 </body>
 </html>
