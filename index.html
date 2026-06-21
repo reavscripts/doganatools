@@ -1883,7 +1883,7 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 .sctBookingPanel[open] summary::after{ transform:rotate(180deg); }
 .sctBookingForm{
   display:grid;
-  grid-template-columns:minmax(150px, 180px) minmax(150px, 190px) minmax(220px, 1fr) auto auto;
+  grid-template-columns:minmax(240px, 1fr) auto auto;
   gap:8px;
   align-items:center;
   padding:0 14px 14px;
@@ -1898,20 +1898,6 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   font-weight:800;
 }
 
-.bookingProviderSelect,
-.bookingCountrySelect{
-  cursor:pointer;
-  appearance:auto;
-}
-.bookingCountrySelect.is-hidden{
-  display:none;
-}
-.bookingLookupForm:not(.is-akkon){
-  grid-template-columns:minmax(150px, 180px) minmax(220px, 1fr) auto auto;
-}
-.bookingLookupForm:not(.is-akkon) .bookingCountrySelect{
-  display:none;
-}
 
 .sctBookingStatus{
   grid-column:1 / -1;
@@ -2160,6 +2146,53 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   .extraCheckInfoBar{ grid-template-columns:1fr; }
   .extraCheckInfoText{ white-space:normal; }
 }
+
+.extraEmptyCell{
+  padding:14px !important;
+  background:var(--surface) !important;
+}
+.extraEmptyCompact{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  padding:14px 16px;
+  border:1px dashed var(--grid);
+  border-radius:12px;
+  background:var(--hint-bg);
+  color:var(--muted);
+  text-align:left;
+}
+.extraEmptyCompactText{
+  min-width:220px;
+  font-size:12px;
+  line-height:1.4;
+  font-weight:750;
+}
+.extraEmptyCompactText strong{
+  display:block;
+  margin-bottom:2px;
+  color:var(--heading);
+  font-size:13px;
+  font-weight:950;
+}
+.extraEmptyCompactActions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.extraEmptyCompactActions button{
+  padding:8px 11px;
+  border-radius:10px;
+  font-size:12px;
+}
+@media (max-width:700px){
+  .extraEmptyCompact{ align-items:flex-start; }
+  .extraEmptyCompactActions{ width:100%; }
+}
+
 #extraTable{ min-width:760px !important; }
 #extraTable th:nth-child(1), #extraTable td:nth-child(1){ width:64px; }
 #extraTable th:nth-child(2), #extraTable td:nth-child(2){ width:210px; }
@@ -5665,7 +5698,7 @@ if (window.pdfjsLib) {
       ["copia container", "Copia container"],
       ["pdf lista contenitori", "PDF lista container"],
       ["pdf lista container", "PDF lista container"],
-      ["scarica zip pdf trovati", "Scarica ZIP PDF trovati"],
+      ["scarica zip pdf trovati", "Scarica ZIP"],
       ["aggiungi riga", "+ Aggiungi riga"],
       ["+ aggiungi riga", "+ Aggiungi riga"],
       ["+10 righe", "+10 righe"],
@@ -5877,6 +5910,249 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 </script>
+
+<style id="booking-standalone-module-final">
+/* === RICERCA BOOKING - modulo separato sotto Ricerca Contenitori === */
+.bookingStandalonePanel.sctBookingPanel{
+  display:block !important;
+  width:calc(100% - 32px) !important;
+  max-width:none !important;
+  margin:18px auto !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+.bookingStandalonePanel .bookingModuleHead{
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  padding:14px 16px !important;
+  border-bottom:1px solid var(--grid-soft) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.bookingStandalonePanel .bookingModuleTitle{
+  margin:0 !important;
+  color:var(--heading) !important;
+  font-size:15px !important;
+}
+
+.bookingStandalonePanel .bookingModuleSubtitle{
+  margin-top:4px !important;
+  color:var(--muted) !important;
+  font-size:12px !important;
+  text-transform:none !important;
+  letter-spacing:0 !important;
+  font-weight:600 !important;
+}
+
+.bookingStandalonePanel .bookingModuleBody{
+  display:grid !important;
+  grid-template-columns:minmax(240px, 1fr) auto auto !important;
+  gap:8px !important;
+  align-items:center !important;
+  padding:14px 16px 16px !important;
+  border-top:0 !important;
+}
+
+.bookingStandalonePanel .sctBookingInput{
+  min-height:42px !important;
+  border-radius:10px !important;
+}
+
+.bookingStandalonePanel .bookingLookupResult{
+  margin-top:4px !important;
+}
+
+@media (max-width:700px){
+  .bookingStandalonePanel.sctBookingPanel{
+    width:100% !important;
+    margin:16px 0 !important;
+  }
+  .bookingStandalonePanel .bookingModuleHead{
+    padding:12px !important;
+  }
+  .bookingStandalonePanel .bookingModuleBody{
+    grid-template-columns:1fr !important;
+    padding:12px !important;
+  }
+  .bookingStandalonePanel .bookingModuleBody button,
+  .bookingStandalonePanel .sctBookingInput{
+    width:100% !important;
+  }
+}
+</style>
+
+
+<style id="booking-standalone-minimize-final">
+/* === RICERCA BOOKING - riduci/mostra modulo === */
+.bookingStandalonePanel .bookingModuleActions{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:8px !important;
+  flex:0 0 auto !important;
+}
+
+.bookingStandalonePanel.is-minimized,
+.bookingStandalonePanel.minimized{
+  width:calc(100% - 32px) !important;
+  max-width:none !important;
+  min-width:0 !important;
+  display:block !important;
+  margin:16px auto !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border-radius:20px !important;
+  border:1px solid color-mix(in srgb, var(--grid) 75%, transparent) !important;
+  background:var(--panel) !important;
+  box-shadow:var(--shadow) !important;
+}
+
+.bookingStandalonePanel.is-minimized .bookingModuleHead,
+.bookingStandalonePanel.minimized .bookingModuleHead{
+  display:flex !important;
+  flex-direction:row !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  flex-wrap:nowrap !important;
+  gap:12px !important;
+  width:100% !important;
+  min-height:58px !important;
+  padding:12px 16px !important;
+  margin:0 !important;
+  border-bottom:0 !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+.bookingStandalonePanel.is-minimized .bookingModuleBody,
+.bookingStandalonePanel.minimized .bookingModuleBody{
+  display:none !important;
+}
+
+.bookingStandalonePanel.is-minimized .bookingModuleTitleWrap,
+.bookingStandalonePanel.minimized .bookingModuleTitleWrap{
+  min-width:0 !important;
+  overflow:hidden !important;
+}
+
+.bookingStandalonePanel.is-minimized .bookingModuleSubtitle,
+.bookingStandalonePanel.minimized .bookingModuleSubtitle{
+  display:none !important;
+}
+
+.bookingStandalonePanel.is-minimized .bookingModuleTitle,
+.bookingStandalonePanel.minimized .bookingModuleTitle{
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn{
+  flex:0 0 auto !important;
+  white-space:nowrap !important;
+}
+
+@media (max-width:700px){
+  .bookingStandalonePanel .bookingModuleHead,
+  .bookingStandalonePanel.is-minimized .bookingModuleHead,
+  .bookingStandalonePanel.minimized .bookingModuleHead{
+    align-items:center !important;
+    flex-direction:row !important;
+    flex-wrap:nowrap !important;
+    padding:10px 12px !important;
+  }
+  .bookingStandalonePanel .bookingModuleActions{
+    margin-left:auto !important;
+  }
+  .bookingStandalonePanel #minimizeBookingLookupBtn{
+    width:auto !important;
+    padding:9px 11px !important;
+  }
+}
+</style>
+
+
+<style id="booking-minimize-button-uniform-final">
+/* === RICERCA BOOKING - pulsante riduci/mostra uguale agli altri moduli === */
+.bookingStandalonePanel #minimizeBookingLookupBtn,
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn{
+  min-width:auto !important;
+  width:auto !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:8px 13px !important;
+  border-radius:11px !important;
+  border:1px solid var(--btn-border) !important;
+  background:var(--tbody-bg) !important;
+  color:var(--text) !important;
+  font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial !important;
+  font-size:12px !important;
+  font-weight:700 !important;
+  line-height:1 !important;
+  letter-spacing:0 !important;
+  white-space:nowrap !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 auto !important;
+  box-shadow:0 1px 0 rgba(255,255,255,.9), 0 3px 10px rgba(15,23,42,.03) !important;
+}
+
+.bookingStandalonePanel #minimizeBookingLookupBtn:hover{
+  transform:translateY(-1px) !important;
+  border-color:#c4d2e4 !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+.bookingStandalonePanel #minimizeBookingLookupBtn:active{
+  transform:translateY(0) !important;
+}
+
+body[data-theme="dark"] .bookingStandalonePanel #minimizeBookingLookupBtn,
+body[data-theme="dark"] .bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn,
+body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookupBtn{
+  border-color:var(--btn-border) !important;
+  background:var(--btn-bg) !important;
+  color:var(--btn-text) !important;
+  box-shadow:none !important;
+}
+</style>
+
+
+<style id="booking-input-font-spacing-final">
+/* === RICERCA BOOKING - font e spaziatura input uniformi alla ricerca navi === */
+.bookingStandalonePanel #bookingLookupInput,
+.bookingStandalonePanel #bookingLookupInput::placeholder,
+.bookingStandalonePanel .sctBookingInput,
+.bookingStandalonePanel .sctBookingInput::placeholder{
+  font-family:var(--font) !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+  line-height:1.15 !important;
+}
+
+.bookingStandalonePanel #bookingLookupInput,
+.bookingStandalonePanel .sctBookingInput{
+  font-size:12px !important;
+}
+
+.bookingStandalonePanel #bookingLookupInput::placeholder,
+.bookingStandalonePanel .sctBookingInput::placeholder{
+  color:var(--muted) !important;
+  opacity:.88 !important;
+}
+</style>
+
 </head>
 <body>
 <div class="wrap">
@@ -5890,14 +6166,15 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
-    <a href="#dogana-section">Tabella</a>
-    <a href="#navi-section">Previsione Navi</a>
-    <a href="#extraPanel" data-jump-focus="#extraTable input">Ricerca Contenitori</a>
-    <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
-    <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">⚙ Impostazioni</button>
+    <a href="#dogana-section">TABELLA</a>
+    <a href="#navi-section">NAVI</a>
+    <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
+    <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
+    <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">CHECKLIST</a>
+    <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn">IMPOSTAZIONI</button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
-      <span id="doganaMenuSessionName">Sessione</span>
+      <span id="doganaMenuSessionName">NOME-SESSIONE</span>
     </button>
   </nav>
 </div>
@@ -5913,7 +6190,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="doganaTitleSeparator" aria-hidden="true"></span>
     </div>
     <div class="left doganaTopButtons">
-      <button id="mergeBtn">Unisci stessa descrizione</button>
+      <button id="mergeBtn">Unisci le voci</button>
       <button id="sortValueBtn">Ordina per valore fattura ↓</button>
       <button id="copyColumnBtn">Copia colonna</button>	  
       <button id="exportPdfBtn">Esporta PDF</button>
@@ -6227,11 +6504,11 @@ document.addEventListener("DOMContentLoaded", () => {
       </label>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
       <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
-      <button id="extraCheckNowBtn" type="button">Controlla ora</button>
+      <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button">Controlla ora</button>
       <button id="minimizeExtraBtn" type="button">Riduci a icona</button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
-      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP PDF trovati</button>
+      <button class="success" id="downloadAllExtraPdfsBtn" type="button">Scarica ZIP</button>
       <button class="primary" id="addExtraRowBtn">+ Aggiungi riga</button>
       <button class="success" id="addExtra10Btn">+10 righe</button>
       <button class="danger" id="clearExtraBtn">Svuota sezione</button>
@@ -6250,7 +6527,7 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
       <div class="extraCheckInfoItem">
         <span class="extraCheckInfoDot wait" id="extraNextCheckDot"></span>
-        <span class="extraCheckInfoText">Prossimo: <strong id="extraNextCheckText">automatico disattivato</strong></span>
+        <span class="extraCheckInfoText">Prossimo: <strong id="extraNextCheckText">disattivato</strong></span>
       </div>
       <div class="extraCheckInfoItem">
         <span class="extraCheckInfoDot ok"></span>
@@ -6260,45 +6537,6 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 
   <div class="extraContent" id="extraContent">
-    <details class="sctBookingPanel is-visible" id="bookingLookupPanel">
-      <summary>Ricerca booking</summary>
-      <div class="sctBookingForm bookingLookupForm">
-        <select class="sctBookingInput bookingProviderSelect" id="bookingProviderSelect" aria-label="Sito ricerca booking">
-          <option value="sct" selected>SCT / JMT</option>
-          <option value="hapag">HAPAG-LLOYD</option>
-          <option value="akkon">AKKONLINES</option>
-          <option value="cma">CMA CGM</option>
-        </select>
-        <select class="sctBookingInput bookingCountrySelect" id="bookingCountrySelect" aria-label="Country AKKONLINES">
-          <option value="TURKEY|SBOAKKON">TURKEY</option>
-          <option value="ALGERIA|SBOAKKONALGERIA">ALGERIA</option>
-          <option value="BELGIUM|SBOAKKONBELGIUM">BELGIUM</option>
-          <option value="BULGARIA|SBOAKKONBULGARIA">BULGARIA</option>
-          <option value="CHINA|SBOAKKONCHINA">CHINA</option>
-          <option value="DJIBOUTI|SBOAKKON">DJIBOUTI</option>
-          <option value="IBERIA / SPAIN|SBOIBERIALIVE">IBERIA / SPAIN</option>
-          <option value="INDIA|AKKONINDIAINT">INDIA</option>
-          <option value="ITALY|SBOAKKONITALY" selected>ITALY</option>
-          <option value="JORDAN|SBOAKKON">JORDAN</option>
-          <option value="KENYA|SBOAKKON">KENYA</option>
-          <option value="LIBYA|SBOAKKON">LIBYA</option>
-          <option value="MOROCCO|SBOAKKONMOROCCO">MOROCCO</option>
-          <option value="PAKISTAN|SBOAKKON">PAKISTAN</option>
-          <option value="ROMANIA|SBOAKKONROMANIA">ROMANIA</option>
-          <option value="SAUDI ARABIA|SBOAKKON">SAUDI ARABIA</option>
-          <option value="TANZANIA|SBOAKKON">TANZANIA</option>
-          <option value="TUNISIA|SBOAKKONTUNISIA">TUNISIA</option>
-          <option value="UKRAINE|SBOAKKONUKRAINE">UKRAINE</option>
-          <option value="UNITED ARAB EMIRATES|SBOAKKON">UNITED ARAB EMIRATES</option>
-          <option value="UNITED KINGDOM|SBOAKKONUK">UNITED KINGDOM</option>
-        </select>
-        <input class="sctBookingInput" id="bookingLookupInput" type="text" inputmode="text" placeholder="INSERISCI NUMERO BOOKING" autocomplete="off" />
-        <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
-        <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri risultato</button>
-        <div class="sctBookingStatus" id="bookingLookupStatus">Scegli il sito e inserisci il booking da controllare.</div>
-        <div class="bookingLookupResult" id="bookingLookupResult" aria-live="polite"></div>
-      </div>
-    </details>
     <div class="miniWrap">
       <table class="miniTable" id="extraTable">
         <thead id="extraThead"></thead>
@@ -6306,11 +6544,10 @@ document.addEventListener("DOMContentLoaded", () => {
       </table>
     </div>
     <div class="extraBottomToolbar">
-      <span class="extraAutoStatus" id="extraAutoStatus">Controllo automatico disattivato.</span>
-      <button id="jmtReconnectBtnBottom" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
+      <span class="extraAutoStatus" id="extraAutoStatus">disattivato.</span>
       <button id="copyExtraColumnBtnBottom" type="button">Copia container</button>
       <button id="exportExtraPdfBtnBottom" type="button">PDF lista container</button>
-      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP PDF trovati</button>
+      <button class="success" id="downloadAllExtraPdfsBtnBottom" type="button">Scarica ZIP</button>
       <button class="primary" id="addExtraRowBtnBottom" type="button">+ Aggiungi riga</button>
       <button class="success" id="addExtra10BtnBottom" type="button">+10 righe</button>
       <button class="danger" id="clearExtraBtnBottom" type="button">Svuota sezione</button>
@@ -6318,11 +6555,30 @@ document.addEventListener("DOMContentLoaded", () => {
   </div>
 </div>
 
+<section class="miniPanel sctBookingPanel bookingStandalonePanel sectionJumpTarget is-visible" id="bookingLookupPanel" aria-label="Ricerca booking SCT">
+  <div class="bookingModuleHead">
+    <div class="bookingModuleTitleWrap">
+      <div class="miniTitle bookingModuleTitle">Ricerca Booking SCT</div>
+      <div class="bookingModuleSubtitle">Usa la stessa sessione JMT/SCT già collegata.</div>
+    </div>
+    <div class="bookingModuleActions">
+      <button id="minimizeBookingLookupBtn" type="button" aria-expanded="true">Riduci a icona</button>
+    </div>
+  </div>
+  <div class="sctBookingForm bookingLookupForm bookingModuleBody">
+    <input class="sctBookingInput" id="bookingLookupInput" type="text" inputmode="text" placeholder="INSERISCI NUMERO BOOKING SCT" autocomplete="off" />
+    <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
+    <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri PDF</button>
+    <div class="sctBookingStatus" id="bookingLookupStatus">Inserisci il booking SCT da controllare tramite JMT.</div>
+    <div class="bookingLookupResult" id="bookingLookupResult" aria-live="polite"></div>
+  </div>
+</section>
+
 <section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
   <div class="operativeChecklistHead">
     <div>
       <div class="operativeChecklistTitle">Checklist Operativa</div>
-      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni. I task completati restano barrati e vengono rimossi gradualmente quando la lista cresce.</div>
+      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
     </div>
     <div class="operativeChecklistActions">
       <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
@@ -6805,8 +7061,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const btn = document.getElementById("sortValueBtn");
       if (!btn) return;
       btn.textContent = sortValueDescending
-        ? "Ordina per valore fattura ↓"
-        : "Ordina per valore fattura ↑";
+        ? "Ordina per valore ↓"
+        : "Ordina per valore ↑";
     }
 
     function sortRowsByInvoiceValue(){
@@ -7819,7 +8075,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
     const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
     const jmtReconnectBtn = document.getElementById("jmtReconnectBtn");
-    const jmtReconnectBtnBottom = document.getElementById("jmtReconnectBtnBottom");
     const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
@@ -7833,8 +8088,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const downloadAllExtraPdfsBtn = document.getElementById("downloadAllExtraPdfsBtn");
     const downloadAllExtraPdfsBtnBottom = document.getElementById("downloadAllExtraPdfsBtnBottom");
     const bookingLookupPanel = document.getElementById("bookingLookupPanel");
-    const bookingProviderSelect = document.getElementById("bookingProviderSelect");
-    const bookingCountrySelect = document.getElementById("bookingCountrySelect");
+    const minimizeBookingLookupBtn = document.getElementById("minimizeBookingLookupBtn");
     const bookingLookupInput = document.getElementById("bookingLookupInput");
     const bookingLookupSearchBtn = document.getElementById("bookingLookupSearchBtn");
     const bookingLookupOpenBtn = document.getElementById("bookingLookupOpenBtn");
@@ -8679,9 +8933,22 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!visibleEntries.length) {
         const tr = document.createElement("tr");
         const td = document.createElement("td");
+        const terminalLabel = cfg.label || "TERMINAL";
         td.colSpan = 5;
-        td.className = "shipEmpty";
-        td.textContent = "Nessuna riga presente. Usa “+ Aggiungi riga”.";
+        td.className = "extraEmptyCell";
+        td.innerHTML = `
+          <div class="extraEmptyCompact" role="status" aria-live="polite">
+            <div class="extraEmptyCompactText">
+              <strong>Nessun container inserito</strong>
+              ${terminalLabel}: aggiungi una riga per iniziare.
+            </div>
+            <div class="extraEmptyCompactActions">
+              <button class="primary" type="button" data-extra-empty-add="1">+ Riga</button>
+              <button type="button" data-extra-empty-add="10">+10 righe</button>
+            </div>
+          </div>`;
+        td.querySelector('[data-extra-empty-add="1"]')?.addEventListener("click", () => addExtraRows(1, true));
+        td.querySelector('[data-extra-empty-add="10"]')?.addEventListener("click", () => addExtraRows(10, true));
         tr.appendChild(td);
         extraTbody.appendChild(tr);
         updateExtraTabs();
@@ -8929,12 +9196,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return String(value || "").trim().toUpperCase().replace(/[^A-Z0-9_-]/g, "");
     }
 
-    function getBookingProviderLabel(provider){
-      if (provider === "hapag") return "HAPAG-LLOYD";
-      if (provider === "akkon") return "AKKONLINES";
-      if (provider === "cma") return "CMA CGM";
-      return "SCT";
-    }
 
     function setBookingLookupStatus(message, type = ""){
       if (!bookingLookupStatus) return;
@@ -8949,94 +9210,23 @@ document.addEventListener("DOMContentLoaded", () => {
       bookingLookupResult.innerHTML = "";
     }
 
-    function escapeBookingLookupHtml(value){
-      return String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
-
-    function pickBookingValue(row, keys){
-      if (!row || typeof row !== "object") return "";
-      for (const key of keys) {
-        const value = row[key];
-        if (value != null && String(value).trim()) return String(value).trim();
-      }
-      return "";
-    }
-
-    function renderBookingLookupTable(title, subtitle, rows, preferredColumns = []){
-      if (!bookingLookupResult) return;
-      const safeRows = Array.isArray(rows) ? rows : [];
-      const colSet = new Set(preferredColumns.filter(Boolean));
-      safeRows.forEach(row => Object.keys(row || {}).forEach(key => colSet.add(key)));
-      const columns = Array.from(colSet).filter(key => safeRows.some(row => String(row?.[key] ?? "").trim()));
-
-      const first = safeRows[0] || {};
-      const allContainers = Array.from(new Set(safeRows
-        .map(row => pickBookingValue(row, ["Nr contenitore", "Container No", "Container", "ContainerReference", "Container reference", "containerReference"]))
-        .filter(Boolean)));
-      const cards = [
-        ["Booking / BL", pickBookingValue(first, ["Akkon BL No", "Booking reference", "Booking", "BL", "Shipment Ref", "Reference", "reference"])],
-        [allContainers.length > 1 ? "Nr contenitori" : "Nr contenitore", allContainers.length ? allContainers.join(", ") : pickBookingValue(first, ["Nr contenitore", "Container No", "Container", "ContainerReference", "Container reference", "containerReference"])],
-        ["Nave / Voyage", [
-          pickBookingValue(first, ["Vessel Name", "Vessel", "vesselName", "Vessel name"]),
-          pickBookingValue(first, ["Voyage", "voyageReference", "Voyage reference"])
-        ].filter(Boolean).join(" / ")],
-        ["ETA", pickBookingValue(first, ["ETA", "Final ETA", "ETA POD", "Estimated arrival", "EstimatedTimeOfArrival"])]
-      ].filter(([, value]) => value);
-
-      bookingLookupResult.innerHTML = `
-        <div class="bookingLookupResultHead">
-          <div class="bookingLookupResultTitle">
-            <strong>${escapeBookingLookupHtml(title)}</strong>
-            <span>${escapeBookingLookupHtml(subtitle || "")}</span>
-          </div>
-        </div>
-        ${cards.length ? `<div class="bookingLookupCards">${cards.map(([label, value]) => `
-          <div class="bookingLookupCard"><span>${escapeBookingLookupHtml(label)}</span><strong title="${escapeBookingLookupHtml(value)}">${escapeBookingLookupHtml(value)}</strong></div>
-        `).join("")}</div>` : ""}
-        ${safeRows.length && columns.length ? `<div class="bookingLookupTableWrap"><table class="bookingLookupTable"><thead><tr>${columns.map(col => `<th>${escapeBookingLookupHtml(col)}</th>`).join("")}</tr></thead><tbody>${safeRows.map(row => `<tr>${columns.map(col => `<td>${escapeBookingLookupHtml(row?.[col] ?? "")}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` : `<div class="bookingLookupEmpty">Nessun dettaglio tabellare disponibile.</div>`}
-      `;
-      bookingLookupResult.classList.add("is-visible");
-    }
-
-    function updateBookingProviderUi(){
-      const provider = bookingProviderSelect?.value || "sct";
-      const form = bookingLookupPanel?.querySelector(".bookingLookupForm");
-      form?.classList.toggle("is-akkon", provider === "akkon");
+    function updateBookingLookupUi(){
       clearBookingLookupResult();
 
       if (bookingLookupInput) {
-        bookingLookupInput.placeholder = provider === "sct"
-          ? "INSERISCI NUMERO BOOKING SCT"
-          : provider === "hapag"
-            ? "INSERISCI BOOKING HAPAG-LLOYD"
-            : provider === "cma"
-              ? "INSERISCI BOOKING / CONTAINER CMA CGM"
-              : "INSERISCI BL/BOOKING AKKONLINES";
+        bookingLookupInput.placeholder = "INSERISCI NUMERO BOOKING SCT";
       }
 
       bookingLookupResultUrl = "";
       if (bookingLookupOpenBtn) {
         bookingLookupOpenBtn.disabled = true;
-        bookingLookupOpenBtn.textContent = provider === "sct" ? "Apri PDF" : "Apri risultato";
+        bookingLookupOpenBtn.textContent = "Apri PDF";
       }
 
-      const msg = provider === "sct"
-        ? "Usa la stessa sessione JMT/SCT già collegata."
-        : provider === "hapag"
-          ? "Controllo booking HAPAG-LLOYD: apre il tracking ufficiale con il booking inserito."
-          : provider === "cma"
-            ? "Controllo CMA CGM: cerca booking/container e mostra i dettagli direttamente qui sotto."
-            : "Controllo AKKONLINES: usa Italy come country predefinito, modificabile dal menu.";
-      setBookingLookupStatus(msg);
+      setBookingLookupStatus("");
     }
 
     async function searchBookingLookup(){
-      const provider = bookingProviderSelect?.value || "sct";
       const booking = normalizeBookingLookupValue(bookingLookupInput?.value || "");
       if (bookingLookupInput && bookingLookupInput.value !== booking) bookingLookupInput.value = booking;
 
@@ -9045,7 +9235,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
 
       if (!booking) {
-        setBookingLookupStatus(`Inserisci un numero booking ${getBookingProviderLabel(provider)}.`, "error");
+        setBookingLookupStatus("Inserisci un numero booking SCT.", "error");
         return;
       }
 
@@ -9054,21 +9244,10 @@ document.addEventListener("DOMContentLoaded", () => {
         bookingLookupSearchBtn.textContent = "Cerco...";
       }
 
-      const providerLabel = getBookingProviderLabel(provider);
-      setBookingLookupStatus(`Cerco booking su ${providerLabel}...`);
+      setBookingLookupStatus("Cerco booking su SCT...");
 
       try {
-        let endpoint = "";
-        if (provider === "sct") {
-          endpoint = `/api/get-sct-booking-pdf?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
-        } else if (provider === "hapag") {
-          endpoint = `/api/get-hapag-booking?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
-        } else if (provider === "cma") {
-          endpoint = `/api/get-cma-booking?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
-        } else {
-          const country = bookingCountrySelect?.value || "ITALY|SBOAKKONITALY";
-          endpoint = `/api/get-akkon-booking?booking=${encodeURIComponent(booking)}&country=${encodeURIComponent(country)}&_=${Date.now()}`;
-        }
+        const endpoint = `/api/get-sct-booking-pdf?booking=${encodeURIComponent(booking)}&_=${Date.now()}`;
 
         const response = await fetch(apiUrl(endpoint), {
           method: "GET",
@@ -9080,7 +9259,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await response.json().catch(() => null);
 
-        if (provider === "sct" && (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired)) {
+        if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
           showJmtDisconnectedMessage(`booking ${booking}`);
           return;
         }
@@ -9089,79 +9268,24 @@ document.addEventListener("DOMContentLoaded", () => {
           throw new Error(data?.error || `Booking non trovato o servizio non disponibile (${response.status})`);
         }
 
-        if (provider === "sct") {
-          bookingLookupResultUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
-          if (!bookingLookupResultUrl) throw new Error("PDF booking SCT non trovato");
-          if (bookingLookupOpenBtn) {
-            bookingLookupOpenBtn.disabled = false;
-            bookingLookupOpenBtn.textContent = "Apri PDF";
-          }
-          setBookingLookupStatus(`PDF booking ${booking} pronto. Premi “Apri PDF”.`, "ok");
-        } else if (provider === "hapag") {
-          bookingLookupResultUrl = data.trackingUrl || data.url || "";
-          if (!bookingLookupResultUrl) throw new Error("Link HAPAG-LLOYD non generato");
-          if (bookingLookupOpenBtn) {
-            bookingLookupOpenBtn.disabled = false;
-            bookingLookupOpenBtn.textContent = "Apri tracking";
-          }
-          setBookingLookupStatus(`Tracking HAPAG-LLOYD pronto per booking ${booking}.`, "ok");
-        } else if (provider === "cma") {
-          bookingLookupResultUrl = data.trackingUrl || data.externalUrl || "https://www.cma-cgm.com/ebusiness/tracking";
-          const rows = Array.isArray(data.rows) ? data.rows : [];
-          const summary = data.summary || {};
-          if (bookingLookupOpenBtn) {
-            bookingLookupOpenBtn.disabled = false;
-            bookingLookupOpenBtn.textContent = "Apri CMA CGM";
-          }
-          const containers = Array.isArray(data.containers) ? data.containers.filter(Boolean) : [];
-          const displayRows = rows.length ? rows : (containers.length ? containers.map(container => ({ Reference: booking, "Nr contenitore": container })) : (Object.keys(summary).length ? [summary] : []));
-          renderBookingLookupTable(
-            `Risultato CMA CGM - ${booking}`,
-            containers.length
-              ? `Container trovati: ${containers.join(", ")}`
-              : (rows.length ? `${rows.length} evento/i tracking recuperati.` : (data.text || "Nessun dettaglio trovato.")),
-            displayRows,
-            ["Nr contenitore", "Status", "Location", "Terminal", "Date", "Time", "Vessel", "Voyage", "Mode", "POL", "POD", "ETA POD"]
-          );
-          setBookingLookupStatus(
-            containers.length || rows.length
-              ? `CMA CGM trovato: ${containers.length ? containers.join(", ") : (summary.container || booking)}${summary.pod ? " - POD " + summary.pod : ""}${summary.eta ? " - ETA " + summary.eta : ""}. Dettagli mostrati qui sotto.`
-              : `CMA CGM ha risposto ma non ha restituito dettagli per ${booking}.`,
-            (containers.length || rows.length) ? "ok" : "error"
-          );
-        } else {
-          bookingLookupResultUrl = data.externalUrl || "https://sap.akkonlines.com/index.aspx";
-          const rows = Array.isArray(data.rows) ? data.rows : [];
-          const first = rows[0] || {};
-          const vessel = first["Vessel Name"] || first.vesselName || "";
-          const voyage = first["Voyage"] || first.voyage || "";
-          const eta = first["ETA"] || first.eta || "";
-          if (bookingLookupOpenBtn) {
-            bookingLookupOpenBtn.disabled = false;
-            bookingLookupOpenBtn.textContent = "Apri AKKON";
-          }
-          renderBookingLookupTable(
-            `Risultato AKKONLINES - ${booking}`,
-            rows.length ? `${rows.length} riga/e recuperate da AKKON.` : (data.text || "Nessun dettaglio trovato."),
-            rows,
-            ["Akkon BL No", "Container No", "Vessel Name", "Voyage", "Port Of Loading", "ETS", "Port Of Discharge", "ETA", "Transhipment Vessel", "Transhipment Voyage", "Final Destination", "Final ETA"]
-          );
-          setBookingLookupStatus(
-            rows.length
-              ? `AKKON trovato: ${vessel || "nave n/d"}${voyage ? " / " + voyage : ""}${eta ? " - ETA " + eta : ""}. Dettagli mostrati qui sotto.`
-              : `AKKON ha risposto ma non ha restituito righe per ${booking}.`,
-            rows.length ? "ok" : "error"
-          );
+        bookingLookupResultUrl = normalizeJmtPdfUrl(data.jmtPdfUrl || data.pdfUrl);
+        if (!bookingLookupResultUrl) throw new Error("PDF booking SCT non trovato");
+
+        if (bookingLookupOpenBtn) {
+          bookingLookupOpenBtn.disabled = false;
+          bookingLookupOpenBtn.textContent = "Apri PDF";
         }
 
+        setBookingLookupStatus(`PDF booking ${booking} pronto. Premi “Apri PDF”.`, "ok");
+
         if (typeof showExtraToast === "function") {
-          showExtraToast(`${providerLabel} booking`, `Controllo completato per ${booking}.`, "success");
+          showExtraToast("SCT booking", `Controllo completato per ${booking}.`, "success");
         }
         try { playExtraNotifySound?.(); } catch {}
 
       } catch (err) {
-        console.error(`Errore ricerca booking ${providerLabel}:`, err);
-        setBookingLookupStatus(err?.message || `Errore ricerca booking ${providerLabel}`, "error");
+        console.error("Errore ricerca booking SCT:", err);
+        setBookingLookupStatus(err?.message || "Errore ricerca booking SCT", "error");
       } finally {
         if (bookingLookupSearchBtn) {
           bookingLookupSearchBtn.disabled = false;
@@ -9171,10 +9295,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function openBookingLookupResult(){
-      const provider = bookingProviderSelect?.value || "sct";
-      const url = provider === "sct" ? normalizeJmtPdfUrl(bookingLookupResultUrl) : bookingLookupResultUrl;
+      const url = normalizeJmtPdfUrl(bookingLookupResultUrl);
       if (!url) {
-        setBookingLookupStatus(`Prima cerca un booking ${getBookingProviderLabel(provider)} valido.`, "error");
+        setBookingLookupStatus("Prima cerca un booking SCT valido.", "error");
         return;
       }
       window.open(url, "_blank", "noopener,noreferrer");
@@ -9249,7 +9372,7 @@ document.addEventListener("DOMContentLoaded", () => {
       } finally {
         buttons.forEach(btn => {
           btn.disabled = false;
-          btn.textContent = "Scarica ZIP PDF trovati";
+          btn.textContent = "Scarica ZIP PDF";
         });
       }
     }
@@ -9299,10 +9422,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       } else {
         extraNextCheckAt = null;
-        if (extraNextCheckText) extraNextCheckText.textContent = "automatico disattivato";
+        if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
         if (extraAutoStatus) {
           extraAutoStatus.textContent = extraLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · automatico disattivato.`
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · disattivato.`
             : "Controllo automatico disattivato.";
         }
       }
@@ -9318,7 +9441,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     async function reconnectJmtManual(){
-      const buttons = [jmtReconnectBtn, jmtReconnectBtnBottom].filter(Boolean);
+      const buttons = [jmtReconnectBtn].filter(Boolean);
       const oldLabels = new Map(buttons.map(btn => [btn, btn.textContent]));
 
       buttons.forEach(btn => {
@@ -9415,23 +9538,16 @@ document.addEventListener("DOMContentLoaded", () => {
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
     extraCheckNowBtn?.addEventListener("click", () => runAutoCheckAllTerminals());
     jmtReconnectBtn?.addEventListener("click", reconnectJmtManual);
-    jmtReconnectBtnBottom?.addEventListener("click", reconnectJmtManual);
     downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
     downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
     bookingLookupSearchBtn?.addEventListener("click", searchBookingLookup);
     bookingLookupOpenBtn?.addEventListener("click", openBookingLookupResult);
-    bookingProviderSelect?.addEventListener("change", updateBookingProviderUi);
-    bookingCountrySelect?.addEventListener("change", () => {
-      bookingLookupResultUrl = "";
-      if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
-      updateBookingProviderUi();
-    });
     bookingLookupInput?.addEventListener("input", () => {
       const normalized = normalizeBookingLookupValue(bookingLookupInput.value);
       if (bookingLookupInput.value !== normalized) bookingLookupInput.value = normalized;
       bookingLookupResultUrl = "";
       if (bookingLookupOpenBtn) bookingLookupOpenBtn.disabled = true;
-      updateBookingProviderUi();
+      updateBookingLookupUi();
     });
     bookingLookupInput?.addEventListener("keydown", (event) => {
       if (event.key === "Enter") {
@@ -9439,7 +9555,30 @@ document.addEventListener("DOMContentLoaded", () => {
         searchBookingLookup();
       }
     });
-    updateBookingProviderUi();
+    updateBookingLookupUi();
+
+    function applyBookingLookupMinimizedState(minimized){
+      if (!bookingLookupPanel || !minimizeBookingLookupBtn) return;
+      bookingLookupPanel.classList.toggle("minimized", !!minimized);
+      bookingLookupPanel.classList.toggle("is-minimized", !!minimized);
+      minimizeBookingLookupBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      minimizeBookingLookupBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      minimizeBookingLookupBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Booking" : "Riduci a icona Ricerca Booking");
+      minimizeBookingLookupBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+      try { localStorage.setItem("doganatools_booking_lookup_minimized", minimized ? "1" : "0"); } catch {}
+    }
+
+    try {
+      applyBookingLookupMinimizedState(localStorage.getItem("doganatools_booking_lookup_minimized") === "1");
+    } catch {
+      applyBookingLookupMinimizedState(false);
+    }
+
+    minimizeBookingLookupBtn?.addEventListener("click", () => {
+      const nextMinimized = !bookingLookupPanel?.classList.contains("is-minimized");
+      applyBookingLookupMinimizedState(nextMinimized);
+    });
+
     extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     renameExtraStationBtn?.addEventListener("click", async () => {
       const current = sanitizeExtraStationName(EXTRA_CLIENT_NAME);
@@ -9452,6 +9591,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!extraPanel || !minimizeExtraBtn) return;
       extraPanel.classList.toggle("minimized", !!minimized);
       extraPanel.classList.toggle("is-minimized", !!minimized);
+
+      // Nasconde in modo forzato "Controlla ora" quando il modulo è ridotto.
+      // Serve perché il pulsante ha uno stile evidenziato con display:inline-flex !important.
+      if (extraCheckNowBtn) {
+        if (minimized) {
+          extraCheckNowBtn.style.setProperty("display", "none", "important");
+          extraCheckNowBtn.setAttribute("aria-hidden", "true");
+          extraCheckNowBtn.setAttribute("tabindex", "-1");
+        } else {
+          extraCheckNowBtn.style.removeProperty("display");
+          extraCheckNowBtn.removeAttribute("aria-hidden");
+          extraCheckNowBtn.removeAttribute("tabindex");
+        }
+      }
+
       minimizeExtraBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
       minimizeExtraBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
       minimizeExtraBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Contenitori" : "Riduci a icona Ricerca Contenitori");
@@ -12250,7 +12404,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
   install();
   document.addEventListener("click", e => {
-    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom, #jmtReconnectBtn, #jmtReconnectBtnBottom")) {
+    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom, #jmtReconnectBtn")) {
       setTimeout(cleanConatecoBadge, 800);
       setTimeout(cleanConatecoBadge, 2000);
     }
@@ -13082,7 +13236,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   function updateTopStationUi(name, color){
     const sessionName = document.getElementById("doganaMenuSessionName");
     const sessionBtn = document.getElementById("doganaMenuSessionSync");
-    if (sessionName) sessionName.textContent = name;
+    if (sessionName) sessionName.textContent = String(name || "NOME-SESSIONE").toUpperCase();
     if (sessionBtn) {
       sessionBtn.style.setProperty("--session-color", color);
       sessionBtn.title = "Rinomina postazione";
@@ -13299,9 +13453,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       btn.innerHTML = `
         <span class="extraAutoSingleButtonSwitch" aria-hidden="true"></span>
         <span id="extraAutoSingleState">Auto OFF</span>
-        <span>ogni</span>
         <input id="extraAutoSingleMinutes" type="number" min="1" max="1440" step="1" value="${localStorage.getItem(MIN_KEY) || "5"}">
-        <span>min</span>
       `;
       tb.insertBefore(btn, tb.firstChild);
     }
@@ -14903,15 +15055,12 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   }
 
   .sctBookingForm,
-  .bookingLookupForm,
-  .bookingLookupForm:not(.is-akkon){
+  .bookingLookupForm{
     grid-template-columns:1fr !important;
     padding:0 12px 12px !important;
   }
 
   .sctBookingInput,
-  .bookingProviderSelect,
-  .bookingCountrySelect,
   .bookingLookupForm button{
     width:100% !important;
   }
@@ -16085,8 +16234,8 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 .appQuickNav > button{
   flex:0 0 auto !important;
   width:auto !important;
-  min-width:104px !important;
-  max-width:174px !important;
+  min-width:92px !important;
+  max-width:148px !important;
   height:38px !important;
   min-height:38px !important;
   display:inline-flex !important;
@@ -16112,10 +16261,10 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease !important;
   appearance:none !important;
 }
-.appQuickNav > a[href="#extraPanel"]{ min-width:142px !important; }
+.appQuickNav > a[href="#extraPanel"]{ min-width:118px !important; }
 .appQuickNav .appSessionSync{
-  min-width:118px !important;
-  max-width:184px !important;
+  min-width:124px !important;
+  max-width:158px !important;
   justify-content:center !important;
 }
 .appQuickNav > a:hover,
@@ -16164,10 +16313,10 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   .appQuickNav .appSessionSync{
     flex:0 0 auto !important;
     width:auto !important;
-    min-width:112px !important;
-    max-width:174px !important;
+    min-width:96px !important;
+    max-width:148px !important;
   }
-  .appQuickNav > a[href="#extraPanel"]{ min-width:142px !important; }
+  .appQuickNav > a[href="#extraPanel"]{ min-width:118px !important; }
 }
 </style>
 
@@ -16383,6 +16532,365 @@ button.extraTab{
   color:var(--accent) !important;
   box-shadow:0 3px 10px rgba(15,23,42,.035) !important;
 }
+</style>
+
+
+
+<style id="dogana-module-title-font-buttons-final">
+/* === FONT PULSANTI DEFINITIVO: stesso carattere dei titoli modulo === */
+:root{
+  --dogana-button-title-font:var(--font);
+  --dogana-button-title-weight:800;
+  --dogana-button-title-letter:.07em;
+  --dogana-button-title-size:11.5px;
+}
+
+/* Copre tutti i pulsanti veri, anche quelli generati via JS */
+button,
+button *,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="file"]::file-selector-button{
+  font-family:var(--dogana-button-title-font) !important;
+}
+
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="file"]::file-selector-button{
+  font-weight:var(--dogana-button-title-weight) !important;
+  text-transform:uppercase !important;
+  letter-spacing:var(--dogana-button-title-letter) !important;
+  line-height:1.15 !important;
+}
+
+/* Pulsanti principali: compattezza stabile anche con il nuovo font */
+button:not(.themeSwitch):not(.floatingBackTop),
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="file"]::file-selector-button{
+  font-size:var(--dogana-button-title-size) !important;
+}
+
+/* Elementi non-button ma usati come pulsanti/comandi nella UI */
+.appQuickNav a,
+.appQuickNav a *,
+[role="button"],
+[role="button"] *,
+summary,
+summary *,
+.operativeChecklistFileBtn,
+.operativeChecklistFileBtn *,
+.operativeChecklistAttachmentLink,
+.operativeChecklistAttachmentLink *,
+.autoCheckSwitch,
+.autoCheckSwitch *,
+.extraAutoSingleButton,
+.extraAutoSingleButton *,
+.calcExtraTools summary,
+.calcExtraTools summary *,
+.sctBookingPanel summary,
+.sctBookingPanel summary *{
+  font-family:var(--dogana-button-title-font) !important;
+  font-weight:var(--dogana-button-title-weight) !important;
+  text-transform:uppercase !important;
+  letter-spacing:var(--dogana-button-title-letter) !important;
+}
+
+/* Tab terminal: allineati ai titoli dei moduli, con spaziatura leggermente più marcata */
+button.shipTab,
+button.shipTab *,
+button.extraTab,
+button.extraTab *{
+  font-family:var(--dogana-button-title-font) !important;
+  font-weight:var(--dogana-button-title-weight) !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+}
+
+/* Pulsanti solo-icona: stesso font, ma niente spaziatura per non deformare X/frecce */
+.rowBtn,
+.rowBtn *,
+.operativeChecklistDeleteBtn,
+.operativeChecklistDeleteBtn *,
+.operativeChecklistFileClear,
+.operativeChecklistFileClear *,
+.floatingBackTop,
+.floatingBackTop *{
+  font-family:var(--dogana-button-title-font) !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+/* Dimensioni protette per elimina/allegato */
+.operativeChecklistFileClear{
+  min-width:24px !important;
+  width:24px !important;
+  height:24px !important;
+  padding:0 !important;
+  font-size:12px !important;
+}
+
+.operativeChecklistDeleteBtn{
+  min-width:30px !important;
+  width:30px !important;
+  height:30px !important;
+  padding:0 !important;
+  font-size:15px !important;
+}
+</style>
+
+
+<style id="dogana-module-title-font-labels-final">
+/* === TESTI / BADGE / FOOTER: font coerente con i titoli dei moduli === */
+.shipCardTitle strong,
+.shipCardTitle span,
+.shipBadge,
+.shipBadge strong,
+.shipSummary,
+.shipSummary *,
+.extraCheckInfoItem,
+.extraCheckInfoText,
+.extraCheckInfoText strong,
+.appFooterTitle,
+.appFooterSub,
+.appFooterPill,
+.appFooterPill *,
+.appFooterCopyright,
+.appFooterVersion,
+.appFooterVersion strong{
+  font-family:var(--font) !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+  line-height:1.15 !important;
+}
+
+/* Previsione Navi: intestazioni delle card terminal */
+.shipCardTitle strong{
+  font-size:13px !important;
+  color:var(--heading) !important;
+}
+
+.shipCardTitle span{
+  font-size:11px !important;
+  color:var(--muted) !important;
+}
+
+/* Previsione Navi: riepiloghi tipo "Totale filtrate" */
+.shipBadge{
+  font-size:11px !important;
+}
+
+.shipBadge strong{
+  font-size:11px !important;
+}
+
+/* Ricerca Contenitori: Ultimo controllo / Prossimo / Terminal */
+.extraCheckInfoItem,
+.extraCheckInfoText,
+.extraCheckInfoText strong{
+  font-size:10.8px !important;
+}
+
+.extraCheckInfoText strong{
+  color:var(--heading) !important;
+  font-weight:800 !important;
+}
+
+/* Footer: copyright e versione con la stessa resa dei titoli modulo */
+.appFooterPill,
+.appFooterCopyright,
+.appFooterVersion{
+  font-size:11px !important;
+}
+
+.appFooterTitle{
+  font-size:12px !important;
+}
+
+.appFooterSub{
+  font-size:10.5px !important;
+  color:var(--muted) !important;
+}
+
+.appFooterHeart{
+  color:#ef4444 !important;
+  letter-spacing:0 !important;
+}
+
+.appFooterDot{
+  letter-spacing:0 !important;
+}
+</style>
+
+
+<style id="dogana-ship-search-title-font-final">
+/* === RICERCA NAVI: stesso font dei titoli modulo === */
+.shipQuickSearch input,
+.shipQuickSearch input::placeholder{
+  font-family:var(--font) !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.08em !important;
+  line-height:1.15 !important;
+}
+
+.shipQuickSearch input{
+  font-size:12px !important;
+}
+
+.shipQuickSearch input::placeholder{
+  color:var(--muted) !important;
+  opacity:.88 !important;
+}
+</style>
+
+
+<style id="dogana-topbar-footer-title-font-final">
+/* === BARRA SUPERIORE: font/aspetto come footer e titoli modulo === */
+.appBrandText strong,
+.appBrandText span,
+.appQuickNav > a,
+.appQuickNav > button,
+.appQuickNav > button *{
+  font-family:var(--font) !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+  line-height:1.15 !important;
+}
+
+.appBrandText strong{
+  color:var(--heading) !important;
+  font-size:12px !important;
+}
+
+.appBrandText span{
+  margin-top:2px !important;
+  color:var(--muted) !important;
+  font-size:10.5px !important;
+}
+
+.appBrandLogo{
+  width:32px !important;
+  height:32px !important;
+  border-radius:12px !important;
+  background:var(--surface) !important;
+  border:1px solid var(--grid-soft) !important;
+  padding:4px !important;
+  box-shadow:0 8px 18px rgba(37,99,235,.12) !important;
+}
+
+.appQuickNav > a,
+.appQuickNav > button{
+  font-size:11px !important;
+  color:var(--heading) !important;
+}
+
+.appQuickNav .appSessionSync #doganaMenuSessionName{
+  font-size:11px !important;
+}
+
+/* === RICERCA CONTENITORI: evidenza pulsante CONTROLLA ORA + label ZIP compatta === */
+.extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
+#extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  padding:10px 16px !important;
+  border-radius:12px !important;
+  border-color:color-mix(in srgb, var(--accent) 52%, var(--btn-border)) !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 16%, var(--surface)) 0%,
+      color-mix(in srgb, var(--accent) 7%, var(--surface)) 100%) !important;
+  color:var(--heading) !important;
+  font-weight:950 !important;
+  letter-spacing:.02em !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 7px 16px rgba(37,99,235,.12) !important;
+}
+
+.extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked::before,
+#extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked::before{
+  content:"✓";
+  width:22px;
+  height:22px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:8px;
+  background:#fff;
+  color:var(--accent);
+  font-size:15px;
+  font-weight:950;
+  line-height:1;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.65),
+    0 3px 9px rgba(37,99,235,.18);
+}
+
+.extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked:hover,
+#extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked:hover{
+  border-color:var(--accent) !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--accent) 22%, var(--surface)) 0%,
+      color-mix(in srgb, var(--accent) 10%, var(--surface)) 100%) !important;
+}
+
+body[data-theme="dark"] .extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
+body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked{
+  color:var(--heading) !important;
+  box-shadow:
+    inset 0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 7px 16px rgba(96,165,250,.12) !important;
+}
+
+body[data-theme="dark"] .extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked::before,
+body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked::before{
+  background:#f8fbff;
+  color:var(--accent);
+}
+
+
+/* FIX: quando Ricerca Contenitori è ridotto a icona, nasconde il pulsante CONTROLLA ORA evidenziato */
+.extraPanel.minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
+.extraPanel.minimized .extraTopToolbar #extraCheckNowBtn{
+  display:none !important;
+}
+
+
+/* FIX DEFINITIVO: il pulsante CONTROLLA ORA evidenziato non deve apparire in modalità ridotta */
+#extraPanel.is-minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
+#extraPanel.minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
+#extraPanel.is-minimized .miniToolbar #extraCheckNowBtn.extraCheckNowMarked,
+#extraPanel.minimized .miniToolbar #extraCheckNowBtn.extraCheckNowMarked,
+#extraPanel.is-minimized #extraCheckNowBtn,
+#extraPanel.minimized #extraCheckNowBtn{
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+  width:0 !important;
+  min-width:0 !important;
+  max-width:0 !important;
+  height:0 !important;
+  min-height:0 !important;
+  max-height:0 !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  overflow:hidden !important;
+  pointer-events:none !important;
+}
+
 </style>
 
 </body>
