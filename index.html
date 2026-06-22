@@ -1622,6 +1622,29 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   white-space:nowrap;
 }
 
+#extraTable .sctPdfActions{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:6px;
+}
+
+#extraTable .sctPdfActions a{
+  display:inline-flex !important;
+  align-items:center;
+  justify-content:flex-start;
+  gap:6px;
+  width:max-content;
+  max-width:100%;
+  white-space:nowrap;
+  font-weight:900;
+  text-decoration:underline;
+}
+
+#extraTable .sctPdfCacheLink{
+  color:var(--accent-2) !important;
+}
+
 
 /* === MIGLIORIA MODULI 2026-05 - Navi in chiusura + Contenitori non entrati === */
 .shipPanel{
@@ -5071,10 +5094,18 @@ function getApiBase(){
   return publicApi;
 }
 
-function getPublicPdfUrl(container){
+function getPublicPdfUrl(container, options = {}){
   const code = String(container || "").trim().toUpperCase();
   if (!code) return "";
-  return apiUrl(`/api/download-cached-pdf?container=${encodeURIComponent(code)}`);
+
+  const params = new URLSearchParams();
+  params.set("container", code);
+
+  // download=1 forza il salvataggio; cacheOnly=1 evita di riusare il link JMT scaduto.
+  if (options.download) params.set("download", "1");
+  if (options.cacheOnly) params.set("cacheOnly", "1");
+
+  return apiUrl(`/api/download-cached-pdf?${params.toString()}`);
 }
 
 function normalizeJmtPdfUrl(url){
@@ -9015,6 +9046,35 @@ button.doganaModuleSvgToggleBtn:active,
           : (activeExtraTerminal === "flavio" ? String(row.flavioPdfUrl || "").trim() : ""));
 
       if (directPdfUrl) {
+        if (activeExtraTerminal === "sct") {
+          const cleanContainer = String(containerValue || row?.sct || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+          const actions = document.createElement("div");
+          actions.className = "sctPdfActions";
+
+          const jmtLink = document.createElement("a");
+          jmtLink.href = apiUrl(directPdfUrl);
+          jmtLink.textContent = "📄 SCARICA PDF";
+          jmtLink.title = "Scarica il memorandum direttamente dal link generato da JMT/SCT";
+          jmtLink.target = "_blank";
+          jmtLink.rel = "noopener noreferrer";
+          jmtLink.style.color = "#2563eb";
+          actions.appendChild(jmtLink);
+
+          if (cleanContainer) {
+            const cacheLink = document.createElement("a");
+            cacheLink.href = getPublicPdfUrl(cleanContainer, { download: true, cacheOnly: true });
+            cacheLink.textContent = "💾 CACHE PDF";
+            cacheLink.title = "Scarica la copia fisica salvata nella cache del server";
+            cacheLink.className = "sctPdfCacheLink";
+            cacheLink.target = "_blank";
+            cacheLink.rel = "noopener noreferrer";
+            actions.appendChild(cacheLink);
+          }
+
+          td.appendChild(actions);
+          return;
+        }
+
         const link = document.createElement("a");
         link.href = activeExtraTerminal === "conateco" ? "#" : apiUrl(directPdfUrl);
 
