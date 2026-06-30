@@ -6443,7 +6443,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
         <span class="autoCheckText">Auto 5 min: <strong id="extraAutoCheckLabel">OFF</strong></span>
       </label>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
-      <button id="jmtReconnectBtn" type="button" title="Forza la riconnessione alla sessione JMT/SCT">Ricollega JMT</button>
+      <button id="jmtReconnectBtn" type="button" title="Ricollega la sessione JMT/SCT rispettando il timer anti -999">Ricollega JMT</button>
       <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button">Controlla ora</button>
       <button id="minimizeExtraBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Contenitori" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
@@ -9496,8 +9496,8 @@ button.doganaModuleSvgToggleBtn:active,
 
         const data = await response.json().catch(() => null);
 
-        if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
-          showJmtDisconnectedMessage(`booking ${booking}`);
+        if (response.status === 401 || response.status === 429 || data?.sessionExpired || data?.jmtSessionExpired) {
+          showJmtDisconnectedMessage(`booking ${booking}`, data || {});
           return;
         }
 
@@ -9683,11 +9683,11 @@ button.doganaModuleSvgToggleBtn:active,
 
       buttons.forEach(btn => {
         btn.disabled = true;
-        btn.textContent = "Ricollego JMT...";
+        btn.textContent = "Verifico timer JMT...";
       });
 
       if (extraAutoStatus) {
-        extraAutoStatus.textContent = "Riconnessione JMT/SCT in corso...";
+        extraAutoStatus.textContent = "Verifico timer riconnessione JMT/SCT...";
         extraAutoStatus.style.color = "";
         extraAutoStatus.style.fontWeight = "900";
       }
@@ -9706,6 +9706,21 @@ button.doganaModuleSvgToggleBtn:active,
         });
 
         const data = await response.json().catch(() => null);
+
+        if ((response.status === 429 || data?.reconnectScheduled) && !data?.success) {
+          const message = data?.error || data?.message || "Timer JMT ancora attivo: riconnessione non avviata.";
+          if (extraAutoStatus) {
+            extraAutoStatus.textContent = message;
+            extraAutoStatus.style.color = "var(--danger)";
+            extraAutoStatus.style.fontWeight = "900";
+          }
+          if (typeof showExtraToast === "function") {
+            showExtraToast("Timer JMT attivo", message, "error");
+          } else {
+            alert(message);
+          }
+          return;
+        }
 
         if (!response.ok || !data?.success) {
           throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
@@ -10051,12 +10066,24 @@ loadTheme();
 const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minut
 
 
-function showJmtDisconnectedMessage(container = "") {
+function showJmtDisconnectedMessage(container = "", details = {}) {
   const code = String(container || "").trim().toUpperCase();
-  const msg =
+  const reconnectMinutes = Number(details?.reconnectDelayMinutes || 10);
+  const remainingMs = Number(details?.reconnectRemainingMs || 0);
+  const remainingText = details?.reconnectRemainingText || (remainingMs > 0 && typeof formatExtraCountdown === "function" ? formatExtraCountdown(remainingMs) : "");
+  const scheduledAt = details?.reconnectScheduledAt ? new Date(details.reconnectScheduledAt) : null;
+  const scheduledText = scheduledAt && !Number.isNaN(scheduledAt.getTime())
+    ? scheduledAt.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit", second: "2-digit" })
+    : "";
+
+  let msg =
     "Sessione JMT scaduta o utente disconnesso" +
-    (code ? ` per il container ${code}` : "") +
-    ". Riconnessione automatica pianificata tra 5 minuti. Puoi anche premere Ricollega JMT.";
+    (code ? ` per ${code}` : "") +
+    `. Riconnessione automatica pianificata tra ${reconnectMinutes} minuti.`;
+
+  if (remainingText) msg += ` Tempo residuo circa ${remainingText}.`;
+  if (scheduledText) msg += ` Orario previsto: ${scheduledText}.`;
+  msg += " Il pulsante Ricollega JMT rispetta lo stesso timer.";
 
   if (typeof showExtraToast === "function") {
     showExtraToast("JMT disconnesso", msg, "error");
@@ -10090,8 +10117,8 @@ async function checkContainerSCT(container) {
 
     const data = await response.json().catch(() => null);
 
-    if (response.status === 401 || data?.sessionExpired || data?.jmtSessionExpired) {
-      showJmtDisconnectedMessage(container);
+    if (response.status === 401 || response.status === 429 || data?.sessionExpired || data?.jmtSessionExpired) {
+      showJmtDisconnectedMessage(container, data || {});
 
       return {
         success: false,
