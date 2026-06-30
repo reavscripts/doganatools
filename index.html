@@ -10384,12 +10384,122 @@ function isConatecoLuogoApprovatoOrRetroporto(tracking) {
 }
 
 function getConatecoTrackingStatus(tracking) {
+  const dateCheck = getConatecoTrackingCurrentMonthCheck(tracking);
+  if (!dateCheck.ok) return getConatecoNotEnteredStatusByDate(dateCheck);
+
   const notaTipo = getConatecoNotaTipo(tracking);
   return notaTipo ? `ENTRATO (${notaTipo})` : "ENTRATO";
 }
 
 function getConatecoTrackingNote(tracking) {
   return getConatecoNotaTipo(tracking);
+}
+
+
+function parseConatecoTrackingDateValue(value) {
+  const raw = String(value ?? "").trim();
+  if (!raw) return null;
+
+  let day = 0;
+  let month = 0;
+  let year = 0;
+
+  let match = raw.match(/\b(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})\b/);
+  if (match) {
+    day = Number(match[1]);
+    month = Number(match[2]);
+    year = Number(match[3]);
+    if (year < 100) year += 2000;
+  } else {
+    match = raw.match(/\b(\d{4})[\/.-](\d{1,2})[\/.-](\d{1,2})\b/);
+    if (match) {
+      year = Number(match[1]);
+      month = Number(match[2]);
+      day = Number(match[3]);
+    } else {
+      match = raw.match(/^\s*(\d{4})(\d{2})(\d{2})\s*$/);
+      if (match) {
+        year = Number(match[1]);
+        month = Number(match[2]);
+        day = Number(match[3]);
+      }
+    }
+  }
+
+  if (!year || !month || !day) return null;
+
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    return null;
+  }
+
+  return { date, raw };
+}
+
+function getConatecoTrackingReferenceDate(tracking) {
+  if (!tracking || typeof tracking !== "object" || Array.isArray(tracking)) return null;
+
+  const preferredFields = [
+    "DataIngresso", "dataIngresso", "DATAINGRESSO",
+    "Data", "data", "DATA",
+    "DataEntrata", "dataEntrata", "DATAENTRATA",
+    "DataUscita", "dataUscita", "DATAUSCITA"
+  ];
+
+  for (const field of preferredFields) {
+    const parsed = parseConatecoTrackingDateValue(tracking[field]);
+    if (parsed) return parsed;
+  }
+
+  for (const [key, value] of Object.entries(tracking)) {
+    if (!/data|date/i.test(key)) continue;
+    const parsed = parseConatecoTrackingDateValue(value);
+    if (parsed) return parsed;
+  }
+
+  return null;
+}
+
+function getConatecoTrackingCurrentMonthCheck(tracking) {
+  const parsed = getConatecoTrackingReferenceDate(tracking);
+
+  if (!parsed) {
+    return {
+      ok: false,
+      dateText: "",
+      reason: "DATA CONATECO MANCANTE"
+    };
+  }
+
+  const now = new Date();
+  const ok =
+    parsed.date.getFullYear() === now.getFullYear() &&
+    parsed.date.getMonth() === now.getMonth();
+
+  return {
+    ok,
+    dateText: parsed.raw,
+    reason: ok ? "" : "DATA FUORI MESE CORRENTE"
+  };
+}
+
+function getConatecoNotEnteredStatusByDate(dateCheck) {
+  const reason = String(dateCheck?.reason || "").trim();
+  const dateText = String(dateCheck?.dateText || "").trim();
+
+  if (reason === "DATA FUORI MESE CORRENTE" && dateText) {
+    return `NON ENTRATO (DATA ${dateText} NON CORRENTE)`;
+  }
+
+  if (reason === "DATA CONATECO MANCANTE") {
+    return "NON ENTRATO (DATA MANCANTE)";
+  }
+
+  return "NON ENTRATO";
 }
 
 async function checkContainerConateco(container) {
@@ -10449,6 +10559,16 @@ async function checkContainerConateco(container) {
       const text = JSON.stringify(data).toUpperCase();
       const invalid = text.includes('"STATO":"???"') || text.includes('"PIENOVUOTO":"0"');
       if (invalid) return { success: true, found: false, status: "NON ENTRATO", tracking: data };
+
+      const dateCheck = getConatecoTrackingCurrentMonthCheck(data);
+      if (!dateCheck.ok) {
+        return {
+          success: true,
+          found: false,
+          status: getConatecoNotEnteredStatusByDate(dateCheck),
+          tracking: data
+        };
+      }
 
       const notaTipo = getConatecoNotaTipo(data);
 
