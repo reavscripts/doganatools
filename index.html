@@ -8236,6 +8236,37 @@ button.doganaModuleSvgToggleBtn:active,
     let extraLocalDirtyUntil = 0;
     let extraDraggedRowId = "";
 
+    // Evita che una riga appena eliminata possa rientrare da una sincronizzazione
+    // o da un PATCH rimasto in coda sul browser.
+    const EXTRA_DELETED_ROW_GRACE_MS = 5 * 60 * 1000;
+    const extraDeletedRowIds = new Map();
+
+    function cleanupExtraDeletedRowIds(){
+      const now = Date.now();
+      for (const [rowId, expiresAt] of extraDeletedRowIds.entries()) {
+        if (!rowId || Number(expiresAt || 0) <= now) extraDeletedRowIds.delete(rowId);
+      }
+    }
+
+    function markExtraRowDeleted(rowId){
+      rowId = String(rowId || "").trim();
+      if (!rowId) return;
+      cleanupExtraDeletedRowIds();
+      extraDeletedRowIds.set(rowId, Date.now() + EXTRA_DELETED_ROW_GRACE_MS);
+    }
+
+    function unmarkExtraRowDeleted(rowId){
+      rowId = String(rowId || "").trim();
+      if (rowId) extraDeletedRowIds.delete(rowId);
+    }
+
+    function isExtraRowPendingDelete(rowId){
+      rowId = String(rowId || "").trim();
+      if (!rowId) return false;
+      cleanupExtraDeletedRowIds();
+      return extraDeletedRowIds.has(rowId);
+    }
+
 
     const extraTbody = document.getElementById("extraTbody");
     const extraThead = document.getElementById("extraThead");
@@ -8453,7 +8484,10 @@ button.doganaModuleSvgToggleBtn:active,
 
       const merged = [];
 
+      cleanupExtraDeletedRowIds();
+
       for (const [id, remoteRow] of remoteById.entries()) {
+        if (id && isExtraRowPendingDelete(id)) continue;
         // Fonte ufficiale: server.js.
         // Teniamo temporaneamente solo la riga in focus per non cancellare caratteri
         // mentre l'utente sta scrivendo; appena la cella perde focus viene inviata
@@ -8513,6 +8547,8 @@ button.doganaModuleSvgToggleBtn:active,
       extraLocalDirtyUntil = Date.now() + 1200;
 
       const rowId = row.__id;
+      if (isExtraRowPendingDelete(rowId)) return;
+
       const payloadPatch = {
         ...(patch || row),
         __terminal: row.__terminal,
@@ -8521,6 +8557,10 @@ button.doganaModuleSvgToggleBtn:active,
 
       clearTimeout(extraRowSaveTimers.get(rowId));
       extraRowSaveTimers.set(rowId, setTimeout(async () => {
+        if (isExtraRowPendingDelete(rowId)) {
+          extraRowSaveTimers.delete(rowId);
+          return;
+        }
         try {
           const res = await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
             method: "PATCH",
@@ -8570,9 +8610,11 @@ button.doganaModuleSvgToggleBtn:active,
       if (!rowId) return false;
       try {
         const res = await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
-          method: "DELETE"
+          method: "DELETE",
+          cache: "no-store"
         });
-        return res.ok;
+        const data = await res.json().catch(() => null);
+        return res.ok && (data?.success !== false);
       } catch (err) {
         console.warn("Eliminazione riga condivisa non riuscita", err);
         return false;
@@ -8776,18 +8818,33 @@ button.doganaModuleSvgToggleBtn:active,
       }
     }
 
-    async function deleteExtraRow(index){
-      if (index < 0 || index >= extraRows.length) return;
+    async function deleteExtraRow(rowRef){
+      const rowId = typeof rowRef === "string"
+        ? String(rowRef || "").trim()
+        : String(extraRows[Number(rowRef)]?.__id || "").trim();
+
+      if (!rowId) return;
+
+      const index = extraRows.findIndex(row => String(row?.__id || "") === rowId);
+      if (index < 0) return;
       if (!rowBelongsToTerminal(extraRows[index], activeExtraTerminal)) return;
 
-      const rowId = extraRows[index]?.__id || "";
       const snapshot = extraRows.slice();
-      extraRows.splice(index, 1);
+
+      // Annulla eventuali PATCH ritardati della stessa riga: erano la causa piu frequente
+      // dei container che ricomparivano subito dopo la cancellazione.
+      clearTimeout(extraRowSaveTimers.get(rowId));
+      extraRowSaveTimers.delete(rowId);
+      markExtraRowDeleted(rowId);
+
+      extraRows = extraRows.filter(row => String(row?.__id || "") !== rowId);
+      extraLocalDirtyUntil = Date.now() + 2500;
       renderExtra();
       saveExtraLocalOnly();
 
       const ok = await deleteSharedExtraRow(rowId);
       if (!ok) {
+        unmarkExtraRowDeleted(rowId);
         extraRows = snapshot;
         renderExtra();
         showExtraToast("Backend condiviso non raggiungibile: eliminazione annullata.");
@@ -9358,7 +9415,7 @@ button.doganaModuleSvgToggleBtn:active,
         btn.className = "rowBtn";
         btn.title = "Elimina riga";
         btn.textContent = "✕";
-        btn.addEventListener("click", () => deleteExtraRow(idx));
+        btn.addEventListener("click", () => deleteExtraRow(row.__id));
         tdActions.appendChild(btn);
         tr.appendChild(tdActions);
 
@@ -9880,6 +9937,12 @@ button.doganaModuleSvgToggleBtn:active,
     document.querySelectorAll(".extraTab").forEach(btn => {
       btn.addEventListener("click", () => setActiveExtraTerminal(btn.dataset.extraTerminal));
     });
+
+    window.syncExtraFromBackend = syncExtraFromBackend;
+    window.syncExtraSharedState = syncExtraFromBackend;
+    window.loadExtraSharedState = async () => syncExtraFromBackend(true);
+    window.scheduleSharedRowPatch = scheduleSharedRowPatch;
+    window.renderExtra = renderExtra;
 
     const extraLoaded = loadExtra();
     if (extraLoaded) renderExtra();
