@@ -4150,6 +4150,50 @@ background:var(--surface);
   gap:8px;
   flex-wrap:wrap;
 }
+
+.serverConsoleControlBtn{
+  min-width:38px;
+  height:38px;
+  padding:0 11px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  border-radius:14px;
+  font-size:12px;
+  font-weight:950;
+  letter-spacing:.05em;
+  line-height:1;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+.serverConsoleControlBtn svg{
+  width:17px;
+  height:17px;
+  display:block;
+  flex:0 0 auto;
+  fill:currentColor;
+}
+.serverConsoleStartBtn{
+  background:linear-gradient(180deg, #22b35d, #16a34a);
+  border-color:#169447;
+  color:#fff;
+}
+.serverConsoleStartBtn:hover{
+  background:linear-gradient(180deg, #28ba64, #189c48);
+}
+.serverConsoleStopBtn{
+  background:linear-gradient(180deg, #ef4444, #dc2626);
+  border-color:#cf2424;
+  color:#fff;
+}
+.serverConsoleStopBtn:hover{
+  background:linear-gradient(180deg, #f45151, #d92525);
+}
+.serverConsoleControlBtn.is-busy{
+  opacity:.65;
+  pointer-events:none;
+}
 .serverConsoleStatus{
   display:inline-flex;
   align-items:center;
@@ -6699,6 +6743,8 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
     </div>
     <div class="serverConsoleActions">
       <span class="serverConsoleStatus" id="serverConsoleStatus">Disconnessa</span>
+      <button type="button" id="serverConsoleStartNode" class="serverConsoleControlBtn serverConsoleStartBtn" aria-label="Avvia server.js" title="Avvia server.js"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M8 5.7v12.6c0 .85.94 1.36 1.65.9l9.65-6.3a1.07 1.07 0 0 0 0-1.8L9.65 4.8A1.06 1.06 0 0 0 8 5.7Z"/></svg><span>Start</span></button>
+      <button type="button" id="serverConsoleStopNode" class="serverConsoleControlBtn serverConsoleStopBtn" aria-label="Ferma server.js" title="Ferma server.js"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M7.2 6.2h9.6c.55 0 1 .45 1 1v9.6c0 .55-.45 1-1 1H7.2c-.55 0-1-.45-1-1V7.2c0-.55.45-1 1-1Z"/></svg><span>Stop</span></button>
       <button type="button" id="serverConsoleReconnect">Riconnetti</button>
       <button type="button" id="serverConsoleClear">Pulisci</button>
       <button type="button" id="serverConsoleToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Console" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
@@ -14032,6 +14078,69 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     return base ? base + clean : clean;
   }
 
+  function panelApi(path){
+    const p = String(path || "");
+    const clean = p.startsWith("/") ? p : "/" + p;
+
+    const forced = String(window.DOGANA_PANEL_BASE || "").trim().replace(/\/$/, "");
+    if (forced) return forced + clean;
+
+    try {
+      const saved = String(localStorage.getItem("doganaPanelBase") || "").trim().replace(/\/$/, "");
+      if (saved) return saved + clean;
+    } catch {}
+
+    const host = String(window.location.hostname || "").toLowerCase();
+
+    // In LAN usa lo stesso host della pagina ma porta 3001.
+    // Su localhost e sui domini pubblici usa il pannello locale.
+    if (
+      host &&
+      host !== "localhost" &&
+      host !== "127.0.0.1" &&
+      host !== "::1" &&
+      !host.includes("reav.website") &&
+      !host.includes("vercel.app")
+    ) {
+      return "http://" + window.location.hostname + ":3001" + clean;
+    }
+
+    return "http://127.0.0.1:3001" + clean;
+  }
+
+  function setBusy(button, busy){
+    if (!button) return;
+    button.classList.toggle("is-busy", !!busy);
+    button.disabled = !!busy;
+  }
+
+  function addPanelLine(message, level){
+    addLine({
+      time: new Date().toISOString(),
+      level: level || "log",
+      line: "Pannello: " + message
+    });
+  }
+
+  async function callPanel(action){
+    const cleanAction = action === "stop" ? "stop" : "start";
+    const response = await fetch(panelApi("/api/server/" + cleanAction), {
+      method: "POST",
+      cache: "no-store",
+      headers: { "Accept": "application/json" }
+    });
+
+    let data = null;
+    try { data = await response.clone().json(); } catch {}
+
+    if (!response.ok || (data && data.success === false)) {
+      const message = data?.message || ("Risposta HTTP " + response.status);
+      throw new Error(message);
+    }
+
+    return data || { success:true, message: cleanAction === "start" ? "Comando start inviato" : "Comando stop inviato" };
+  }
+
   function setStatus(text, connected){
     const el = $("serverConsoleStatus");
     if (!el) return;
@@ -14097,6 +14206,8 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   function boot(){
     const clearBtn = $("serverConsoleClear");
     const reconnectBtn = $("serverConsoleReconnect");
+    const startNodeBtn = $("serverConsoleStartNode");
+    const stopNodeBtn = $("serverConsoleStopNode");
     const toggleBtn = $("serverConsoleToggle");
     const panel = $("serverConsolePanel");
 
@@ -14106,6 +14217,38 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     });
 
     if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
+
+    if (startNodeBtn) startNodeBtn.addEventListener("click", async function(){
+      setBusy(startNodeBtn, true);
+      addPanelLine("richiesta START server.js inviata");
+      try {
+        const result = await callPanel("start");
+        addPanelLine(result.message || "server.js avviato", result.success === false ? "warn" : "log");
+        setStatus("Avvio server...", false);
+        setTimeout(connect, 1400);
+        setTimeout(connect, 3500);
+      } catch (err) {
+        addPanelLine("impossibile avviare server.js. Verifica che panel.js sia attivo su porta 3001. Dettaglio: " + (err?.message || err), "warn");
+      } finally {
+        setBusy(startNodeBtn, false);
+      }
+    });
+
+    if (stopNodeBtn) stopNodeBtn.addEventListener("click", async function(){
+      setBusy(stopNodeBtn, true);
+      addPanelLine("richiesta STOP server.js inviata");
+      try {
+        const result = await callPanel("stop");
+        addPanelLine(result.message || "server.js fermato", result.success === false ? "warn" : "log");
+        try { source && source.close(); } catch {}
+        source = null;
+        setStatus("Server fermato", false);
+      } catch (err) {
+        addPanelLine("impossibile fermare server.js. Verifica che panel.js sia attivo su porta 3001. Dettaglio: " + (err?.message || err), "warn");
+      } finally {
+        setBusy(stopNodeBtn, false);
+      }
+    });
 
     if (toggleBtn && panel && toggleBtn.dataset.minimizeReady !== "1") {
       toggleBtn.dataset.minimizeReady = "1";
@@ -17657,6 +17800,79 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     }
   });
   if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["class","aria-expanded","title","aria-label"] });
+})();
+</script>
+
+
+
+<style id="dogana-collapsed-bar-click-expand-style">
+/* Barra del modulo cliccabile solo quando il modulo è già ridotto. */
+.doganaTableModuleCard.is-minimized .doganaTableTopToolbar,
+#extraPanel.is-minimized .extraHead,
+#extraPanel.minimized .extraHead,
+.extraPanel.is-minimized .extraHead,
+.extraPanel.minimized .extraHead,
+#operativeChecklistPanel.is-minimized .operativeChecklistHead,
+.operativeChecklistPanel.is-minimized .operativeChecklistHead,
+#shipPanel.is-minimized .shipToolbar,
+.shipPanel.is-minimized .shipToolbar,
+#bookingLookupPanel.is-minimized .bookingModuleHead,
+#bookingLookupPanel.minimized .bookingModuleHead,
+.bookingStandalonePanel.is-minimized .bookingModuleHead,
+.bookingStandalonePanel.minimized .bookingModuleHead,
+#serverConsolePanel.is-minimized .serverConsoleHead,
+.serverConsolePanel.is-minimized .serverConsoleHead{
+  cursor:pointer !important;
+}
+</style>
+<script id="dogana-collapsed-bar-click-expand-script">
+(function(){
+  const modules = [
+    { panel: ".doganaTableModuleCard", bar: ".doganaTableTopToolbar", toggle: "#doganaMinimizeBtn" },
+    { panel: "#extraPanel", bar: ".extraHead", toggle: "#minimizeExtraBtn" },
+    { panel: "#operativeChecklistPanel", bar: ".operativeChecklistHead", toggle: "#operativeChecklistToggleBtn" },
+    { panel: "#shipPanel", bar: ".shipToolbar", toggle: "#minimizeShipsBtn" },
+    { panel: "#bookingLookupPanel", bar: ".bookingModuleHead", toggle: "#minimizeBookingLookupBtn" },
+    { panel: "#serverConsolePanel", bar: ".serverConsoleHead", toggle: "#serverConsoleToggle" }
+  ];
+
+  const toggleSelector = modules.map(item => item.toggle).join(",");
+  const interactiveSelector = "button,a,input,select,textarea,label,summary,[role='button'],[contenteditable='true']";
+
+  function isMinimized(panel){
+    return !!panel && (panel.classList.contains("is-minimized") || panel.classList.contains("minimized"));
+  }
+
+  function shouldIgnoreClick(event){
+    const target = event.target;
+    if (!target || !target.closest) return false;
+    if (target.closest(toggleSelector)) return true;
+    return !!target.closest(interactiveSelector);
+  }
+
+  function initOne(config){
+    const panel = document.querySelector(config.panel);
+    if (!panel) return;
+    const bar = panel.querySelector(config.bar);
+    const toggle = panel.querySelector(config.toggle) || document.querySelector(config.toggle);
+    if (!bar || !toggle || bar.dataset.collapsedBarExpandReady === "1") return;
+    bar.dataset.collapsedBarExpandReady = "1";
+
+    bar.addEventListener("click", function(event){
+      if (!isMinimized(panel)) return;
+      if (shouldIgnoreClick(event)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      toggle.click();
+    });
+  }
+
+  function initAll(){
+    modules.forEach(initOne);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initAll);
+  else initAll();
 })();
 </script>
 
