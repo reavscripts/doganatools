@@ -10697,24 +10697,31 @@ function getTfgResultText(status, tracking) {
     .trim();
 }
 
-function isTfgNoDownloadResult(status, tracking, data = null) {
-  if (data?.pdfAvailable === false) return true;
+function isTfgFoundResult(status, tracking, data = null) {
+  if (data?.found === true || tracking?.found === true) return true;
+  if (Array.isArray(tracking?.history) && tracking.history.length > 0) return true;
+
   const text = getTfgResultText(status, tracking);
   if (!text) return false;
 
-  const hasImportMarkers =
-    text.includes("MRN IMPORTAZIONE") ||
-    text.includes("DELIVERY ORDER") ||
-    text.includes("DELEGA PER IL RITIRO") ||
-    text.includes("SBARCATO");
+  return (
+    text.includes("ARRIVATO PIENO") ||
+    text.includes("ENTRATO PIENO") ||
+    text.includes("GATE IN") ||
+    text.includes("IN TERMINAL")
+  );
+}
 
-  const hasNotEnteredStatus =
-    text.includes("NON ENTRATO") ||
-    text.includes("SBARCATO PIENO") ||
-    text.includes("USCITO PIENO") ||
-    /\bUSCITO\b/.test(text);
+function isTfgNoDownloadResult(status, tracking, data = null) {
+  // TFG non ha eccezioni come CONATECO: se il portale restituisce una riga
+  // o uno stato utile del container, non va declassato a NON ENTRATO.
+  if (isTfgFoundResult(status, tracking, data)) return false;
+  if (data?.pdfAvailable === false) return true;
 
-  return hasImportMarkers && hasNotEnteredStatus;
+  const text = getTfgResultText(status, tracking);
+  if (!text) return false;
+
+  return text.includes("NON ENTRATO") || text.includes("NON TROVATO");
 }
 
 async function checkContainerTfg(container) {
@@ -10749,14 +10756,15 @@ async function checkContainerTfg(container) {
 
     const tracking = data.tracking || null;
     const status = data.status || tracking?.status || (data.found ? "TROVATO" : "NON TROVATO");
+    const foundResult = isTfgFoundResult(status, tracking, data);
     const noDownload = isTfgNoDownloadResult(status, tracking, data);
     const pdfUrl = noDownload
       ? ""
-      : (data.cachedPdfUrl || data.pdfUrl || (data.found && data.pdfAvailable !== false ? `/api/download-tfg-pdf?container=${encodeURIComponent(code)}` : ""));
+      : (data.cachedPdfUrl || data.pdfUrl || (foundResult && data.pdfAvailable !== false ? `/api/download-tfg-pdf?container=${encodeURIComponent(code)}` : ""));
 
     return {
       success: !!data.success,
-      found: !!data.found && !noDownload,
+      found: foundResult && !noDownload,
       status: noDownload ? "NON ENTRATO" : status,
       pdfUrl,
       tracking,
@@ -10804,7 +10812,13 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
     cell.style.color = "#dc2626";
   } else if (value.includes("RETROPORTO") || value.includes("LUOGO APPROVATO")) {
     cell.style.color = "#f59e0b";
-  } else if (value === "ENTRATO") {
+  } else if (
+    value === "ENTRATO" ||
+    value.includes("ARRIVATO PIENO") ||
+    value.includes("ENTRATO PIENO") ||
+    value.includes("GATE IN") ||
+    value.includes("IN TERMINAL")
+  ) {
     cell.style.color = "#16a34a";
   } else if (value.includes("PDF")) {
     cell.style.color = "#2563eb";
