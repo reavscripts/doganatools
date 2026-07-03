@@ -8334,6 +8334,19 @@ button.doganaModuleSvgToggleBtn:active,
       }
     };
 
+    function loadLocalActiveExtraTerminal(){
+      try {
+        const saved = String(localStorage.getItem(EXTRA_ACTIVE_TERMINAL_KEY) || "").toLowerCase();
+        if (EXTRA_TERMINALS[saved]) activeExtraTerminal = saved;
+      } catch {}
+    }
+
+    function saveLocalActiveExtraTerminal(){
+      try { localStorage.setItem(EXTRA_ACTIVE_TERMINAL_KEY, activeExtraTerminal); } catch {}
+    }
+
+    loadLocalActiveExtraTerminal();
+
     function emptyExtraRow(termKey = activeExtraTerminal){
       return {
         __id: makeExtraId(),
@@ -8505,11 +8518,10 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function clearExtraLocalCache(){
-      // La ricerca contenitori deve usare SOLO lo stato condiviso del backend.
-      // Rimuove le vecchie copie locali che potevano ripresentarsi e sovrascrivere
-      // contenitori già segnati da altri client.
+      // La ricerca contenitori deve usare SOLO lo stato condiviso del backend per le righe.
+      // Il tab attivo invece è una preferenza locale del singolo browser: non va cancellato,
+      // altrimenti ogni sincronizzazione può riportare visivamente il modulo su SCT.
       try { localStorage.removeItem(EXTRA_LS_KEY); } catch {}
-      try { localStorage.removeItem(EXTRA_ACTIVE_TERMINAL_KEY); } catch {}
       try { localStorage.removeItem(EXTRA_AUTOCHECK_KEY); } catch {}
     }
 
@@ -8527,7 +8539,8 @@ button.doganaModuleSvgToggleBtn:active,
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              activeExtraTerminal,
+              // Non salviamo activeExtraTerminal nello stato condiviso:
+              // SCT/CONATECO/TFG deve restare una scelta locale del singolo utente.
               extraAutoCheckEnabled
             })
           });
@@ -8741,9 +8754,9 @@ button.doganaModuleSvgToggleBtn:active,
           extraLastRemoteState = state;
         }
 
-        if (EXTRA_TERMINALS[state.activeExtraTerminal]) {
-          activeExtraTerminal = state.activeExtraTerminal;
-        }
+        // Non applicare state.activeExtraTerminal dal backend.
+        // Il tab attivo è locale: applicarlo qui causava il ritorno automatico su SCT
+        // dopo un click su CONATECO/TFG o dopo una sincronizzazione periodica.
 
         const remoteAutoCheckEnabled = !!state.extraAutoCheckEnabled;
         const autoChanged = remoteAutoCheckEnabled !== extraAutoCheckEnabled;
@@ -9429,6 +9442,7 @@ button.doganaModuleSvgToggleBtn:active,
     function setActiveExtraTerminal(termKey){
       if (!EXTRA_TERMINALS[termKey]) return;
       activeExtraTerminal = termKey;
+      saveLocalActiveExtraTerminal();
       renderExtra();
       saveExtra();
     }
@@ -11000,12 +11014,21 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     liveRow = getLiveRow();
     liveRow.flavio = flavioValue;
 
-    if (result && result.success && result.found && result.pdfUrl) {
-      liveRow.flavioStatus = "PDF PRONTO";
-      liveRow.flavioPdfUrl = result.pdfUrl;
+    if (result && result.success && result.found) {
       liveRow.flavioTracking = result.tracking || null;
-      notifyExtraPdfReadyFromCheck("flavio", flavioValue);
-      console.log("PDF TFG PRONTO:", flavioValue, result.pdfUrl);
+
+      if (result.pdfUrl) {
+        liveRow.flavioStatus = "PDF PRONTO";
+        liveRow.flavioPdfUrl = result.pdfUrl;
+        notifyExtraPdfReadyFromCheck("flavio", flavioValue);
+        console.log("PDF TFG PRONTO:", flavioValue, result.pdfUrl);
+      } else {
+        // TFG non ha eccezioni come CONATECO: se il portale restituisce la riga,
+        // il container deve risultare entrato anche senza PDF generato.
+        liveRow.flavioStatus = result.status || result.tracking?.status || "TROVATO";
+        liveRow.flavioPdfUrl = "";
+        console.log("TFG trovato senza PDF:", flavioValue, liveRow.flavioStatus);
+      }
     } else {
       liveRow.flavioStatus = result?.status || result?.error || "NON TROVATO";
       liveRow.flavioPdfUrl = "";
