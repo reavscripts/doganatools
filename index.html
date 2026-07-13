@@ -8413,10 +8413,13 @@ button.doganaModuleSvgToggleBtn:active,
 
     function getExtraRowDedupKey(row){
       const normalized = normalizeExtraRow(row);
-      const term = inferExtraTerminal(normalized);
-      const container = getExtraRowContainer(normalized, term);
-      if (!container) return "id:" + String(normalized.__id || makeExtraId());
-      return `container:${term}:${container}`;
+
+      // Le righe sono entità distinte e vengono riconosciute esclusivamente
+      // dal loro ID stabile. Non eliminare mai automaticamente due righe solo
+      // perché contengono lo stesso numero container: durante un controllo
+      // asincrono o una modifica multiutente un valore duplicato può essere
+      // temporaneo e non deve causare la sparizione di altre righe.
+      return "id:" + String(normalized.__id || makeExtraId());
     }
 
     function getExtraRowTime(row){
@@ -10853,28 +10856,36 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     return;
   }
 
-  // IMPORTANTE:
-  // renderExtra() normalizza e ricrea gli oggetti dentro extraRows.
-  // Quindi dopo un render non bisogna più aggiornare il vecchio rowData,
-  // ma la riga reale dentro extraRows.
-  const rowIndex = extraRows.indexOf(rowData);
+  // Ogni controllo asincrono resta legato all'ID stabile della riga.
+  // Usare l'indice numerico è pericoloso: eliminando una riga, gli indici di
+  // tutte le righe successive cambiano e il risultato può finire sul container
+  // sbagliato. In quel caso si creavano duplicati e altre righe scomparivano.
+  const rowId = String(rowData?.__id || "").trim();
+  if (!rowId || isExtraRowPendingDelete(rowId)) return;
+
+  const getLiveRowIndex = () => extraRows.findIndex(row =>
+    String(row?.__id || "") === rowId
+  );
+
   const getLiveRow = () => {
-    if (rowIndex >= 0 && extraRows[rowIndex]) return extraRows[rowIndex];
-    return rowData;
+    if (isExtraRowPendingDelete(rowId)) return null;
+    const liveIndex = getLiveRowIndex();
+    return liveIndex >= 0 ? extraRows[liveIndex] : null;
   };
 
   const saveLiveRowStatus = () => {
-    const live = getLiveRow();
-    if (rowIndex >= 0 && live) {
-      saveExtraLocalOnly();
-      scheduleSharedRowPatch(rowIndex, normalizeExtraRow(live), 0);
-    } else {
-      saveLiveRowStatus();
-    }
+    const liveIndex = getLiveRowIndex();
+    const live = liveIndex >= 0 ? extraRows[liveIndex] : null;
+    if (!live || isExtraRowPendingDelete(rowId)) return false;
+
+    saveExtraLocalOnly();
+    scheduleSharedRowPatch(liveIndex, normalizeExtraRow(live), 0);
+    return true;
   };
 
   if (term === "conateco") {
     let liveRow = getLiveRow();
+    if (!liveRow) return;
     const conatecoValue = String(liveRow.conateco || "").trim().toUpperCase();
     if (!conatecoValue) return;
 
@@ -10901,6 +10912,9 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const result = await checkContainerConateco(conatecoValue);
 
     liveRow = getLiveRow();
+    if (!liveRow || normalizeExtraContainerValue(liveRow.conateco) !== normalizeExtraContainerValue(conatecoValue)) {
+      return;
+    }
     liveRow.conateco = conatecoValue;
 
     if (result && result.success && result.found) {
@@ -10931,6 +10945,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
   if (term === "sct") {
     let liveRow = getLiveRow();
+    if (!liveRow) return;
     const sctValue = String(liveRow.sct || "").trim().toUpperCase();
     if (!sctValue) return;
 
@@ -10951,6 +10966,9 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const result = await checkContainerSCT(sctValue);
 
     liveRow = getLiveRow();
+    if (!liveRow || normalizeExtraContainerValue(liveRow.sct) !== normalizeExtraContainerValue(sctValue)) {
+      return;
+    }
     liveRow.sct = sctValue;
 
     if (result && result.success && result.pdfUrl) {
@@ -10987,6 +11005,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
   if (term === "flavio") {
     let liveRow = getLiveRow();
+    if (!liveRow) return;
     const flavioValue = String(liveRow.flavio || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (!flavioValue) return;
 
@@ -11012,6 +11031,9 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     const result = await checkContainerTfg(flavioValue);
 
     liveRow = getLiveRow();
+    if (!liveRow || normalizeExtraContainerValue(liveRow.flavio) !== normalizeExtraContainerValue(flavioValue)) {
+      return;
+    }
     liveRow.flavio = flavioValue;
 
     if (result && result.success && result.found) {
@@ -11054,18 +11076,28 @@ async function runAutoCheck(terminalKey = activeExtraTerminal) {
     ? terminalKey
     : (EXTRA_TERMINALS?.[activeExtraTerminal] ? activeExtraTerminal : "sct");
 
-  const rowsToCheck = getVisibleExtraEntries(terminalToCheck);
+  // Congela gli ID, non gli indici. Se una riga viene eliminata mentre il
+  // controllo è in corso, le altre continuano a essere trovate correttamente.
+  const rowIdsToCheck = getVisibleExtraEntries(terminalToCheck)
+    .map(entry => String(entry.row?.__id || "").trim())
+    .filter(Boolean);
 
-  for (let i = 0; i < rowsToCheck.length; i++) {
-    const rowData = extraRows[rowsToCheck[i].index];
-    if (!rowData) continue;
+  for (let i = 0; i < rowIdsToCheck.length; i++) {
+    const rowId = rowIdsToCheck[i];
+    if (isExtraRowPendingDelete(rowId)) continue;
+
+    const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === rowId);
+    if (liveIndex < 0) continue;
+
+    const rowData = extraRows[liveIndex];
+    if (!rowData || !rowBelongsToTerminal(rowData, terminalToCheck)) continue;
 
     try {
       // Controlla SOLO il terminal attualmente selezionato.
       // Così CONATECO/Napoli non richiama più SCT/Salerno.
       await checkExtraRowByTerminal(rowData, terminalToCheck);
     } catch (err) {
-      console.error("Errore controllo contenitori riga", i, err);
+      console.error("Errore controllo contenitori riga", rowId, err);
     }
   }
 
