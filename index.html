@@ -8154,10 +8154,11 @@ button.doganaModuleSvgToggleBtn:active,
       }
     }
 
-    const EXTRA_CLIENT_ID = getExtraClientId();
+    const EXTRA_CLIENT_ID = String(window.DOGANA_MULTIUSER?.clientId || getExtraClientId());
+    try { localStorage.setItem(EXTRA_CLIENT_ID_KEY, EXTRA_CLIENT_ID); } catch {}
     let EXTRA_CLIENT_NAME = (() => {
       try {
-        let name = localStorage.getItem(EXTRA_CLIENT_NAME_KEY) || localStorage.getItem("dogana_multi_client_name_v3");
+        let name = window.DOGANA_MULTIUSER?.clientName || localStorage.getItem(EXTRA_CLIENT_NAME_KEY) || localStorage.getItem("dogana_multi_client_name_v3");
         if (!name) {
           name = "PC-" + EXTRA_CLIENT_ID.slice(-5).toUpperCase();
         }
