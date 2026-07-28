@@ -174,6 +174,37 @@
 
     button:active{ transform:translateY(0); }
 
+    .doganaUndoBtn{
+      min-width:44px;
+      padding:10px 12px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .doganaUndoBtn svg{
+      width:18px;
+      height:18px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:2;
+      stroke-linecap:round;
+      stroke-linejoin:round;
+    }
+
+    .doganaUndoBtn:disabled{
+      opacity:.42;
+      cursor:not-allowed;
+      transform:none;
+      box-shadow:none;
+    }
+
+    .doganaUndoBtn:disabled:hover{
+      transform:none;
+      border-color:var(--btn-border);
+      box-shadow:none;
+    }
+
     .primary{
       background:linear-gradient(180deg, #3374f0, #2563eb);
       border-color:#2563eb;
@@ -6278,6 +6309,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
       <span class="doganaTitleSeparator" aria-hidden="true"></span>
     </div>
     <div class="left doganaTopButtons">
+      <button id="undoTableBtn" type="button" class="doganaUndoBtn" aria-label="Annulla ultima azione nella tabella" title="Annulla ultima azione" disabled><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 7 4 12l5 5"/><path d="M4 12h9a7 7 0 0 1 7 7"/></svg></button>
       <button id="mergeBtn">Unisci le voci</button>
       <button id="sortValueBtn">Ordina per valore fattura ↓</button>
       <button id="copyColumnBtn">Copia colonna</button>	  
@@ -7157,6 +7189,98 @@ button.doganaModuleSvgToggleBtn:active,
     let originalRows = [];
     let sortValueDescending = true;
 
+    const TABLE_UNDO_LIMIT = 50;
+    const tableUndoStack = [];
+    const tableEditSnapshots = new WeakMap();
+    let titleEditSnapshot = null;
+    let tableStateRestoring = false;
+
+    function cloneTableRows(source){
+      return JSON.parse(JSON.stringify(Array.isArray(source) ? source : []));
+    }
+
+    function captureTableState(){
+      return {
+        rows: cloneTableRows(rows),
+        title: document.getElementById("pdfTitleInput")?.value || "",
+        isMerged: !!isMerged,
+        originalRows: cloneTableRows(originalRows),
+        sortValueDescending: !!sortValueDescending
+      };
+    }
+
+    function tableStateSignature(state){
+      return JSON.stringify(state || {});
+    }
+
+    function updateUndoTableButton(){
+      const btn = document.getElementById("undoTableBtn");
+      if (!btn) return;
+      const available = tableUndoStack.length > 0;
+      btn.disabled = !available;
+      btn.title = available
+        ? `Annulla ultima azione (${tableUndoStack.length} disponibili)`
+        : "Nessuna azione da annullare";
+    }
+
+    function pushTableUndoState(snapshot = captureTableState()){
+      if (tableStateRestoring || !snapshot) return;
+      const safeSnapshot = JSON.parse(JSON.stringify(snapshot));
+      const last = tableUndoStack[tableUndoStack.length - 1];
+      if (last && tableStateSignature(last) === tableStateSignature(safeSnapshot)) {
+        updateUndoTableButton();
+        return;
+      }
+      tableUndoStack.push(safeSnapshot);
+      if (tableUndoStack.length > TABLE_UNDO_LIMIT) tableUndoStack.shift();
+      updateUndoTableButton();
+    }
+
+    function restoreTableState(snapshot){
+      if (!snapshot) return;
+      tableStateRestoring = true;
+      try {
+        rows = cloneTableRows(snapshot.rows);
+        isMerged = !!snapshot.isMerged;
+        originalRows = cloneTableRows(snapshot.originalRows);
+        sortValueDescending = snapshot.sortValueDescending !== false;
+
+        const titleInput = document.getElementById("pdfTitleInput");
+        if (titleInput) titleInput.value = snapshot.title || "";
+
+        updateSortValueButtonLabel();
+        render();
+        save();
+      } finally {
+        tableStateRestoring = false;
+        updateUndoTableButton();
+      }
+    }
+
+    function undoLastTableAction(){
+      const snapshot = tableUndoStack.pop();
+      if (!snapshot) {
+        updateUndoTableButton();
+        return;
+      }
+      restoreTableState(snapshot);
+    }
+
+    function beginTableCellEdit(input){
+      if (!input || tableStateRestoring) return;
+      tableEditSnapshots.set(input, captureTableState());
+    }
+
+    function commitTableCellEdit(input){
+      if (!input || tableStateRestoring) return;
+      const snapshot = tableEditSnapshots.get(input);
+      tableEditSnapshots.delete(input);
+      if (!snapshot) return;
+      if (tableStateSignature(snapshot) !== tableStateSignature(captureTableState())) {
+        pushTableUndoState(snapshot);
+      }
+    }
+
     const tbody = document.getElementById("tbody");
     const totalGrossEl = document.getElementById("totalGross");
     const totalPezziEl = document.getElementById("totalPezzi");
@@ -7169,10 +7293,39 @@ button.doganaModuleSvgToggleBtn:active,
     document.getElementById("addRowBtn").addEventListener("click", () => addRows(1, true));
     document.getElementById("add10Btn").addEventListener("click", () => addRows(10, true));
     document.getElementById("exportPdfBtn")?.addEventListener("click", exportTableToPdf);
-    document.getElementById("pdfTitleInput")?.addEventListener("input", savePdfTitle);
+
+    const undoTableBtn = document.getElementById("undoTableBtn");
+    const pdfTitleInput = document.getElementById("pdfTitleInput");
+
+    function beginPdfTitleEdit(){
+      if (!tableStateRestoring && !titleEditSnapshot) titleEditSnapshot = captureTableState();
+    }
+
+    function commitPdfTitleEdit(){
+      const snapshot = titleEditSnapshot;
+      titleEditSnapshot = null;
+      if (!snapshot || tableStateRestoring) return;
+      if (tableStateSignature(snapshot) !== tableStateSignature(captureTableState())) {
+        pushTableUndoState(snapshot);
+      }
+    }
+
+    undoTableBtn?.addEventListener("pointerdown", () => {
+      const active = document.activeElement;
+      if (active?.matches?.("#tbody input")) commitTableCellEdit(active);
+      if (active === pdfTitleInput) commitPdfTitleEdit();
+    });
+    undoTableBtn?.addEventListener("click", undoLastTableAction);
+
+    pdfTitleInput?.addEventListener("focus", beginPdfTitleEdit);
+    pdfTitleInput?.addEventListener("beforeinput", beginPdfTitleEdit);
+    pdfTitleInput?.addEventListener("input", savePdfTitle);
+    pdfTitleInput?.addEventListener("blur", commitPdfTitleEdit);
+
     document.getElementById("sortValueBtn")?.addEventListener("click", sortRowsByInvoiceValue);
     document.getElementById("clearBtn").addEventListener("click", () => {
       if (!confirm("Vuoi svuotare tutto?")) return;
+      pushTableUndoState();
       resetMergeState();
       rows = [];
       render();
@@ -7211,7 +7364,8 @@ button.doganaModuleSvgToggleBtn:active,
       originalRows = [];
     }
 
-    function addRows(count, focusLast=false){
+    function addRows(count, focusLast=false, recordUndo=true){
+      if (recordUndo) pushTableUndoState();
       resetMergeState();
       for (let i=0; i<count; i++){
         rows.push({ desc:"", colli:"", pezzi:"", gross:"", net:"", mq:"", value:"" });
@@ -7225,6 +7379,7 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function deleteRow(index){
+      pushTableUndoState();
       resetMergeState();
       rows.splice(index, 1);
       render();
@@ -7240,6 +7395,7 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function sortRowsByInvoiceValue(){
+      pushTableUndoState();
       const mergedState = isMerged;
       const originalSnapshot = JSON.parse(JSON.stringify(originalRows || []));
 
@@ -7316,6 +7472,7 @@ button.doganaModuleSvgToggleBtn:active,
       if (nextRow < 0) nextRow = 0;
 
       if (nextRow >= rows.length) {
+        pushTableUndoState();
         rows.push({ desc:"", colli:"", pezzi:"", gross:"", net:"", mq:"", value:"" });
         render();
         save();
@@ -7403,6 +7560,12 @@ button.doganaModuleSvgToggleBtn:active,
         tr.appendChild(tdActions);
 
         [inpDesc, inpColli, inpPezzi, inpGross, inpNet, inpMq, inpValue].forEach(inp => {
+          inp.addEventListener("focus", () => beginTableCellEdit(inp));
+          inp.addEventListener("beforeinput", () => {
+            if (!tableEditSnapshots.has(inp)) beginTableCellEdit(inp);
+          });
+          inp.addEventListener("blur", () => commitTableCellEdit(inp));
+
           inp.addEventListener("input", (e) => {
             resetMergeState();
             const row = Number(e.target.dataset.row);
@@ -7422,6 +7585,8 @@ button.doganaModuleSvgToggleBtn:active,
             if (lines.length <= 1 && !text.includes("\t")) return;
 
             e.preventDefault();
+            pushTableUndoState();
+            resetMergeState();
 
             const startRow = Number(inp.dataset.row);
             const field = inp.dataset.field;
@@ -7653,6 +7818,7 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
+      pushTableUndoState();
       resetMergeState();
 
       if (appendMode) {
@@ -7902,9 +8068,10 @@ button.doganaModuleSvgToggleBtn:active,
 
     const loaded = load();
     loadPdfTitle();
-    if (!loaded || rows.length === 0) addRows(8, false);
+    if (!loaded || rows.length === 0) addRows(8, false, false);
     else render();
     updateSortValueButtonLabel();
+    updateUndoTableButton();
 
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.key === "Enter") {
@@ -7914,6 +8081,7 @@ button.doganaModuleSvgToggleBtn:active,
     });
 
     document.getElementById("mergeBtn").addEventListener("click", () => {
+      pushTableUndoState();
       if (isMerged) {
         rows = JSON.parse(JSON.stringify(originalRows));
         resetMergeState();
