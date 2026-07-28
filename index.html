@@ -9104,7 +9104,12 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     const EXTRA_CONTAINER_FIELDS = ["sct", "conateco", "flavio"];
-    const EXTRA_CONTAINER_CODE_RE = /^[A-Z]{4}\d{7}$/;
+    const EXTRA_CONTAINER_CODE_RE = /^[A-Z]{3}U\d{7}$/;
+    const EXTRA_CONTAINER_LETTER_VALUES = Object.freeze({
+      A:10, B:12, C:13, D:14, E:15, F:16, G:17, H:18, I:19,
+      J:20, K:21, L:23, M:24, N:25, O:26, P:27, Q:28, R:29,
+      S:30, T:31, U:32, V:34, W:35, X:36, Y:37, Z:38
+    });
 
     function isExtraContainerField(field){
       return EXTRA_CONTAINER_FIELDS.includes(String(field || ""));
@@ -9117,9 +9122,33 @@ button.doganaModuleSvgToggleBtn:active,
         .replace(/\s+/g, "");
     }
 
+    function getExtraContainerCheckDigit(value){
+      const clean = normalizeExtraContainerValue(value);
+      const body = clean.slice(0, 10);
+      if (!/^[A-Z]{3}U\d{6}$/.test(body)) return null;
+
+      let sum = 0;
+      for (let index = 0; index < body.length; index++) {
+        const char = body[index];
+        const numericValue = /\d/.test(char)
+          ? Number(char)
+          : EXTRA_CONTAINER_LETTER_VALUES[char];
+
+        if (!Number.isFinite(numericValue)) return null;
+        sum += numericValue * (2 ** index);
+      }
+
+      const remainder = sum % 11;
+      return remainder === 10 ? 0 : remainder;
+    }
+
     function isValidExtraContainerCode(value){
       const clean = normalizeExtraContainerValue(value);
-      return !clean || EXTRA_CONTAINER_CODE_RE.test(clean);
+      if (!clean) return true;
+      if (!EXTRA_CONTAINER_CODE_RE.test(clean)) return false;
+
+      const expectedCheckDigit = getExtraContainerCheckDigit(clean);
+      return expectedCheckDigit !== null && expectedCheckDigit === Number(clean[10]);
     }
 
     function countExtraContainerOccurrences(field, value){
@@ -9165,7 +9194,7 @@ button.doganaModuleSvgToggleBtn:active,
 
       const field = input.dataset.extraField;
       const clean = normalizeExtraContainerValue(input.value);
-      const valid = !clean || EXTRA_CONTAINER_CODE_RE.test(clean);
+      const valid = isValidExtraContainerCode(clean);
       const duplicate = valid && !!clean && countExtraContainerOccurrences(field, clean) > 1;
 
       input.classList.toggle("extraContainerInvalid", !valid);
@@ -9173,7 +9202,7 @@ button.doganaModuleSvgToggleBtn:active,
       input.setAttribute("aria-invalid", valid ? "false" : "true");
 
       if (!valid) {
-        input.title = "Formato container non valido. Usa ABCD1234567: 4 lettere + 7 numeri.";
+        input.title = "Container non valido secondo ISO 6346: verifica formato, lettera U e cifra di controllo finale.";
         input.dataset.extraValidationTitle = "1";
       } else if (duplicate) {
         input.title = "Container duplicato nella lista.";
@@ -9512,8 +9541,8 @@ button.doganaModuleSvgToggleBtn:active,
             if (!extraRows[rowIndex]) return;
 
             if (isExtraContainerField(key)) {
-              const normalized = normalizeExtraContainerValue(e.target.value);
-              if (e.target.value !== normalized) e.target.value = normalized;
+              // Durante la digitazione non normalizziamo e non validiamo nulla.
+              // Il controllo ISO 6346 viene eseguito solo quando la cella perde il focus.
               clearExtraContainerValidation(e.target);
             }
 
