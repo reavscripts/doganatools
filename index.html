@@ -11198,7 +11198,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     if (activeExtraTerminal === "sct") {
       renderExtra();
     }
-    return;
+    return result;
   }
 
   if (term === "flavio") {
@@ -11262,52 +11262,126 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
   }
 }
 
-// --- FUNZIONE PRINCIPALE ---
-async function runAutoCheck(terminalKey = activeExtraTerminal) {
+// --- MOTORE DI CONTROLLO PARALLELO PER TERMINAL ---
+// SCT resta a concorrenza 1 perché usa una singola sessione autenticata JMT.
+// CONATECO usa API HTTP pubbliche; TFG usa richieste HTTP e PDF su browser dedicato.
+const EXTRA_TERMINAL_WORKERS = Object.freeze({
+  sct: 1,
+  conateco: 5,
+  flavio: 2
+});
+
+const extraTerminalCheckPromises = new Map();
+
+async function runExtraTerminalWorkers(rowIds, terminalToCheck) {
+  const limit = Math.max(
+    1,
+    Math.min(
+      Number(EXTRA_TERMINAL_WORKERS[terminalToCheck] || 1),
+      rowIds.length || 1
+    )
+  );
+
+  let cursor = 0;
+  let terminalAborted = false;
+
+  const workers = Array.from({ length: limit }, async () => {
+    while (true) {
+      if (terminalAborted) return;
+
+      const current = cursor++;
+      if (current >= rowIds.length) return;
+
+      const rowId = rowIds[current];
+      if (isExtraRowPendingDelete(rowId)) continue;
+
+      const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === rowId);
+      if (liveIndex < 0) continue;
+
+      const rowData = extraRows[liveIndex];
+      if (!rowData || !rowBelongsToTerminal(rowData, terminalToCheck)) continue;
+
+      try {
+        const result = await checkExtraRowByTerminal(rowData, terminalToCheck);
+
+        // Una sessione JMT scaduta è un errore di terminal, non del singolo
+        // container: interrompe la coda SCT e impedisce decine di alert uguali.
+        if (
+          terminalToCheck === "sct" &&
+          (result?.sessionExpired || result?.jmtSessionExpired)
+        ) {
+          terminalAborted = true;
+          console.warn("Controllo SCT interrotto: sessione JMT non disponibile");
+          return;
+        }
+      } catch (err) {
+        console.error(
+          "Errore controllo contenitori",
+          terminalToCheck,
+          "riga",
+          rowId,
+          err
+        );
+      }
+    }
+  });
+
+  await Promise.allSettled(workers);
+}
+
+async function runAutoCheckTerminal(terminalToCheck) {
   if (!Array.isArray(extraRows)) return;
 
   if (typeof refreshExtraContainerValidations === "function") {
     refreshExtraContainerValidations({ force: true });
   }
 
-  const terminalToCheck = EXTRA_TERMINALS?.[terminalKey]
-    ? terminalKey
-    : (EXTRA_TERMINALS?.[activeExtraTerminal] ? activeExtraTerminal : "sct");
-
-  // Congela gli ID, non gli indici. Se una riga viene eliminata mentre il
-  // controllo è in corso, le altre continuano a essere trovate correttamente.
+  // Congela gli ID, non gli indici. L'eliminazione di una riga durante il
+  // controllo non sposta i risultati sulle righe successive.
   const rowIdsToCheck = getVisibleExtraEntries(terminalToCheck)
     .map(entry => String(entry.row?.__id || "").trim())
     .filter(Boolean);
 
-  for (let i = 0; i < rowIdsToCheck.length; i++) {
-    const rowId = rowIdsToCheck[i];
-    if (isExtraRowPendingDelete(rowId)) continue;
+  console.log(
+    "Avvio controllo terminal",
+    terminalToCheck,
+    `righe=${rowIdsToCheck.length}`,
+    `worker=${EXTRA_TERMINAL_WORKERS[terminalToCheck] || 1}`
+  );
 
-    const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === rowId);
-    if (liveIndex < 0) continue;
-
-    const rowData = extraRows[liveIndex];
-    if (!rowData || !rowBelongsToTerminal(rowData, terminalToCheck)) continue;
-
-    try {
-      // Controlla SOLO il terminal attualmente selezionato.
-      // Così CONATECO/Napoli non richiama più SCT/Salerno.
-      await checkExtraRowByTerminal(rowData, terminalToCheck);
-    } catch (err) {
-      console.error("Errore controllo contenitori riga", rowId, err);
-    }
-  }
+  await runExtraTerminalWorkers(rowIdsToCheck, terminalToCheck);
 
   if (typeof saveExtra === "function") saveExtra();
   if (typeof renderExtra === "function") renderExtra();
+
   extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
     extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
   }
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 
-  console.log("Check completato", terminalToCheck, new Date().toLocaleTimeString());
+  console.log("Check terminal completato", terminalToCheck, new Date().toLocaleTimeString());
+}
+
+async function runAutoCheck(terminalKey = activeExtraTerminal) {
+  const terminalToCheck = EXTRA_TERMINALS?.[terminalKey]
+    ? terminalKey
+    : (EXTRA_TERMINALS?.[activeExtraTerminal] ? activeExtraTerminal : "sct");
+
+  // Evita che timer automatico e click manuale avviino due controlli
+  // sovrapposti sullo stesso terminal. Gli altri terminal restano indipendenti.
+  const existing = extraTerminalCheckPromises.get(terminalToCheck);
+  if (existing) return existing;
+
+  const task = runAutoCheckTerminal(terminalToCheck)
+    .finally(() => {
+      if (extraTerminalCheckPromises.get(terminalToCheck) === task) {
+        extraTerminalCheckPromises.delete(terminalToCheck);
+      }
+    });
+
+  extraTerminalCheckPromises.set(terminalToCheck, task);
+  return task;
 }
 
 async function runAutoCheckAllTerminals(){
@@ -11326,17 +11400,30 @@ async function runAutoCheckAllTerminals(){
     return;
   }
 
-  const originalTerminal = activeExtraTerminal;
-  for (const term of terminals) {
-    await runAutoCheck(term);
-  }
-  activeExtraTerminal = originalTerminal;
+  // Le tre pipeline partono nello stesso momento:
+  // SCT/JMT, CONATECO e TFG non si aspettano più a vicenda.
+  const results = await Promise.allSettled(
+    terminals.map(term => runAutoCheck(term))
+  );
+
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error("Controllo terminal fallito", terminals[index], result.reason);
+    }
+  });
+
   extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
     extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
   }
   if (typeof renderExtra === "function") renderExtra();
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
+
+  console.log(
+    "Check parallelo completato",
+    terminals.join(", "),
+    new Date().toLocaleTimeString()
+  );
 }
 
 /* API pubbliche usate dal pulsante Auto compatto aggiunto in fondo al file.
