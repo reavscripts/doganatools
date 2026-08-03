@@ -10769,6 +10769,8 @@ function getConatecoTrackingReferenceDate(tracking) {
   return null;
 }
 
+const CONATECO_RETROPORTO_RECENT_DAYS = 7;
+
 function getConatecoTrackingCurrentMonthCheck(tracking) {
   const parsed = getConatecoTrackingReferenceDate(tracking);
 
@@ -10781,14 +10783,34 @@ function getConatecoTrackingCurrentMonthCheck(tracking) {
   }
 
   const now = new Date();
-  const ok =
+  const sameCurrentMonth =
     parsed.date.getFullYear() === now.getFullYear() &&
     parsed.date.getMonth() === now.getMonth();
+
+  // Eccezione al cambio mese: un container ancora segnalato da CONATECO come
+  // RETROPORTO/LUOGO APPROVATO resta operativo se l'ingresso risale al massimo
+  // a 7 giorni fa. Esempio: 31/07 controllato il 03/08 = ENTRATO (RETROPORTO).
+  const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const trackingDateUtc = Date.UTC(
+    parsed.date.getFullYear(),
+    parsed.date.getMonth(),
+    parsed.date.getDate()
+  );
+  const ageDays = Math.floor((todayUtc - trackingDateUtc) / 86400000);
+  const notaTipo = getConatecoNotaTipo(tracking);
+  const recentRetroporto =
+    !!notaTipo &&
+    ageDays >= 0 &&
+    ageDays <= CONATECO_RETROPORTO_RECENT_DAYS;
+
+  const ok = sameCurrentMonth || recentRetroporto;
 
   return {
     ok,
     dateText: parsed.raw,
-    reason: ok ? "" : "DATA FUORI MESE CORRENTE"
+    reason: ok ? "" : "DATA FUORI MESE CORRENTE",
+    acceptedByRecentRetroporto: !sameCurrentMonth && recentRetroporto,
+    ageDays
   };
 }
 
