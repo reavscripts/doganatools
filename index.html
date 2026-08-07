@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-07-1246-dnd-autoscroll-lastcheck"/>
+<meta name="doganatools-build" content="2026-08-07-1355-container-entered-sound-fix"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -11274,6 +11274,113 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   }
 }
 
+/* === NOTIFICA SU VERA TRANSIZIONE: NON ENTRATO -> ENTRATO === */
+function isExtraEnteredNotificationState(terminal, row, result = null){
+  const term = String(terminal || "").toLowerCase() === "tfg" ? "flavio" : String(terminal || "").toLowerCase();
+  if (!row) return false;
+
+  const statusField = EXTRA_TERMINALS?.[term]?.statusField || `${term}Status`;
+  const pdfField = EXTRA_TERMINALS?.[term]?.pdfField || `${term}PdfUrl`;
+  const status = String(row?.[statusField] || "").trim().toUpperCase();
+
+  if (!status ||
+      status.includes("NON ENTRATO") ||
+      status.includes("NON TROVATO") ||
+      status.includes("NON RISULTA") ||
+      status.includes("NON PRESENTE") ||
+      status.includes("ERRORE") ||
+      status.includes("DA COLLEGARE") ||
+      /^CONTROLLO\.*$/i.test(status)) {
+    return false;
+  }
+
+  if (term === "sct") {
+    return status === "PDF PRONTO" ||
+      status.includes("VISTO ENTRARE") ||
+      status === "ENTRATO" ||
+      !!String(row?.[pdfField] || "").trim();
+  }
+
+  if (term === "conateco") {
+    return status === "ENTRATO" ||
+      status.startsWith("ENTRATO (") ||
+      (result?.success === true && result?.found === true);
+  }
+
+  if (term === "flavio") {
+    if (status === "PDF PRONTO" || !!String(row?.flavioPdfUrl || "").trim()) return true;
+    try {
+      if (typeof isTfgFoundResult === "function" && isTfgFoundResult(status, row?.flavioTracking || null, result)) {
+        return true;
+      }
+    } catch {}
+
+    return status.includes("ARRIVATO PIENO") ||
+      status.includes("ENTRATO PIENO") ||
+      status.includes("GATE IN") ||
+      status.includes("IN TERMINAL") ||
+      status === "ENTRATO" ||
+      (result?.success === true && result?.found === true);
+  }
+
+  return status === "ENTRATO" || status.startsWith("ENTRATO (");
+}
+
+function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, result = null){
+  const keyRaw = String(terminal || "").toLowerCase();
+  const key = keyRaw === "tfg" ? "flavio" : keyRaw;
+  const code = normalizeExtraNotifyContainer(container);
+  if (!/^[A-Z]{4}\d{7}$/.test(code)) return false;
+
+  const isEnteredNow = isExtraEnteredNotificationState(key, liveRow, result);
+
+  // Se torna negativo, riarmiamo la notifica: una successiva nuova entrata
+  // dello stesso container dovrà poter suonare di nuovo.
+  if (!isEnteredNow) {
+    try { window.doganaResetContainerNotified?.(key, code); } catch {}
+    return false;
+  }
+
+  // Non notificare un semplice ricontrollo di una riga che era già entrata.
+  if (wasEntered) return false;
+
+  const terminalLabel = EXTRA_TERMINALS?.[key]?.label || key.toUpperCase();
+  const title = "Container entrato";
+  const body = `${code} - ENTRATO (${terminalLabel})`;
+
+  try { showExtraToast?.(title, body, "success"); } catch {}
+
+  try {
+    if ("Notification" in window && Notification.permission === "granted") {
+      new Notification(title, {
+        body,
+        tag: `container-entered-${key}-${code}`,
+        requireInteraction: false
+      });
+    }
+  } catch {}
+
+  try {
+    const soundOn =
+      extraSoundEnabled === true ||
+      localStorage.getItem("doganatools_container_sound") === "1" ||
+      document.getElementById("extraSoundNotifyBtn")?.classList.contains("sound-on");
+
+    if (soundOn && typeof playExtraContainerSound === "function") {
+      setTimeout(() => {
+        try { playExtraContainerSound(); } catch {}
+      }, 60);
+    }
+  } catch {}
+
+  // Allinea anche il vecchio sistema anti-duplicati, così il MutationObserver
+  // non genera una seconda notifica quando renderExtra() ridisegna la riga.
+  try { markExtraNotifyFired?.(key, code); } catch {}
+  try { window.doganaMarkContainerNotified?.(key, code); } catch {}
+
+  return true;
+}
+
 async function checkExtraRowByTerminal(rowData, terminalKey) {
   const term = String(terminalKey || activeExtraTerminal || "sct").toLowerCase();
 
@@ -11333,6 +11440,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     if (!conatecoValue) return;
 
     const currentConatecoStatus = String(liveRow.conatecoStatus || "").trim().toUpperCase();
+    const conatecoWasEntered = isExtraEnteredNotificationState("conateco", liveRow);
     const currentConatecoHasNota =
       currentConatecoStatus.includes("LUOGO APPROVATO") ||
       currentConatecoStatus.includes("RETROPORTO") ||
@@ -11373,7 +11481,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
       // Nota presente = arancione e nessun download. Nota assente = ENTRATO e download PDF.
       liveRow.conatecoPdfUrl = resultHasNota ? "" : (result.pdfUrl || "");
-      if (!resultHasNota && result.pdfUrl) notifyExtraPdfReadyFromCheck("conateco", conatecoValue);
+      // La notifica viene gestita sotto sulla vera transizione di stato, non sulla sola presenza del PDF.
       console.log("CONATECO trovato:", conatecoValue, liveRow.conatecoStatus, liveRow.conatecoPdfUrl || "NO PDF PER NOTA");
     } else {
       liveRow.conatecoStatus = result?.status || result?.error || "NON ENTRATO";
@@ -11382,6 +11490,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       console.log("CONATECO esito:", conatecoValue, result);
     }
 
+    notifyExtraEnteredTransition("conateco", conatecoValue, conatecoWasEntered, liveRow, result);
     saveLiveRowStatus();
     if (activeExtraTerminal === "conateco") renderExtra();
     return;
@@ -11394,6 +11503,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     if (!sctValue) return;
 
     liveRow.sct = sctValue;
+    const sctWasEntered = isExtraEnteredNotificationState("sct", liveRow);
 
     const alreadyHasPdf =
       liveRow.sctStatus === "PDF PRONTO" &&
@@ -11425,7 +11535,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       liveRow.DataIngresso = result.DataIngresso || "";
       liveRow.Ora = result.Ora || "";
       liveRow.Causale = result.Causale || "";
-      notifyExtraPdfReadyFromCheck("sct", sctValue);
+      // La notifica viene gestita sotto sulla vera transizione di stato.
 
       console.log("PDF TROVATO E SALVATO NELLA RIGA:", sctValue, pdfUrl);
     } else {
@@ -11440,6 +11550,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       console.log("PDF NON TROVATO/ERRORE:", sctValue, result);
     }
 
+    notifyExtraEnteredTransition("sct", sctValue, sctWasEntered, liveRow, result);
     saveLiveRowStatus();
 
     if (activeExtraTerminal === "sct") {
@@ -11453,6 +11564,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     if (!liveRow) return;
     const flavioValue = String(liveRow.flavio || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
     if (!flavioValue) return;
+    const flavioWasEntered = isExtraEnteredNotificationState("flavio", liveRow);
 
     if (String(liveRow.flavioStatus || "").trim().toUpperCase() === "DA COLLEGARE") {
       liveRow.flavioStatus = "";
@@ -11488,7 +11600,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       if (result.pdfUrl) {
         liveRow.flavioStatus = "PDF PRONTO";
         liveRow.flavioPdfUrl = result.pdfUrl;
-        notifyExtraPdfReadyFromCheck("flavio", flavioValue);
+        // La notifica viene gestita sotto sulla vera transizione di stato.
         console.log("PDF TFG PRONTO:", flavioValue, result.pdfUrl);
       } else {
         // TFG non ha eccezioni come CONATECO: se il portale restituisce la riga,
@@ -11504,6 +11616,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       console.log("TFG esito:", flavioValue, result);
     }
 
+    notifyExtraEnteredTransition("flavio", flavioValue, flavioWasEntered, liveRow, result);
     saveLiveRowStatus();
     if (activeExtraTerminal === "flavio") renderExtra();
     return;
@@ -13278,12 +13391,22 @@ function rowLooksPdfGenerated(row){
   if (!row) return false;
 
   const text = String(row.innerText || row.textContent || "").toUpperCase();
+  if (
+    text.includes("NON ENTRATO") ||
+    text.includes("NON TROVATO") ||
+    text.includes("NON RISULTA") ||
+    text.includes("ERRORE")
+  ) return false;
 
   return (
     text.includes("PDF GENERATO") ||
     text.includes("PDF SCARICATO") ||
     text.includes("PDF OK") ||
+    text.includes("PDF PRONTO") ||
     text.includes("ENTRATO") ||
+    text.includes("ARRIVATO PIENO") ||
+    text.includes("GATE IN") ||
+    text.includes("IN TERMINAL") ||
     !!row.querySelector('a[href*=".pdf"], a[href*="report"], a[href*="pdf"]')
   );
 }
@@ -13535,35 +13658,82 @@ function initExtraAudioContext(){
 }
 
 function playExtraContainerSound(){
-  if (!extraSoundEnabled) return;
+  let enabled = extraSoundEnabled === true;
+  try {
+    enabled = enabled ||
+      localStorage.getItem("doganatools_container_sound") === "1" ||
+      document.getElementById("extraSoundNotifyBtn")?.classList.contains("sound-on");
+  } catch {}
+
+  if (!enabled) return;
+  extraSoundEnabled = true;
 
   const ctx = initExtraAudioContext();
   if (!ctx) return;
 
-  try {
-    const now = ctx.currentTime;
+  const playBeeps = () => {
+    try {
+      const now = ctx.currentTime;
 
-    function beep(freq, start, duration, gainValue){
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
+      function beep(freq, start, duration, gainValue){
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(freq, now + start);
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq, now + start);
 
-      gain.gain.setValueAtTime(0.0001, now + start);
-      gain.gain.exponentialRampToValueAtTime(gainValue, now + start + 0.015);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
+        gain.gain.setValueAtTime(0.0001, now + start);
+        gain.gain.exponentialRampToValueAtTime(gainValue, now + start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
 
-      osc.connect(gain);
-      gain.connect(ctx.destination);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-      osc.start(now + start);
-      osc.stop(now + start + duration + 0.03);
+        osc.start(now + start);
+        osc.stop(now + start + duration + 0.03);
+      }
+
+      beep(880, 0.00, 0.13, 0.08);
+      beep(1175, 0.16, 0.16, 0.07);
+    } catch (err) {
+      console.warn("Riproduzione suono container non riuscita:", err);
     }
+  };
 
-    beep(880, 0.00, 0.13, 0.08);
-    beep(1175, 0.16, 0.16, 0.07);
-  } catch {}
+  if (ctx.state === "running") {
+    playBeeps();
+    return;
+  }
+
+  // Chrome/Edge possono sospendere WebAudio dopo reload o inattività.
+  // Attendere davvero resume() evita il caso "Suono ON" ma nessun beep.
+  try {
+    const resumed = ctx.resume();
+    if (resumed && typeof resumed.then === "function") {
+      resumed.then(() => {
+        if (ctx.state === "running") playBeeps();
+      }).catch(err => console.warn("AudioContext non sbloccato:", err));
+    }
+  } catch (err) {
+    console.warn("AudioContext resume fallito:", err);
+  }
+}
+
+function armExtraAudioUnlock(){
+  if (window.__extraAudioUnlockArmed) return;
+  window.__extraAudioUnlockArmed = true;
+
+  const unlock = () => {
+    if (!extraSoundEnabled) return;
+    try {
+      const ctx = initExtraAudioContext();
+      if (ctx?.state === "suspended") ctx.resume().catch(() => {});
+    } catch {}
+  };
+
+  ["pointerdown", "keydown", "touchstart"].forEach(type => {
+    document.addEventListener(type, unlock, { capture:true, passive:true });
+  });
 }
 
 function updateExtraSoundButton(){
@@ -13585,6 +13755,11 @@ function initExtraSoundNotify(){
   }
 
   updateExtraSoundButton();
+  armExtraAudioUnlock();
+
+  // Se Suono ON è stato ripristinato da localStorage, prepara il contesto:
+  // Chrome lo sbloccherà definitivamente alla prima interazione utente.
+  if (extraSoundEnabled) initExtraAudioContext();
 
   btn?.addEventListener("click", () => {
     extraSoundEnabled = !extraSoundEnabled;
@@ -13785,6 +13960,22 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     notifiedRuntime[t].add(c);
     saveNotified();
   }
+
+  // API interna usata dal motore di controllo: consente alla notifica basata
+  // sulla transizione reale di allineare/reset tare la memoria anti-duplicati.
+  window.doganaMarkContainerNotified = function(terminal, container){
+    markNotified(terminal, container);
+  };
+
+  window.doganaResetContainerNotified = function(terminal, container){
+    const t = normTerminal(terminal);
+    const c = normContainer(container);
+    if (!c) return;
+    notifiedRuntime[t]?.delete(c);
+    try { window.EXTRA_NOTIFY_STATE?.[t]?.delete(c); } catch {}
+    saveNotified();
+    try { setExtraTabNotify?.(t, window.EXTRA_NOTIFY_STATE?.[t]?.size || 0); } catch {}
+  };
 
   function cleanBadgeFromAlreadyNotified(){
     // Il badge rosso deve indicare nuovi entrati non ancora visti/notificati.
