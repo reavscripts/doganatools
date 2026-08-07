@@ -3,6 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
+<meta name="doganatools-build" content="2026-08-07-1246-dnd-autoscroll-lastcheck"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -2260,6 +2261,16 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   font-weight:900;
   line-height:1.25;
   white-space:normal;
+}
+#extraTable .extraStatusLastCheck{
+  display:inline-block;
+  margin-left:6px;
+  font-size:10px;
+  line-height:1;
+  font-weight:600;
+  opacity:.62;
+  white-space:nowrap;
+  vertical-align:baseline;
 }
 @media (max-width:900px){
   .extraTopToolbar{ width:100%; justify-content:flex-start; }
@@ -8315,7 +8326,8 @@ button.doganaModuleSvgToggleBtn:active,
     let extraAutoCheckTimer = null; // timer SCT dinamico
     let extraFastAutoCheckTimer = null; // timer CONATECO/TFG
     let extraCountdownTimer = null;
-    let extraLastCheckAt = null;
+    let extraLastCheckAtByTerminal = { sct: null, conateco: null, flavio: null };
+    const extraCheckingRowIds = new Set();
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
@@ -8427,6 +8439,69 @@ button.doganaModuleSvgToggleBtn:active,
     let extraLocalDirtyUntil = 0;
     let extraDraggedRowId = "";
 
+    // Auto-scroll verticale durante il drag & drop delle righe contenitori.
+    // Serve soprattutto con liste lunghe: trascinando vicino al bordo superiore/inferiore
+    // della finestra la pagina continua a scorrere senza interrompere il trascinamento.
+    let extraDragPointerY = null;
+    let extraDragAutoScrollFrame = null;
+
+    function stopExtraDragAutoScroll(){
+      extraDragPointerY = null;
+      if (extraDragAutoScrollFrame !== null) {
+        cancelAnimationFrame(extraDragAutoScrollFrame);
+        extraDragAutoScrollFrame = null;
+      }
+    }
+
+    function runExtraDragAutoScroll(){
+      extraDragAutoScrollFrame = null;
+
+      if (!extraDraggedRowId || !Number.isFinite(extraDragPointerY)) return;
+
+      const viewportHeight = Math.max(document.documentElement?.clientHeight || 0, window.innerHeight || 0);
+      if (!viewportHeight) return;
+
+      // Zona sensibile proporzionale allo schermo, con limiti per desktop/notebook.
+      const edgeZone = Math.min(150, Math.max(90, Math.round(viewportHeight * 0.16)));
+      const y = Math.max(0, Math.min(viewportHeight, extraDragPointerY));
+      let speed = 0;
+
+      if (y < edgeZone) {
+        const intensity = 1 - (y / edgeZone);
+        speed = -Math.max(4, Math.round(34 * intensity));
+      } else if (y > viewportHeight - edgeZone) {
+        const intensity = 1 - ((viewportHeight - y) / edgeZone);
+        speed = Math.max(4, Math.round(34 * intensity));
+      }
+
+      if (speed !== 0) {
+        window.scrollBy(0, speed);
+      }
+
+      // Continua a verificare finché il drag è attivo: se il mouse rimane fermo
+      // vicino al bordo, lo scroll non deve fermarsi dopo un singolo evento dragover.
+      extraDragAutoScrollFrame = requestAnimationFrame(runExtraDragAutoScroll);
+    }
+
+    function updateExtraDragAutoScroll(clientY){
+      if (!extraDraggedRowId) return;
+      const y = Number(clientY);
+      if (!Number.isFinite(y)) return;
+      extraDragPointerY = y;
+      if (extraDragAutoScrollFrame === null) {
+        extraDragAutoScrollFrame = requestAnimationFrame(runExtraDragAutoScroll);
+      }
+    }
+
+    // Listener globale: durante il trascinamento il cursore può uscire dalla singola riga
+    // mentre la pagina scorre. Continuiamo quindi a leggere la posizione anche fuori dal <tr>.
+    document.addEventListener("dragover", (event) => {
+      if (!extraDraggedRowId) return;
+      updateExtraDragAutoScroll(event.clientY);
+    }, { passive: true });
+
+    document.addEventListener("drop", () => stopExtraDragAutoScroll(), true);
+
     // Evita che una riga appena eliminata possa rientrare da una sincronizzazione
     // o da un PATCH rimasto in coda sul browser.
     const EXTRA_DELETED_ROW_GRACE_MS = 5 * 60 * 1000;
@@ -8524,6 +8599,46 @@ button.doganaModuleSvgToggleBtn:active,
       }
     };
 
+    function normalizeExtraLastCheckMap(value){
+      const raw = value && typeof value === "object" ? value : {};
+      const out = { sct: null, conateco: null, flavio: null };
+      for (const term of Object.keys(out)) {
+        const n = Number(raw[term]);
+        out[term] = Number.isFinite(n) && n > 0 ? n : null;
+      }
+      return out;
+    }
+
+    function getExtraLastCheckAt(termKey = activeExtraTerminal){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
+      return Number(extraLastCheckAtByTerminal?.[term] || 0) || null;
+    }
+
+    function setExtraLastCheckAt(termKey, value = Date.now(), options = {}){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
+      const timestamp = Number(value);
+      if (!Number.isFinite(timestamp) || timestamp <= 0) return;
+      extraLastCheckAtByTerminal = {
+        ...normalizeExtraLastCheckMap(extraLastCheckAtByTerminal),
+        [term]: timestamp
+      };
+      if (!options.skipSave && typeof scheduleSharedMetaSave === "function") {
+        scheduleSharedMetaSave();
+      }
+      if (!options.skipUi && typeof updateExtraCheckInfo === "function") {
+        updateExtraCheckInfo();
+      }
+    }
+
+    function getExtraCheckingKey(rowId, termKey){
+      return `${String(termKey || "").toLowerCase()}:${String(rowId || "").trim()}`;
+    }
+
+    function isExtraRowChecking(rowId, termKey){
+      const key = getExtraCheckingKey(rowId, termKey);
+      return !!key && extraCheckingRowIds.has(key);
+    }
+
     function loadLocalActiveExtraTerminal(){
       try {
         const saved = String(localStorage.getItem(EXTRA_ACTIVE_TERMINAL_KEY) || "").toLowerCase();
@@ -8544,9 +8659,9 @@ button.doganaModuleSvgToggleBtn:active,
         __updatedAt: new Date().toISOString(),
         __updatedBy: EXTRA_CLIENT_ID,
         __terminal: EXTRA_TERMINALS[termKey] ? termKey : "sct",
-        clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
-        clientConateco:"", conateco:"", conatecoStatus:"", conatecoPdfUrl:"", conatecoTracking:null,
-        clientFlavio:"", flavio:"", flavioStatus:"", flavioPdfUrl:"", flavioTracking:null
+        clientSct:"", sct:"", sctStatus:"", sctPdfUrl:"", sctLastCheckedAt:null, StatoEsteso:"", DataIngresso:"", Ora:"", Causale:"",
+        clientConateco:"", conateco:"", conatecoStatus:"", conatecoPdfUrl:"", conatecoTracking:null, conatecoLastCheckedAt:null,
+        clientFlavio:"", flavio:"", flavioStatus:"", flavioPdfUrl:"", flavioTracking:null, flavioLastCheckedAt:null
       };
     }
 
@@ -8572,6 +8687,7 @@ button.doganaModuleSvgToggleBtn:active,
         sct: r?.sct ?? "",
         sctStatus: r?.sctStatus ?? "",
         sctPdfUrl: r?.sctPdfUrl ?? "",
+        sctLastCheckedAt: Number(r?.sctLastCheckedAt || 0) || null,
         StatoEsteso: r?.StatoEsteso ?? "",
         DataIngresso: r?.DataIngresso ?? "",
         Ora: r?.Ora ?? "",
@@ -8581,11 +8697,13 @@ button.doganaModuleSvgToggleBtn:active,
         conatecoStatus: r?.conatecoStatus ?? "",
         conatecoPdfUrl: r?.conatecoPdfUrl ?? "",
         conatecoTracking: r?.conatecoTracking ?? null,
+        conatecoLastCheckedAt: Number(r?.conatecoLastCheckedAt || 0) || null,
         clientFlavio: r?.clientFlavio ?? "",
         flavio: r?.flavio ?? "",
         flavioStatus: r?.flavioStatus ?? "",
         flavioPdfUrl: r?.flavioPdfUrl ?? "",
-        flavioTracking: r?.flavioTracking ?? null
+        flavioTracking: r?.flavioTracking ?? null,
+        flavioLastCheckedAt: Number(r?.flavioLastCheckedAt || 0) || null
       };
     }
 
@@ -8698,8 +8816,16 @@ button.doganaModuleSvgToggleBtn:active,
         // Teniamo temporaneamente solo la riga in focus per non cancellare caratteri
         // mentre l'utente sta scrivendo; appena la cella perde focus viene inviata
         // con PATCH /api/extra-row/:rowId e poi ricaricata dal server.
-        if (id && id === focusedRowId && localById.has(id)) {
-          merged.push(localById.get(id));
+        const localRow = id ? localById.get(id) : null;
+        const keepLocalRow = !!localRow && (
+          id === focusedRowId ||
+          isExtraRowChecking(id, inferExtraTerminal(localRow))
+        );
+        if (keepLocalRow) {
+          // Anche durante un controllo in corso conserviamo la copia locale:
+          // lo stato "Controllo..." è solo transitorio e non deve essere
+          // sovrascritto da un refresh realtime del vecchio stato server.
+          merged.push(localRow);
         } else {
           merged.push(remoteRow);
         }
@@ -8735,7 +8861,10 @@ button.doganaModuleSvgToggleBtn:active,
             body: JSON.stringify({
               // Non salviamo activeExtraTerminal nello stato condiviso:
               // SCT/CONATECO/TFG deve restare una scelta locale del singolo utente.
-              extraAutoCheckEnabled
+              extraAutoCheckEnabled,
+              // Timestamp separati per terminal: persistono dopo refresh e sono
+              // condivisi tra tutte le postazioni senza confondere SCT/CONATECO/TFG.
+              extraLastCheckAtByTerminal: normalizeExtraLastCheckMap(extraLastCheckAtByTerminal)
             })
           });
         } catch (err) {
@@ -8950,6 +9079,15 @@ button.doganaModuleSvgToggleBtn:active,
         const remoteAutoCheckEnabled = !!state.extraAutoCheckEnabled;
         const autoChanged = remoteAutoCheckEnabled !== extraAutoCheckEnabled;
         extraAutoCheckEnabled = remoteAutoCheckEnabled;
+
+        const remoteLastChecks = normalizeExtraLastCheckMap(state.extraLastCheckAtByTerminal);
+        const localLastChecks = normalizeExtraLastCheckMap(extraLastCheckAtByTerminal);
+        for (const term of Object.keys(localLastChecks)) {
+          const remoteTs = Number(remoteLastChecks[term] || 0);
+          const localTs = Number(localLastChecks[term] || 0);
+          if (remoteTs > localTs) localLastChecks[term] = remoteTs;
+        }
+        extraLastCheckAtByTerminal = localLastChecks;
         extraSharedLastPull = Date.now();
 
         saveExtraLocalOnly();
@@ -9264,6 +9402,7 @@ button.doganaModuleSvgToggleBtn:active,
         Object.assign(row, {
           sctStatus: "",
           sctPdfUrl: "",
+          sctLastCheckedAt: null,
           StatoEsteso: "",
           DataIngresso: "",
           Ora: "",
@@ -9275,8 +9414,9 @@ button.doganaModuleSvgToggleBtn:active,
         row.conatecoStatus = "";
         row.conatecoPdfUrl = "";
         row.conatecoTracking = null;
+        row.conatecoLastCheckedAt = null;
       }
-      if (field === "flavio") { row.flavioStatus = ""; row.flavioPdfUrl = ""; row.flavioTracking = null; }
+      if (field === "flavio") { row.flavioStatus = ""; row.flavioPdfUrl = ""; row.flavioTracking = null; row.flavioLastCheckedAt = null; }
     }
 
     function handleExtraContainerPaste(e){
@@ -9347,6 +9487,42 @@ button.doganaModuleSvgToggleBtn:active,
       const cfg = EXTRA_TERMINALS[activeExtraTerminal];
       if (extraTerminalSubtitle) extraTerminalSubtitle.textContent = cfg.subtitle;
       if (bookingLookupPanel) bookingLookupPanel.classList.add("is-visible");
+    }
+
+    function getExtraRowLastCheckedAt(row, termKey = activeExtraTerminal){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : "sct";
+      const field = term === "conateco"
+        ? "conatecoLastCheckedAt"
+        : (term === "flavio" ? "flavioLastCheckedAt" : "sctLastCheckedAt");
+      const timestamp = Number(row?.[field] || 0);
+      return Number.isFinite(timestamp) && timestamp > 0 ? timestamp : null;
+    }
+
+    function isExtraNegativeCheckStatus(status){
+      const value = String(status || "").toUpperCase();
+      return value.includes("NON TROVATO") || value.includes("NON ENTRATO");
+    }
+
+    function appendExtraLastCheckTime(td, row, termKey, status){
+      if (!td || !isExtraNegativeCheckStatus(status)) return;
+      const timestamp = getExtraRowLastCheckedAt(row, termKey);
+      if (!timestamp) return;
+
+      const date = new Date(timestamp);
+      if (Number.isNaN(date.getTime())) return;
+
+      const time = date.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
+      const fullDateTime = date.toLocaleString("it-IT", {
+        day: "2-digit", month: "2-digit", year: "numeric",
+        hour: "2-digit", minute: "2-digit", second: "2-digit"
+      });
+
+      const small = document.createElement("span");
+      small.className = "extraStatusLastCheck";
+      small.textContent = `· ${time}`;
+      small.title = `Ultimo controllo di questo container: ${fullDateTime}`;
+      small.setAttribute("aria-label", `Ultimo controllo ${fullDateTime}`);
+      td.appendChild(small);
     }
 
     function renderExtraStatusCell(td, row, cfg, containerValue){
@@ -9437,6 +9613,7 @@ button.doganaModuleSvgToggleBtn:active,
 
       td.textContent = status;
       colorStatus(td, status, containerValue, activeExtraTerminal);
+      appendExtraLastCheckTime(td, row, activeExtraTerminal, status);
       if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
     }
 
@@ -9490,7 +9667,9 @@ button.doganaModuleSvgToggleBtn:active,
         tr.dataset.extraRowId = row.__id || "";
 
         tr.addEventListener("dragover", (event) => {
-          if (!extraDraggedRowId || extraDraggedRowId === tr.dataset.extraRowId) return;
+          if (!extraDraggedRowId) return;
+          updateExtraDragAutoScroll(event.clientY);
+          if (extraDraggedRowId === tr.dataset.extraRowId) return;
           event.preventDefault();
           tr.classList.add("extraDropTarget");
         });
@@ -9501,6 +9680,7 @@ button.doganaModuleSvgToggleBtn:active,
 
         tr.addEventListener("drop", async (event) => {
           event.preventDefault();
+          stopExtraDragAutoScroll();
           tr.classList.remove("extraDropTarget");
           const draggedId = event.dataTransfer?.getData("text/plain") || extraDraggedRowId;
           extraDraggedRowId = "";
@@ -9525,8 +9705,10 @@ button.doganaModuleSvgToggleBtn:active,
           event.dataTransfer.effectAllowed = "move";
           event.dataTransfer.setData("text/plain", extraDraggedRowId);
           tr.classList.add("extraDragging");
+          updateExtraDragAutoScroll(event.clientY);
         });
         dragHandle.addEventListener("dragend", () => {
+          stopExtraDragAutoScroll();
           extraDraggedRowId = "";
           document.querySelectorAll("#extraTable tr.extraDragging, #extraTable tr.extraDropTarget").forEach(el => {
             el.classList.remove("extraDragging", "extraDropTarget");
@@ -9585,6 +9767,7 @@ button.doganaModuleSvgToggleBtn:active,
               Object.assign(extraRows[rowIndex], {
                 sctStatus: "",
                 sctPdfUrl: "",
+                sctLastCheckedAt: null,
                 StatoEsteso: "",
                 DataIngresso: "",
                 Ora: "",
@@ -9593,6 +9776,7 @@ button.doganaModuleSvgToggleBtn:active,
               Object.assign(patch, {
                 sctStatus: "",
                 sctPdfUrl: "",
+                sctLastCheckedAt: null,
                 StatoEsteso: "",
                 DataIngresso: "",
                 Ora: "",
@@ -9603,13 +9787,21 @@ button.doganaModuleSvgToggleBtn:active,
               extraRows[rowIndex].conatecoStatus = "";
               extraRows[rowIndex].conatecoPdfUrl = "";
               extraRows[rowIndex].conatecoTracking = null;
+              extraRows[rowIndex].conatecoLastCheckedAt = null;
               patch.conatecoStatus = "";
               patch.conatecoPdfUrl = "";
               patch.conatecoTracking = null;
+              patch.conatecoLastCheckedAt = null;
             }
             if (key === "flavio") {
               extraRows[rowIndex].flavioStatus = "";
+              extraRows[rowIndex].flavioPdfUrl = "";
+              extraRows[rowIndex].flavioTracking = null;
+              extraRows[rowIndex].flavioLastCheckedAt = null;
               patch.flavioStatus = "";
+              patch.flavioPdfUrl = "";
+              patch.flavioTracking = null;
+              patch.flavioLastCheckedAt = null;
             }
 
             updateExtraTabs();
@@ -10029,8 +10221,9 @@ button.doganaModuleSvgToggleBtn:active,
       }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
-      if (extraLastCheckText) extraLastCheckText.textContent = extraLastCheckAt ? formatExtraClock(extraLastCheckAt) : "mai eseguito";
-      extraLastCheckDot?.classList.toggle("ok", !!extraLastCheckAt);
+      const activeLastCheckAt = getExtraLastCheckAt(activeExtraTerminal);
+      if (extraLastCheckText) extraLastCheckText.textContent = activeLastCheckAt ? formatExtraClock(activeLastCheckAt) : "mai eseguito";
+      extraLastCheckDot?.classList.toggle("ok", !!activeLastCheckAt);
 
       if (extraAutoCheckEnabled) {
         if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
@@ -10041,8 +10234,8 @@ button.doganaModuleSvgToggleBtn:active,
         if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
 
         if (extraAutoStatus) {
-          extraAutoStatus.textContent = extraLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
+          extraAutoStatus.textContent = activeLastCheckAt
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
             : `Controllo automatico attivo. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`;
         }
       } else {
@@ -10050,8 +10243,8 @@ button.doganaModuleSvgToggleBtn:active,
         extraFastNextCheckAt = null;
         if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
         if (extraAutoStatus) {
-          extraAutoStatus.textContent = extraLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · disattivato.`
+          extraAutoStatus.textContent = activeLastCheckAt
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · disattivato.`
             : "Controllo automatico disattivato.";
         }
       }
@@ -11120,6 +11313,19 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     return true;
   };
 
+  const statusField = cfgForValidation?.statusField || "";
+  const checkingKey = getExtraCheckingKey(rowId, term);
+  let checkStarted = false;
+  const beginChecking = () => {
+    if (!checkingKey) return;
+    checkStarted = true;
+    extraCheckingRowIds.add(checkingKey);
+    // Lo stato transitorio resta solo nel browser. Non viene PATCHato sul server:
+    // se la pagina viene chiusa/ricaricata a metà richiesta non rimarrà mai
+    // un "Controllo..." permanente nello stato condiviso.
+  };
+
+  try {
   if (term === "conateco") {
     let liveRow = getLiveRow();
     if (!liveRow) return;
@@ -11140,10 +11346,10 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     // Le righe con Nota vanno sempre ricontrollate: quando la Nota sparisce devono diventare ENTRATO + DOWNLOAD.
     if (alreadyChecked && !currentConatecoHasNota) return;
 
+    beginChecking();
     liveRow.conateco = conatecoValue;
     liveRow.conatecoStatus = "Controllo...";
     liveRow.conatecoPdfUrl = "";
-    saveLiveRowStatus();
     if (activeExtraTerminal === "conateco") renderExtra();
 
     const result = await checkContainerConateco(conatecoValue);
@@ -11153,6 +11359,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       return;
     }
     liveRow.conateco = conatecoValue;
+    liveRow.conatecoLastCheckedAt = Date.now();
 
     if (result && result.success && result.found) {
       liveRow.conatecoStatus = result.status || getConatecoTrackingStatus(result.tracking || null);
@@ -11194,9 +11401,9 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
 
     if (alreadyHasPdf) return;
 
+    beginChecking();
     liveRow.sctStatus = "Controllo...";
     liveRow.sctPdfUrl = "";
-    saveLiveRowStatus();
 
     if (activeExtraTerminal === "sct") renderExtra();
 
@@ -11207,6 +11414,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       return;
     }
     liveRow.sct = sctValue;
+    liveRow.sctLastCheckedAt = Date.now();
 
     if (result && result.success && result.pdfUrl) {
       const pdfUrl = normalizeJmtPdfUrl(result.pdfUrl || result.rawPdfUrl || "");
@@ -11258,11 +11466,11 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     // TFG va ricontrollato anche se prima risultava PDF PRONTO:
     // vecchie cache possono riferirsi a risposte import/sbarco/uscita, che ora devono diventare NON ENTRATO.
 
+    beginChecking();
     liveRow.flavio = flavioValue;
     liveRow.flavioStatus = "Controllo...";
     liveRow.flavioPdfUrl = "";
     liveRow.flavioTracking = null;
-    saveLiveRowStatus();
     if (activeExtraTerminal === "flavio") renderExtra();
 
     const result = await checkContainerTfg(flavioValue);
@@ -11272,6 +11480,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       return;
     }
     liveRow.flavio = flavioValue;
+    liveRow.flavioLastCheckedAt = Date.now();
 
     if (result && result.success && result.found) {
       liveRow.flavioTracking = result.tracking || null;
@@ -11298,6 +11507,18 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     saveLiveRowStatus();
     if (activeExtraTerminal === "flavio") renderExtra();
     return;
+  }
+  } finally {
+    if (checkStarted) {
+      extraCheckingRowIds.delete(checkingKey);
+      const liveRow = getLiveRow();
+      if (liveRow && statusField && /^controllo\.*$/i.test(String(liveRow[statusField] || "").trim())) {
+        // Qualunque eccezione/uscita anticipata non deve lasciare la riga bloccata.
+        liveRow[statusField] = "";
+        saveLiveRowStatus();
+      }
+      if (activeExtraTerminal === term) renderExtra();
+    }
   }
 }
 
@@ -11388,12 +11609,18 @@ async function runAutoCheckTerminal(terminalToCheck) {
     `worker=${EXTRA_TERMINAL_WORKERS[terminalToCheck] || 1}`
   );
 
+  if (!rowIdsToCheck.length) {
+    if (typeof renderExtra === "function") renderExtra();
+    if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
+    return;
+  }
+
   await runExtraTerminalWorkers(rowIdsToCheck, terminalToCheck);
 
+  setExtraLastCheckAt(terminalToCheck, Date.now(), { skipSave: true, skipUi: true });
   if (typeof saveExtra === "function") saveExtra();
   if (typeof renderExtra === "function") renderExtra();
 
-  extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
     if (terminalToCheck === "sct") {
       extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
@@ -11447,7 +11674,6 @@ async function runAutoCheckFastTerminals(){
     }
   });
 
-  extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 }
@@ -11480,7 +11706,6 @@ async function runAutoCheckAllTerminals(){
     }
   });
 
-  extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
     extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
     extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
