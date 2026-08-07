@@ -1371,7 +1371,7 @@ body[data-theme="dark"] .shipStatus.tomorrow{
 }
 
 
-/* === NAVI IN CHIUSURA - schede dettagliate filtro oggi/domani/dopodomani === */
+/* === NAVI IN CHIUSURA - finestra operativa entro 2 giorni lavorativi === */
 .shipClosingCard{
   width:100%;
   display:grid;
@@ -6665,7 +6665,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
             <div class="shipTerminalIcon">C</div>
             <div class="shipCardTitle">
               <strong>CONATECO</strong>
-              <span>Filtro: chiuse oggi · in chiusura oggi, domani e dopodomani. Le note evidenziano eventuale accettazione retroporto.</span>
+              <span>Filtro operativo: chiuse oggi · in chiusura entro 2 giorni lavorativi. Le note evidenziano eventuale accettazione retroporto.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountConatecoHead">0</strong></span>
@@ -6692,7 +6692,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
             <div class="shipTerminalIcon">T</div>
             <div class="shipCardTitle">
               <strong>TFG / Flavio Gioia</strong>
-              <span>Filtro: chiuse oggi · in chiusura oggi, domani e dopodomani dal portale TFG.</span>
+              <span>Filtro operativo: chiuse oggi · in chiusura entro 2 giorni lavorativi dal portale TFG.</span>
             </div>
           </div>
           <span class="shipBadge">Totale <strong id="shipCountTfgHead">0</strong></span>
@@ -10017,8 +10017,8 @@ button.doganaModuleSvgToggleBtn:active,
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
       if (extraAutoCheckLabel) {
         extraAutoCheckLabel.textContent = extraAutoCheckEnabled
-          ? `ON · SCT ${sctMinutes} min · C/TFG ${fastMinutes} min`
-          : `OFF · SCT ${sctMinutes} min · C/TFG ${fastMinutes} min`;
+          ? `ON · SCT ${sctMinutes} min · CON/TFG ${fastMinutes} min`
+          : `OFF · SCT ${sctMinutes} min · CON/TFG ${fastMinutes} min`;
       }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
@@ -11720,10 +11720,13 @@ const refreshShipsBtn = document.getElementById("refreshShipsBtn");
 if (refreshShipsBtn) {
   refreshShipsBtn.addEventListener("click", async () => {
     await Promise.allSettled([
-      loadShipsSct(),
-      loadShipsConateco(),
-      loadShipsTfg()
+      loadShipsSct(true),
+      loadShipsConateco(true),
+      loadShipsTfg(true)
     ]);
+    // La prossima ricerca rilegge il dataset "all" dal backend.
+    // Il backend deciderà se riusare la cache globale (< 8h) o aggiornarla.
+    resetShipSearchDatasetCache();
   });
 }
 
@@ -11774,6 +11777,75 @@ function parseShipDate(value){
   return Number.isNaN(date.getTime()) ? null : date;
 }
 
+function isShipWorkingDay(date){
+  const d = date instanceof Date ? date : new Date(date);
+  if (Number.isNaN(d.getTime())) return false;
+  const day = d.getDay();
+  return day !== 0 && day !== 6;
+}
+
+function countShipWorkingDaysUntil(closeDate, referenceDate = new Date()){
+  const from = new Date(referenceDate);
+  const to = closeDate instanceof Date ? new Date(closeDate) : parseShipDate(closeDate);
+  if (!to || Number.isNaN(from.getTime()) || Number.isNaN(to.getTime())) return null;
+
+  from.setHours(0, 0, 0, 0);
+  to.setHours(0, 0, 0, 0);
+  if (to < from) return -1;
+
+  let workingDays = 0;
+  const cursor = new Date(from);
+  while (cursor < to) {
+    cursor.setDate(cursor.getDate() + 1);
+    if (isShipWorkingDay(cursor)) workingDays++;
+  }
+  return workingDays;
+}
+
+function getShipOperationalUrgency(row){
+  const closeDate = parseShipDate(getShipCloseValue(row));
+
+  if (isShipClosed(row)) {
+    return { className: "closed", label: "CHIUSA", workingDays: -1 };
+  }
+
+  if (!closeDate) {
+    return { className: "unknown", label: "DATA NON LETTA", workingDays: null };
+  }
+
+  const workingDays = countShipWorkingDaysUntil(closeDate);
+  if (workingDays === null) {
+    return { className: "unknown", label: "DATA NON LETTA", workingDays: null };
+  }
+
+  if (workingDays < 0) {
+    return { className: "closed", label: "CHIUSURA SUPERATA", workingDays };
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const closeDay = new Date(closeDate);
+  closeDay.setHours(0, 0, 0, 0);
+  const sameDay = closeDay.getTime() === today.getTime();
+
+  // Regola operativa: il weekend non conta come tempo utile.
+  // Venerdì -> lunedì = 1 giorno lavorativo (rosso).
+  // Lunedì -> mercoledì = 2 giorni lavorativi (giallo).
+  if (workingDays <= 1) {
+    return {
+      className: "urgent",
+      label: sameDay ? "CHIUSURA OGGI" : `IN CHIUSURA · ${workingDays} GG LAV.`,
+      workingDays
+    };
+  }
+
+  if (workingDays === 2) {
+    return { className: "warning", label: "IN CHIUSURA · 2 GG LAV.", workingDays };
+  }
+
+  return { className: "future", label: `PROGRAMMATA · ${workingDays} GG LAV.`, workingDays };
+}
+
 function getShipCloseValue(row){
   return row?.chiusura || row?.data || row?.customCloseTime || row?.tdtcd1 || row?.closing || "";
 }
@@ -11808,19 +11880,15 @@ function isShipVisibleInClosingModule(row){
   const closeDay = new Date(closeDate);
   closeDay.setHours(0, 0, 0, 0);
 
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const dayAfterTomorrow = new Date(today);
-  dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 2);
-
   if (isShipClosed(row)) {
     // Navi già chiuse: mostra solo quelle chiuse oggi.
     return closeDay.getTime() === today.getTime();
   }
 
-  // Navi in chiusura/aperta: mostra oggi, domani e dopodomani.
-  return closeDay >= today && closeDay <= dayAfterTomorrow;
+  // Finestra operativa: oggi + i prossimi 2 giorni lavorativi.
+  // Sabato e domenica non consumano giorni utili.
+  const workingDays = countShipWorkingDaysUntil(closeDate, today);
+  return workingDays !== null && workingDays >= 0 && workingDays <= 2;
 }
 
 function filterShipsVisibleForClosingModule(rows){
@@ -11903,7 +11971,7 @@ function setShipTfgCounts(count) {
   document.getElementById("shipTabCountTfg") && (document.getElementById("shipTabCountTfg").textContent = countText);
 }
 
-async function loadShipsSct() {
+async function loadShipsSct(forceRefresh = false) {
   const tbody = document.getElementById("tbody-sct");
   if (!tbody) return;
 
@@ -11912,7 +11980,7 @@ async function loadShipsSct() {
   refreshShipsBtn.textContent = "Aggiornamento...";
 
   try {
-    const res = await fetch(apiUrl("/get-ships-sct"));
+    const res = await fetch(apiUrl(`/get-ships-sct${forceRefresh ? "?refresh=1" : ""}`), { cache: "no-store" });
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -11969,15 +12037,13 @@ function getShipWindowLabel(row) {
     return "CHIUSA";
   }
 
-  if (diffDays === 0) return "IN CHIUSURA OGGI";
-  if (diffDays === 1) return "IN CHIUSURA DOMANI";
-  if (diffDays === 2) return "IN CHIUSURA DOPODOMANI";
-  return "IN CHIUSURA";
+  return getShipOperationalUrgency(row).label;
 }
 
 function renderShipClosingCard(row, terminal) {
   const statusClass = getShipStatusClass(row);
   const statusLabel = getShipStatusLabel(row);
+  const urgency = getShipOperationalUrgency(row);
   const nave = shipClosingValue(row, ["nave", "nome", "nome_nave", "vessel"], "-");
   const chiusura = getShipCloseValue(row) || "-";
   const viaggio = shipClosingValue(row, ["viaggio", "voyage", "arrVoy", "depVoy", "voy", "codiceViaggio"]);
@@ -12011,6 +12077,7 @@ function renderShipClosingCard(row, terminal) {
             <div class="shipClosingTop">
               <span class="shipClosingTerminal">${escapeHtml(terminal)}</span>
               <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+              <span class="shipClosingUrgencyBadge ${urgency.className}">${escapeHtml(urgency.label)}</span>
               <span class="shipClosingWindow">${escapeHtml(windowLabel)}</span>
             </div>
             <div>
@@ -12049,7 +12116,7 @@ function renderShipsSct(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura entro 2 giorni lavorativi.</td></tr>`;
     return;
   }
 
@@ -12057,14 +12124,14 @@ function renderShipsSct(data) {
 }
 
 
-async function loadShipsConateco() {
+async function loadShipsConateco(forceRefresh = false) {
   const tbody = document.getElementById("tbody-conateco");
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi CONATECO...</td></tr>`;
 
   try {
-    const res = await fetch(apiUrl("/get-ships-conateco"));
+    const res = await fetch(apiUrl(`/get-ships-conateco${forceRefresh ? "?refresh=1" : ""}`), { cache: "no-store" });
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -12096,14 +12163,14 @@ function renderShipsConateco(data) {
 }
 
 
-async function loadShipsTfg() {
+async function loadShipsTfg(forceRefresh = false) {
   const tbody = document.getElementById("tbody-tfg");
   if (!tbody) return;
 
   tbody.innerHTML = `<tr><td colspan="3" class="shipLoading">Caricamento navi TFG...</td></tr>`;
 
   try {
-    const res = await fetch(apiUrl("/get-ships-tfg"));
+    const res = await fetch(apiUrl(`/get-ships-tfg${forceRefresh ? "?refresh=1" : ""}`), { cache: "no-store" });
     const payload = await res.json();
 
     if (!res.ok || payload?.success === false) {
@@ -12115,7 +12182,7 @@ async function loadShipsTfg() {
 
     // TFG: oltre al filtro data della chiusura doganale, mostra sempre
     // le navi che accettano carico. Sono operative anche se non rientrano
-    // nella finestra oggi/domani/dopodomani.
+    // nella finestra operativa dei prossimi 2 giorni lavorativi.
     const visibleShips = ships.filter(row =>
       isShipVisibleInClosingModule(row) || isTfgAcceptaCarico(row)
     );
@@ -12135,7 +12202,7 @@ function renderShipsTfg(data) {
   if (!tbody) return;
 
   if (!Array.isArray(data) || !data.length) {
-    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa oggi o in chiusura oggi/domani/dopodomani.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="3" class="shipEmpty">Nessuna nave TFG chiusa oggi o in chiusura entro 2 giorni lavorativi.</td></tr>`;
     return;
   }
 
@@ -12149,6 +12216,97 @@ const SHIP_SEARCH_ENDPOINTS = [
   { terminal: "CONATECO", url: apiUrl("/get-ships-conateco?all=1") },
   { terminal: "TFG", url: apiUrl("/get-ships-tfg?all=1") }
 ];
+
+const SHIP_SEARCH_CACHE_MS = 8 * 60 * 60 * 1000;
+let shipSearchDatasetCache = {
+  ships: null,
+  errors: [],
+  validUntil: 0,
+  loadedAt: 0,
+  promise: null
+};
+
+function resetShipSearchDatasetCache(){
+  shipSearchDatasetCache.ships = null;
+  shipSearchDatasetCache.errors = [];
+  shipSearchDatasetCache.validUntil = 0;
+  shipSearchDatasetCache.loadedAt = 0;
+}
+
+function getShipPayloadSavedAtMs(payload){
+  const epoch = Number(payload?.cacheSavedAtEpoch || 0);
+  if (Number.isFinite(epoch) && epoch > 0) return epoch;
+
+  const parsedCache = parseShipDate(payload?.cacheSavedAt);
+  if (parsedCache) return parsedCache.getTime();
+
+  const parsedUpdate = parseShipDate(payload?.updatedAt || payload?.generatedAt || payload?.lastUpdate);
+  if (parsedUpdate) return parsedUpdate.getTime();
+
+  return Date.now();
+}
+
+async function loadShipSearchDataset(){
+  const now = Date.now();
+  if (Array.isArray(shipSearchDatasetCache.ships) && now < shipSearchDatasetCache.validUntil) {
+    return {
+      ships: shipSearchDatasetCache.ships,
+      errors: shipSearchDatasetCache.errors,
+      fromClientCache: true
+    };
+  }
+
+  if (shipSearchDatasetCache.promise) return shipSearchDatasetCache.promise;
+
+  shipSearchDatasetCache.promise = (async () => {
+    const responses = await Promise.allSettled(
+      SHIP_SEARCH_ENDPOINTS.map(async item => {
+        // Niente cache-buster casuale: il backend gestisce una cache condivisa di 8 ore.
+        const res = await fetch(item.url, { cache: "no-store" });
+        const payload = await res.json();
+        if (!res.ok || payload?.success === false) {
+          throw new Error(payload?.error || `Errore ${item.terminal}`);
+        }
+        const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
+        return {
+          ships: ships.map(ship => ({ ...ship, terminalRicerca: item.terminal })),
+          savedAtMs: getShipPayloadSavedAtMs(payload)
+        };
+      })
+    );
+
+    const allShips = [];
+    const errors = [];
+    const sourceExpirations = [];
+
+    responses.forEach((result, index) => {
+      if (result.status === "fulfilled") {
+        allShips.push(...result.value.ships);
+        sourceExpirations.push(result.value.savedAtMs + SHIP_SEARCH_CACHE_MS);
+      } else {
+        errors.push(`${SHIP_SEARCH_ENDPOINTS[index].terminal}: ${result.reason?.message || "errore"}`);
+      }
+    });
+
+    // La cache client non può vivere più a lungo della fonte più vecchia.
+    // Se un terminale è in errore, riprova entro 5 minuti invece di congelare l'errore per 8 ore.
+    let validUntil = sourceExpirations.length ? Math.min(...sourceExpirations) : Date.now();
+    if (errors.length) validUntil = Math.min(validUntil, Date.now() + 5 * 60 * 1000);
+
+    shipSearchDatasetCache.ships = allShips;
+    shipSearchDatasetCache.errors = errors;
+    shipSearchDatasetCache.loadedAt = Date.now();
+    shipSearchDatasetCache.validUntil = Math.max(Date.now(), validUntil);
+
+    return { ships: allShips, errors, fromClientCache: false };
+  })();
+
+  try {
+    return await shipSearchDatasetCache.promise;
+  } finally {
+    shipSearchDatasetCache.promise = null;
+  }
+}
 
 function normalizeShipSearchText(value){
   return String(value || "")
@@ -12212,6 +12370,7 @@ function renderShipSearchCard(row){
   const chiusura = getShipRowClose(row);
   const statusClass = getShipStatusClass(row);
   const statusLabel = getShipStatusLabel(row);
+  const urgency = getShipOperationalUrgency(row);
   const viaggio = firstShipValue(row, ["viaggio", "voyage", "arrVoy", "depVoy", "voy", "codiceViaggio"]);
   const eta = firstShipValue(row, ["eta", "ETA", "eTA", "E.T.A.", "arrivo", "arrival", "dataArrivo", "data_arrivo", "tdta", "etaDate"]);
   const etd = firstShipValue(row, ["etd", "ETD", "eTD", "E.T.D.", "ets", "ETS", "partenza", "departure", "dataPartenza", "data_partenza", "tdtd", "etaDeparture"]);
@@ -12246,7 +12405,7 @@ function renderShipSearchCard(row){
           <div class="shipSearchMain">
             <div class="shipSearchTop">
               <span class="shipSearchHitTerminal">${escapeHtml(terminal)}</span>
-              <span class="shipStatus ${statusClass}">${escapeHtml(statusLabel)}</span>
+              <span class="shipClosingUrgencyBadge ${urgency.className}">${escapeHtml(urgency.label)}</span>
             </div>
             <div>
               <div class="shipSearchName">${escapeHtml(nave)}</div>
@@ -12304,28 +12463,9 @@ async function searchShipsEverywhere(query){
   tbody.innerHTML = `<tr><td colspan="4" class="shipLoading">Ricerca nave in corso...</td></tr>`;
   if (status) status.textContent = "Ricerca in corso...";
 
-  const responses = await Promise.allSettled(
-    SHIP_SEARCH_ENDPOINTS.map(async item => {
-      const res = await fetch(item.url + "&_=" + Date.now());
-      const payload = await res.json();
-      if (!res.ok || payload?.success === false) {
-        throw new Error(payload?.error || `Errore ${item.terminal}`);
-      }
-      const ships = Array.isArray(payload) ? payload : (payload.ships || payload.data || []);
-      return ships.map(ship => ({ ...ship, terminalRicerca: item.terminal }));
-    })
-  );
-
-  const allShips = [];
-  const errors = [];
-
-  responses.forEach((result, index) => {
-    if (result.status === "fulfilled") {
-      allShips.push(...result.value);
-    } else {
-      errors.push(`${SHIP_SEARCH_ENDPOINTS[index].terminal}: ${result.reason?.message || "errore"}`);
-    }
-  });
+  const dataset = await loadShipSearchDataset();
+  const allShips = dataset.ships || [];
+  const errors = dataset.errors || [];
 
   const matches = allShips.filter(row => {
     const haystack = normalizeShipSearchText([
@@ -12357,7 +12497,7 @@ async function searchShipsEverywhere(query){
   if (status) {
     status.textContent = errors.length
       ? `Trovate ${matches.length}. Alcuni terminal non hanno risposto: ${errors.join(" | ")}`
-      : `Trovate ${matches.length} navi`;
+      : `Trovate ${matches.length} navi${dataset.fromClientCache ? " · dati ricerca in cache" : ""}`;
   }
 }
 
@@ -14312,7 +14452,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     }
 
     if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
-    if (intervalLabel) intervalLabel.textContent = `SCT ${minutes}m · C/TFG 3m`;
+    if (intervalLabel) intervalLabel.textContent = `SCT ${minutes}m · CON/TFG 3m`;
   }
 
   function setOn(on, runImmediately){
@@ -14721,7 +14861,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   min-width:0 !important;
   box-sizing:border-box !important;
   display:grid !important;
-  grid-template-columns:minmax(220px, 1fr) 160px 130px;
+  grid-template-columns:minmax(220px, 1fr) 170px 140px 110px minmax(185px, .9fr);
   gap:10px;
   align-items:center;
   padding:10px 12px;
@@ -14806,6 +14946,82 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   white-space:nowrap;
 }
 
+.shipClosingUrgencyBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:36px;
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid var(--grid-soft);
+  font-size:10px;
+  font-weight:950;
+  letter-spacing:.04em;
+  text-align:center;
+  line-height:1.2;
+}
+.shipClosingUrgencyBadge.urgent{
+  color:#991b1b;
+  background:#fee2e2;
+  border-color:#fecaca;
+}
+.shipClosingUrgencyBadge.warning{
+  color:#92400e;
+  background:#fef3c7;
+  border-color:#fde68a;
+}
+.shipClosingUrgencyBadge.future{
+  color:#075985;
+  background:#e0f2fe;
+  border-color:#bae6fd;
+}
+.shipClosingUrgencyBadge.closed{
+  color:#7f1d1d;
+  background:#fecaca;
+  border-color:#fca5a5;
+}
+.shipClosingUrgencyBadge.unknown{
+  color:var(--muted);
+  background:var(--hint-bg);
+  border-color:var(--grid-soft);
+}
+
+.shipAcceptanceBox{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  min-width:0;
+  padding:8px 10px;
+  border-radius:12px;
+  border:1px solid color-mix(in srgb, var(--accent-2) 22%, var(--grid-soft));
+  background:color-mix(in srgb, var(--accent-2) 7%, var(--surface));
+}
+.shipAcceptanceBox span{
+  color:var(--muted);
+  font-size:9px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.shipAcceptanceBox strong{
+  color:var(--heading);
+  font-size:11px;
+  font-weight:950;
+  line-height:1.25;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+
+body[data-theme="dark"] .shipClosingUrgencyBadge.urgent{
+  color:#fecaca; background:rgba(127,29,29,.35); border-color:rgba(248,113,113,.28);
+}
+body[data-theme="dark"] .shipClosingUrgencyBadge.warning{
+  color:#fde68a; background:rgba(120,53,15,.35); border-color:rgba(251,191,36,.28);
+}
+body[data-theme="dark"] .shipClosingUrgencyBadge.future{
+  color:#bae6fd; background:rgba(12,74,110,.35); border-color:rgba(56,189,248,.28);
+}
+
 .shipClosingTopLine,
 .shipClosingMainBlock,
 .shipClosingDataBlock,
@@ -14817,11 +15033,12 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   display:none !important;
 }
 
-@media (max-width:760px){
+@media (max-width:980px){
   .shipClosingCardsList .shipClosingCard{
     grid-template-columns:1fr 1fr;
   }
-  .shipClosingCompactMain{
+  .shipClosingCompactMain,
+  .shipAcceptanceBox{
     grid-column:1 / -1;
   }
 }
@@ -14888,6 +15105,24 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     };
   }
 
+  function acceptanceText(row){
+    const dry = pick(row, ['acceptanceDry','accettaDry','dry','accettazioneDry'], '');
+    const reef = pick(row, ['acceptanceReef','acceptanceReefer','accettaReef','reefer','accettazioneReef'], '');
+    const generic = pick(row, ['statoCarico','accettaCarico','acceptance','acceptanceStatus','carico'], '');
+
+    const details = [];
+    if (isRealValue(dry)) details.push(`DRY ${dry}`);
+    if (isRealValue(reef)) details.push(`REEFER ${reef}`);
+    if (details.length) return details.join(' · ');
+    if (isRealValue(generic) && /ACCETTA|CARICO|CHIUSA|APERTA/i.test(generic)) return generic;
+    return '-';
+  }
+
+  function urgencyInfo(row){
+    if (typeof getShipOperationalUrgency === 'function') return getShipOperationalUrgency(row);
+    return { className: 'unknown', label: 'IN CHIUSURA' };
+  }
+
   function compactCard(row, terminal, options = {}){
     const nave = pick(row, ['nave','nome','nome_nave','vessel','shipName'], '-');
     const fonte = pick(row, ['fonteSct','fonteConateco','categoriaConateco','fonte','section','source'], '');
@@ -14896,6 +15131,8 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const parts = isForecast ? etaParts(row) : closingParts(row);
     const labelPrefix = isForecast ? 'ETA' : 'Chiusura';
     const meta = [fonte, viaggio ? `Viaggio: ${viaggio}` : '', statusLabel(row)].filter(isRealValue).join(' · ');
+    const urgency = urgencyInfo(row);
+    const acceptance = acceptanceText(row);
 
     return `<div class="shipClosingCard shipClosingCompactCard">
       <div class="shipClosingCompactMain">
@@ -14905,6 +15142,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
           <div class="shipClosingMetaLine" title="${htmlEscape(meta)}">${htmlEscape(meta || '-')}</div>
         </div>
       </div>
+      <span class="shipClosingUrgencyBadge ${htmlEscape(urgency.className)}">${htmlEscape(urgency.label)}</span>
       <div class="shipClosingDateBox">
         <span>${htmlEscape(labelPrefix)} giorno</span>
         <strong title="${htmlEscape(parts.date)}">${htmlEscape(parts.date)}</strong>
@@ -14912,6 +15150,10 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       <div class="shipClosingDateBox">
         <span>${htmlEscape(labelPrefix)} ora</span>
         <strong title="${htmlEscape(parts.time)}">${htmlEscape(parts.time)}</strong>
+      </div>
+      <div class="shipAcceptanceBox">
+        <span>Accettazione merce</span>
+        <strong title="${htmlEscape(acceptance)}">${htmlEscape(acceptance)}</strong>
       </div>
     </div>`;
   }
@@ -14934,7 +15176,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     if (!tbody) return;
     if (table) table.classList.add('force-card-table');
     if (!Array.isArray(data) || !data.length) {
-      tbody.innerHTML = `<tr><td><div class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura oggi/domani/dopodomani.</div></td></tr>`;
+      tbody.innerHTML = `<tr><td><div class="shipEmpty">Nessuna nave SCT chiusa oggi o in chiusura entro 2 giorni lavorativi.</div></td></tr>`;
       return;
     }
     tbody.innerHTML = `<tr><td><div class="shipClosingCardsList">${data.map(row => {
@@ -14949,7 +15191,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
   };
 
   window.renderShipsTfg = function(data){
-    renderToList('tbody-tfg', 'table-tfg', data, 'TFG', 'Nessuna nave TFG chiusa oggi o in chiusura oggi/domani/dopodomani.');
+    renderToList('tbody-tfg', 'table-tfg', data, 'TFG', 'Nessuna nave TFG chiusa oggi o in chiusura entro 2 giorni lavorativi.');
   };
 })();
 </script>
