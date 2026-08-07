@@ -6487,8 +6487,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
         <span class="autoCheckText">Auto dinamico: <strong id="extraAutoCheckLabel">OFF · 3 min</strong></span>
       </label>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
-      <button id="jmtReconnectBtn" type="button" title="Ricollega la sessione JMT/SCT rispettando il timer anti -999">Ricollega JMT</button>
-      <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button">Controlla ora</button>
+      <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button" style="display:none !important" aria-hidden="true" tabindex="-1">Controlla ora</button>
       <button id="minimizeExtraBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Contenitori" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
       <button id="copyExtraColumnBtn" type="button">Copia container</button>
       <button id="exportExtraPdfBtn" type="button">PDF lista container</button>
@@ -8308,14 +8307,17 @@ button.doganaModuleSvgToggleBtn:active,
     let extraRows = [];
     let activeExtraTerminal = "sct";
     let extraAutoCheckEnabled = false;
-    let extraAutoCheckTimer = null;
+    let extraAutoCheckTimer = null; // timer SCT dinamico
+    let extraFastAutoCheckTimer = null; // timer CONATECO/TFG
     let extraCountdownTimer = null;
     let extraLastCheckAt = null;
-    let extraNextCheckAt = null;
+    let extraNextCheckAt = null; // prossimo SCT
+    let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
     const EXTRA_AUTO_ROWS_PER_STEP = 5;
     const EXTRA_AUTO_MINUTES_PER_STEP = 3;
     const EXTRA_AUTO_MAX_MINUTES = 1440;
+    const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
     const EXTRA_CLIENT_NAME_KEY = "peso_sheet_extra_client_name_v1";
@@ -8463,7 +8465,6 @@ button.doganaModuleSvgToggleBtn:active,
     const clearExtraBtnBottom = document.getElementById("clearExtraBtnBottom");
     const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
     const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
-    const jmtReconnectBtn = document.getElementById("jmtReconnectBtn");
     const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
     const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
@@ -9659,11 +9660,34 @@ button.doganaModuleSvgToggleBtn:active,
       updateAutoCheckUI();
     }
 
+    function updateExtraCheckNowVisibility(){
+      if (!extraCheckNowBtn) return;
+
+      const manualCheckAllowed = activeExtraTerminal === "conateco" || activeExtraTerminal === "flavio";
+      const minimized = !!extraPanel?.classList.contains("is-minimized") || !!extraPanel?.classList.contains("minimized");
+      const visible = manualCheckAllowed && !minimized;
+
+      if (visible) {
+        extraCheckNowBtn.style.removeProperty("display");
+        extraCheckNowBtn.removeAttribute("aria-hidden");
+        extraCheckNowBtn.removeAttribute("tabindex");
+        extraCheckNowBtn.title = activeExtraTerminal === "conateco"
+          ? "Controlla ora i container CONATECO"
+          : "Controlla ora i container TFG";
+      } else {
+        extraCheckNowBtn.style.setProperty("display", "none", "important");
+        extraCheckNowBtn.setAttribute("aria-hidden", "true");
+        extraCheckNowBtn.setAttribute("tabindex", "-1");
+        extraCheckNowBtn.removeAttribute("title");
+      }
+    }
+
     function setActiveExtraTerminal(termKey){
       if (!EXTRA_TERMINALS[termKey]) return;
       activeExtraTerminal = termKey;
       saveLocalActiveExtraTerminal();
       renderExtra();
+      updateExtraCheckNowVisibility();
       saveExtra();
     }
 
@@ -9920,17 +9944,13 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function getExtraAutoContainerCount(){
-      return Object.keys(EXTRA_TERMINALS || {}).reduce((total, termKey) => {
-        const cfg = EXTRA_TERMINALS[termKey];
-        if (!cfg) return total;
+      const cfg = EXTRA_TERMINALS?.sct;
+      if (!cfg) return 0;
 
-        const filled = extraRows.filter(row =>
-          rowBelongsToTerminal(row, termKey) &&
-          String(row?.[cfg.containerField] || "").trim()
-        ).length;
-
-        return total + filled;
-      }, 0);
+      return extraRows.filter(row =>
+        rowBelongsToTerminal(row, "sct") &&
+        String(row?.[cfg.containerField] || "").trim()
+      ).length;
     }
 
     function getExtraAutomaticCheckMinutes(){
@@ -9951,19 +9971,35 @@ button.doganaModuleSvgToggleBtn:active,
         clearInterval(extraAutoCheckTimer);
         extraAutoCheckTimer = null;
       }
+      if (extraFastAutoCheckTimer) {
+        clearInterval(extraFastAutoCheckTimer);
+        extraFastAutoCheckTimer = null;
+      }
 
       if (!extraAutoCheckEnabled) {
         extraAutoCheckScheduledInterval = null;
         extraNextCheckAt = null;
+        extraFastNextCheckAt = null;
         return;
       }
 
-      const interval = getExtraEffectiveCheckInterval();
-      extraAutoCheckScheduledInterval = interval;
-      extraNextCheckAt = Date.now() + interval;
+      // SCT: intervallo crescente in base alle sole righe SCT (5 righe = 3 min, 10 = 6 min, ecc.).
+      const sctInterval = getExtraEffectiveCheckInterval();
+      extraAutoCheckScheduledInterval = sctInterval;
+      extraNextCheckAt = Date.now() + sctInterval;
       extraAutoCheckTimer = setInterval(async () => {
-        await runAutoCheckAllTerminals();
-      }, interval);
+        await runAutoCheck("sct");
+        extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+        updateExtraCheckInfo();
+      }, sctInterval);
+
+      // CONATECO e TFG: non dipendono dal numero di righe e restano su un ciclo rapido fisso.
+      extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+      extraFastAutoCheckTimer = setInterval(async () => {
+        await runAutoCheckFastTerminals();
+        extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+        updateExtraCheckInfo();
+      }, EXTRA_FAST_CHECK_INTERVAL);
     }
 
     function refreshExtraAutoCheckSchedule(){
@@ -9975,10 +10011,15 @@ button.doganaModuleSvgToggleBtn:active,
 
     function updateExtraCheckInfo(){
       const terminalLabel = EXTRA_TERMINALS?.[activeExtraTerminal]?.label || String(activeExtraTerminal || "sct").toUpperCase();
-      const containerCount = getExtraAutoContainerCount();
-      const automaticMinutes = getExtraAutomaticCheckMinutes();
+      const sctContainerCount = getExtraAutoContainerCount();
+      const sctMinutes = getExtraAutomaticCheckMinutes();
+      const fastMinutes = Math.round(EXTRA_FAST_CHECK_INTERVAL / 60000);
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
-      if (extraAutoCheckLabel) extraAutoCheckLabel.textContent = extraAutoCheckEnabled ? `ON · ${automaticMinutes} min` : `OFF · ${automaticMinutes} min`;
+      if (extraAutoCheckLabel) {
+        extraAutoCheckLabel.textContent = extraAutoCheckEnabled
+          ? `ON · SCT ${sctMinutes} min · C/TFG ${fastMinutes} min`
+          : `OFF · SCT ${sctMinutes} min · C/TFG ${fastMinutes} min`;
+      }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
       if (extraLastCheckText) extraLastCheckText.textContent = extraLastCheckAt ? formatExtraClock(extraLastCheckAt) : "mai eseguito";
@@ -9986,15 +10027,20 @@ button.doganaModuleSvgToggleBtn:active,
 
       if (extraAutoCheckEnabled) {
         if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
-        const remaining = Math.max(0, extraNextCheckAt - Date.now());
+        if (!extraFastNextCheckAt) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+
+        const nextAt = activeExtraTerminal === "sct" ? extraNextCheckAt : extraFastNextCheckAt;
+        const remaining = Math.max(0, nextAt - Date.now());
         if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
+
         if (extraAutoStatus) {
           extraAutoStatus.textContent = extraLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)} (${containerCount} container, intervallo ${automaticMinutes} min).`
-            : `Controllo automatico attivo: ${containerCount} container, intervallo ${automaticMinutes} min · primo controllo tra ${formatExtraCountdown(remaining)}.`;
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(extraLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
+            : `Controllo automatico attivo. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`;
         }
       } else {
         extraNextCheckAt = null;
+        extraFastNextCheckAt = null;
         if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
         if (extraAutoStatus) {
           extraAutoStatus.textContent = extraLastCheckAt
@@ -10016,88 +10062,6 @@ button.doganaModuleSvgToggleBtn:active,
       extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
-    async function reconnectJmtManual(){
-      const buttons = [jmtReconnectBtn].filter(Boolean);
-      const oldLabels = new Map(buttons.map(btn => [btn, btn.textContent]));
-
-      buttons.forEach(btn => {
-        btn.disabled = true;
-        btn.textContent = "Verifico timer JMT...";
-      });
-
-      if (extraAutoStatus) {
-        extraAutoStatus.textContent = "Verifico timer riconnessione JMT/SCT...";
-        extraAutoStatus.style.color = "";
-        extraAutoStatus.style.fontWeight = "900";
-      }
-
-      try {
-        const response = await fetch(apiUrl(`/api/jmt-reconnect?_=${Date.now()}`), {
-          method: "POST",
-          mode: "cors",
-          credentials: "omit",
-          cache: "no-store",
-          headers: {
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ reason: "manuale da frontend" })
-        });
-
-        const data = await response.json().catch(() => null);
-
-        if ((response.status === 429 || data?.reconnectScheduled) && !data?.success) {
-          const message = data?.error || data?.message || "Timer JMT ancora attivo: riconnessione non avviata.";
-          if (extraAutoStatus) {
-            extraAutoStatus.textContent = message;
-            extraAutoStatus.style.color = "var(--danger)";
-            extraAutoStatus.style.fontWeight = "900";
-          }
-          if (typeof showExtraToast === "function") {
-            showExtraToast("Timer JMT attivo", message, "error");
-          } else {
-            alert(message);
-          }
-          return;
-        }
-
-        if (!response.ok || !data?.success) {
-          throw new Error(data?.error || data?.message || `HTTP ${response.status}`);
-        }
-
-        if (extraAutoStatus) {
-          extraAutoStatus.textContent = "JMT ricollegato correttamente.";
-          extraAutoStatus.style.color = "var(--accent-2)";
-          extraAutoStatus.style.fontWeight = "900";
-        }
-
-        if (typeof showExtraToast === "function") {
-          showExtraToast("JMT ricollegato", "La sessione JMT/SCT è stata ricreata correttamente.", "success");
-        }
-
-        if (typeof checkBackend === "function") {
-          try { await checkBackend(); } catch {}
-        }
-      } catch (err) {
-        const message = "Riconnessione JMT fallita: " + (err?.message || err);
-        if (extraAutoStatus) {
-          extraAutoStatus.textContent = message;
-          extraAutoStatus.style.color = "var(--danger)";
-          extraAutoStatus.style.fontWeight = "900";
-        }
-        if (typeof showExtraToast === "function") {
-          showExtraToast("Errore JMT", message, "error");
-        } else {
-          alert(message);
-        }
-      } finally {
-        buttons.forEach(btn => {
-          btn.disabled = false;
-          btn.textContent = oldLabels.get(btn) || "Ricollega JMT";
-        });
-      }
-    }
-
     function setExtraAutoCheck(enabled, options = {}){
       extraAutoCheckEnabled = !!enabled;
       armExtraAutoCheckTimer();
@@ -10115,8 +10079,10 @@ button.doganaModuleSvgToggleBtn:active,
     addExtra10BtnBottom?.addEventListener("click", () => addExtraRows(10, true));
     clearExtraBtn?.addEventListener("click", clearExtraSection);
     clearExtraBtnBottom?.addEventListener("click", clearExtraSection);
-    extraCheckNowBtn?.addEventListener("click", () => runAutoCheckAllTerminals());
-    jmtReconnectBtn?.addEventListener("click", reconnectJmtManual);
+    extraCheckNowBtn?.addEventListener("click", async () => {
+      if (activeExtraTerminal !== "conateco" && activeExtraTerminal !== "flavio") return;
+      await runAutoCheck(activeExtraTerminal);
+    });
     downloadAllExtraPdfsBtn?.addEventListener("click", downloadAllFoundExtraPdfs);
     downloadAllExtraPdfsBtnBottom?.addEventListener("click", downloadAllFoundExtraPdfs);
     bookingLookupSearchBtn?.addEventListener("click", searchBookingLookup);
@@ -10172,19 +10138,8 @@ button.doganaModuleSvgToggleBtn:active,
       extraPanel.classList.toggle("minimized", !!minimized);
       extraPanel.classList.toggle("is-minimized", !!minimized);
 
-      // Nasconde in modo forzato "Controlla ora" quando il modulo è ridotto.
-      // Serve perché il pulsante ha uno stile evidenziato con display:inline-flex !important.
-      if (extraCheckNowBtn) {
-        if (minimized) {
-          extraCheckNowBtn.style.setProperty("display", "none", "important");
-          extraCheckNowBtn.setAttribute("aria-hidden", "true");
-          extraCheckNowBtn.setAttribute("tabindex", "-1");
-        } else {
-          extraCheckNowBtn.style.removeProperty("display");
-          extraCheckNowBtn.removeAttribute("aria-hidden");
-          extraCheckNowBtn.removeAttribute("tabindex");
-        }
-      }
+      // "Controlla ora" esiste solo su CONATECO e TFG e resta nascosto a modulo ridotto.
+      updateExtraCheckNowVisibility();
 
       minimizeExtraBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
       if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(minimizeExtraBtn, minimized);
@@ -10207,6 +10162,7 @@ button.doganaModuleSvgToggleBtn:active,
     document.querySelectorAll(".extraTab").forEach(btn => {
       btn.addEventListener("click", () => setActiveExtraTerminal(btn.dataset.extraTerminal));
     });
+    updateExtraCheckNowVisibility();
 
     window.syncExtraFromBackend = syncExtraFromBackend;
     window.syncExtraSharedState = syncExtraFromBackend;
@@ -10416,7 +10372,6 @@ function showJmtDisconnectedMessage(container = "", details = {}) {
 
   if (remainingText) msg += ` Tempo residuo circa ${remainingText}.`;
   if (scheduledText) msg += ` Orario previsto: ${scheduledText}.`;
-  msg += " Il pulsante Ricollega JMT rispetta lo stesso timer.";
 
   if (typeof showExtraToast === "function") {
     showExtraToast("JMT disconnesso", msg, "error");
@@ -11433,7 +11388,11 @@ async function runAutoCheckTerminal(terminalToCheck) {
 
   extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
-    extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+    if (terminalToCheck === "sct") {
+      extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+    } else if (terminalToCheck === "conateco" || terminalToCheck === "flavio") {
+      extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+    }
   }
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 
@@ -11459,6 +11418,31 @@ async function runAutoCheck(terminalKey = activeExtraTerminal) {
 
   extraTerminalCheckPromises.set(terminalToCheck, task);
   return task;
+}
+
+async function runAutoCheckFastTerminals(){
+  if (!Array.isArray(extraRows)) return;
+
+  const terminals = ["conateco", "flavio"].filter(term =>
+    getVisibleExtraEntries(term).some(entry => {
+      const row = normalizeExtraRow(extraRows[entry.index]);
+      const cfg = EXTRA_TERMINALS[term];
+      return String(row?.[cfg.containerField] || "").trim();
+    })
+  );
+
+  if (!terminals.length) return;
+
+  const results = await Promise.allSettled(terminals.map(term => runAutoCheck(term)));
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error("Controllo rapido terminal fallito", terminals[index], result.reason);
+    }
+  });
+
+  extraLastCheckAt = Date.now();
+  if (extraAutoCheckEnabled) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+  if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
 }
 
 async function runAutoCheckAllTerminals(){
@@ -11492,6 +11476,7 @@ async function runAutoCheckAllTerminals(){
   extraLastCheckAt = Date.now();
   if (extraAutoCheckEnabled) {
     extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+    extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
   }
   if (typeof renderExtra === "function") renderExtra();
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
@@ -11506,6 +11491,7 @@ async function runAutoCheckAllTerminals(){
 /* API pubbliche usate dal pulsante Auto compatto aggiunto in fondo al file.
    Senza questa esposizione il secondo script non può aggiornare "Ultimo controllo". */
 window.runAutoCheckAllTerminals = runAutoCheckAllTerminals;
+window.runAutoCheckFastTerminals = runAutoCheckFastTerminals;
 window.runExtraAutoCheck = runAutoCheckAllTerminals;
 window.checkExtraAllRows = runAutoCheckAllTerminals;
 window.checkExtraContainers = runAutoCheckAllTerminals;
@@ -13301,7 +13287,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
   install();
   document.addEventListener("click", e => {
-    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom, #jmtReconnectBtn")) {
+    if (e.target.closest("#extraCheckNowBtn, #extraCheckNowBtnBottom")) {
       setTimeout(cleanConatecoBadge, 800);
       setTimeout(cleanConatecoBadge, 2000);
     }
@@ -14322,11 +14308,11 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       btn.classList.toggle("is-on", !!on);
       btn.classList.toggle("is-off", !on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.title = `${rows} container presenti: controllo automatico ogni ${minutes} minuti`;
+      btn.title = `${rows} container SCT: SCT ogni ${minutes} min · CONATECO/TFG ogni 3 min`;
     }
 
     if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
-    if (intervalLabel) intervalLabel.textContent = `${minutes} min`;
+    if (intervalLabel) intervalLabel.textContent = `SCT ${minutes}m · C/TFG 3m`;
   }
 
   function setOn(on, runImmediately){
@@ -17259,7 +17245,6 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 .extraPanel .extraTopToolbar .autoCheckSwitch{ order:10 !important; }
 .extraPanel .extraTopToolbar #extraAutoSingleButton{ order:10 !important; }
 .extraPanel .extraTopToolbar #extraSoundNotifyBtn{ order:20 !important; }
-.extraPanel .extraTopToolbar #jmtReconnectBtn{ order:30 !important; }
 .extraPanel .extraTopToolbar #extraCheckNowBtn{ order:40 !important; }
 .extraPanel .extraTopToolbar #minimizeExtraBtn{
   order:45 !important;
