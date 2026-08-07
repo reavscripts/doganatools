@@ -5760,6 +5760,11 @@ if (window.pdfjsLib) {
   }
 
   async function safeRefreshSharedState(force = false){
+    // Durante un drag & drop il client mantiene l'ordine locale appena scelto finché
+    // /api/extra-reorder non conferma il nuovo ordine. Ignora quindi refresh/SSE
+    // intermedi che potrebbero ripristinare per un istante l'ordine precedente.
+    if (window.__doganaExtraReorderInProgress === true) return;
+
     if (!force) {
       if (Date.now() - lastLocalEditAt < 1600) return;
       if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
@@ -8823,45 +8828,27 @@ button.doganaModuleSvgToggleBtn:active,
       }
     }
 
-    async function flushExtraRowsBeforeReorder(termKey){
-      const rowsToFlush = extraRows
-        .filter(row => rowBelongsToTerminal(row, termKey))
-        .map(row => normalizeExtraRow(row))
-        .filter(row => row.__id);
+    async function saveSharedExtraOrder(termKey, desiredRowIds = null){
+      // Il riordino deve modificare SOLO l'ordine, mai i dati delle righe.
+      // I campi vengono già salvati con PATCH /api/extra-row/:rowId.
+      // Inviare qui un PATCH completo di tutte le righe poteva sovrascrivere
+      // modifiche più recenti effettuate contemporaneamente da un altro PC.
+      const rowIds = Array.isArray(desiredRowIds)
+        ? desiredRowIds.map(id => String(id || "").trim()).filter(Boolean)
+        : extraRows
+            .filter(row => rowBelongsToTerminal(row, termKey))
+            .map(row => String(row?.__id || "").trim())
+            .filter(Boolean);
 
-      for (const row of rowsToFlush) {
-        const rowId = String(row.__id || "");
-        try {
-          clearTimeout(extraRowSaveTimers.get(rowId));
-          extraRowSaveTimers.delete(rowId);
+      if (!rowIds.length) return true;
 
-          row.__updatedAt = new Date().toISOString();
-          row.__updatedBy = EXTRA_CLIENT_ID;
+      // Congela temporaneamente i refresh realtime: eventuali PATCH ancora in coda
+      // possono generare eventi SSE con il vecchio ordine prima che il POST di
+      // riordino venga completato. La sequenza scelta dall'utente resta quindi stabile.
+      window.__doganaExtraReorderInProgress = true;
+      extraLocalDirtyUntil = Date.now() + 3000;
 
-          await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              clientId: EXTRA_CLIENT_ID,
-              clientName: EXTRA_CLIENT_NAME,
-              patch: row
-            })
-          });
-        } catch (err) {
-          console.warn("Flush riga prima del riordino non riuscito", rowId, err);
-        }
-      }
-    }
-
-    async function saveSharedExtraOrder(termKey){
       try {
-        await flushExtraRowsBeforeReorder(termKey);
-
-        const rowIds = extraRows
-          .filter(row => rowBelongsToTerminal(row, termKey))
-          .map(row => String(row?.__id || ""))
-          .filter(Boolean);
-
         const res = await fetch(apiUrl("/api/extra-reorder"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -8869,15 +8856,28 @@ button.doganaModuleSvgToggleBtn:active,
         });
 
         const data = await res.json().catch(() => null);
-        if (res.ok && data?.state?.extraRows) {
-          extraRows = mergeRemoteExtraRows(data.state.extraRows);
-          saveExtraLocalOnly();
-          return true;
+        if (!res.ok || data?.success === false) {
+          throw new Error(data?.error || `HTTP ${res.status}`);
         }
+
+        if (Array.isArray(data?.state?.extraRows)) {
+          // La risposta del backend è la fonte ufficiale e contiene già il nuovo
+          // ordine. mergeRemoteExtraRows mantiene i dati locali della sola cella
+          // eventualmente ancora in modifica, senza cambiare la sequenza ricevuta.
+          extraRows = mergeRemoteExtraRows(data.state.extraRows);
+          extraLastRemoteState = data.state;
+          saveExtraLocalOnly();
+          renderExtra();
+        }
+
+        return true;
       } catch (err) {
         console.warn("Salvataggio ordine righe non riuscito", err);
+        return false;
+      } finally {
+        window.__doganaExtraReorderInProgress = false;
+        extraLocalDirtyUntil = Date.now() + 1200;
       }
-      return false;
     }
 
     async function clearSharedExtraTerminal(termKey){
@@ -9071,13 +9071,20 @@ button.doganaModuleSvgToggleBtn:active,
       const insertAt = reorderedVisible.findIndex(row => String(row?.__id || "") === targetRowId);
       reorderedVisible.splice(insertAt < 0 ? reorderedVisible.length : insertAt, 0, draggedRow);
 
+      const desiredRowIds = reorderedVisible
+        .map(row => String(row?.__id || "").trim())
+        .filter(Boolean);
+
       const queue = reorderedVisible.slice();
       extraRows = extraRows.map(row => rowBelongsToTerminal(row, termKey) ? queue.shift() : row);
-      extraLocalDirtyUntil = Date.now() + 1200;
+      extraLocalDirtyUntil = Date.now() + 3000;
       renderExtra();
       saveExtraLocalOnly();
 
-      const ok = await saveSharedExtraOrder(termKey);
+      // Passa una fotografia immutabile dell'ordine scelto. Anche se nel frattempo
+      // arriva un evento realtime, il POST non può più ricostruire accidentalmente
+      // la sequenza precedente.
+      const ok = await saveSharedExtraOrder(termKey, desiredRowIds);
       if (!ok) {
         extraRows = snapshot;
         renderExtra();
