@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-07-1355-container-entered-sound-fix"/>
+<meta name="doganatools-build" content="2026-08-10-sct-auto-25s-per-container"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -8331,8 +8331,7 @@ button.doganaModuleSvgToggleBtn:active,
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
-    const EXTRA_AUTO_ROWS_PER_STEP = 5;
-    const EXTRA_AUTO_MINUTES_PER_STEP = 3;
+    const EXTRA_AUTO_SECONDS_PER_CONTAINER = 25;
     const EXTRA_AUTO_MAX_MINUTES = 1440;
     const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
@@ -10152,17 +10151,24 @@ button.doganaModuleSvgToggleBtn:active,
       ).length;
     }
 
-    function getExtraAutomaticCheckMinutes(){
+    function getExtraAutomaticCheckSeconds(){
       const containerCount = getExtraAutoContainerCount();
-      const blocks = Math.max(1, Math.ceil(containerCount / EXTRA_AUTO_ROWS_PER_STEP));
+      // SCT: 25 secondi di attesa per ogni container presente in lista.
+      // Esempi: 10 container = 250 s, 20 container = 500 s.
+      const effectiveCount = Math.max(1, containerCount);
       return Math.min(
-        blocks * EXTRA_AUTO_MINUTES_PER_STEP,
-        EXTRA_AUTO_MAX_MINUTES
+        effectiveCount * EXTRA_AUTO_SECONDS_PER_CONTAINER,
+        EXTRA_AUTO_MAX_MINUTES * 60
       );
     }
 
+    function getExtraAutomaticCheckMinutes(){
+      // Compatibilità con eventuali componenti che leggono ancora il valore in minuti.
+      return getExtraAutomaticCheckSeconds() / 60;
+    }
+
     function getExtraEffectiveCheckInterval(){
-      return getExtraAutomaticCheckMinutes() * 60 * 1000;
+      return getExtraAutomaticCheckSeconds() * 1000;
     }
 
     function armExtraAutoCheckTimer(){
@@ -10182,7 +10188,7 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
-      // SCT: intervallo crescente in base alle sole righe SCT (5 righe = 3 min, 10 = 6 min, ecc.).
+      // SCT: intervallo lineare in base alle sole righe SCT (25 secondi per container).
       const sctInterval = getExtraEffectiveCheckInterval();
       extraAutoCheckScheduledInterval = sctInterval;
       extraNextCheckAt = Date.now() + sctInterval;
@@ -10211,13 +10217,13 @@ button.doganaModuleSvgToggleBtn:active,
     function updateExtraCheckInfo(){
       const terminalLabel = EXTRA_TERMINALS?.[activeExtraTerminal]?.label || String(activeExtraTerminal || "sct").toUpperCase();
       const sctContainerCount = getExtraAutoContainerCount();
-      const sctMinutes = getExtraAutomaticCheckMinutes();
+      const sctSeconds = getExtraAutomaticCheckSeconds();
       const fastMinutes = Math.round(EXTRA_FAST_CHECK_INTERVAL / 60000);
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
       if (extraAutoCheckLabel) {
         extraAutoCheckLabel.textContent = extraAutoCheckEnabled
-          ? `ON · SCT ${sctMinutes} min · CON/TFG ${fastMinutes} min`
-          : `OFF · SCT ${sctMinutes} min · CON/TFG ${fastMinutes} min`;
+          ? `ON · SCT ${sctSeconds} sec · CON/TFG ${fastMinutes} min`
+          : `OFF · SCT ${sctSeconds} sec · CON/TFG ${fastMinutes} min`;
       }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
@@ -10235,8 +10241,8 @@ button.doganaModuleSvgToggleBtn:active,
 
         if (extraAutoStatus) {
           extraAutoStatus.textContent = activeLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
-            : `Controllo automatico attivo. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`;
+            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctSeconds} sec · CONATECO/TFG: ${fastMinutes} min.`
+            : `Controllo automatico attivo. SCT: ${sctContainerCount} container / ${sctSeconds} sec · CONATECO/TFG: ${fastMinutes} min.`;
         }
       } else {
         extraNextCheckAt = null;
@@ -11843,6 +11849,7 @@ window.checkExtraContainers = runAutoCheckAllTerminals;
 window.doganaSetExtraAutoCheck = setExtraAutoCheck;
 window.doganaGetExtraAutoCheckEnabled = () => !!extraAutoCheckEnabled;
 window.doganaGetExtraAutoIntervalMs = getExtraEffectiveCheckInterval;
+window.doganaGetExtraAutoSeconds = getExtraAutomaticCheckSeconds;
 window.doganaGetExtraAutoMinutes = getExtraAutomaticCheckMinutes;
 window.doganaGetExtraAutoContainerCount = getExtraAutoContainerCount;
 window.doganaRefreshExtraAutoSchedule = refreshExtraAutoCheckSchedule;
@@ -14824,12 +14831,16 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     return p.querySelector(".extraTopToolbar, .miniToolbar, .right, .toolbar") || p.querySelector(".miniHead");
   }
 
-  function automaticMinutes(){
-    if (typeof window.doganaGetExtraAutoMinutes === "function") {
-      const value = Number(window.doganaGetExtraAutoMinutes());
-      if (Number.isFinite(value) && value >= 1) return value;
+  function automaticSeconds(){
+    if (typeof window.doganaGetExtraAutoSeconds === "function") {
+      const value = Number(window.doganaGetExtraAutoSeconds());
+      if (Number.isFinite(value) && value >= 1) return Math.round(value);
     }
-    return 3;
+    if (typeof window.doganaGetExtraAutoIntervalMs === "function") {
+      const value = Number(window.doganaGetExtraAutoIntervalMs());
+      if (Number.isFinite(value) && value >= 1000) return Math.round(value / 1000);
+    }
+    return 25;
   }
 
   function containerCount(){
@@ -14864,18 +14875,18 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const btn = document.getElementById("extraAutoSingleButton");
     const label = document.getElementById("extraAutoSingleState");
     const intervalLabel = document.getElementById("extraAutoSingleInterval");
-    const minutes = automaticMinutes();
+    const seconds = automaticSeconds();
     const rows = containerCount();
 
     if (btn) {
       btn.classList.toggle("is-on", !!on);
       btn.classList.toggle("is-off", !on);
       btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.title = `${rows} container SCT: SCT ogni ${minutes} min · CONATECO/TFG ogni 3 min`;
+      btn.title = `${rows} container SCT: SCT ogni ${seconds} sec · CONATECO/TFG ogni 3 min`;
     }
 
     if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
-    if (intervalLabel) intervalLabel.textContent = `SCT ${minutes}m · CON/TFG 3m`;
+    if (intervalLabel) intervalLabel.textContent = `SCT ${seconds}s · CON/TFG 3m`;
   }
 
   function setOn(on, runImmediately){
