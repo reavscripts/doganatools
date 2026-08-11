@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-11-auth-merge-r1"/>
+<meta name="doganatools-build" content="2026-08-11-auth-settings-r2"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -5450,6 +5450,19 @@ if (window.pdfjsLib) {
         <button type="button" id="doganaSettingsClose">Chiudi</button>
       </div>
       <div class="doganaSettingsBody doganaSettingsBodyCompact">
+        <div class="doganaSettingCard doganaSettingCardColumn" id="doganaAccountSettingsCard">
+          <div class="doganaSettingRow">
+            <div class="doganaSettingInfo">
+              <strong>Accesso</strong>
+              <span>Account attualmente collegato a DoganaTools.</span>
+            </div>
+            <span class="doganaSettingBadge" id="doganaSettingsAuthUser">Utente</span>
+          </div>
+          <div class="doganaSettingActions">
+            <button type="button" id="doganaSettingsLogout">Esci</button>
+          </div>
+        </div>
+
         <div class="doganaSettingCard doganaSettingCardColumn">
           <div class="doganaSettingRow">
             <div class="doganaSettingInfo">
@@ -5534,6 +5547,10 @@ if (window.pdfjsLib) {
       const sessionName = document.getElementById("doganaSessionName");
       const topName = document.getElementById("doganaMenuSessionName")?.textContent?.trim();
       if (sessionName && topName) sessionName.textContent = topName;
+
+      const authUser = document.getElementById("doganaSettingsAuthUser");
+      const currentUser = window.__doganaAuthState?.user || null;
+      if (authUser) authUser.textContent = currentUser?.displayName || currentUser?.username || "Utente";
     }
 
     refreshSettingsButtons();
@@ -5554,6 +5571,11 @@ if (window.pdfjsLib) {
       await safeRefreshSharedState(true);
       showHint("Sincronizzazione completata.");
       refreshSettingsButtons();
+    });
+
+    panel.querySelector("#doganaSettingsLogout")?.addEventListener("click", () => {
+      if (typeof window.doganaLogout === "function") window.doganaLogout();
+      else showHint("Comando di disconnessione non disponibile.");
     });
 
 
@@ -6432,8 +6454,6 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   #doganaAuthStatus{ min-height:20px; margin-top:13px; color:#fca5a5; font-size:13px; text-align:center; }
   #doganaAuthStatus.ok{ color:#86efac; }
   .doganaAuthSecurity{ margin:18px 0 0; color:#8396b2; font-size:11px; line-height:1.45; text-align:center; }
-  #doganaLogoutBtn{ display:inline-flex; align-items:center; justify-content:center; }
-  #doganaLoggedUser{ color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
 </style>
 
 </head>
@@ -6489,29 +6509,15 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   }
 
   function addAccountControls(user){
-    const nav = document.querySelector(".appQuickNav");
-    if (!nav) return;
+    const userEl = document.getElementById("doganaSettingsAuthUser");
+    if (userEl) userEl.textContent = user?.displayName || user?.username || "Utente";
 
-    let userEl = document.getElementById("doganaLoggedUser");
-    if (!userEl) {
-      userEl = document.createElement("span");
-      userEl.id = "doganaLoggedUser";
-      const settings = document.getElementById("doganaMenuSettingsBtn");
-      nav.insertBefore(userEl, settings || null);
-    }
-    userEl.textContent = user?.displayName || user?.username || "Utente";
+    // Rimuove eventuali controlli account creati da build precedenti nel menu superiore.
+    document.getElementById("doganaLoggedUser")?.remove();
+    document.getElementById("doganaLogoutBtn")?.remove();
 
-    let logoutBtn = document.getElementById("doganaLogoutBtn");
-    if (!logoutBtn) {
-      logoutBtn = document.createElement("button");
-      logoutBtn.id = "doganaLogoutBtn";
-      logoutBtn.type = "button";
-      logoutBtn.className = "appMenuSettingsBtn";
-      logoutBtn.textContent = "Esci";
-      logoutBtn.title = "Disconnetti l’utente";
-      const settings = document.getElementById("doganaMenuSettingsBtn");
-      nav.insertBefore(logoutBtn, settings || null);
-      logoutBtn.addEventListener("click", logout);
+    if (typeof window.doganaRefreshSettingsPanel === "function") {
+      window.doganaRefreshSettingsPanel();
     }
   }
 
@@ -6592,12 +6598,12 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
 
   async function logout(){
     try { await authFetch("/logout", { method: "POST" }); } catch {}
-    const logoutBtn = document.getElementById("doganaLogoutBtn");
-    const userEl = document.getElementById("doganaLoggedUser");
-    logoutBtn?.remove();
-    userEl?.remove();
+    const userEl = document.getElementById("doganaSettingsAuthUser");
+    if (userEl) userEl.textContent = "Utente";
     lock("Disconnessione completata.");
   }
+
+  window.doganaLogout = logout;
 
   try { usernameInput.value = localStorage.getItem(LAST_USER_KEY) || ""; } catch {}
   form.addEventListener("submit", login);
