@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-10-sct-auto-25s-per-container"/>
+<meta name="doganatools-build" content="2026-08-11-auth-merge-r1"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -5202,23 +5202,94 @@ function initApiBaseUi(){
 document.addEventListener("DOMContentLoaded", initApiBaseUi);
 
 
-/* === FETCH GUARD: diagnostica backend === */
+/* === FETCH GUARD: diagnostica backend + sessione autenticata === */
 (function installDoganaFetchGuard(){
   if (window.__doganaFetchGuardInstalled) return;
   window.__doganaFetchGuardInstalled = true;
 
   const originalFetch = window.fetch.bind(window);
 
+  const authState = window.__doganaAuthState || {
+    authenticated: false,
+    gate: null,
+    resolveGate: null,
+    user: null
+  };
+
+  function resetAuthGate(){
+    authState.gate = new Promise(resolve => { authState.resolveGate = resolve; });
+  }
+  if (!authState.gate) resetAuthGate();
+  window.__doganaAuthState = authState;
+
+  window.doganaAuthGate = {
+    setAuthenticated(user){
+      authState.authenticated = true;
+      authState.user = user || null;
+      if (typeof authState.resolveGate === "function") authState.resolveGate(user || true);
+    },
+    setUnauthenticated(){
+      const wasAuthenticated = authState.authenticated;
+      authState.authenticated = false;
+      authState.user = null;
+      if (wasAuthenticated || !authState.gate) resetAuthGate();
+    },
+    isAuthenticated(){ return !!authState.authenticated; }
+  };
+
+  function backendBaseUrl(){
+    try {
+      const base = typeof getApiBase === "function" ? String(getApiBase() || "") : "";
+      return new URL(base || window.location.origin, window.location.href);
+    } catch {
+      return new URL(window.location.origin);
+    }
+  }
+
+  function requestInfo(input){
+    try {
+      const raw = typeof input === "string" ? input : String(input?.url || "");
+      const parsed = new URL(raw, window.location.href);
+      const base = backendBaseUrl();
+      const normalizedBasePath = base.pathname.replace(/\/+$/, "");
+      const basePath = normalizedBasePath === "/" ? "" : normalizedBasePath;
+      const pathMatches = !basePath || parsed.pathname === basePath || parsed.pathname.startsWith(basePath + "/");
+      const isBackend = parsed.origin === base.origin && pathMatches;
+      const relativePath = isBackend && basePath && parsed.pathname.startsWith(basePath)
+        ? parsed.pathname.slice(basePath.length) || "/"
+        : parsed.pathname;
+      const isAuth = isBackend && (relativePath === "/api/auth" || relativePath.startsWith("/api/auth/"));
+      return { raw, parsed, isBackend, isAuth };
+    } catch {
+      return { raw: "", parsed: null, isBackend: false, isAuth: false };
+    }
+  }
+
   window.fetch = async function(input, init){
-    const response = await originalFetch(input, init);
+    const info = requestInfo(input);
+    const nextInit = { ...(init || {}) };
+
+    if (info.isBackend) {
+      nextInit.credentials = "include";
+      if (!info.isAuth && !authState.authenticated) await authState.gate;
+    }
+
+    const response = await originalFetch(input, nextInit);
 
     try {
-      const url = typeof input === "string" ? input : String(input?.url || "");
-      if (url.includes("/get-")) {
+      if (info.raw.includes("/get-")) {
         const contentType = response.headers.get("content-type") || "";
         if (!contentType.includes("application/json")) {
           const preview = await response.clone().text().catch(() => "");
-          console.warn("Risposta non JSON dal backend:", url, preview.slice(0, 160));
+          console.warn("Risposta non JSON dal backend:", info.raw, preview.slice(0, 160));
+        }
+      }
+
+      if (info.isBackend && !info.isAuth && response.status === 401) {
+        const data = await response.clone().json().catch(() => null);
+        if (data?.authRequired || data?.code === "AUTH_REQUIRED") {
+          window.doganaAuthGate?.setUnauthenticated();
+          window.dispatchEvent(new CustomEvent("dogana-auth-required", { detail: data || {} }));
         }
       }
     } catch {}
@@ -6300,8 +6371,245 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
 }
 </style>
 
+<style id="dogana-auth-style">
+  body.dogana-auth-locked{ overflow:hidden !important; }
+  body.dogana-auth-locked > *:not(#doganaAuthOverlay):not(script){ visibility:hidden !important; }
+  #doganaAuthOverlay[hidden]{ display:none !important; }
+  #doganaAuthOverlay{
+    position:fixed;
+    inset:0;
+    z-index:2147483647;
+    display:grid;
+    place-items:center;
+    padding:24px;
+    background:
+      radial-gradient(900px 460px at 0% 0%, rgba(37,99,235,.18), transparent 62%),
+      radial-gradient(780px 420px at 100% 10%, rgba(22,163,74,.12), transparent 58%),
+      #08111f;
+    visibility:visible !important;
+  }
+  .doganaAuthCard{
+    width:min(440px, 100%);
+    padding:30px;
+    border:1px solid rgba(148,163,184,.24);
+    border-radius:22px;
+    background:rgba(15,26,43,.96);
+    color:#e6edf7;
+    box-shadow:0 28px 80px rgba(0,0,0,.42);
+  }
+  .doganaAuthBrand{ display:flex; align-items:center; gap:13px; margin-bottom:24px; }
+  .doganaAuthBrand img{ width:48px; height:48px; object-fit:contain; }
+  .doganaAuthBrand strong{ display:block; font-size:22px; }
+  .doganaAuthBrand span{ display:block; margin-top:3px; color:#9db0cb; font-size:13px; }
+  .doganaAuthField{ display:block; margin:14px 0; }
+  .doganaAuthField > span{ display:block; margin-bottom:7px; color:#c7d3e5; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
+  .doganaAuthField input[type="text"],
+  .doganaAuthField input[type="password"]{
+    width:100%;
+    height:48px;
+    padding:0 14px;
+    border:1px solid #29405f;
+    border-radius:12px;
+    background:#132038;
+    color:#f8fbff;
+    font:600 15px var(--font, system-ui);
+    outline:none;
+  }
+  .doganaAuthField input:focus{ border-color:#60a5fa; box-shadow:0 0 0 4px rgba(96,165,250,.12); }
+  .doganaAuthRemember{ display:flex; align-items:center; gap:10px; margin:14px 0 18px; color:#c7d3e5; font-size:13px; }
+  .doganaAuthRemember input{ width:18px; height:18px; accent-color:#2563eb; }
+  #doganaAuthSubmit{
+    width:100%;
+    min-height:48px;
+    border:0;
+    border-radius:12px;
+    background:linear-gradient(180deg,#3374f0,#2563eb);
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
+  }
+  #doganaAuthSubmit:disabled{ opacity:.6; cursor:wait; }
+  #doganaAuthStatus{ min-height:20px; margin-top:13px; color:#fca5a5; font-size:13px; text-align:center; }
+  #doganaAuthStatus.ok{ color:#86efac; }
+  .doganaAuthSecurity{ margin:18px 0 0; color:#8396b2; font-size:11px; line-height:1.45; text-align:center; }
+  #doganaLogoutBtn{ display:inline-flex; align-items:center; justify-content:center; }
+  #doganaLoggedUser{ color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.05em; }
+</style>
+
 </head>
-<body>
+<body class="dogana-auth-locked">
+
+<div id="doganaAuthOverlay" role="dialog" aria-modal="true" aria-labelledby="doganaAuthTitle">
+  <form class="doganaAuthCard" id="doganaAuthForm" autocomplete="on">
+    <div class="doganaAuthBrand">
+      <img src="./img/logo.svg" alt="" />
+      <div>
+        <strong id="doganaAuthTitle">DoganaTools</strong>
+        <span>Accesso all’utility operativa</span>
+      </div>
+    </div>
+
+    <label class="doganaAuthField">
+      <span>Utente</span>
+      <input id="doganaAuthUsername" name="username" type="text" autocomplete="username" required maxlength="40" />
+    </label>
+
+    <label class="doganaAuthField">
+      <span>Password</span>
+      <input id="doganaAuthPassword" name="password" type="password" autocomplete="current-password" required maxlength="200" />
+    </label>
+
+    <label class="doganaAuthRemember">
+      <input id="doganaAuthRemember" type="checkbox" checked />
+      <span>Ricordami su questo dispositivo per 30 giorni</span>
+    </label>
+
+    <button id="doganaAuthSubmit" type="submit">Accedi</button>
+    <div id="doganaAuthStatus" role="status" aria-live="polite"></div>
+    <p class="doganaAuthSecurity">La password viene verificata dal server e non viene salvata nel browser dall’applicazione.</p>
+  </form>
+</div>
+
+<script id="dogana-auth-script">
+(function(){
+  const AUTH_BASE = apiUrl("/api/auth");
+  const LAST_USER_KEY = "dogana_auth_last_username_v1";
+
+  const overlay = document.getElementById("doganaAuthOverlay");
+  const form = document.getElementById("doganaAuthForm");
+  const usernameInput = document.getElementById("doganaAuthUsername");
+  const passwordInput = document.getElementById("doganaAuthPassword");
+  const rememberInput = document.getElementById("doganaAuthRemember");
+  const submitBtn = document.getElementById("doganaAuthSubmit");
+  const statusEl = document.getElementById("doganaAuthStatus");
+
+  function setStatus(message, ok){
+    statusEl.textContent = String(message || "");
+    statusEl.classList.toggle("ok", !!ok);
+  }
+
+  function addAccountControls(user){
+    const nav = document.querySelector(".appQuickNav");
+    if (!nav) return;
+
+    let userEl = document.getElementById("doganaLoggedUser");
+    if (!userEl) {
+      userEl = document.createElement("span");
+      userEl.id = "doganaLoggedUser";
+      const settings = document.getElementById("doganaMenuSettingsBtn");
+      nav.insertBefore(userEl, settings || null);
+    }
+    userEl.textContent = user?.displayName || user?.username || "Utente";
+
+    let logoutBtn = document.getElementById("doganaLogoutBtn");
+    if (!logoutBtn) {
+      logoutBtn = document.createElement("button");
+      logoutBtn.id = "doganaLogoutBtn";
+      logoutBtn.type = "button";
+      logoutBtn.className = "appMenuSettingsBtn";
+      logoutBtn.textContent = "Esci";
+      logoutBtn.title = "Disconnetti l’utente";
+      const settings = document.getElementById("doganaMenuSettingsBtn");
+      nav.insertBefore(logoutBtn, settings || null);
+      logoutBtn.addEventListener("click", logout);
+    }
+  }
+
+  function unlock(user){
+    window.doganaAuthGate?.setAuthenticated(user || null);
+    document.body.classList.remove("dogana-auth-locked");
+    overlay.hidden = true;
+    passwordInput.value = "";
+    setStatus("");
+    addAccountControls(user || {});
+  }
+
+  function lock(message){
+    window.doganaAuthGate?.setUnauthenticated();
+    document.body.classList.add("dogana-auth-locked");
+    overlay.hidden = false;
+    setStatus(message || "Inserisci le credenziali per continuare.");
+    setTimeout(() => (usernameInput.value ? passwordInput : usernameInput).focus(), 30);
+  }
+
+  async function authFetch(path, options = {}){
+    return fetch(AUTH_BASE + path, {
+      ...options,
+      credentials: "include",
+      cache: "no-store",
+      headers: {
+        "Accept": "application/json",
+        ...(options.body ? { "Content-Type": "application/json" } : {}),
+        ...(options.headers || {})
+      }
+    });
+  }
+
+  async function checkSession(){
+    try {
+      const response = await authFetch("/me");
+      const data = await response.json().catch(() => null);
+      if (response.ok && data?.success) return unlock(data.user);
+      lock("");
+    } catch {
+      lock("Backend non raggiungibile. Verifica server e tunnel Cloudflare.");
+    }
+  }
+
+  async function login(event){
+    event.preventDefault();
+    const username = String(usernameInput.value || "").trim();
+    const password = String(passwordInput.value || "");
+    if (!username || !password) return setStatus("Inserisci utente e password.");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Accesso...";
+    setStatus("");
+
+    try {
+      const response = await authFetch("/login", {
+        method: "POST",
+        body: JSON.stringify({ username, password, remember: !!rememberInput.checked })
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        passwordInput.value = "";
+        setStatus(data?.error || `Accesso non riuscito (${response.status})`);
+        passwordInput.focus();
+        return;
+      }
+
+      try { localStorage.setItem(LAST_USER_KEY, username); } catch {}
+      unlock(data.user);
+    } catch {
+      setStatus("Backend non raggiungibile. Verifica server e tunnel Cloudflare.");
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Accedi";
+    }
+  }
+
+  async function logout(){
+    try { await authFetch("/logout", { method: "POST" }); } catch {}
+    const logoutBtn = document.getElementById("doganaLogoutBtn");
+    const userEl = document.getElementById("doganaLoggedUser");
+    logoutBtn?.remove();
+    userEl?.remove();
+    lock("Disconnessione completata.");
+  }
+
+  try { usernameInput.value = localStorage.getItem(LAST_USER_KEY) || ""; } catch {}
+  form.addEventListener("submit", login);
+  window.addEventListener("dogana-auth-required", () => lock("Sessione scaduta. Accedi nuovamente."));
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", checkSession, { once: true });
+  } else {
+    checkSession();
+  }
+})();
+</script>
 <div class="wrap">
 
 <div class="appTopBar" id="appTopBar">
