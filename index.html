@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-11-auth-settings-r2"/>
+<meta name="doganatools-build" content="2026-08-12-container-sync-r3"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -1503,6 +1503,23 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   color:var(--muted);
   font-size:11px;
   font-weight:900;
+}
+.shipClosingBadge.shipAcceptanceBadge{
+  gap:5px;
+  font-weight:950;
+}
+.shipClosingBadge.shipAcceptanceBadge.isAccepted{
+  color:#16803a;
+  border-color:rgba(22,128,58,.28);
+  background:rgba(34,197,94,.10);
+}
+.shipClosingBadge.shipAcceptanceBadge.isRejected{
+  color:#b4233c;
+  border-color:rgba(180,35,60,.28);
+  background:rgba(220,38,38,.09);
+}
+.shipClosingBadge.shipAcceptanceBadge.isUnknown{
+  color:var(--muted);
 }
 .shipClosingNote{
   padding:10px 11px;
@@ -5646,6 +5663,10 @@ if (window.pdfjsLib) {
   }
 
   function findField(input){
+    // Usa lo stesso nome campo del modulo contenitori e del backend.
+    // In precedenza questo secondo sistema di lock inventava "container"/"col_N",
+    // quindi due browser potevano bloccare chiavi diverse per la stessa cella.
+    if (input.dataset.extraField) return input.dataset.extraField;
     if (input.dataset.field) return input.dataset.field;
     const td = input.closest("td");
     const tr = input.closest("tr");
@@ -5916,7 +5937,7 @@ if (window.pdfjsLib) {
 
   window.addEventListener("beforeunload", () => {
     try {
-      navigator.sendBeacon?.(api(`/api/extra-lock?clientId=${encodeURIComponent(clientId)}`));
+      navigator.sendBeacon?.(api(`/api/extra-unlock-client?clientId=${encodeURIComponent(clientId)}`));
     } catch {}
   });
 })();
@@ -9105,17 +9126,96 @@ button.doganaModuleSvgToggleBtn:active,
     let extraSharedSaveTimer = null;
     let extraSharedLastPull = 0;
 
-    function getFocusedExtraRowId(){
+    // Stato locale "in transito": serve a impedire che un evento SSE/polling
+    // rimetta sullo schermo una versione server precedente mentre una modifica
+    // della stessa postazione non è ancora stata confermata.
+    let extraSharedPendingLastChecks = false;
+    let extraSharedPendingAuto = false;
+    let extraAutoSaveSeq = 0;
+    let extraAutoSavePendingSeq = 0;
+    let extraAutoSavePendingValue = null;
+
+    const extraRowPendingPatches = new Map();
+    const extraRowInFlightPatches = new Map();
+    const extraRowPatchChains = new Map();
+    const extraRowsPendingCreate = new Set();
+
+    function getFocusedExtraCell(){
       const active = document.activeElement;
       if (active && active.matches && active.matches("#extraTable input[data-extra-field]")) {
+        const tr = active.closest("tr");
         const rowIndex = Number(active.dataset.extraRow);
-        return extraRows[rowIndex]?.__id || "";
+        return {
+          rowId: String(tr?.dataset?.rowId || tr?.dataset?.extraRowId || extraRows[rowIndex]?.__id || ""),
+          field: String(active.dataset.extraField || "")
+        };
       }
-      return "";
+      return { rowId: "", field: "" };
+    }
+
+    function getFocusedExtraRowId(){
+      return getFocusedExtraCell().rowId;
+    }
+
+    function buildExtraStatusPatch(row, termKey = null){
+      const term = EXTRA_TERMINALS[termKey] ? termKey : inferExtraTerminal(row);
+      const r = normalizeExtraRow(row);
+
+      if (term === "conateco") {
+        return {
+          __terminal: term,
+          conatecoStatus: r.conatecoStatus,
+          conatecoPdfUrl: r.conatecoPdfUrl,
+          conatecoTracking: r.conatecoTracking,
+          conatecoLastCheckedAt: r.conatecoLastCheckedAt
+        };
+      }
+
+      if (term === "flavio") {
+        return {
+          __terminal: term,
+          flavioStatus: r.flavioStatus,
+          flavioPdfUrl: r.flavioPdfUrl,
+          flavioTracking: r.flavioTracking,
+          flavioLastCheckedAt: r.flavioLastCheckedAt
+        };
+      }
+
+      return {
+        __terminal: "sct",
+        sctStatus: r.sctStatus,
+        sctPdfUrl: r.sctPdfUrl,
+        sctLastCheckedAt: r.sctLastCheckedAt,
+        StatoEsteso: r.StatoEsteso,
+        DataIngresso: r.DataIngresso,
+        Ora: r.Ora,
+        Causale: r.Causale
+      };
+    }
+
+    function getExtraProtectedPatch(rowId, localRow){
+      const protectedPatch = {};
+      const pending = extraRowPendingPatches.get(rowId);
+      const inFlight = extraRowInFlightPatches.get(rowId);
+      if (inFlight && typeof inFlight === "object") Object.assign(protectedPatch, inFlight);
+      if (pending && typeof pending === "object") Object.assign(protectedPatch, pending);
+
+      const focused = getFocusedExtraCell();
+      if (focused.rowId === rowId && focused.field && localRow) {
+        protectedPatch[focused.field] = localRow[focused.field];
+      }
+
+      const term = localRow ? inferExtraTerminal(localRow) : "";
+      if (localRow && isExtraRowChecking(rowId, term)) {
+        Object.assign(protectedPatch, buildExtraStatusPatch(localRow, term));
+      }
+
+      delete protectedPatch.__updatedAt;
+      delete protectedPatch.__rev;
+      return protectedPatch;
     }
 
     function mergeRemoteExtraRows(remoteRows){
-      const focusedRowId = getFocusedExtraRowId();
       const localById = new Map(dedupeExtraRows(extraRows).map(row => [String(row.__id || ""), row]));
       const remoteById = new Map(dedupeExtraRows(remoteRows || []).map(row => [String(row.__id || ""), row]));
 
@@ -9125,27 +9225,38 @@ button.doganaModuleSvgToggleBtn:active,
 
       for (const [id, remoteRow] of remoteById.entries()) {
         if (id && isExtraRowPendingDelete(id)) continue;
-        // Fonte ufficiale: server.js.
-        // Teniamo temporaneamente solo la riga in focus per non cancellare caratteri
-        // mentre l'utente sta scrivendo; appena la cella perde focus viene inviata
-        // con PATCH /api/extra-row/:rowId e poi ricaricata dal server.
+
+        // Il server resta la fonte ufficiale. Conserviamo soltanto i SINGOLI campi
+        // che questa postazione sta ancora modificando/inviando; non l'intera riga.
+        // Così una modifica contemporanea di un altro utente su un'altra colonna
+        // non viene più cancellata al successivo blur o refresh.
         const localRow = id ? localById.get(id) : null;
-        const keepLocalRow = !!localRow && (
-          id === focusedRowId ||
-          isExtraRowChecking(id, inferExtraTerminal(localRow))
-        );
-        if (keepLocalRow) {
-          // Anche durante un controllo in corso conserviamo la copia locale:
-          // lo stato "Controllo..." è solo transitorio e non deve essere
-          // sovrascritto da un refresh realtime del vecchio stato server.
-          merged.push(localRow);
-        } else {
+        if (!localRow) {
           merged.push(remoteRow);
+          continue;
         }
+
+        const protectedPatch = getExtraProtectedPatch(id, localRow);
+        merged.push(normalizeExtraRow({
+          ...remoteRow,
+          ...protectedPatch,
+          __id: remoteRow.__id,
+          __rev: remoteRow.__rev,
+          __updatedAt: remoteRow.__updatedAt,
+          __updatedBy: remoteRow.__updatedBy
+        }));
       }
 
-      // Nessuna riga locale non presente sul backend viene mantenuta.
-      // Questo evita che copie vecchie nel browser facciano ricomparire o sparire container.
+      // Conserva soltanto le righe appena create da QUESTA postazione finché il
+      // relativo POST /api/extra-rows non è stato confermato. Un evento SSE di un
+      // altro utente non può quindi far sparire la riga mentre stiamo iniziando a scriverla.
+      for (const [id, localRow] of localById.entries()) {
+        if (!id || remoteById.has(id) || isExtraRowPendingDelete(id)) continue;
+        if (extraRowsPendingCreate.has(id)) merged.push(localRow);
+      }
+
+      // Tutte le altre righe locali assenti sul backend restano escluse: non devono
+      // poter ricomparire dopo una cancellazione o da copie browser obsolete.
       return dedupeExtraRows(merged);
     }
 
@@ -9164,80 +9275,217 @@ button.doganaModuleSvgToggleBtn:active,
       clearExtraLocalCache();
     }
 
-    function scheduleSharedMetaSave(){
-      clearTimeout(extraSharedSaveTimer);
-      extraSharedSaveTimer = setTimeout(async () => {
-        try {
-          await fetch(apiUrl("/api/shared-state"), {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              // Non salviamo activeExtraTerminal nello stato condiviso:
-              // SCT/CONATECO/TFG deve restare una scelta locale del singolo utente.
-              extraAutoCheckEnabled,
-              // Timestamp separati per terminal: persistono dopo refresh e sono
-              // condivisi tra tutte le postazioni senza confondere SCT/CONATECO/TFG.
-              extraLastCheckAtByTerminal: normalizeExtraLastCheckMap(extraLastCheckAtByTerminal)
-            })
-          });
-        } catch (err) {
-          console.warn("Salvataggio stato condiviso non riuscito", err);
+    async function flushSharedMetaSave(){
+      const sendLastChecks = extraSharedPendingLastChecks;
+      const sendAuto = extraSharedPendingAuto;
+      extraSharedPendingLastChecks = false;
+      extraSharedPendingAuto = false;
+
+      if (!sendLastChecks && !sendAuto) return true;
+
+      const body = {};
+      if (sendLastChecks) {
+        body.extraLastCheckAtByTerminal = normalizeExtraLastCheckMap(extraLastCheckAtByTerminal);
+      }
+
+      let autoSeq = 0;
+      let desiredAuto = null;
+      if (sendAuto) {
+        desiredAuto = !!extraAutoCheckEnabled;
+        autoSeq = ++extraAutoSaveSeq;
+        extraAutoSavePendingSeq = autoSeq;
+        extraAutoSavePendingValue = desiredAuto;
+        body.extraAutoCheckEnabled = desiredAuto;
+      }
+
+      try {
+        const res = await fetch(apiUrl("/api/shared-state"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json().catch(() => null);
+
+        if (!res.ok || data?.success === false) {
+          throw new Error(data?.error || `HTTP ${res.status}`);
         }
-      }, 350);
+
+        if (sendAuto && autoSeq === extraAutoSavePendingSeq) {
+          const confirmed = !!data?.state?.extraAutoCheckEnabled;
+          if (confirmed === desiredAuto) {
+            extraAutoSavePendingValue = null;
+            extraAutoSavePendingSeq = 0;
+          }
+        }
+
+        return true;
+      } catch (err) {
+        console.warn("Salvataggio stato condiviso non riuscito", err);
+
+        // Non perdiamo l'intenzione dell'utente: la rimettiamo in coda.
+        if (sendLastChecks) extraSharedPendingLastChecks = true;
+        if (sendAuto && autoSeq === extraAutoSavePendingSeq) {
+          extraSharedPendingAuto = true;
+          extraAutoSavePendingValue = desiredAuto;
+        }
+
+        clearTimeout(extraSharedSaveTimer);
+        extraSharedSaveTimer = setTimeout(() => flushSharedMetaSave(), 1200);
+        return false;
+      }
     }
 
-    function scheduleSharedRowPatch(rowIndex, patch = null, delay = 250){
-      const row = extraRows[rowIndex] ? normalizeExtraRow(extraRows[rowIndex]) : null;
-      if (!row?.__id) return;
+    function scheduleSharedMetaSave(options = {}){
+      // Di default vengono aggiornati solo gli "ultimi controlli".
+      // Il flag Auto viene scritto ESCLUSIVAMENTE da un'azione esplicita sul toggle:
+      // prima ogni salvataggio dell'orario poteva rispedire un valore Auto vecchio
+      // e riaccenderlo/spegnerlo su tutti gli altri PC.
+      if (options.includeLastChecks !== false) extraSharedPendingLastChecks = true;
+      if (options.includeAuto === true) extraSharedPendingAuto = true;
 
-      extraRows[rowIndex] = row;
-      row.__updatedAt = new Date().toISOString();
-      row.__updatedBy = EXTRA_CLIENT_ID;
-      extraLocalDirtyUntil = Date.now() + 1200;
+      clearTimeout(extraSharedSaveTimer);
+      extraSharedSaveTimer = setTimeout(
+        () => flushSharedMetaSave(),
+        options.immediate === true || options.includeAuto === true ? 0 : 350
+      );
+    }
 
-      const rowId = row.__id;
-      if (isExtraRowPendingDelete(rowId)) return;
+    function queueSharedRowPatch(rowId, payloadPatch){
+      const previous = extraRowPatchChains.get(rowId) || Promise.resolve();
 
-      const payloadPatch = {
-        ...(patch || row),
-        __terminal: row.__terminal,
-        __updatedBy: EXTRA_CLIENT_ID
-      };
+      const task = previous.catch(() => {}).then(async () => {
+        if (isExtraRowPendingDelete(rowId)) return false;
 
-      clearTimeout(extraRowSaveTimers.get(rowId));
-      extraRowSaveTimers.set(rowId, setTimeout(async () => {
-        if (isExtraRowPendingDelete(rowId)) {
-          extraRowSaveTimers.delete(rowId);
-          return;
-        }
+        const outgoing = { ...(payloadPatch || {}) };
+        if (!Object.keys(outgoing).length) return true;
+
+        extraRowInFlightPatches.set(rowId, outgoing);
+
         try {
+          const currentRow = extraRows.find(r => String(r?.__id || "") === rowId);
           const res = await fetch(apiUrl(`/api/extra-row/${encodeURIComponent(rowId)}`), {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               clientId: EXTRA_CLIENT_ID,
               clientName: EXTRA_CLIENT_NAME,
-              patch: payloadPatch
+              baseRev: Number(currentRow?.__rev || 0),
+              changedFields: Object.keys(outgoing).filter(key => !key.startsWith("__")),
+              patch: outgoing
             })
           });
 
           const data = await res.json().catch(() => null);
-          if (res.ok && data?.row) {
-            const idx = extraRows.findIndex(r => String(r.__id || "") === rowId);
-            if (idx >= 0 && getFocusedExtraRowId() !== rowId) {
-              extraRows[idx] = normalizeExtraRow(data.row);
-              saveExtraLocalOnly();
+          if (!res.ok || data?.success === false) {
+            const err = new Error(data?.error || `HTTP ${res.status}`);
+            err.status = res.status;
+            err.data = data;
+            throw err;
+          }
+
+          if (data?.row) {
+            const idx = extraRows.findIndex(r => String(r?.__id || "") === rowId);
+            if (idx >= 0) {
+              // Aggiorniamo solo i metadati di revisione. I valori locali potrebbero
+              // contenere una digitazione più recente già in coda e non vanno rimpiazzati.
+              extraRows[idx].__rev = Number(data.row.__rev || extraRows[idx].__rev || 0);
+              extraRows[idx].__updatedAt = data.row.__updatedAt || extraRows[idx].__updatedAt;
+              extraRows[idx].__updatedBy = data.row.__updatedBy || extraRows[idx].__updatedBy;
             }
           }
+
+          return true;
         } catch (err) {
           console.warn("Salvataggio riga condivisa non riuscito", rowId, err);
+
+          if (err?.status === 409) {
+            // Un conflitto reale non va ritentato automaticamente dopo la scadenza
+            // del lock, altrimenti questa postazione finirebbe per sovrascrivere
+            // proprio il dato appena inserito dall'altro utente.
+            showExtraToast(err?.data?.error || "Cella aggiornata da un'altra postazione: ricarico il dato condiviso.");
+            setTimeout(() => syncExtraFromBackend(true), 80);
+            return false;
+          }
+
+          if (isExtraRowPendingDelete(rowId)) {
+            extraRowPendingPatches.delete(rowId);
+            return false;
+          }
+
+          // Errori di rete/backend (e 404 temporaneo mentre una riga nuova sta ancora
+          // completando il POST di creazione): re-accoda il PATCH davanti ad eventuali
+          // modifiche più recenti. I campi restano protetti finché il retry riesce.
+          const newer = extraRowPendingPatches.get(rowId) || {};
+          extraRowPendingPatches.set(rowId, { ...outgoing, ...newer });
+
+          clearTimeout(extraRowSaveTimers.get(rowId));
+          extraRowSaveTimers.set(rowId, setTimeout(() => {
+            flushSharedRowPatch(rowId);
+          }, 1500));
+          return false;
+        } finally {
+          const current = extraRowInFlightPatches.get(rowId);
+          if (current === outgoing || JSON.stringify(current) === JSON.stringify(outgoing)) {
+            extraRowInFlightPatches.delete(rowId);
+          }
         }
-      }, delay));
+      });
+
+      extraRowPatchChains.set(rowId, task);
+      task.finally(() => {
+        if (extraRowPatchChains.get(rowId) === task) extraRowPatchChains.delete(rowId);
+      });
+      return task;
     }
 
+    function flushSharedRowPatch(rowId){
+      rowId = String(rowId || "").trim();
+      if (!rowId || isExtraRowPendingDelete(rowId)) return Promise.resolve(false);
+
+      clearTimeout(extraRowSaveTimers.get(rowId));
+      extraRowSaveTimers.delete(rowId);
+
+      const payloadPatch = extraRowPendingPatches.get(rowId);
+      if (!payloadPatch || !Object.keys(payloadPatch).length) return Promise.resolve(true);
+
+      extraRowPendingPatches.delete(rowId);
+      return queueSharedRowPatch(rowId, payloadPatch);
+    }
+
+    function scheduleSharedRowPatch(rowIndex, patch = null, delay = 250){
+      const row = extraRows[rowIndex] ? normalizeExtraRow(extraRows[rowIndex]) : null;
+      if (!row?.__id || !patch || typeof patch !== "object") return;
+
+      extraRows[rowIndex] = row;
+      row.__updatedAt = new Date().toISOString();
+      row.__updatedBy = EXTRA_CLIENT_ID;
+      extraLocalDirtyUntil = Date.now() + 1800;
+
+      const rowId = row.__id;
+      if (isExtraRowPendingDelete(rowId)) return;
+
+      const previousPatch = extraRowPendingPatches.get(rowId) || {};
+      const payloadPatch = {
+        ...previousPatch,
+        ...patch,
+        __terminal: patch.__terminal || row.__terminal,
+        __updatedBy: EXTRA_CLIENT_ID
+      };
+      extraRowPendingPatches.set(rowId, payloadPatch);
+
+      clearTimeout(extraRowSaveTimers.get(rowId));
+      extraRowSaveTimers.set(rowId, setTimeout(() => {
+        flushSharedRowPatch(rowId);
+      }, Math.max(0, Number(delay) || 0)));
+    }
+
+
     async function addSharedExtraRows(rows){
+      const cleanRows = dedupeExtraRows(rows || []);
+      const createIds = cleanRows.map(row => String(row?.__id || "").trim()).filter(Boolean);
+      createIds.forEach(id => extraRowsPendingCreate.add(id));
+
       try {
-        const cleanRows = dedupeExtraRows(rows || []);
         const res = await fetch(apiUrl("/api/extra-rows"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -9245,6 +9493,7 @@ button.doganaModuleSvgToggleBtn:active,
         });
         const data = await res.json().catch(() => null);
         if (res.ok && data?.state?.extraRows) {
+          createIds.forEach(id => extraRowsPendingCreate.delete(id));
           extraRows = mergeRemoteExtraRows(data.state.extraRows);
           saveExtraLocalOnly();
           return true;
@@ -9252,6 +9501,8 @@ button.doganaModuleSvgToggleBtn:active,
       } catch (err) {
         console.warn("Aggiunta righe condivise non riuscita", err);
       }
+
+      createIds.forEach(id => extraRowsPendingCreate.delete(id));
       return false;
     }
 
@@ -9353,7 +9604,8 @@ button.doganaModuleSvgToggleBtn:active,
         if (res.status === 409) {
           const data = await res.json().catch(() => null);
           const who = data?.lock?.clientName || "un altro PC";
-          return confirm(`Questa cella risulta in modifica da ${who}.\nVuoi continuare comunque?`);
+          showExtraToast(`Cella in modifica da ${who}. Attendi che venga liberata.`);
+          return false;
         }
 
         return true;
@@ -9390,8 +9642,16 @@ button.doganaModuleSvgToggleBtn:active,
         // dopo un click su CONATECO/TFG o dopo una sincronizzazione periodica.
 
         const remoteAutoCheckEnabled = !!state.extraAutoCheckEnabled;
-        const autoChanged = remoteAutoCheckEnabled !== extraAutoCheckEnabled;
-        extraAutoCheckEnabled = remoteAutoCheckEnabled;
+        // Se questa postazione ha appena premuto il toggle, un GET/SSE può arrivare
+        // prima del POST di conferma. In quel breve intervallo non deve ripristinare
+        // il vecchio valore server (era la causa del "primo click non funziona").
+        const hasPendingAutoMutation = extraAutoSavePendingValue !== null;
+        const autoChanged = !hasPendingAutoMutation && remoteAutoCheckEnabled !== extraAutoCheckEnabled;
+        if (hasPendingAutoMutation) {
+          extraAutoCheckEnabled = !!extraAutoSavePendingValue;
+        } else {
+          extraAutoCheckEnabled = remoteAutoCheckEnabled;
+        }
 
         const remoteLastChecks = normalizeExtraLastCheckMap(state.extraLastCheckAtByTerminal);
         const localLastChecks = normalizeExtraLastCheckMap(extraLastCheckAtByTerminal);
@@ -9417,12 +9677,12 @@ button.doganaModuleSvgToggleBtn:active,
       }
     }
 
-    function saveExtra(){
+    function saveExtra(options = {}){
       // Ricerca Contenitori: nessuna cache locale delle righe.
       // Salva sul backend solo i metadati; le righe viaggiano sempre via
       // PATCH /api/extra-row/:rowId o POST /api/extra-rows.
       saveExtraLocalOnly();
-      scheduleSharedMetaSave();
+      scheduleSharedMetaSave(options);
     }
 
     function loadExtra(){
@@ -9488,6 +9748,10 @@ button.doganaModuleSvgToggleBtn:active,
       // dei container che ricomparivano subito dopo la cancellazione.
       clearTimeout(extraRowSaveTimers.get(rowId));
       extraRowSaveTimers.delete(rowId);
+      extraRowPendingPatches.delete(rowId);
+      extraRowsPendingCreate.delete(rowId);
+      // Un eventuale PATCH già partito non può essere annullato, ma il backend
+      // non ricrea più righe mancanti: dopo DELETE riceverà 404.
       markExtraRowDeleted(rowId);
 
       extraRows = extraRows.filter(row => String(row?.__id || "") !== rowId);
@@ -9978,6 +10242,8 @@ button.doganaModuleSvgToggleBtn:active,
         extraRows[idx] = row;
         const tr = document.createElement("tr");
         tr.dataset.extraRowId = row.__id || "";
+        // ID stabile condiviso anche con il layer realtime dei lock.
+        tr.dataset.rowId = row.__id || "";
 
         tr.addEventListener("dragover", (event) => {
           if (!extraDraggedRowId) return;
@@ -10136,7 +10402,10 @@ button.doganaModuleSvgToggleBtn:active,
                 refreshExtraAutoCheckSchedule();
                 updateAutoCheckUI();
               }
-              scheduleSharedRowPatch(rowIndex, null, 0);
+              scheduleSharedRowPatch(rowIndex, {
+                [key]: extraRows[rowIndex][key],
+                __terminal: extraRows[rowIndex].__terminal
+              }, 0);
               unlockSharedExtraCell(extraRows[rowIndex].__id, key);
             }
           });
@@ -10587,7 +10856,11 @@ button.doganaModuleSvgToggleBtn:active,
       armExtraAutoCheckTimer();
       restartExtraCountdownTimer();
       updateAutoCheckUI();
-      if (!options.skipSave) saveExtra();
+      if (!options.skipSave) {
+        // Il valore Auto è un metadato globale condiviso e va scritto soltanto
+        // quando l'utente lo cambia esplicitamente.
+        saveExtra({ includeAuto: true, immediate: true });
+      }
       if (!options.skipRender && typeof updateExtraSingleAutoButton === "function") {
         updateExtraSingleAutoButton(extraAutoCheckEnabled);
       }
@@ -10688,6 +10961,7 @@ button.doganaModuleSvgToggleBtn:active,
     window.syncExtraSharedState = syncExtraFromBackend;
     window.loadExtraSharedState = async () => syncExtraFromBackend(true);
     window.scheduleSharedRowPatch = scheduleSharedRowPatch;
+    window.flushSharedRowPatch = flushSharedRowPatch;
     window.renderExtra = renderExtra;
 
     const extraLoaded = loadExtra();
@@ -11736,7 +12010,10 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
     if (!live || isExtraRowPendingDelete(rowId)) return false;
 
     saveExtraLocalOnly();
-    scheduleSharedRowPatch(liveIndex, normalizeExtraRow(live), 0);
+    // Il controllo aggiorna soltanto i campi di esito del terminal.
+    // Non inviare mai l'intera riga: cliente/container potrebbero essere stati
+    // modificati nello stesso istante da un'altra postazione.
+    scheduleSharedRowPatch(liveIndex, buildExtraStatusPatch(live, term), 0);
     return true;
   };
 
@@ -12687,6 +12964,28 @@ function shipClosingBadge(label) {
   return clean ? `<span class="shipClosingBadge">${escapeHtml(clean)}</span>` : "";
 }
 
+function normalizeShipAcceptance(value) {
+  const clean = String(value || "").trim();
+  if (!clean) return { state: "unknown", text: "-" };
+  if (/NON\s+ACCETTA|NOT\s+ACCEPTED|CARGO\s+NOT\s+ACCEPTED|\bNO\b|TIMES-CIRCLE|DENY/i.test(clean)) {
+    return { state: "rejected", text: "NON ACCETTA" };
+  }
+  if (/ACCETTA|CARGO\s+ACCEPTED|\bACCEPTED\b|\bSI\b|\bSÌ\b|\bYES\b|CHECK-CIRCLE/i.test(clean)) {
+    return { state: "accepted", text: "ACCETTA" };
+  }
+  return { state: "unknown", text: clean };
+}
+
+function shipAcceptanceBadge(label, value) {
+  const normalized = normalizeShipAcceptance(value);
+  if (!value || normalized.text === "-") return "";
+  const className = normalized.state === "accepted"
+    ? "isAccepted"
+    : (normalized.state === "rejected" ? "isRejected" : "isUnknown");
+  const symbol = normalized.state === "accepted" ? "✓" : (normalized.state === "rejected" ? "✕" : "•");
+  return `<span class="shipClosingBadge shipAcceptanceBadge ${className}">${escapeHtml(label)} ${symbol} ${escapeHtml(normalized.text)}</span>`;
+}
+
 function getShipWindowLabel(row) {
   const closeDate = parseShipDate(getShipCloseValue(row));
   if (!closeDate) return "DATA NON LETTA";
@@ -12717,23 +13016,26 @@ function renderShipClosingCard(row, terminal) {
   const etd = shipClosingValue(row, ["etd", "ETD", "eTD", "E.T.D.", "ets", "ETS", "partenza", "departure", "dataPartenza", "data_partenza", "tdtd"]);
   const fonte = shipClosingValue(row, ["fonteSct", "fonteConateco", "categoriaConateco", "fonte", "section"]);
   const statoCarico = shipClosingValue(row, ["statoCarico", "accettaCarico", "acceptance", "acceptanceStatus"]);
-  const dry = shipClosingValue(row, ["acceptanceDry", "dry", "accettazioneDry"], "");
-  const reef = shipClosingValue(row, ["acceptanceReef", "acceptanceReefer", "reefer", "accettazioneReef"], "");
+  const dry = shipClosingValue(row, ["acceptanceDry", "accettaDry", "dry", "accettazioneDry"], "");
+  const reef = shipClosingValue(row, ["acceptanceReef", "acceptanceReefer", "accettaReef", "reefer", "accettazioneReef"], "");
   const agenzia = shipClosingValue(row, ["agenzia", "armatore", "linea", "compagnia", "carrier"]);
   const ormeggio = shipClosingValue(row, ["ormeggio", "berth", "banchina", "molo"]);
   const noteParts = [row?.note, row?.terminal, row?.porto, row?.statoCarico].filter(Boolean);
   const note = noteParts.length ? noteParts.join(" · ") : "Nessuna nota operativa aggiuntiva disponibile.";
   const windowLabel = getShipWindowLabel(row);
 
+  const acceptanceBadges = [
+    shipAcceptanceBadge("DRY", dry),
+    shipAcceptanceBadge("REEFER", reef)
+  ].filter(Boolean).join("");
+
   const badges = [
     terminal,
     fonte,
     statoCarico,
-    dry ? `DRY ${dry}` : "",
-    reef ? `REEFER ${reef}` : "",
     row?.tipo,
     row?.flag
-  ].filter(Boolean).map(shipClosingBadge).join("");
+  ].filter(Boolean).map(shipClosingBadge).join("") + acceptanceBadges;
 
   return `
     <tr>
@@ -15047,7 +15349,13 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
         active.dispatchEvent(new Event("input", { bubbles: true }));
         const rowIndex = Number(active.dataset.extraRow);
         if (Number.isFinite(rowIndex) && typeof window.scheduleSharedRowPatch === "function") {
-          window.scheduleSharedRowPatch(rowIndex, null, 0);
+          const field = String(active.dataset.extraField || "");
+          if (field) {
+            window.scheduleSharedRowPatch(rowIndex, {
+              [field]: active.value,
+              __terminal: String(active.closest("tr")?.dataset?.extraTerminal || "")
+            }, 0);
+          }
         }
       } catch {}
       await new Promise(resolve => setTimeout(resolve, 180));
