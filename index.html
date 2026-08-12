@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-12-console-sse-r4"/>
+<meta name="doganatools-build" content="2026-08-12-extra-events-auth-r5"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -5720,49 +5720,97 @@ if (window.pdfjsLib) {
   }
 
 
-  function connectLocksRealtime(){
-    if (!("EventSource" in window)) return;
-    if (window.__doganaExtraEventSource) return;
+  /* === REALTIME CONTENITORI R5: SSE via fetch autenticato ===
+     EventSource cross-origin può partire prima del completamento del login e ricevere 401.
+     Usiamo fetch streaming: passa dal DoganaFetchGuard, aspetta l'auth gate e forza
+     credentials=include. In caso di sessione scaduta il prossimo tentativo resta sospeso
+     fino al nuovo login, evitando il loop continuo di 401 in console. */
+  async function connectLocksRealtime(){
+    if (window.__doganaExtraStreamRunning) return;
+    window.__doganaExtraStreamRunning = true;
 
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url, { withCredentials: true });
-      window.__doganaExtraEventSource = es;
+    const controller = new AbortController();
+    window.__doganaExtraStreamAbort = controller;
 
-      es.addEventListener("hello", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
+    const handleRealtimeEvent = (eventName, payloadText) => {
+      let data = null;
+      try { data = JSON.parse(payloadText || "{}"); } catch { data = null; }
 
-      es.addEventListener("locks", ev => {
-        try {
-          const data = JSON.parse(ev.data || "{}");
-          if (data?.locks) {
-            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-            applyLocksToInputs();
-          }
-        } catch {}
-      });
+      if (eventName === "hello" || eventName === "locks") {
+        if (data?.locks) {
+          locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+          applyLocksToInputs();
+        }
+        return;
+      }
 
-      es.addEventListener("shared-state", ev => {
+      if (eventName === "shared-state") {
         try {
           if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
           safeRefreshSharedState(true);
         } catch {}
+      }
+    };
+
+    try {
+      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
+      const response = await fetch(url, {
+        method: "GET",
+        cache: "no-store",
+        credentials: "include",
+        headers: { "Accept": "text/event-stream" },
+        signal: controller.signal
       });
 
-      es.onerror = () => {
-        try { es.close(); } catch {}
-        window.__doganaExtraEventSource = null;
-        setTimeout(connectLocksRealtime, 1800);
-      };
+      if (!response.ok) {
+        // Il fetch guard intercetta già il 401 e riapre il gate di autenticazione.
+        // Non rilanciamo immediatamente: il retry successivo aspetterà il nuovo login.
+        throw new Error(`Realtime contenitori HTTP ${response.status}`);
+      }
+      if (!response.body || typeof response.body.getReader !== "function") {
+        throw new Error("Streaming fetch non supportato dal browser");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+
+      while (!controller.signal.aborted) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n");
+
+        let boundary;
+        while ((boundary = buffer.indexOf("\n\n")) >= 0) {
+          const block = buffer.slice(0, boundary);
+          buffer = buffer.slice(boundary + 2);
+          if (!block.trim()) continue;
+
+          let eventName = "message";
+          const dataLines = [];
+          for (const line of block.split("\n")) {
+            if (line.startsWith("event:")) eventName = line.slice(6).trim() || "message";
+            else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
+          }
+          handleRealtimeEvent(eventName, dataLines.join("\n"));
+        }
+      }
     } catch (err) {
-      console.warn("Realtime lock SSE non disponibile:", err);
+      if (err?.name !== "AbortError") {
+        const message = String(err?.message || err || "");
+        // 401/sessione scaduta viene già gestito dal fetch guard: niente spam in console.
+        if (!/HTTP 401/i.test(message)) console.warn("Realtime contenitori temporaneamente non disponibile:", message);
+      }
+    } finally {
+      if (window.__doganaExtraStreamAbort === controller) window.__doganaExtraStreamAbort = null;
+      window.__doganaExtraStreamRunning = false;
+
+      if (!controller.signal.aborted) {
+        setTimeout(() => {
+          // Se non autenticato, fetch guard terrà il prossimo stream in attesa del login.
+          connectLocksRealtime();
+        }, 2500);
+      }
     }
   }
 
