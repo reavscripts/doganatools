@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-12-extra-events-auth-r5"/>
+<meta name="doganatools-build" content="2026-08-12-container-sync-r3"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -5720,97 +5720,49 @@ if (window.pdfjsLib) {
   }
 
 
-  /* === REALTIME CONTENITORI R5: SSE via fetch autenticato ===
-     EventSource cross-origin può partire prima del completamento del login e ricevere 401.
-     Usiamo fetch streaming: passa dal DoganaFetchGuard, aspetta l'auth gate e forza
-     credentials=include. In caso di sessione scaduta il prossimo tentativo resta sospeso
-     fino al nuovo login, evitando il loop continuo di 401 in console. */
-  async function connectLocksRealtime(){
-    if (window.__doganaExtraStreamRunning) return;
-    window.__doganaExtraStreamRunning = true;
+  function connectLocksRealtime(){
+    if (!("EventSource" in window)) return;
+    if (window.__doganaExtraEventSource) return;
 
-    const controller = new AbortController();
-    window.__doganaExtraStreamAbort = controller;
+    try {
+      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
+      const es = new EventSource(url);
+      window.__doganaExtraEventSource = es;
 
-    const handleRealtimeEvent = (eventName, payloadText) => {
-      let data = null;
-      try { data = JSON.parse(payloadText || "{}"); } catch { data = null; }
+      es.addEventListener("hello", ev => {
+        try {
+          const data = JSON.parse(ev.data || "{}");
+          if (data?.locks) {
+            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+            applyLocksToInputs();
+          }
+        } catch {}
+      });
 
-      if (eventName === "hello" || eventName === "locks") {
-        if (data?.locks) {
-          locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
-          applyLocksToInputs();
-        }
-        return;
-      }
+      es.addEventListener("locks", ev => {
+        try {
+          const data = JSON.parse(ev.data || "{}");
+          if (data?.locks) {
+            locks = new Map((data.locks || []).map(l => [l.key || getCellKey(l.rowId, l.field), l]));
+            applyLocksToInputs();
+          }
+        } catch {}
+      });
 
-      if (eventName === "shared-state") {
+      es.addEventListener("shared-state", ev => {
         try {
           if (document.activeElement && document.activeElement.matches && document.activeElement.matches("#extraTable input")) return;
           safeRefreshSharedState(true);
         } catch {}
-      }
-    };
-
-    try {
-      const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const response = await fetch(url, {
-        method: "GET",
-        cache: "no-store",
-        credentials: "include",
-        headers: { "Accept": "text/event-stream" },
-        signal: controller.signal
       });
 
-      if (!response.ok) {
-        // Il fetch guard intercetta già il 401 e riapre il gate di autenticazione.
-        // Non rilanciamo immediatamente: il retry successivo aspetterà il nuovo login.
-        throw new Error(`Realtime contenitori HTTP ${response.status}`);
-      }
-      if (!response.body || typeof response.body.getReader !== "function") {
-        throw new Error("Streaming fetch non supportato dal browser");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let buffer = "";
-
-      while (!controller.signal.aborted) {
-        const { value, done } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true }).replace(/\r\n/g, "\n");
-
-        let boundary;
-        while ((boundary = buffer.indexOf("\n\n")) >= 0) {
-          const block = buffer.slice(0, boundary);
-          buffer = buffer.slice(boundary + 2);
-          if (!block.trim()) continue;
-
-          let eventName = "message";
-          const dataLines = [];
-          for (const line of block.split("\n")) {
-            if (line.startsWith("event:")) eventName = line.slice(6).trim() || "message";
-            else if (line.startsWith("data:")) dataLines.push(line.slice(5).trimStart());
-          }
-          handleRealtimeEvent(eventName, dataLines.join("\n"));
-        }
-      }
+      es.onerror = () => {
+        try { es.close(); } catch {}
+        window.__doganaExtraEventSource = null;
+        setTimeout(connectLocksRealtime, 1800);
+      };
     } catch (err) {
-      if (err?.name !== "AbortError") {
-        const message = String(err?.message || err || "");
-        // 401/sessione scaduta viene già gestito dal fetch guard: niente spam in console.
-        if (!/HTTP 401/i.test(message)) console.warn("Realtime contenitori temporaneamente non disponibile:", message);
-      }
-    } finally {
-      if (window.__doganaExtraStreamAbort === controller) window.__doganaExtraStreamAbort = null;
-      window.__doganaExtraStreamRunning = false;
-
-      if (!controller.signal.aborted) {
-        setTimeout(() => {
-          // Se non autenticato, fetch guard terrà il prossimo stream in attesa del login.
-          connectLocksRealtime();
-        }, 2500);
-      }
+      console.warn("Realtime lock SSE non disponibile:", err);
     }
   }
 
@@ -15655,14 +15607,11 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 
 <script>
-/* === CONSOLE SERVER.JS - snapshot + SSE autenticato === */
+/* === CONSOLE SERVER.JS - solo lettura output backend === */
 (function(){
   const MAX_LINES = 500;
   let source = null;
   let lines = [];
-  let connecting = false;
-  let reconnectTimer = null;
-  const seenEntries = new Set();
 
   function $(id){ return document.getElementById(id); }
 
@@ -15670,6 +15619,9 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const p = String(path || "");
     const clean = p.startsWith("/") ? p : "/" + p;
 
+    // Usa la stessa configurazione API del resto dell'app.
+    // Su dogana.reav.website deve puntare a https://dogana-api.reav.website,
+    // non a /api sul dominio frontend.
     try {
       if (typeof apiUrl === "function") return apiUrl(clean);
     } catch {}
@@ -15706,117 +15658,50 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
   function cleanConsoleText(value){
     return String(value || "")
-      .replace(/[\u001B\u009B][[\]\()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g, "")
+      .replace(/[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g, "")
       .replace(/\\u001b\[[0-9;?]*[A-Za-z]/gi, "")
       .replace(/\\x1b\[[0-9;?]*[A-Za-z]/gi, "")
       .replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "")
       .trimEnd();
   }
 
-  function entryKey(entry){
-    return [entry?.time || "", entry?.source || entry?.level || "", entry?.line || ""].join("|");
-  }
-
   function addLine(entry){
-    const text = cleanConsoleText(entry && entry.line ? entry.line : "");
-    if (!text) return;
-
-    const key = entryKey(entry);
-    if (key && seenEntries.has(key)) return;
-    if (key) seenEntries.add(key);
-
     const time = entry && entry.time ? new Date(entry.time).toLocaleTimeString("it-IT", { hour12:false }) : new Date().toLocaleTimeString("it-IT", { hour12:false });
     const rawLevel = String((entry && (entry.level || entry.source)) || "log").toLowerCase();
     const prefix = rawLevel.includes("err") || rawLevel === "stderr" ? "ERRORE" : rawLevel.includes("warn") || rawLevel.includes("avviso") ? "AVVISO" : rawLevel.includes("table") || rawLevel.includes("tabella") ? "TABELLA" : "LOG";
+    const text = cleanConsoleText(entry && entry.line ? entry.line : "");
+    if (!text) return;
     lines.push(`[${time}] ${prefix} ${text}`);
     while (lines.length > MAX_LINES) lines.shift();
-    while (seenEntries.size > MAX_LINES * 2) seenEntries.delete(seenEntries.values().next().value);
     render();
   }
 
-  function closeSource(){
+  function connect(){
+    if (!$("serverConsoleOutput")) return;
     if (source) {
       try { source.close(); } catch {}
       source = null;
     }
-  }
 
-  function scheduleReconnect(){
-    clearTimeout(reconnectTimer);
-    reconnectTimer = setTimeout(() => {
-      reconnectTimer = null;
-      connect(false);
-    }, 3000);
-  }
+    if (!window.EventSource) {
+      setStatus("EventSource non supportato", false);
+      return;
+    }
 
-  async function loadSnapshot(){
-    const response = await fetch(api(`/api/console?_=${Date.now()}`), {
-      method: "GET",
-      cache: "no-store",
-      credentials: "include",
-      headers: { "Accept": "application/json" }
+    setStatus("Connessione...", false);
+    source = new EventSource(api("/api/console-stream"));
+
+    source.addEventListener("ready", function(){
+      setStatus("Connessa", true);
     });
 
-    const data = await response.json().catch(() => null);
-    if (!response.ok || !data?.success) {
-      const message = data?.error || (response.status === 401 ? "Sessione non autenticata" : `HTTP ${response.status}`);
-      throw new Error(message);
-    }
+    source.addEventListener("line", function(event){
+      try { addLine(JSON.parse(event.data || "{}")); } catch {}
+    });
 
-    if (Array.isArray(data.lines)) {
-      lines = [];
-      seenEntries.clear();
-      data.lines.slice(-MAX_LINES).forEach(addLine);
-      render();
-    }
-  }
-
-  async function connect(manual = false){
-    if (!$("serverConsoleOutput") || connecting) return;
-    connecting = true;
-    clearTimeout(reconnectTimer);
-    reconnectTimer = null;
-    closeSource();
-    setStatus(manual ? "Riconnessione..." : "Connessione...", false);
-
-    try {
-      // Il fetch guard attende l'autenticazione e forza credentials=include.
-      // In questo modo la Console non tenta l'SSE prima che /api/auth/me sia concluso.
-      await loadSnapshot();
-
-      if (!window.EventSource) {
-        setStatus("EventSource non supportato", false);
-        return;
-      }
-
-      const streamUrl = api(`/api/console-stream?_=${Date.now()}`);
-      source = new EventSource(streamUrl, { withCredentials: true });
-
-      source.addEventListener("ready", function(){
-        setStatus("Connessa", true);
-      });
-
-      source.addEventListener("line", function(event){
-        try { addLine(JSON.parse(event.data || "{}")); } catch {}
-      });
-
-      source.addEventListener("ping", function(){
-        setStatus("Connessa", true);
-      });
-
-      source.onerror = function(){
-        closeSource();
-        setStatus("Disconnessa", false);
-        scheduleReconnect();
-      };
-    } catch (err) {
-      closeSource();
-      const msg = String(err?.message || err || "Errore connessione");
-      setStatus(msg.includes("Sessione") ? "Sessione scaduta" : "Disconnessa", false);
-      if (!msg.includes("Sessione")) scheduleReconnect();
-    } finally {
-      connecting = false;
-    }
+    source.onerror = function(){
+      setStatus("Disconnessa", false);
+    };
   }
 
   function boot(){
@@ -15827,13 +15712,10 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
     if (clearBtn) clearBtn.addEventListener("click", function(){
       lines = [];
-      seenEntries.clear();
       render();
     });
 
-    if (reconnectBtn) reconnectBtn.addEventListener("click", function(){
-      connect(true);
-    });
+    if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
 
     if (toggleBtn && panel && toggleBtn.dataset.minimizeReady !== "1") {
       toggleBtn.dataset.minimizeReady = "1";
@@ -15841,7 +15723,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       const applyState = function(minimized){
         panel.classList.toggle("is-minimized", !!minimized);
         toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
-        if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(toggleBtn, minimized);
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(toggleBtn, minimized);
         toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
         toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Console" : "Riduci a icona Console");
         toggleBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -15855,15 +15737,14 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       });
     }
 
-    connect(false);
+    connect();
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
   window.addEventListener("beforeunload", function(){
-    clearTimeout(reconnectTimer);
-    closeSource();
+    try { source && source.close(); } catch {}
   });
 })();
 </script>
