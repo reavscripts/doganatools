@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-12-container-sync-r3"/>
+<meta name="doganatools-build" content="2026-08-12-console-sse-r4"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -5726,7 +5726,7 @@ if (window.pdfjsLib) {
 
     try {
       const url = api(`/api/extra-events?clientId=${encodeURIComponent(clientId)}&_=${Date.now()}`);
-      const es = new EventSource(url);
+      const es = new EventSource(url, { withCredentials: true });
       window.__doganaExtraEventSource = es;
 
       es.addEventListener("hello", ev => {
@@ -15607,11 +15607,14 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
 
 <script>
-/* === CONSOLE SERVER.JS - solo lettura output backend === */
+/* === CONSOLE SERVER.JS - snapshot + SSE autenticato === */
 (function(){
   const MAX_LINES = 500;
   let source = null;
   let lines = [];
+  let connecting = false;
+  let reconnectTimer = null;
+  const seenEntries = new Set();
 
   function $(id){ return document.getElementById(id); }
 
@@ -15619,9 +15622,6 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     const p = String(path || "");
     const clean = p.startsWith("/") ? p : "/" + p;
 
-    // Usa la stessa configurazione API del resto dell'app.
-    // Su dogana.reav.website deve puntare a https://dogana-api.reav.website,
-    // non a /api sul dominio frontend.
     try {
       if (typeof apiUrl === "function") return apiUrl(clean);
     } catch {}
@@ -15658,50 +15658,117 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
   function cleanConsoleText(value){
     return String(value || "")
-      .replace(/[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g, "")
+      .replace(/[\u001B\u009B][[\]\()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[a-zA-Z\d]*)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g, "")
       .replace(/\\u001b\[[0-9;?]*[A-Za-z]/gi, "")
       .replace(/\\x1b\[[0-9;?]*[A-Za-z]/gi, "")
       .replace(/\x1b\[[0-9;?]*[A-Za-z]/g, "")
       .trimEnd();
   }
 
+  function entryKey(entry){
+    return [entry?.time || "", entry?.source || entry?.level || "", entry?.line || ""].join("|");
+  }
+
   function addLine(entry){
+    const text = cleanConsoleText(entry && entry.line ? entry.line : "");
+    if (!text) return;
+
+    const key = entryKey(entry);
+    if (key && seenEntries.has(key)) return;
+    if (key) seenEntries.add(key);
+
     const time = entry && entry.time ? new Date(entry.time).toLocaleTimeString("it-IT", { hour12:false }) : new Date().toLocaleTimeString("it-IT", { hour12:false });
     const rawLevel = String((entry && (entry.level || entry.source)) || "log").toLowerCase();
     const prefix = rawLevel.includes("err") || rawLevel === "stderr" ? "ERRORE" : rawLevel.includes("warn") || rawLevel.includes("avviso") ? "AVVISO" : rawLevel.includes("table") || rawLevel.includes("tabella") ? "TABELLA" : "LOG";
-    const text = cleanConsoleText(entry && entry.line ? entry.line : "");
-    if (!text) return;
     lines.push(`[${time}] ${prefix} ${text}`);
     while (lines.length > MAX_LINES) lines.shift();
+    while (seenEntries.size > MAX_LINES * 2) seenEntries.delete(seenEntries.values().next().value);
     render();
   }
 
-  function connect(){
-    if (!$("serverConsoleOutput")) return;
+  function closeSource(){
     if (source) {
       try { source.close(); } catch {}
       source = null;
     }
+  }
 
-    if (!window.EventSource) {
-      setStatus("EventSource non supportato", false);
-      return;
+  function scheduleReconnect(){
+    clearTimeout(reconnectTimer);
+    reconnectTimer = setTimeout(() => {
+      reconnectTimer = null;
+      connect(false);
+    }, 3000);
+  }
+
+  async function loadSnapshot(){
+    const response = await fetch(api(`/api/console?_=${Date.now()}`), {
+      method: "GET",
+      cache: "no-store",
+      credentials: "include",
+      headers: { "Accept": "application/json" }
+    });
+
+    const data = await response.json().catch(() => null);
+    if (!response.ok || !data?.success) {
+      const message = data?.error || (response.status === 401 ? "Sessione non autenticata" : `HTTP ${response.status}`);
+      throw new Error(message);
     }
 
-    setStatus("Connessione...", false);
-    source = new EventSource(api("/api/console-stream"));
+    if (Array.isArray(data.lines)) {
+      lines = [];
+      seenEntries.clear();
+      data.lines.slice(-MAX_LINES).forEach(addLine);
+      render();
+    }
+  }
 
-    source.addEventListener("ready", function(){
-      setStatus("Connessa", true);
-    });
+  async function connect(manual = false){
+    if (!$("serverConsoleOutput") || connecting) return;
+    connecting = true;
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+    closeSource();
+    setStatus(manual ? "Riconnessione..." : "Connessione...", false);
 
-    source.addEventListener("line", function(event){
-      try { addLine(JSON.parse(event.data || "{}")); } catch {}
-    });
+    try {
+      // Il fetch guard attende l'autenticazione e forza credentials=include.
+      // In questo modo la Console non tenta l'SSE prima che /api/auth/me sia concluso.
+      await loadSnapshot();
 
-    source.onerror = function(){
-      setStatus("Disconnessa", false);
-    };
+      if (!window.EventSource) {
+        setStatus("EventSource non supportato", false);
+        return;
+      }
+
+      const streamUrl = api(`/api/console-stream?_=${Date.now()}`);
+      source = new EventSource(streamUrl, { withCredentials: true });
+
+      source.addEventListener("ready", function(){
+        setStatus("Connessa", true);
+      });
+
+      source.addEventListener("line", function(event){
+        try { addLine(JSON.parse(event.data || "{}")); } catch {}
+      });
+
+      source.addEventListener("ping", function(){
+        setStatus("Connessa", true);
+      });
+
+      source.onerror = function(){
+        closeSource();
+        setStatus("Disconnessa", false);
+        scheduleReconnect();
+      };
+    } catch (err) {
+      closeSource();
+      const msg = String(err?.message || err || "Errore connessione");
+      setStatus(msg.includes("Sessione") ? "Sessione scaduta" : "Disconnessa", false);
+      if (!msg.includes("Sessione")) scheduleReconnect();
+    } finally {
+      connecting = false;
+    }
   }
 
   function boot(){
@@ -15712,10 +15779,13 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 
     if (clearBtn) clearBtn.addEventListener("click", function(){
       lines = [];
+      seenEntries.clear();
       render();
     });
 
-    if (reconnectBtn) reconnectBtn.addEventListener("click", connect);
+    if (reconnectBtn) reconnectBtn.addEventListener("click", function(){
+      connect(true);
+    });
 
     if (toggleBtn && panel && toggleBtn.dataset.minimizeReady !== "1") {
       toggleBtn.dataset.minimizeReady = "1";
@@ -15723,7 +15793,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       const applyState = function(minimized){
         panel.classList.toggle("is-minimized", !!minimized);
         toggleBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
-      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(toggleBtn, minimized);
+        if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(toggleBtn, minimized);
         toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
         toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Console" : "Riduci a icona Console");
         toggleBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
@@ -15737,14 +15807,15 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
       });
     }
 
-    connect();
+    connect(false);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
   else boot();
 
   window.addEventListener("beforeunload", function(){
-    try { source && source.close(); } catch {}
+    clearTimeout(reconnectTimer);
+    closeSource();
   });
 })();
 </script>
