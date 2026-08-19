@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-notifiche-r5"/>
+<meta name="doganatools-build" content="2026-08-19-notifiche-r6"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -7232,7 +7232,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   <div class="notificationHead">
     <div>
       <div class="notificationTitle">Notifiche</div>
-      <div class="notificationSubtitle">Programma un task: all'orario impostato DoganaTools mostra un avviso e suona una campanella.</div>
+      <div class="notificationSubtitle">Programma un task: all'orario impostato DoganaTools mostra un avviso e riproduce un chime dedicato.</div>
     </div>
     <div class="notificationActions">
       <span class="notificationStats" id="notificationStats">0 programmati</span>
@@ -7449,7 +7449,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R5</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R6</strong></a>
   </div>
 </footer>
 </section>
@@ -18576,31 +18576,63 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     return reminderAudioCtx;
   }
 
-  function playReminderBell(){
+  // Chime dedicato ai promemoria: breve melodia morbida, volutamente diversa
+  // dal doppio beep dei container e dai classici suoni di sistema.
+  // Volume contenuto per l'uso in ufficio; durata totale inferiore a 1 secondo.
+  function playReminderChime(){
     if (!soundEnabled) return;
     const ctx = reminderAudioCtx;
     if (!ctx || ctx.state !== "running") return;
+
     try {
-      const start = ctx.currentTime;
-      const strike = (offset, level) => {
-        [880, 1320, 1760].forEach((freq, index) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = index === 0 ? "sine" : "triangle";
-          osc.frequency.setValueAtTime(freq, start + offset);
-          gain.gain.setValueAtTime(0.0001, start + offset);
-          gain.gain.exponentialRampToValueAtTime(level / (index + 1), start + offset + 0.012);
-          gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.75 + index * 0.12);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(start + offset);
-          osc.stop(start + offset + 1.05);
-        });
+      const start = ctx.currentTime + 0.015;
+      const notes = [
+        { freq: 587.33, at: 0.00, duration: 0.24, level: 0.048 }, // D5
+        { freq: 739.99, at: 0.23, duration: 0.26, level: 0.052 }, // F#5
+        { freq: 659.25, at: 0.48, duration: 0.36, level: 0.046 }  // E5
+      ];
+
+      const master = ctx.createGain();
+      master.gain.setValueAtTime(0.82, start);
+      master.connect(ctx.destination);
+
+      const softNote = ({ freq, at, duration, level }) => {
+        const when = start + at;
+
+        // Fondamentale morbida.
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(freq * 1.012, when);
+        osc.frequency.exponentialRampToValueAtTime(freq, when + 0.035);
+        gain.gain.setValueAtTime(0.0001, when);
+        gain.gain.exponentialRampToValueAtTime(level, when + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, when + duration);
+        osc.connect(gain);
+        gain.connect(master);
+        osc.start(when);
+        osc.stop(when + duration + 0.04);
+
+        // Armonica molto leggera: dà un carattere "chime" senza renderlo acuto.
+        const overtone = ctx.createOscillator();
+        const overtoneGain = ctx.createGain();
+        overtone.type = "triangle";
+        overtone.frequency.setValueAtTime(freq * 2.005, when);
+        overtoneGain.gain.setValueAtTime(0.0001, when);
+        overtoneGain.gain.exponentialRampToValueAtTime(level * 0.16, when + 0.009);
+        overtoneGain.gain.exponentialRampToValueAtTime(0.0001, when + Math.min(0.16, duration * 0.65));
+        overtone.connect(overtoneGain);
+        overtoneGain.connect(master);
+        overtone.start(when);
+        overtone.stop(when + Math.min(0.20, duration) + 0.03);
       };
-      strike(0, 0.09);
-      strike(0.46, 0.065);
+
+      notes.forEach(softNote);
+
+      // Scollega il master dopo il termine del chime per non lasciare nodi audio vivi.
+      window.setTimeout(() => { try { master.disconnect(); } catch {} }, 1200);
     } catch (err) {
-      console.warn("Campanella promemoria non riprodotta:", err);
+      console.warn("Chime promemoria non riprodotto:", err);
     }
   }
 
@@ -18660,7 +18692,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
         };
       }
     } catch {}
-    try { playReminderBell(); } catch {}
+    try { playReminderChime(); } catch {}
     markFired(task);
   }
 
@@ -18867,7 +18899,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     try { localStorage.setItem(SOUND_KEY, soundEnabled ? "1" : "0"); } catch {}
     if (soundEnabled) {
       initReminderAudioContext({ resume:true });
-      setTimeout(playReminderBell, 80);
+      setTimeout(playReminderChime, 80);
     }
     updateSoundButton();
   });
@@ -20324,7 +20356,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // NOTIFICHE R4: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-NOTIFICHE-R5 con una semplice data.
+    // v2026.08.19-NOTIFICHE-R6 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
