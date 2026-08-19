@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-organizza-gruppo-r8"/>
+<meta name="doganatools-build" content="2026-08-19-postit-desktop-r9"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -7124,6 +7124,35 @@ body[data-theme="dark"] .postItCard{
 }
 .postItCardTop{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
 .postItPin{ font-size:14px; opacity:.72; }
+.postItCardTools{ display:flex; align-items:center; gap:6px; }
+.postItDesktopBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-height:30px !important;
+  padding:0 9px !important;
+  border-radius:8px !important;
+  border:1px solid rgba(113,89,0,.24) !important;
+  background:rgba(255,255,255,.24) !important;
+  color:#675500 !important;
+  font-size:10.5px !important;
+  font-weight:900 !important;
+  letter-spacing:.02em !important;
+  line-height:1 !important;
+  white-space:nowrap;
+  box-shadow:none !important;
+}
+.postItDesktopBtn:hover{
+  transform:none !important;
+  background:rgba(255,255,255,.42) !important;
+  border-color:rgba(113,89,0,.40) !important;
+}
+body[data-theme="dark"] .postItDesktopBtn{
+  color:#fff0a7 !important;
+  border-color:rgba(255,239,139,.25) !important;
+  background:rgba(255,255,255,.07) !important;
+}
 .postItDeleteBtn{
   display:inline-flex;
   align-items:center;
@@ -7708,7 +7737,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
           <textarea class="postItInput" id="postItInput" maxlength="1200" placeholder="Scrivi una nota da ricordare..."></textarea>
           <button class="primary" type="button" id="postItAddBtn">+ Aggiungi post-it</button>
         </div>
-        <div class="postItHint">Le note sono condivise e salvate sul server. Puoi modificarne il testo direttamente sulla bacheca: il salvataggio avviene quando esci dalla nota.</div>
+        <div class="postItHint">Le note sono condivise e salvate sul server. Modificale direttamente oppure usa ↗ Desktop per staccare un Post-it in una finestra flottante sempre in primo piano.</div>
         <div class="postItBoard" id="postItBoard">
           <div class="postItEmpty">Nessun post-it in bacheca.</div>
         </div>
@@ -7911,7 +7940,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-ORGANIZZA-R8</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-POSTIT-DESKTOP-R9</strong></a>
   </div>
 </footer>
 </section>
@@ -19304,6 +19333,187 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     }).join("");
   }
 
+  function desktopNoteById(id){
+    return notes.find(item => String(item?.id || "") === String(id || "")) || null;
+  }
+
+  function closeDesktopPostIt(){
+    if (desktopSaveTimer) { clearTimeout(desktopSaveTimer); desktopSaveTimer = null; }
+    const current = desktopPostIt;
+    desktopPostIt = null;
+    try {
+      if (current?.win && !current.win.closed) current.win.close();
+    } catch {}
+  }
+
+  function desktopWindowCss(){
+    return `
+      :root{color-scheme:light;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}
+      *{box-sizing:border-box}
+      html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#ffef8b;color:#3d3512}
+      body{background:linear-gradient(180deg,#fff7b8 0%,#ffef8b 100%);}
+      .deskWrap{height:100%;display:flex;flex-direction:column;padding:12px;gap:8px;}
+      .deskHead{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px;}
+      .deskTitle{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:950;letter-spacing:.08em;text-transform:uppercase;color:#584900;}
+      .deskPin{font-size:13px;opacity:.72}
+      .deskClose{width:30px;height:30px;padding:0;border-radius:8px;border:1px solid rgba(185,28,28,.24);background:rgba(220,38,38,.07);color:#b91c1c;font-size:16px;font-weight:900;cursor:pointer;}
+      .deskClose:hover{background:rgba(220,38,38,.14)}
+      .deskText{flex:1;min-height:0;width:100%;resize:none;border:0;border-radius:8px;background:rgba(255,255,255,.16);color:#3d3512;padding:10px;font:780 15px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;outline:none;box-shadow:inset 0 0 0 1px rgba(141,108,0,.12);}
+      .deskText:focus{background:rgba(255,255,255,.26);box-shadow:inset 0 0 0 1px rgba(141,108,0,.24),0 0 0 3px rgba(214,166,0,.12)}
+      .deskFoot{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:30px;}
+      .deskMeta{min-width:0;color:rgba(73,62,16,.68);font-size:9.5px;font-weight:800;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      .deskSave{height:30px;padding:0 11px;border-radius:8px;border:1px solid rgba(113,89,0,.25);background:rgba(255,255,255,.28);color:#675500;font-size:10px;font-weight:950;cursor:pointer;white-space:nowrap;}
+      .deskSave:hover{background:rgba(255,255,255,.48)}
+      .deskStatus{font-size:9px;font-weight:900;color:#766516;white-space:nowrap;}
+      .deskStatus.ok{color:#22713c}.deskStatus.err{color:#b91c1c}
+    `;
+  }
+
+  function desktopMetaText(note){
+    if (!note) return "Post-it DoganaTools";
+    const creator = String(note.createdByName || "Postazione");
+    const updated = formatDate(note.updatedAt || note.createdAt);
+    return `${creator}${updated ? ` · ${updated}` : ""}`;
+  }
+
+  function setDesktopStatus(text, kind = ""){
+    const current = desktopPostIt;
+    const el = current?.statusEl;
+    if (!el) return;
+    el.textContent = String(text || "");
+    el.className = `deskStatus${kind ? ` ${kind}` : ""}`;
+  }
+
+  async function saveDesktopPostIt({ immediate = false } = {}){
+    const current = desktopPostIt;
+    if (!current?.noteId || !current?.textarea) return false;
+    if (desktopSaveTimer) { clearTimeout(desktopSaveTimer); desktopSaveTimer = null; }
+    if (!immediate) {
+      desktopSaveTimer = setTimeout(() => saveDesktopPostIt({ immediate:true }), 650);
+      setDesktopStatus("Modifica...", "");
+      return true;
+    }
+    const clean = String(current.textarea.value || "").trim();
+    const original = String(current.originalText || "").trim();
+    if (!clean) {
+      current.textarea.value = original;
+      setDesktopStatus("Testo vuoto non salvato", "err");
+      return false;
+    }
+    if (clean === original) { setDesktopStatus("Salvato", "ok"); return true; }
+    setDesktopStatus("Salvataggio...", "");
+    try {
+      const res = await fetch(endpoint(`/${encodeURIComponent(current.noteId)}`), {
+        method:"PATCH",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ text:clean, clientId:stationId(), clientName:stationName() })
+      });
+      const data = await parseResponse(res);
+      notes = Array.isArray(data?.state?.notes) ? data.state.notes : notes;
+      current.originalText = clean;
+      setDesktopStatus("Salvato", "ok");
+      render();
+      return true;
+    } catch (err) {
+      console.warn("Salvataggio Post-it desktop non riuscito", err);
+      setDesktopStatus("Errore salvataggio", "err");
+      return false;
+    }
+  }
+
+  function syncDesktopPostItFromState(){
+    const current = desktopPostIt;
+    if (!current?.win || current.win.closed || !current.noteId) return;
+    const note = desktopNoteById(current.noteId);
+    if (!note) { closeDesktopPostIt(); return; }
+    try {
+      const active = current.win.document.activeElement === current.textarea;
+      const serverText = String(note.text || "");
+      if (!active && current.textarea && current.textarea.value !== serverText) current.textarea.value = serverText;
+      if (!active) current.originalText = serverText;
+      if (current.metaEl) current.metaEl.textContent = desktopMetaText(note);
+    } catch {}
+  }
+
+  function mountDesktopPostItWindow(win, note, mode){
+    const doc = win.document;
+    doc.title = "Post-it · DoganaTools";
+    doc.documentElement.lang = "it";
+    doc.head.innerHTML = `<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${desktopWindowCss()}</style>`;
+    doc.body.innerHTML = `
+      <div class="deskWrap">
+        <div class="deskHead">
+          <div class="deskTitle"><span class="deskPin">●</span><span>Post-it DoganaTools</span></div>
+          <button type="button" class="deskClose" title="Chiudi Post-it" aria-label="Chiudi Post-it">×</button>
+        </div>
+        <textarea class="deskText" maxlength="1200" spellcheck="true"></textarea>
+        <div class="deskFoot">
+          <div class="deskMeta"></div>
+          <span class="deskStatus ok">Salvato</span>
+          <button type="button" class="deskSave">Salva</button>
+        </div>
+      </div>`;
+    const textarea = doc.querySelector(".deskText");
+    const metaEl = doc.querySelector(".deskMeta");
+    const statusEl = doc.querySelector(".deskStatus");
+    const saveBtn = doc.querySelector(".deskSave");
+    const closeBtn = doc.querySelector(".deskClose");
+    textarea.value = String(note.text || "");
+    metaEl.textContent = desktopMetaText(note);
+    desktopPostIt = { win, noteId:String(note.id || ""), textarea, metaEl, statusEl, originalText:String(note.text || ""), mode };
+
+    textarea.addEventListener("input", () => saveDesktopPostIt({ immediate:false }));
+    textarea.addEventListener("blur", () => saveDesktopPostIt({ immediate:true }));
+    textarea.addEventListener("keydown", event => {
+      if ((event.ctrlKey || event.metaKey) && event.key === "Enter") {
+        event.preventDefault();
+        saveDesktopPostIt({ immediate:true });
+      }
+    });
+    saveBtn.addEventListener("click", () => saveDesktopPostIt({ immediate:true }));
+    closeBtn.addEventListener("click", async () => {
+      await saveDesktopPostIt({ immediate:true });
+      try { win.close(); } catch {}
+    });
+    win.addEventListener("pagehide", () => {
+      if (desktopPostIt?.win === win) {
+        if (desktopSaveTimer) { clearTimeout(desktopSaveTimer); desktopSaveTimer = null; }
+        desktopPostIt = null;
+      }
+    }, { once:true });
+    setTimeout(() => { try { textarea.focus(); textarea.setSelectionRange(textarea.value.length, textarea.value.length); } catch {} }, 30);
+  }
+
+  async function openDesktopPostIt(id){
+    const note = desktopNoteById(id);
+    if (!note) return;
+    if (desktopPostIt?.noteId === String(id || "") && desktopPostIt?.win && !desktopPostIt.win.closed) {
+      try { desktopPostIt.win.focus(); } catch {}
+      return;
+    }
+    if (desktopPostIt?.win && !desktopPostIt.win.closed) closeDesktopPostIt();
+
+    try {
+      if (window.documentPictureInPicture?.requestWindow) {
+        const pipWin = await window.documentPictureInPicture.requestWindow({ width:360, height:330 });
+        mountDesktopPostItWindow(pipWin, note, "pip");
+        try { showExtraToast?.("Post-it sul desktop", "Finestra flottante sempre in primo piano attivata.", "success"); } catch {}
+        return;
+      }
+    } catch (err) {
+      console.warn("Document Picture-in-Picture non disponibile", err);
+    }
+
+    const popup = window.open("", `doganatools_postit_${String(id || "").replace(/[^a-z0-9_-]/gi, "")}`, "popup=yes,width=360,height=330,resizable=yes,scrollbars=no");
+    if (!popup) {
+      alert("Il browser ha bloccato la finestra Post-it. Consenti i popup per DoganaTools.");
+      return;
+    }
+    mountDesktopPostItWindow(popup, note, "popup");
+    try { popup.focus(); } catch {}
+    try { showExtraToast?.("Post-it staccato", "Il browser non supporta la modalità sempre in primo piano: aperto come finestra separata.", "warning"); } catch {}
+  }
+
   async function parseResponse(res){
     const contentType = String(res.headers.get("content-type") || "");
     let data = null;
@@ -19500,6 +19710,8 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   const MIN_KEY = "doganatools_postit_minimized_v1";
   let notes = [];
   let busy = false;
+  let desktopPostIt = null;
+  let desktopSaveTimer = null;
 
   function endpoint(path = ""){
     const suffix = String(path || "");
@@ -19551,12 +19763,19 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
         : `Creato da ${creator}${created ? ` ${created}` : ""}`;
       return `
         <article class="postItCard" data-postit-id="${esc(note.id)}">
-          <div class="postItCardTop"><span class="postItPin" aria-hidden="true">●</span><button type="button" class="postItDeleteBtn" data-delete-postit="${esc(note.id)}" title="Elimina post-it" aria-label="Elimina post-it">×</button></div>
+          <div class="postItCardTop">
+            <span class="postItPin" aria-hidden="true">●</span>
+            <div class="postItCardTools">
+              <button type="button" class="postItDesktopBtn" data-desktop-postit="${esc(note.id)}" title="Apri questo Post-it sul desktop" aria-label="Apri Post-it sul desktop">↗ Desktop</button>
+              <button type="button" class="postItDeleteBtn" data-delete-postit="${esc(note.id)}" title="Elimina post-it" aria-label="Elimina post-it">×</button>
+            </div>
+          </div>
           <textarea class="postItCardText" maxlength="1200" data-note-id="${esc(note.id)}" data-original="${esc(note.text)}">${esc(note.text)}</textarea>
           <div class="postItMeta">${meta}</div>
         </article>`;
     }).join("");
     board.querySelectorAll(".postItCardText").forEach(autoGrow);
+    syncDesktopPostItFromState();
   }
 
   async function parseResponse(res){
@@ -19636,6 +19855,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
       const res = await fetch(endpoint(`/${encodeURIComponent(id)}`), { method:"DELETE" });
       const data = await parseResponse(res);
       notes = Array.isArray(data?.state?.notes) ? data.state.notes : [];
+      if (desktopPostIt?.noteId === String(id || "")) closeDesktopPostIt();
       render();
     } catch (err) {
       console.warn("Eliminazione Post-it non riuscita", err);
@@ -19669,6 +19889,11 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     updateNote(ta.dataset.noteId || "", ta.value, ta);
   });
   board.addEventListener("click", event => {
+    const desktopBtn = event.target.closest?.(".postItDesktopBtn");
+    if (desktopBtn) {
+      openDesktopPostIt(desktopBtn.dataset.desktopPostit || "");
+      return;
+    }
     const btn = event.target.closest?.(".postItDeleteBtn");
     if (btn) deleteNote(btn.dataset.deletePostit || "");
   });
@@ -19677,6 +19902,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   loadNotes({ force:true });
   setInterval(() => loadNotes(), 10000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) loadNotes(); });
+  window.addEventListener("beforeunload", () => { try { closeDesktopPostIt(); } catch {} });
 })();
 </script>
 
@@ -21111,7 +21337,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-ORGANIZZA-R8 con una semplice data.
+    // v2026.08.19-POSTIT-DESKTOP-R9 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
