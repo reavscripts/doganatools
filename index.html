@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-notifiche-r4"/>
+<meta name="doganatools-build" content="2026-08-19-notifiche-r5"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -6692,17 +6692,34 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
 }
 .notificationTask.done .notificationDueBadge{ color:var(--accent-2); }
 .notificationDeleteBtn{
-  width:32px;
-  height:32px;
-  min-width:32px;
-  padding:0;
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  border-radius:10px;
-  color:var(--muted);
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  max-width:30px !important;
+  max-height:30px !important;
+  padding:0 !important;
+  border-radius:8px !important;
+  border:1px solid color-mix(in srgb, var(--danger) 24%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--danger) 7%, var(--surface)) !important;
+  color:var(--danger) !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  white-space:nowrap;
+  box-shadow:none !important;
 }
-.notificationDeleteBtn:hover{ color:var(--danger); border-color:rgba(220,38,38,.35); }
+.notificationDeleteBtn:hover{
+  transform:none !important;
+  border-color:color-mix(in srgb, var(--danger) 42%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--danger) 12%, var(--surface)) !important;
+}
+.notificationTask.done .notificationDeleteBtn{
+  background:color-mix(in srgb, var(--danger) 9%, var(--surface));
+}
 .notificationEmpty{
   padding:18px;
   border:1px dashed var(--grid);
@@ -7432,7 +7449,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R4</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R5</strong></a>
   </div>
 </footer>
 </section>
@@ -19686,6 +19703,8 @@ button.extraTab *{
 .rowBtn *,
 .operativeChecklistDeleteBtn,
 .operativeChecklistDeleteBtn *,
+.notificationDeleteBtn,
+.notificationDeleteBtn *,
 .operativeChecklistFileClear,
 .operativeChecklistFileClear *,
 .floatingBackTop,
@@ -20305,7 +20324,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // NOTIFICHE R4: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-NOTIFICHE-R4 con una semplice data.
+    // v2026.08.19-NOTIFICHE-R5 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
