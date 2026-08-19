@@ -1,0 +1,585 @@
+/* DoganaTools visual system — aligned with the DOGANA AI search experience. */
+:root{
+  --dt-blue:#2563eb;
+  --dt-violet:#6d4aff;
+  --dt-green:#168a55;
+  --dt-gradient:linear-gradient(135deg,var(--dt-blue) 0%,var(--dt-violet) 58%,var(--dt-green) 100%);
+  --dt-gradient-line:linear-gradient(90deg,var(--dt-blue) 0%,#7c3aed 52%,#16a34a 100%);
+  --dt-accent-soft:color-mix(in srgb,var(--accent) 9%,var(--surface));
+  --dt-violet-soft:color-mix(in srgb,var(--dt-violet) 8%,var(--surface));
+  --dt-border:color-mix(in srgb,var(--grid) 82%,transparent);
+  --dt-border-strong:color-mix(in srgb,var(--accent) 25%,var(--grid));
+  --dt-shadow:0 18px 44px rgba(15,23,42,.09);
+  --dt-shadow-soft:0 8px 22px rgba(15,23,42,.07);
+  --dt-radius-xl:22px;
+  --dt-radius-lg:16px;
+  --dt-radius-md:12px;
+  --dt-focus:0 0 0 4px color-mix(in srgb,var(--accent) 14%,transparent);
+}
+
+body[data-theme="dark"]{
+  --dt-border:color-mix(in srgb,var(--grid) 90%,transparent);
+  --dt-border-strong:color-mix(in srgb,var(--accent) 34%,var(--grid));
+  --dt-shadow:0 22px 54px rgba(0,0,0,.34);
+  --dt-shadow-soft:0 10px 26px rgba(0,0,0,.22);
+}
+
+html body{
+  background:
+    radial-gradient(1100px 580px at -8% -8%,color-mix(in srgb,var(--dt-blue) 13%,transparent),transparent 62%),
+    radial-gradient(900px 500px at 108% 2%,color-mix(in srgb,var(--dt-green) 10%,transparent),transparent 58%),
+    linear-gradient(180deg,var(--bg) 0%,var(--bg-accent) 100%);
+}
+
+html body .doganaPreviewBanner{
+  position:relative;
+  z-index:100000;
+  width:min(1180px,calc(100% - 20px));
+  margin:8px auto 10px;
+  padding:8px 14px;
+  border:1px solid color-mix(in srgb,var(--dt-violet) 32%,var(--grid));
+  border-radius:12px;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--dt-blue) 12%,var(--surface)),color-mix(in srgb,var(--dt-violet) 10%,var(--surface)),color-mix(in srgb,var(--dt-green) 10%,var(--surface)));
+  color:var(--muted);
+  box-shadow:var(--dt-shadow-soft);
+  font:850 10px/1.3 var(--font);
+  letter-spacing:.055em;
+  text-align:center;
+  text-transform:uppercase;
+}
+
+/* Shared module shell */
+html body #dogana-section,
+html body .extraPanel,
+html body .organizeModulePanel,
+html body .operativeChecklistPanel,
+html body .notificationPanel,
+html body .postItPanel,
+html body .shipPanel,
+html body .bookingStandalonePanel,
+html body .serverConsolePanel,
+html body .doganaSettingsPanel{
+  position:relative;
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-xl) !important;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-soft) 100%) !important;
+  box-shadow:var(--dt-shadow) !important;
+}
+
+html body #dogana-section::before,
+html body .extraPanel::before,
+html body .organizeModulePanel::before,
+html body .shipPanel::before,
+html body .bookingStandalonePanel::before,
+html body .serverConsolePanel::before,
+html body .doganaSettingsPanel::before{
+  content:"";
+  position:absolute;
+  z-index:3;
+  top:-1px;
+  right:12px;
+  left:12px;
+  height:3px;
+  border-radius:0 0 999px 999px;
+  background:var(--dt-gradient-line);
+  pointer-events:none;
+}
+
+html body .organizeModuleBody .operativeChecklistPanel,
+html body .organizeModuleBody .notificationPanel,
+html body .organizeModuleBody .postItPanel{
+  border-color:color-mix(in srgb,var(--grid) 76%,transparent) !important;
+  box-shadow:var(--dt-shadow-soft) !important;
+}
+
+/* Header: same geometry for links, buttons and the ORGANIZZA dropdown trigger. */
+html body .appTopBar{
+  position:sticky !important;
+  isolation:isolate;
+  padding:12px 14px !important;
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-xl) !important;
+  background:color-mix(in srgb,var(--surface) 91%,transparent) !important;
+  box-shadow:var(--dt-shadow) !important;
+  backdrop-filter:blur(18px) saturate(125%) !important;
+}
+
+html body .appTopBar::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  top:-1px;
+  right:12px;
+  left:12px;
+  height:3px;
+  border-radius:0 0 999px 999px;
+  background:var(--dt-gradient-line);
+}
+
+html body .appBrandLogo{
+  width:38px !important;
+  height:38px !important;
+  padding:6px !important;
+  border:1px solid var(--dt-border-strong) !important;
+  border-radius:13px !important;
+  background:linear-gradient(145deg,var(--surface),var(--dt-accent-soft)) !important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--accent) 16%,transparent) !important;
+}
+
+html body .appBrandText strong{
+  font-size:12px !important;
+  letter-spacing:.085em !important;
+}
+
+html body .appBrandText span{
+  margin-top:3px !important;
+  font-size:10px !important;
+  letter-spacing:.055em !important;
+}
+
+html body .appTopBar .appQuickNav > a,
+html body .appTopBar .appQuickNav > button,
+html body .appTopBar .appQuickNav > .appNavDropdown > .appNavDropdownToggle{
+  box-sizing:border-box !important;
+  width:auto !important;
+  min-width:94px !important;
+  max-width:156px !important;
+  height:40px !important;
+  min-height:40px !important;
+  margin:0 !important;
+  padding:0 14px !important;
+  display:inline-flex !important;
+  flex:0 0 auto !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  appearance:none !important;
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-md) !important;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-soft) 100%) !important;
+  color:var(--heading) !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.045) !important;
+  font-family:var(--font) !important;
+  font-size:10.5px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:.075em !important;
+  text-align:center !important;
+  text-decoration:none !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,background .16s ease !important;
+}
+
+html body .appTopBar .appQuickNav > a[href="#customs-ai-section"]{
+  border-color:transparent !important;
+  background:var(--dt-gradient) !important;
+  color:#fff !important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--dt-blue) 23%,transparent) !important;
+}
+
+html body .appTopBar .appQuickNav > a:hover,
+html body .appTopBar .appQuickNav > button:hover,
+html body .appTopBar .appQuickNav > .appNavDropdown > .appNavDropdownToggle:hover,
+html body .appTopBar .appNavDropdown.open > .appNavDropdownToggle{
+  transform:translateY(-1px) !important;
+  border-color:var(--dt-border-strong) !important;
+  background:linear-gradient(180deg,var(--dt-accent-soft) 0%,var(--surface) 100%) !important;
+  box-shadow:0 9px 20px rgba(15,23,42,.09) !important;
+}
+
+html body .appTopBar .appQuickNav > a[href="#customs-ai-section"]:hover{
+  border-color:transparent !important;
+  background:var(--dt-gradient) !important;
+  filter:brightness(1.06);
+}
+
+html body .appTopBar .appQuickNav > a:focus-visible,
+html body .appTopBar .appQuickNav > button:focus-visible,
+html body .appTopBar .appQuickNav > .appNavDropdown > .appNavDropdownToggle:focus-visible{
+  outline:0 !important;
+  border-color:var(--dt-violet) !important;
+  box-shadow:var(--dt-focus) !important;
+}
+
+html body .appQuickNav > .appNavDropdown{
+  flex:0 0 auto !important;
+}
+
+html body .appNavDropdownChevron{
+  width:16px;
+  height:16px;
+  border-radius:6px;
+  align-items:center;
+  justify-content:center;
+  background:var(--dt-violet-soft);
+  color:var(--dt-violet);
+  font-size:12px !important;
+}
+
+html body .appNavDropdownMenu{
+  top:calc(100% + 10px) !important;
+  min-width:224px !important;
+  padding:8px !important;
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-lg) !important;
+  background:color-mix(in srgb,var(--surface) 96%,transparent) !important;
+  box-shadow:var(--dt-shadow) !important;
+  backdrop-filter:blur(18px) !important;
+}
+
+html body .appNavDropdownMenu a{
+  min-height:42px !important;
+  border-radius:10px !important;
+  color:var(--heading) !important;
+}
+
+html body .appNavDropdownMenu a:hover{
+  background:linear-gradient(90deg,var(--dt-accent-soft),var(--dt-violet-soft)) !important;
+  color:var(--accent) !important;
+}
+
+html body .appQuickNav .appMenuSettingsBtn.settingsIconOnly{
+  width:40px !important;
+  min-width:40px !important;
+  max-width:40px !important;
+  padding:0 !important;
+}
+
+html body .appQuickNav .appSessionSync{
+  min-width:124px !important;
+  max-width:162px !important;
+}
+
+/* Headings and toolbars */
+html body .toolbar,
+html body .miniHead,
+html body .organizeModuleHead,
+html body .operativeChecklistHead,
+html body .notificationHead,
+html body .postItHead,
+html body .bookingModuleHead,
+html body .serverConsoleHead,
+html body .shipCardHead{
+  border-color:var(--dt-border) !important;
+  background:linear-gradient(180deg,var(--surface) 0%,color-mix(in srgb,var(--accent) 3%,var(--surface-soft)) 100%) !important;
+}
+
+html body .miniTitle,
+html body .doganaModuleTitle,
+html body .organizeModuleTitle,
+html body .operativeChecklistTitle,
+html body .notificationTitle,
+html body .postItTitle,
+html body .bookingModuleTitle,
+html body .serverConsoleTitle h2,
+html body .shipToolbar h2{
+  color:var(--heading) !important;
+  font-weight:950 !important;
+  letter-spacing:.085em !important;
+}
+
+html body .organizeModuleTitle::before,
+html body .operativeChecklistTitle::before,
+html body .notificationTitle::before,
+html body .postItTitle::before{
+  content:"✦";
+  margin-right:7px;
+  background:var(--dt-gradient);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+
+/* Buttons: quiet by default, DOGANA AI gradient for primary actions. */
+html body button:not(.themeSwitch):not(.floatingBackTop),
+html body input[type="button"],
+html body input[type="submit"],
+html body input[type="reset"],
+html body input[type="file"]::file-selector-button{
+  border-color:var(--dt-border) !important;
+  border-radius:var(--dt-radius-md) !important;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-soft) 100%) !important;
+  color:var(--heading) !important;
+  box-shadow:0 4px 12px rgba(15,23,42,.045) !important;
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease,filter .16s ease !important;
+}
+
+html body button:not(.themeSwitch):not(.floatingBackTop):hover,
+html body input[type="button"]:hover,
+html body input[type="submit"]:hover,
+html body input[type="reset"]:hover{
+  transform:translateY(-1px) !important;
+  border-color:var(--dt-border-strong) !important;
+  box-shadow:var(--dt-shadow-soft) !important;
+}
+
+html body button.primary.primary,
+html body button.customsAiSubmit.customsAiSubmit,
+html body .floatingBackTop,
+html body button.extraTab.active,
+html body button.shipTab.active{
+  border-color:transparent !important;
+  background:var(--dt-gradient) !important;
+  color:#fff !important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--dt-blue) 22%,transparent) !important;
+}
+
+html body button.primary.primary:hover,
+html body button.customsAiSubmit.customsAiSubmit:hover,
+html body .floatingBackTop:hover{
+  filter:brightness(1.07) !important;
+}
+
+html body button.success.success{
+  border-color:color-mix(in srgb,var(--dt-green) 70%,transparent) !important;
+  background:linear-gradient(135deg,#20a667,var(--dt-green)) !important;
+  color:#fff !important;
+}
+
+html body button.danger.danger{
+  border-color:color-mix(in srgb,var(--danger) 72%,transparent) !important;
+  background:linear-gradient(135deg,#ef4444,var(--danger)) !important;
+  color:#fff !important;
+}
+
+html body button:disabled{
+  filter:saturate(.55) !important;
+  opacity:.48 !important;
+  transform:none !important;
+  box-shadow:none !important;
+}
+
+/* Fields follow the single, rounded DOGANA AI search shell. */
+html body input:not([type="checkbox"]):not([type="radio"]):not(.customsAiInput),
+html body textarea,
+html body select{
+  border-color:var(--dt-border) !important;
+  background:var(--input-bg) !important;
+  color:var(--text) !important;
+}
+
+html body .operativeChecklistInput,
+html body .notificationInput,
+html body .postItInput,
+html body .bookingLookupInput,
+html body .shipQuickSearch,
+html body .calcInput,
+html body .calcResultCard,
+html body .titleField,
+html body .doganaSettingCard{
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-lg) !important;
+  background:color-mix(in srgb,var(--surface) 94%,var(--dt-accent-soft)) !important;
+}
+
+html body input:not(.customsAiInput):focus,
+html body textarea:focus,
+html body select:focus,
+html body .shipQuickSearch:focus-within,
+html body .titleField:focus-within{
+  outline:0 !important;
+  border-color:var(--dt-border-strong) !important;
+  box-shadow:var(--dt-focus) !important;
+}
+
+/* Tables and data-heavy areas */
+html body .gridWrap,
+html body .miniWrap,
+html body .shipTableWrap{
+  border-color:var(--dt-border) !important;
+  background:var(--surface) !important;
+}
+
+html body thead th{
+  background:color-mix(in srgb,var(--accent) 5%,var(--thead-bg)) !important;
+  border-color:var(--dt-border) !important;
+  color:var(--muted) !important;
+}
+
+html body tbody td{
+  border-color:color-mix(in srgb,var(--grid-soft) 86%,transparent) !important;
+}
+
+html body tbody tr:hover td{
+  background:linear-gradient(90deg,var(--dt-accent-soft),var(--tbody-hover)) !important;
+}
+
+html body tfoot td{
+  border-color:var(--dt-border) !important;
+  background:color-mix(in srgb,var(--accent) 5%,var(--panel-2)) !important;
+}
+
+/* Tabs, chips, badges and status indicators */
+html body .extraTab,
+html body .shipTab,
+html body .organizeModuleChip,
+html body .pill,
+html body .shipBadge,
+html body .serverConsoleStatus,
+html body .operativeChecklistStats,
+html body .appFooterPill,
+html body .appFooterCopyright,
+html body .appFooterVersion,
+html body .doganaSettingBadge,
+html body .doganaSessionChip{
+  border-color:var(--dt-border) !important;
+  border-radius:10px !important;
+  background:linear-gradient(180deg,var(--surface),var(--surface-soft)) !important;
+  box-shadow:0 3px 10px rgba(15,23,42,.04) !important;
+}
+
+html body .organizeModuleChip:hover{
+  border-color:var(--dt-border-strong) !important;
+  background:linear-gradient(90deg,var(--dt-accent-soft),var(--dt-violet-soft)) !important;
+}
+
+html body .organizeModuleStats::before,
+html body .appSessionDot,
+html body .extraLiveDot{
+  background:var(--dt-gradient) !important;
+}
+
+html body .customsAiAnswer,
+html body .shipCard,
+html body .postItCard,
+html body .calcPanel{
+  border-color:var(--dt-border) !important;
+  border-radius:var(--dt-radius-lg) !important;
+  background:linear-gradient(180deg,var(--surface) 0%,var(--surface-soft) 100%) !important;
+  box-shadow:var(--dt-shadow-soft) !important;
+}
+
+html body .appFooter{
+  border:1px solid var(--dt-border) !important;
+  border-radius:var(--dt-radius-xl) !important;
+  background:color-mix(in srgb,var(--surface) 92%,transparent) !important;
+  box-shadow:var(--dt-shadow-soft) !important;
+}
+
+html body ::-webkit-scrollbar{
+  width:10px;
+  height:10px;
+}
+
+html body ::-webkit-scrollbar-track{
+  background:color-mix(in srgb,var(--surface-soft) 82%,transparent);
+  border-radius:999px;
+}
+
+html body ::-webkit-scrollbar-thumb{
+  border:2px solid transparent;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--dt-blue),var(--dt-violet),var(--dt-green));
+  background-clip:padding-box;
+}
+
+@media (max-width:1100px){
+  html body .appTopBar{
+    align-items:flex-start !important;
+    flex-direction:column !important;
+  }
+
+  html body .appQuickNav{
+    width:100% !important;
+    justify-content:flex-start !important;
+  }
+}
+
+@media (max-width:700px){
+  html body{
+    padding:10px !important;
+  }
+
+  html body .doganaPreviewBanner{
+    width:calc(100% - 20px);
+    margin:7px auto 9px;
+    padding:7px 10px;
+    border-radius:10px;
+    font-size:9px;
+  }
+
+  html body .appTopBar{
+    top:8px !important;
+    gap:11px !important;
+    padding:11px !important;
+    border-radius:18px !important;
+  }
+
+  html body .appBrandLogo{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  html body .appQuickNav{
+    gap:7px !important;
+    padding:1px 1px 5px !important;
+    scroll-snap-type:x proximity;
+  }
+
+  html body .appTopBar .appQuickNav > a,
+  html body .appTopBar .appQuickNav > button,
+  html body .appTopBar .appQuickNav > .appNavDropdown > .appNavDropdownToggle{
+    min-width:104px !important;
+    max-width:148px !important;
+    height:38px !important;
+    min-height:38px !important;
+    padding:0 12px !important;
+    scroll-snap-align:start;
+  }
+
+  html body .appQuickNav .appMenuSettingsBtn.settingsIconOnly{
+    width:38px !important;
+    min-width:38px !important;
+    max-width:38px !important;
+  }
+
+  html body .customsAiPanel,
+  html body #dogana-section,
+  html body .extraPanel,
+  html body .organizeModulePanel,
+  html body .shipPanel,
+  html body .bookingStandalonePanel,
+  html body .serverConsolePanel{
+    border-radius:18px !important;
+  }
+
+  html body .toolbar,
+  html body .miniHead,
+  html body .organizeModuleHead,
+  html body .operativeChecklistHead,
+  html body .notificationHead,
+  html body .postItHead,
+  html body .bookingModuleHead,
+  html body .serverConsoleHead{
+    padding:14px !important;
+  }
+
+  html body .appQuickNav:has(.appNavDropdown.open){
+    overflow:visible !important;
+    flex-wrap:wrap !important;
+  }
+
+  html body .appNavDropdownMenu{
+    position:absolute !important;
+    top:calc(100% + 8px) !important;
+    right:auto !important;
+    bottom:auto !important;
+    left:0 !important;
+    width:224px !important;
+    min-width:224px !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  html body *,
+  html body *::before,
+  html body *::after{
+    scroll-behavior:auto !important;
+    transition-duration:.01ms !important;
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+  }
+}

@@ -5,3 +5,7 @@ package.json
 package-lock.json
 .env
 *.log
+data/auth/
+data/customs/processed/backups/
+data/customs/processed/*.tmp-*
+data/customs/history/*.jsonl

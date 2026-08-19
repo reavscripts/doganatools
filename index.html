@@ -10,10 +10,13 @@
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
+<link rel="stylesheet" href="./public/customs-ai/customs-ai.css" />
+<script src="./public/customs-ai/customs-ai.js" defer></script>
 
 <meta name="robots" content="noindex,nofollow" />
 <meta name="referrer" content="no-referrer" />
 <title>DoganaTools - Utility operativa doganale</title>
+<link rel="stylesheet" href="./public/doganatools-theme.css" />
 <style>
     :root{
       --bg:#f3f6fb;
@@ -7396,6 +7399,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
     </div>
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
+    <a href="#customs-ai-section" data-jump-focus="#customsAiInput">DOGANA AI</a>
     <a href="#dogana-section">TABELLA</a>
     <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
     <div class="appNavDropdown" id="organizeNavDropdown">
@@ -7417,6 +7421,21 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
     </button>
   </nav>
 </div>
+
+<section class="panel sectionJumpTarget customsAiPanel" id="customs-ai-section" aria-label="DOGANA AI classificatore TARIC">
+  <div class="customsAiBody">
+    <form id="customsAiForm" class="customsAiSearch">
+      <div class="customsAiSearchShell">
+        <span class="customsAiSearchBrand" aria-hidden="true"><span>✦</span> DOGANA AI</span>
+        <input id="customsAiInput" class="customsAiInput" type="search" maxlength="2000" autocomplete="off" placeholder="Cerca un prodotto, es. pomodori pelati 600 g" aria-label="Cerca un prodotto da classificare" />
+        <button id="customsAiSubmit" class="customsAiSubmit" type="submit" aria-label="Cerca codice TARIC" title="Cerca codice TARIC"><span aria-hidden="true">→</span></button>
+      </div>
+    </form>
+    <div class="customsAiProgress" id="customsAiProgress" role="status"><span class="customsAiSpinner" aria-hidden="true"></span><span id="customsAiProgressLabel">Cerco la voce più probabile…</span></div>
+    <div class="customsAiMessage" id="customsAiMessage" role="status" aria-live="polite"></div>
+    <div class="customsAiOutput" id="customsAiOutput" aria-live="polite"></div>
+  </div>
+</section>
 
 
 
