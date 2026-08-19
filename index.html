@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-notifiche-r6"/>
+<meta name="doganatools-build" content="2026-08-19-organizza-postit-r7"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -2800,6 +2800,101 @@ body{
 .appQuickNav a:hover{
   transform:translateY(-1px);
   box-shadow:var(--shadow-soft);
+}
+
+
+/* === ORGANIZZA: dropdown moduli secondari === */
+.appNavDropdown{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+}
+.appNavDropdownToggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:6px !important;
+  min-height:34px !important;
+  padding:8px 10px !important;
+  border-radius:999px !important;
+  border:1px solid var(--grid-soft) !important;
+  background:var(--pill-bg) !important;
+  color:var(--text) !important;
+  font-family:var(--font) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+  line-height:1.15 !important;
+  box-shadow:none !important;
+}
+.appNavDropdownToggle:hover,
+.appNavDropdown.open .appNavDropdownToggle{
+  transform:translateY(-1px);
+  box-shadow:var(--shadow-soft) !important;
+  border-color:color-mix(in srgb, var(--accent) 28%, var(--grid-soft)) !important;
+}
+.appNavDropdownChevron{
+  display:inline-flex;
+  font-size:13px;
+  line-height:1;
+  transition:transform .16s ease;
+  letter-spacing:0 !important;
+}
+.appNavDropdown.open .appNavDropdownChevron{ transform:rotate(180deg); }
+.appNavDropdownMenu{
+  position:absolute;
+  top:calc(100% + 8px);
+  right:0;
+  z-index:100120;
+  min-width:210px;
+  padding:7px;
+  border:1px solid var(--grid-soft);
+  border-radius:15px;
+  background:var(--surface);
+  box-shadow:0 18px 38px rgba(15,23,42,.16);
+  display:none;
+  flex-direction:column;
+  gap:4px;
+}
+.appNavDropdown.open .appNavDropdownMenu{ display:flex; }
+.appNavDropdownMenu a{
+  width:100%;
+  min-height:38px;
+  justify-content:flex-start !important;
+  border-radius:10px !important;
+  border:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  padding:9px 11px !important;
+  font-family:var(--font) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+}
+.appNavDropdownMenu a:hover{
+  transform:none !important;
+  background:var(--surface-soft) !important;
+}
+.organizeNavCount{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  margin-left:1px;
+  border-radius:999px;
+  background:var(--danger);
+  color:#fff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:0 !important;
+}
+.organizeNavCount[hidden]{ display:none !important; }
+@media (max-width:700px){
+  .appNavDropdownMenu{ right:auto; left:0; min-width:200px; }
 }
 
 .apiConfigPanel.is-collapsed .apiConfigHint,
@@ -6784,6 +6879,179 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   .notificationTask{ grid-template-columns:auto minmax(0,1fr); }
   .notificationDueBadge, .notificationDeleteBtn{ grid-column:2; justify-self:start; }
 }
+
+
+
+/* === MODULO POST-IT CONDIVISO === */
+.postItPanel{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.postItHead{
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto;
+  align-items:start;
+  gap:14px;
+  padding:16px;
+  border-bottom:1px solid var(--grid-soft);
+}
+.postItTitle{
+  color:var(--heading);
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  line-height:1.15;
+}
+.postItSubtitle{ margin-top:5px; color:var(--muted); font-size:11px; font-weight:700; line-height:1.4; }
+.postItActions{ display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.postItStats{
+  display:inline-flex;
+  align-items:center;
+  min-height:36px;
+  padding:0 11px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+.postItBody{ padding:16px; }
+.postItForm{
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto;
+  gap:10px;
+  align-items:stretch;
+}
+.postItInput{
+  width:100%;
+  min-height:78px;
+  max-height:180px;
+  resize:vertical;
+  border:1px solid color-mix(in srgb, #d9ad00 34%, var(--btn-border));
+  border-radius:13px;
+  background:color-mix(in srgb, #fff2a8 72%, var(--surface));
+  color:#3b3416;
+  padding:12px 14px;
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:750;
+  line-height:1.45;
+  outline:none;
+}
+body[data-theme="dark"] .postItInput{
+  background:color-mix(in srgb, #6d5d12 30%, var(--surface));
+  color:var(--text);
+}
+.postItInput:focus{ border-color:#d6a600; box-shadow:0 0 0 3px rgba(214,166,0,.13); }
+#postItAddBtn{ min-width:150px; align-self:stretch; }
+.postItHint{ margin:10px 0 14px; color:var(--muted); font-size:11px; font-weight:700; }
+.postItBoard{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+  align-items:start;
+}
+.postItCard{
+  position:relative;
+  min-height:170px;
+  padding:13px 13px 11px;
+  border:1px solid rgba(188,146,0,.30);
+  border-radius:8px 8px 13px 13px;
+  background:linear-gradient(180deg,#fff7b8 0%,#ffef8b 100%);
+  color:#3d3512;
+  box-shadow:0 10px 20px rgba(106,82,0,.10);
+  transition:transform .16s ease, box-shadow .16s ease;
+}
+.postItCard:nth-child(3n+1){ transform:rotate(-.35deg); }
+.postItCard:nth-child(3n+2){ transform:rotate(.25deg); }
+.postItCard:hover{ transform:translateY(-2px) rotate(0deg); box-shadow:0 14px 26px rgba(106,82,0,.14); }
+body[data-theme="dark"] .postItCard{
+  border-color:rgba(245,206,67,.22);
+  background:linear-gradient(180deg,#544a1d 0%,#413914 100%);
+  color:#fff3b7;
+  box-shadow:0 12px 24px rgba(0,0,0,.23);
+}
+.postItCardTop{ display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:8px; }
+.postItPin{ font-size:14px; opacity:.72; }
+.postItDeleteBtn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  min-height:30px !important;
+  padding:0 !important;
+  border-radius:8px !important;
+  border:1px solid rgba(185,28,28,.24) !important;
+  background:rgba(220,38,38,.07) !important;
+  color:#b91c1c !important;
+  font-size:15px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  box-shadow:none !important;
+}
+.postItDeleteBtn:hover{ transform:none !important; background:rgba(220,38,38,.12) !important; border-color:rgba(185,28,28,.42) !important; }
+.postItCardText{
+  width:100%;
+  min-height:94px;
+  resize:none;
+  overflow:hidden;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:inherit;
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:780;
+  line-height:1.45;
+  outline:none;
+  box-shadow:none !important;
+}
+.postItCardText:focus{ background:rgba(255,255,255,.18); border-radius:6px; box-shadow:inset 0 0 0 1px rgba(141,108,0,.18) !important; }
+body[data-theme="dark"] .postItCardText:focus{ background:rgba(255,255,255,.05); }
+.postItMeta{ margin-top:9px; color:rgba(73,62,16,.68); font-size:9.8px; font-weight:800; line-height:1.35; }
+body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
+.postItEmpty{
+  grid-column:1 / -1;
+  padding:22px;
+  border:1px dashed var(--grid);
+  border-radius:14px;
+  color:var(--muted);
+  text-align:center;
+  font-size:12px;
+  font-weight:800;
+}
+.postItPanel.is-minimized .postItBody,
+.postItPanel.is-minimized .postItSubtitle,
+.postItPanel.is-minimized .postItActions > :not(#postItToggleBtn){ display:none !important; }
+.postItPanel.is-minimized{
+  width:auto !important;
+  min-width:180px;
+  margin:18px 16px !important;
+  display:inline-block;
+  vertical-align:top;
+}
+.postItPanel.is-minimized .postItHead{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:0; }
+.postItPanel.is-minimized .postItActions{ display:flex; }
+.postItPanel.is-minimized #postItToggleBtn{ display:inline-flex !important; }
+@media (max-width:700px){
+  .postItPanel{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+  .postItHead{ grid-template-columns:1fr; }
+  .postItActions{ justify-content:flex-start; }
+  .postItForm{ grid-template-columns:1fr; }
+  #postItAddBtn{ min-width:0; min-height:44px; }
+  .postItBoard{ grid-template-columns:1fr; }
+}
 </style>
 
 </head>
@@ -6959,8 +7227,16 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   <nav class="appQuickNav" aria-label="Scorciatoie">
     <a href="#dogana-section">TABELLA</a>
     <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
-    <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">CHECKLIST</a>
-    <a href="#notificationPanel" data-jump-focus="#notificationTaskInput">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
+    <div class="appNavDropdown" id="organizeNavDropdown">
+      <button type="button" class="appNavDropdownToggle" id="organizeNavToggle" aria-expanded="false" aria-haspopup="true" aria-controls="organizeNavMenu">
+        ORGANIZZA <span class="organizeNavCount" id="organizeNavCount" hidden>0</span><span class="appNavDropdownChevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="appNavDropdownMenu" id="organizeNavMenu" role="menu" aria-label="Organizza">
+        <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput" role="menuitem">CHECKLIST</a>
+        <a href="#notificationPanel" data-jump-focus="#notificationTaskInput" role="menuitem">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
+        <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
+      </div>
+    </div>
     <a href="#navi-section">NAVI</a>
     <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn settingsIconOnly" aria-label="Impostazioni" title="Impostazioni"><span aria-hidden="true">⚙</span></button>
@@ -7255,6 +7531,30 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
 </section>
 
+<section class="postItPanel sectionJumpTarget" id="postItPanel" aria-label="Post-it condivisi">
+  <div class="postItHead">
+    <div>
+      <div class="postItTitle">Post-it</div>
+      <div class="postItSubtitle">Note rapide condivise tra le postazioni: scrivi qualcosa da ricordare e lascialo in bacheca.</div>
+    </div>
+    <div class="postItActions">
+      <span class="postItStats" id="postItStats">0 note</span>
+      <button type="button" id="postItRefreshBtn">Aggiorna</button>
+      <button type="button" id="postItToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Post-it" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+  </div>
+  <div class="postItBody">
+    <div class="postItForm">
+      <textarea class="postItInput" id="postItInput" maxlength="1200" placeholder="Scrivi una nota da ricordare..."></textarea>
+      <button class="primary" type="button" id="postItAddBtn">+ Aggiungi post-it</button>
+    </div>
+    <div class="postItHint">Le note sono condivise e salvate sul server. Puoi modificarne il testo direttamente sulla bacheca: il salvataggio avviene quando esci dalla nota.</div>
+    <div class="postItBoard" id="postItBoard">
+      <div class="postItEmpty">Nessun post-it in bacheca.</div>
+    </div>
+  </div>
+</section>
+
 <div id="navi-section" class="sectionJumpTarget"></div>
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
   <div class="toolbar shipToolbar">
@@ -7449,7 +7749,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R6</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-ORGANIZZA-R7</strong></a>
   </div>
 </footer>
 </section>
@@ -7462,6 +7762,7 @@ button.doganaModuleSvgToggleBtn,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 #notificationToggleBtn.doganaModuleSvgToggleBtn,
+#postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -14466,6 +14767,33 @@ function installExtraTabClearOnClick(){
 })();
 
 
+/* === MENU ORGANIZZA DROPDOWN === */
+(function initOrganizeDropdown(){
+  const root = document.getElementById("organizeNavDropdown");
+  const toggle = document.getElementById("organizeNavToggle");
+  const menu = document.getElementById("organizeNavMenu");
+  if (!root || !toggle || !menu) return;
+
+  function setOpen(open){
+    root.classList.toggle("open", !!open);
+    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  toggle.addEventListener("click", event => {
+    event.stopPropagation();
+    setOpen(!root.classList.contains("open"));
+  });
+  menu.addEventListener("click", event => {
+    if (event.target.closest("a")) setOpen(false);
+  });
+  document.addEventListener("click", event => {
+    if (!root.contains(event.target)) setOpen(false);
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") { setOpen(false); toggle.focus(); }
+  });
+})();
+
 /* === UX IMPROVEMENTS DOGANATOOLS JS === */
 (function initDoganaToolsUx(){
   const apiToggleBtn = document.getElementById("apiPanelToggleBtn");
@@ -18421,6 +18749,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   const listEl = document.getElementById("notificationList");
   const statsEl = document.getElementById("notificationStats");
   const navCountEl = document.getElementById("notificationNavCount");
+  const organizeCountEl = document.getElementById("organizeNavCount");
   if (!panel || !input || !dateInput || !timeInput || !addBtn || !listEl) return;
 
   const SOUND_KEY = "doganatools_reminder_sound_v1";
@@ -18723,6 +19052,11 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
       navCountEl.hidden = overdueCount <= 0;
       navCountEl.textContent = String(overdueCount || 0);
     }
+    if (organizeCountEl) {
+      organizeCountEl.hidden = overdueCount <= 0;
+      organizeCountEl.textContent = String(overdueCount || 0);
+      organizeCountEl.title = overdueCount ? `${overdueCount} promemoria scaduti` : "";
+    }
 
     if (!tasks.length) {
       listEl.innerHTML = '<div class="notificationEmpty">Nessun promemoria programmato.</div>';
@@ -18928,6 +19262,200 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     if (!document.hidden) loadReminders();
   });
   window.addEventListener("focus", () => loadReminders());
+})();
+</script>
+
+<script id="dogana-postit-module-script">
+(function initPostItModule(){
+  const panel = document.getElementById("postItPanel");
+  const input = document.getElementById("postItInput");
+  const addBtn = document.getElementById("postItAddBtn");
+  const refreshBtn = document.getElementById("postItRefreshBtn");
+  const toggleBtn = document.getElementById("postItToggleBtn");
+  const board = document.getElementById("postItBoard");
+  const stats = document.getElementById("postItStats");
+  if (!panel || !input || !addBtn || !board) return;
+
+  const MIN_KEY = "doganatools_postit_minimized_v1";
+  let notes = [];
+  let busy = false;
+
+  function endpoint(path = ""){
+    const suffix = String(path || "");
+    const apiPath = `/api/postits${suffix}`;
+    try {
+      const host = String(window.location.hostname || "").toLowerCase();
+      const isPublicFrontend = host === "dogana.reav.website" || host === "doganatools.reav.website" || host.endsWith(".reav.website") || host.includes("vercel.app");
+      if (isPublicFrontend) return `https://dogana-api.reav.website${apiPath}`;
+    } catch {}
+    return apiPath;
+  }
+
+  function stationName(){
+    try {
+      if (typeof window.DOGANA_EXTRA_GET_STATION_NAME === "function") return window.DOGANA_EXTRA_GET_STATION_NAME() || "Postazione";
+      if (window.DOGANA_TOP_STATION?.getName) return window.DOGANA_TOP_STATION.getName() || "Postazione";
+      return localStorage.getItem("dogana_multi_client_name_v3") || localStorage.getItem("peso_sheet_extra_client_name_v1") || "Postazione";
+    } catch { return "Postazione"; }
+  }
+  function stationId(){
+    try { return localStorage.getItem("dogana_multi_client_id_v3") || localStorage.getItem("peso_sheet_extra_client_id_v1") || ""; }
+    catch { return ""; }
+  }
+  function esc(value){ return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch])); }
+  function formatDate(value){
+    const d = new Date(value || "");
+    if (!Number.isFinite(d.getTime())) return "";
+    return d.toLocaleString("it-IT", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }
+  function autoGrow(el){
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.max(94, el.scrollHeight)}px`;
+  }
+  function render(){
+    if (stats) stats.textContent = `${notes.length} ${notes.length === 1 ? "nota" : "note"}`;
+    if (!notes.length) {
+      board.innerHTML = '<div class="postItEmpty">Nessun post-it in bacheca.</div>';
+      return;
+    }
+    const ordered = [...notes].sort((a,b) => Date.parse(b.updatedAt || b.createdAt || 0) - Date.parse(a.updatedAt || a.createdAt || 0));
+    board.innerHTML = ordered.map(note => {
+      const creator = esc(note.createdByName || "Postazione");
+      const updater = esc(note.updatedByName || "");
+      const created = esc(formatDate(note.createdAt));
+      const updated = esc(formatDate(note.updatedAt));
+      const meta = updater && updated && note.updatedAt !== note.createdAt
+        ? `Creato da ${creator} · aggiornato da ${updater} ${updated}`
+        : `Creato da ${creator}${created ? ` ${created}` : ""}`;
+      return `
+        <article class="postItCard" data-postit-id="${esc(note.id)}">
+          <div class="postItCardTop"><span class="postItPin" aria-hidden="true">●</span><button type="button" class="postItDeleteBtn" data-delete-postit="${esc(note.id)}" title="Elimina post-it" aria-label="Elimina post-it">×</button></div>
+          <textarea class="postItCardText" maxlength="1200" data-note-id="${esc(note.id)}" data-original="${esc(note.text)}">${esc(note.text)}</textarea>
+          <div class="postItMeta">${meta}</div>
+        </article>`;
+    }).join("");
+    board.querySelectorAll(".postItCardText").forEach(autoGrow);
+  }
+
+  async function parseResponse(res){
+    const type = String(res.headers.get("content-type") || "");
+    const data = type.includes("application/json") ? await res.json().catch(() => null) : null;
+    if (!res.ok) throw new Error(data?.error || `Operazione Post-it non riuscita (HTTP ${res.status})`);
+    if (!data) throw new Error("Risposta Post-it non valida dal backend");
+    return data;
+  }
+
+  async function loadNotes({ force = false } = {}){
+    const active = document.activeElement;
+    if (!force && active?.classList?.contains("postItCardText")) return false;
+    try {
+      const res = await fetch(`${endpoint()}?_=${Date.now()}`, { cache:"no-store" });
+      const data = await parseResponse(res);
+      notes = Array.isArray(data?.state?.notes) ? data.state.notes : [];
+      render();
+      return true;
+    } catch (err) {
+      console.warn("Caricamento Post-it non riuscito", err);
+      return false;
+    }
+  }
+
+  async function addNote(){
+    const text = String(input.value || "").trim();
+    if (!text || busy) return;
+    busy = true;
+    addBtn.disabled = true;
+    try {
+      const res = await fetch(endpoint(), {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ text, clientId:stationId(), clientName:stationName() })
+      });
+      const data = await parseResponse(res);
+      notes = Array.isArray(data?.state?.notes) ? data.state.notes : [];
+      input.value = "";
+      render();
+      try { showExtraToast?.("Post-it salvato", text.slice(0,90), "success"); } catch {}
+    } catch (err) {
+      console.warn("Aggiunta Post-it non riuscita", err);
+      alert(err?.message || "Post-it non salvato sul server.");
+    } finally {
+      busy = false;
+      addBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  async function updateNote(id, text, textarea){
+    const clean = String(text || "").trim();
+    const original = String(textarea?.dataset?.original || "").trim();
+    if (!id || !clean || clean === original) { if (!clean) { textarea.value = original; autoGrow(textarea); } return; }
+    try {
+      const res = await fetch(endpoint(`/${encodeURIComponent(id)}`), {
+        method:"PATCH",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ text:clean, clientId:stationId(), clientName:stationName() })
+      });
+      const data = await parseResponse(res);
+      notes = Array.isArray(data?.state?.notes) ? data.state.notes : [];
+      render();
+    } catch (err) {
+      console.warn("Aggiornamento Post-it non riuscito", err);
+      alert(err?.message || "Modifica Post-it non salvata.");
+      await loadNotes({ force:true });
+    }
+  }
+
+  async function deleteNote(id){
+    const note = notes.find(item => String(item.id || "") === String(id || ""));
+    if (!note) return;
+    if (!confirm(`Eliminare questo post-it?\n\n${String(note.text || "").slice(0,120)}`)) return;
+    try {
+      const res = await fetch(endpoint(`/${encodeURIComponent(id)}`), { method:"DELETE" });
+      const data = await parseResponse(res);
+      notes = Array.isArray(data?.state?.notes) ? data.state.notes : [];
+      render();
+    } catch (err) {
+      console.warn("Eliminazione Post-it non riuscita", err);
+      alert(err?.message || "Post-it non eliminato.");
+    }
+  }
+
+  function setMinimized(minimized){
+    panel.classList.toggle("is-minimized", !!minimized);
+    if (toggleBtn) {
+      toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Post-it" : "Riduci a icona Post-it");
+      toggleBtn.title = minimized ? "Mostra modulo" : "Riduci a icona";
+    }
+    try { localStorage.setItem(MIN_KEY, minimized ? "1" : "0"); } catch {}
+  }
+
+  addBtn.addEventListener("click", addNote);
+  input.addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) && event.key === "Enter") { event.preventDefault(); addNote(); }
+  });
+  refreshBtn?.addEventListener("click", () => loadNotes({ force:true }));
+  toggleBtn?.addEventListener("click", () => setMinimized(!panel.classList.contains("is-minimized")));
+  board.addEventListener("input", event => {
+    const ta = event.target.closest?.(".postItCardText");
+    if (ta) autoGrow(ta);
+  });
+  board.addEventListener("change", event => {
+    const ta = event.target.closest?.(".postItCardText");
+    if (!ta) return;
+    updateNote(ta.dataset.noteId || "", ta.value, ta);
+  });
+  board.addEventListener("click", event => {
+    const btn = event.target.closest?.(".postItDeleteBtn");
+    if (btn) deleteNote(btn.dataset.deletePostit || "");
+  });
+
+  try { setMinimized(localStorage.getItem(MIN_KEY) === "1"); } catch { setMinimized(false); }
+  loadNotes({ force:true });
+  setInterval(() => loadNotes(), 10000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) loadNotes(); });
 })();
 </script>
 
@@ -20161,6 +20689,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 #notificationToggleBtn.doganaModuleSvgToggleBtn,
+#postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 #serverConsoleToggle.doganaModuleSvgToggleBtn,
@@ -20173,6 +20702,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 .shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 .notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
+.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -20207,6 +20737,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 .shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 .notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
+.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -20219,6 +20750,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #notificationToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#postItToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg{
@@ -20232,6 +20764,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #notificationToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#postItToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path{
@@ -20249,6 +20782,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     { id:"minimizeExtraBtn", panel:"#extraPanel,.extraPanel", reduce:"Riduci a icona Ricerca Contenitori", show:"Mostra modulo Ricerca Contenitori" },
     { id:"operativeChecklistToggleBtn", panel:"#operativeChecklistPanel,.operativeChecklistPanel", reduce:"Riduci a icona Checklist Operativa", show:"Mostra modulo Checklist Operativa" },
     { id:"notificationToggleBtn", panel:"#notificationPanel,.notificationPanel", reduce:"Riduci a icona Notifiche", show:"Mostra modulo Notifiche" },
+    { id:"postItToggleBtn", panel:"#postItPanel,.postItPanel", reduce:"Riduci a icona Post-it", show:"Mostra modulo Post-it" },
     { id:"minimizeShipsBtn", panel:"#shipPanel,.shipPanel", reduce:"Riduci a icona Previsione Navi", show:"Mostra modulo Previsione Navi" },
     { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Ricerca Booking", show:"Mostra modulo Ricerca Booking" },
     { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" }
@@ -20293,7 +20827,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   else normalizeAll();
 
   document.addEventListener("click", (event) => {
-    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
+    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#postItToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
       setTimeout(normalizeAll, 0);
       setTimeout(normalizeAll, 80);
     }
@@ -20304,7 +20838,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
       const node = m.target;
       if (!node) continue;
       if (node.id && configs.some(c => c.id === node.id)) { scheduleNormalize(); return; }
-      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
+      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#postItToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
     }
   });
   if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["class","aria-expanded","title","aria-label"] });
@@ -20354,9 +20888,9 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   }
 
   function applyVersion(date){
-    // NOTIFICHE R4: la versione visibile identifica la build reale del file.
+    // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-NOTIFICHE-R6 con una semplice data.
+    // v2026.08.19-ORGANIZZA-R7 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
