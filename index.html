@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-12-extra-events-auth-r5-audio-unlock-r1"/>
+<meta name="doganatools-build" content="2026-08-19-notifiche-r1"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -6525,6 +6525,250 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   .doganaAuthSecurity{ margin:18px 0 0; color:#8396b2; font-size:11px; line-height:1.45; text-align:center; }
 </style>
 
+
+<style id="dogana-notification-module-r1">
+/* === MODULO NOTIFICHE / PROMEMORIA === */
+.notificationPanel{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:20px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.notificationHead{
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto;
+  align-items:start;
+  gap:14px;
+  padding:16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+}
+.notificationTitle{
+  color:var(--heading);
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:800;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+  line-height:1.15;
+}
+.notificationSubtitle{
+  margin-top:5px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+  line-height:1.4;
+}
+.notificationActions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.notificationStats{
+  display:inline-flex;
+  align-items:center;
+  min-height:36px;
+  padding:0 11px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+.notificationSoundBtn.sound-on{
+  border-color:rgba(22,163,74,.35);
+  color:var(--accent-2);
+}
+.notificationSoundBtn.sound-off{
+  opacity:.75;
+}
+.notificationBody{ padding:16px; }
+.notificationForm{
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) minmax(150px,180px) minmax(125px,145px) auto;
+  gap:10px;
+  align-items:end;
+}
+.notificationTaskInput,
+.notificationDateField input{
+  min-height:44px;
+  border:1px solid var(--btn-border);
+  border-radius:12px;
+  background:var(--surface);
+  color:var(--text);
+  padding:10px 12px;
+  font-weight:800;
+}
+.notificationTaskInput:focus,
+.notificationDateField input:focus{
+  border-color:rgba(37,99,235,.55);
+  box-shadow:0 0 0 3px rgba(37,99,235,.10);
+}
+.notificationDateField{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+  color:var(--muted);
+  font-size:10px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.07em;
+}
+.notificationHint{
+  margin:10px 0 14px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+}
+.notificationList{
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+}
+.notificationTask{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto auto;
+  align-items:center;
+  gap:12px;
+  padding:12px 13px;
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  background:var(--surface);
+  transition:.16s ease;
+}
+.notificationTask:hover{ transform:translateY(-1px); box-shadow:var(--shadow-soft); }
+.notificationTask.is-overdue{
+  border-color:rgba(220,38,38,.38);
+  background:color-mix(in srgb, var(--danger) 5%, var(--surface));
+}
+.notificationTask.is-due-soon{
+  border-color:rgba(245,158,11,.40);
+  background:color-mix(in srgb, #f59e0b 4%, var(--surface));
+}
+.notificationTask.done{ opacity:.72; }
+.notificationTask.done .notificationTaskText{ text-decoration:line-through; color:var(--muted); }
+.notificationCheck{ width:18px; height:18px; accent-color:var(--accent-2); cursor:pointer; }
+.notificationTaskText{
+  color:var(--heading);
+  font-size:13px;
+  font-weight:850;
+  line-height:1.35;
+  overflow-wrap:anywhere;
+}
+.notificationTaskMeta{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:10.8px;
+  font-weight:750;
+}
+.notificationDueBadge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:30px;
+  padding:0 10px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface-soft);
+  color:var(--muted);
+  font-size:10.5px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.notificationTask.is-overdue .notificationDueBadge{
+  border-color:rgba(220,38,38,.35);
+  color:var(--danger);
+}
+.notificationTask.is-due-soon .notificationDueBadge{
+  border-color:rgba(245,158,11,.35);
+  color:#b45309;
+}
+.notificationTask.done .notificationDueBadge{ color:var(--accent-2); }
+.notificationDeleteBtn{
+  width:32px;
+  height:32px;
+  min-width:32px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  color:var(--muted);
+}
+.notificationDeleteBtn:hover{ color:var(--danger); border-color:rgba(220,38,38,.35); }
+.notificationEmpty{
+  padding:18px;
+  border:1px dashed var(--grid);
+  border-radius:14px;
+  color:var(--muted);
+  text-align:center;
+  font-size:12px;
+  font-weight:800;
+}
+.notificationNavCount{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  margin-left:3px;
+  border-radius:999px;
+  background:var(--danger);
+  color:#fff;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:0 !important;
+}
+.notificationNavCount[hidden]{ display:none !important; }
+.extraToast.reminder{
+  border-color:rgba(245,158,11,.48);
+}
+.extraToast.reminder strong::before{
+  content:"🔔 ";
+}
+.notificationPanel.is-minimized .notificationBody,
+.notificationPanel.is-minimized .notificationSubtitle,
+.notificationPanel.is-minimized .notificationActions > :not(#notificationToggleBtn){ display:none !important; }
+.notificationPanel.is-minimized{
+  width:auto !important;
+  min-width:180px;
+  margin:18px 16px !important;
+  display:inline-block;
+  vertical-align:top;
+}
+.notificationPanel.is-minimized .notificationHead{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-bottom:0;
+}
+.notificationPanel.is-minimized .notificationActions{ display:flex; }
+.notificationPanel.is-minimized #notificationToggleBtn{ display:inline-flex !important; }
+@media (max-width:900px){
+  .notificationForm{ grid-template-columns:1fr 1fr; }
+  .notificationTaskInput{ grid-column:1 / -1; }
+  #notificationAddBtn{ grid-column:1 / -1; }
+}
+@media (max-width:700px){
+  .notificationPanel{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+  .notificationHead{ grid-template-columns:1fr; }
+  .notificationActions{ justify-content:flex-start; }
+  .notificationForm{ grid-template-columns:1fr; }
+  .notificationTaskInput, #notificationAddBtn{ grid-column:auto; }
+  .notificationTask{ grid-template-columns:auto minmax(0,1fr); }
+  .notificationDueBadge, .notificationDeleteBtn{ grid-column:2; justify-self:start; }
+}
+</style>
+
 </head>
 <body class="dogana-auth-locked">
 
@@ -6699,6 +6943,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
     <a href="#dogana-section">TABELLA</a>
     <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
     <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">CHECKLIST</a>
+    <a href="#notificationPanel" data-jump-focus="#notificationTaskInput">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
     <a href="#navi-section">NAVI</a>
     <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn settingsIconOnly" aria-label="Impostazioni" title="Impostazioni"><span aria-hidden="true">⚙</span></button>
@@ -6966,6 +7211,33 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
 </section>
 
+<section class="notificationPanel sectionJumpTarget" id="notificationPanel" aria-label="Promemoria e notifiche condivise">
+  <div class="notificationHead">
+    <div>
+      <div class="notificationTitle">Notifiche</div>
+      <div class="notificationSubtitle">Programma un task: all'orario impostato DoganaTools mostra un avviso e suona una campanella.</div>
+    </div>
+    <div class="notificationActions">
+      <span class="notificationStats" id="notificationStats">0 programmati</span>
+      <button type="button" id="notificationSoundBtn" class="notificationSoundBtn sound-on" aria-pressed="true">🔔 Suono ON</button>
+      <button type="button" id="notificationRefreshBtn">Aggiorna</button>
+      <button type="button" id="notificationToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Notifiche" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+  </div>
+  <div class="notificationBody">
+    <div class="notificationForm">
+      <input class="notificationTaskInput" id="notificationTaskInput" type="text" maxlength="240" placeholder="Task da ricordare..." autocomplete="off" />
+      <label class="notificationDateField"><span>Data</span><input id="notificationDateInput" type="date" /></label>
+      <label class="notificationDateField"><span>Ora</span><input id="notificationTimeInput" type="time" step="60" /></label>
+      <button class="primary" type="button" id="notificationAddBtn">+ Aggiungi promemoria</button>
+    </div>
+    <div class="notificationHint">Gli avvisi scattano sulle postazioni che hanno DoganaTools aperto. I task sono condivisi e restano salvati sul server.</div>
+    <div class="notificationList" id="notificationList">
+      <div class="notificationEmpty">Nessun promemoria programmato.</div>
+    </div>
+  </div>
+</section>
+
 <div id="navi-section" class="sectionJumpTarget"></div>
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
   <div class="toolbar shipToolbar">
@@ -7160,7 +7432,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.06.22</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R1</strong></a>
   </div>
 </footer>
 </section>
@@ -7172,6 +7444,7 @@ button.doganaModuleSvgToggleBtn,
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#notificationToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -18118,6 +18391,468 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
 })();
 </script>
 
+<script id="dogana-notification-module-script-r1">
+(function initDoganaNotificationModule(){
+  const panel = document.getElementById("notificationPanel");
+  const input = document.getElementById("notificationTaskInput");
+  const dateInput = document.getElementById("notificationDateInput");
+  const timeInput = document.getElementById("notificationTimeInput");
+  const addBtn = document.getElementById("notificationAddBtn");
+  const refreshBtn = document.getElementById("notificationRefreshBtn");
+  const soundBtn = document.getElementById("notificationSoundBtn");
+  const toggleBtn = document.getElementById("notificationToggleBtn");
+  const listEl = document.getElementById("notificationList");
+  const statsEl = document.getElementById("notificationStats");
+  const navCountEl = document.getElementById("notificationNavCount");
+  if (!panel || !input || !dateInput || !timeInput || !addBtn || !listEl) return;
+
+  const SOUND_KEY = "doganatools_reminder_sound_v1";
+  const FIRED_KEY = "doganatools_reminder_fired_v1";
+  const MIN_KEY = "doganatools_reminder_minimized_v1";
+  let tasks = [];
+  let busy = false;
+  let reminderAudioCtx = null;
+  let soundEnabled = true;
+  let notificationCheckTimer = null;
+
+  function endpoint(path = ""){
+    const suffix = String(path || "");
+    try {
+      if (typeof api === "function") return api(`/api/reminders${suffix}`);
+    } catch {}
+    return `/api/reminders${suffix}`;
+  }
+
+  function esc(value){
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[ch]));
+  }
+
+  function stationName(){
+    try {
+      if (typeof window.DOGANA_EXTRA_GET_STATION_NAME === "function") return window.DOGANA_EXTRA_GET_STATION_NAME() || "Postazione";
+      if (window.DOGANA_TOP_STATION?.getName) return window.DOGANA_TOP_STATION.getName() || "Postazione";
+      return localStorage.getItem("dogana_multi_client_name_v3") || localStorage.getItem("peso_sheet_extra_client_name_v1") || "Postazione";
+    } catch { return "Postazione"; }
+  }
+
+  function stationId(){
+    try { return localStorage.getItem("dogana_multi_client_id_v3") || localStorage.getItem("peso_sheet_extra_client_id_v1") || ""; }
+    catch { return ""; }
+  }
+
+  function localDateParts(date){
+    const d = date instanceof Date ? date : new Date(date);
+    const pad = n => String(n).padStart(2, "0");
+    return {
+      date: `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`,
+      time: `${pad(d.getHours())}:${pad(d.getMinutes())}`
+    };
+  }
+
+  function setDefaultDue(force = false){
+    if (!force && dateInput.value && timeInput.value) return;
+    const d = new Date(Date.now() + 15 * 60 * 1000);
+    d.setSeconds(0, 0);
+    const minute = Math.ceil(d.getMinutes() / 5) * 5;
+    if (minute >= 60) {
+      d.setHours(d.getHours() + 1, 0, 0, 0);
+    } else {
+      d.setMinutes(minute, 0, 0);
+    }
+    const parts = localDateParts(d);
+    dateInput.value = parts.date;
+    timeInput.value = parts.time;
+  }
+
+  function formatDue(value){
+    const d = new Date(value || "");
+    if (!Number.isFinite(d.getTime())) return "Data non valida";
+    return d.toLocaleString("it-IT", { weekday:"short", day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }
+
+  function formatCreated(value){
+    const d = new Date(value || "");
+    if (!Number.isFinite(d.getTime())) return "";
+    return d.toLocaleString("it-IT", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  }
+
+  function getDueMs(task){
+    const ms = Date.parse(task?.dueAt || "");
+    return Number.isFinite(ms) ? ms : Number.POSITIVE_INFINITY;
+  }
+
+  function taskState(task, now = Date.now()){
+    if (task?.done) return "done";
+    const due = getDueMs(task);
+    if (due <= now) return "overdue";
+    if (due - now <= 30 * 60 * 1000) return "soon";
+    return "scheduled";
+  }
+
+  function loadFired(){
+    try {
+      const raw = JSON.parse(localStorage.getItem(FIRED_KEY) || "{}");
+      return raw && typeof raw === "object" ? raw : {};
+    } catch { return {}; }
+  }
+
+  function firedIdentity(task){
+    return `${String(task?.id || "")}@${String(task?.dueAt || "")}`;
+  }
+
+  function hasFired(task){
+    const identity = firedIdentity(task);
+    if (!identity || identity === "@") return true;
+    const fired = loadFired();
+    return !!fired[identity];
+  }
+
+  function markFired(task){
+    const identity = firedIdentity(task);
+    if (!identity || identity === "@") return;
+    try {
+      const fired = loadFired();
+      fired[identity] = Date.now();
+      const entries = Object.entries(fired).sort((a,b) => Number(b[1] || 0) - Number(a[1] || 0)).slice(0, 250);
+      localStorage.setItem(FIRED_KEY, JSON.stringify(Object.fromEntries(entries)));
+    } catch {}
+  }
+
+  function clearFired(task){
+    const identity = firedIdentity(task);
+    try {
+      const fired = loadFired();
+      if (identity && Object.prototype.hasOwnProperty.call(fired, identity)) {
+        delete fired[identity];
+        localStorage.setItem(FIRED_KEY, JSON.stringify(fired));
+      }
+    } catch {}
+  }
+
+  function initReminderAudioContext({ resume = false } = {}){
+    if (!reminderAudioCtx) {
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass) return null;
+      reminderAudioCtx = new AudioContextClass();
+    }
+    if (resume && reminderAudioCtx.state === "suspended") {
+      try {
+        const p = reminderAudioCtx.resume();
+        if (p?.catch) p.catch(() => {});
+      } catch {}
+    }
+    return reminderAudioCtx;
+  }
+
+  function playReminderBell(){
+    if (!soundEnabled) return;
+    const ctx = reminderAudioCtx;
+    if (!ctx || ctx.state !== "running") return;
+    try {
+      const start = ctx.currentTime;
+      const strike = (offset, level) => {
+        [880, 1320, 1760].forEach((freq, index) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = index === 0 ? "sine" : "triangle";
+          osc.frequency.setValueAtTime(freq, start + offset);
+          gain.gain.setValueAtTime(0.0001, start + offset);
+          gain.gain.exponentialRampToValueAtTime(level / (index + 1), start + offset + 0.012);
+          gain.gain.exponentialRampToValueAtTime(0.0001, start + offset + 0.75 + index * 0.12);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(start + offset);
+          osc.stop(start + offset + 1.05);
+        });
+      };
+      strike(0, 0.09);
+      strike(0.46, 0.065);
+    } catch (err) {
+      console.warn("Campanella promemoria non riprodotta:", err);
+    }
+  }
+
+  function armAudioUnlock(){
+    if (window.__doganaReminderAudioUnlockArmed) return;
+    window.__doganaReminderAudioUnlockArmed = true;
+    const unlock = event => {
+      if (!soundEnabled || event?.isTrusted === false) return;
+      try {
+        const ctx = initReminderAudioContext({ resume:true });
+        if (!ctx || ctx.state !== "running") return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + 0.01);
+      } catch {}
+    };
+    ["pointerdown", "keydown", "touchstart"].forEach(type => {
+      document.addEventListener(type, unlock, { capture:true, passive:true });
+    });
+  }
+
+  function updateSoundButton(){
+    if (!soundBtn) return;
+    soundBtn.classList.toggle("sound-on", soundEnabled);
+    soundBtn.classList.toggle("sound-off", !soundEnabled);
+    soundBtn.setAttribute("aria-pressed", soundEnabled ? "true" : "false");
+    soundBtn.textContent = soundEnabled ? "🔔 Suono ON" : "🔕 Suono OFF";
+  }
+
+  function requestDesktopPermission(){
+    if (!("Notification" in window) || Notification.permission !== "default") return;
+    try {
+      const p = Notification.requestPermission();
+      if (p?.catch) p.catch(() => {});
+    } catch {}
+  }
+
+  function showReminder(task){
+    const dueText = formatDue(task.dueAt);
+    const body = `${task.text} · ${dueText}`;
+    try {
+      if (typeof showExtraToast === "function") showExtraToast("Promemoria", body, "reminder");
+    } catch {}
+    try {
+      if ("Notification" in window && Notification.permission === "granted") {
+        const desktop = new Notification("Promemoria DoganaTools", {
+          body: task.text,
+          tag: `doganatools-reminder-${task.id}`,
+          requireInteraction: true
+        });
+        desktop.onclick = () => {
+          try { window.focus(); panel.scrollIntoView({ behavior:"smooth", block:"center" }); desktop.close(); } catch {}
+        };
+      }
+    } catch {}
+    try { playReminderBell(); } catch {}
+    markFired(task);
+  }
+
+  function checkDueNotifications(){
+    const now = Date.now();
+    let changed = false;
+    tasks.forEach(task => {
+      if (task?.done) return;
+      const due = getDueMs(task);
+      if (!Number.isFinite(due) || due > now || hasFired(task)) return;
+      showReminder(task);
+      changed = true;
+    });
+    if (changed) render();
+  }
+
+  function render(){
+    const now = Date.now();
+    const open = tasks.filter(t => !t.done).sort((a,b) => getDueMs(a) - getDueMs(b));
+    const done = tasks.filter(t => t.done).sort((a,b) => Date.parse(b.completedAt || b.createdAt || 0) - Date.parse(a.completedAt || a.createdAt || 0));
+    const overdueCount = open.filter(t => taskState(t, now) === "overdue").length;
+    const soonCount = open.filter(t => taskState(t, now) === "soon").length;
+
+    if (statsEl) {
+      statsEl.textContent = `${open.length} programmati${overdueCount ? ` · ${overdueCount} scaduti` : ""}`;
+    }
+    if (navCountEl) {
+      navCountEl.hidden = overdueCount <= 0;
+      navCountEl.textContent = String(overdueCount || 0);
+    }
+
+    if (!tasks.length) {
+      listEl.innerHTML = '<div class="notificationEmpty">Nessun promemoria programmato.</div>';
+      return;
+    }
+
+    listEl.innerHTML = open.concat(done).map(task => {
+      const state = taskState(task, now);
+      const rowClass = state === "overdue" ? "is-overdue" : state === "soon" ? "is-due-soon" : "";
+      const badge = task.done ? "Completato" : state === "overdue" ? "SCADUTO" : state === "soon" ? "Tra poco" : formatDue(task.dueAt);
+      const meta = task.done
+        ? `Programmato ${esc(formatDue(task.dueAt))} · completato da ${esc(task.completedByName || "Postazione")} ${esc(formatCreated(task.completedAt))}`
+        : `Creato da ${esc(task.createdByName || "Postazione")} ${esc(formatCreated(task.createdAt))}`;
+      return `
+        <div class="notificationTask ${rowClass} ${task.done ? "done" : ""}" data-reminder-id="${esc(task.id)}">
+          <input class="notificationCheck" type="checkbox" ${task.done ? "checked" : ""} aria-label="Segna task come completato">
+          <div>
+            <div class="notificationTaskText">${esc(task.text)}</div>
+            <div class="notificationTaskMeta">${meta}</div>
+          </div>
+          <span class="notificationDueBadge" title="${esc(formatDue(task.dueAt))}">${esc(badge)}</span>
+          <button type="button" class="notificationDeleteBtn" data-delete-reminder="${esc(task.id)}" title="Elimina promemoria" aria-label="Elimina promemoria">×</button>
+        </div>`;
+    }).join("");
+  }
+
+  async function parseResponse(res){
+    const data = await res.json().catch(() => null);
+    if (!res.ok) throw new Error(data?.error || "Operazione promemoria non riuscita");
+    return data;
+  }
+
+  async function loadReminders({ notify = true } = {}){
+    try {
+      const res = await fetch(`${endpoint()}?_=${Date.now()}`, { cache:"no-store" });
+      const data = await parseResponse(res);
+      tasks = Array.isArray(data?.state?.tasks) ? data.state.tasks : [];
+      render();
+      if (notify) checkDueNotifications();
+      return true;
+    } catch (err) {
+      console.warn("Caricamento promemoria non riuscito", err);
+      return false;
+    }
+  }
+
+  function dueFromInputs(){
+    const date = String(dateInput.value || "").trim();
+    const time = String(timeInput.value || "").trim();
+    if (!date || !time) return null;
+    const local = new Date(`${date}T${time}:00`);
+    if (!Number.isFinite(local.getTime())) return null;
+    return local;
+  }
+
+  async function addReminder(){
+    const text = String(input.value || "").trim();
+    const due = dueFromInputs();
+    if (!text || busy) return;
+    if (!due) { alert("Inserisci una data e un orario validi."); return; }
+    if (due.getTime() < Date.now() - 30 * 1000) { alert("L'orario del promemoria deve essere nel futuro."); return; }
+
+    // Richiesta nel gesto utente: permette anche la notifica desktop, oltre al toast interno.
+    requestDesktopPermission();
+    if (soundEnabled) initReminderAudioContext({ resume:true });
+
+    busy = true;
+    addBtn.disabled = true;
+    try {
+      const payload = {
+        text,
+        dueAt: due.toISOString(),
+        clientId: stationId(),
+        clientName: stationName()
+      };
+      const res = await fetch(endpoint(), {
+        method:"POST",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify(payload)
+      });
+      const data = await parseResponse(res);
+      tasks = Array.isArray(data?.state?.tasks) ? data.state.tasks : [];
+      input.value = "";
+      setDefaultDue(true);
+      render();
+      try { showExtraToast?.("Promemoria salvato", `${text} · ${formatDue(payload.dueAt)}`, "success"); } catch {}
+    } catch (err) {
+      console.warn("Aggiunta promemoria non riuscita", err);
+      alert(err?.message || "Promemoria non salvato sul server.");
+    } finally {
+      busy = false;
+      addBtn.disabled = false;
+      input.focus();
+    }
+  }
+
+  async function toggleReminder(taskId, done){
+    const task = tasks.find(item => String(item.id || "") === String(taskId || ""));
+    if (!task) return;
+    try {
+      const res = await fetch(endpoint(`/${encodeURIComponent(taskId)}`), {
+        method:"PATCH",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ done, clientId:stationId(), clientName:stationName() })
+      });
+      const data = await parseResponse(res);
+      tasks = Array.isArray(data?.state?.tasks) ? data.state.tasks : [];
+      if (!done) clearFired(task);
+      render();
+      if (!done) checkDueNotifications();
+    } catch (err) {
+      console.warn("Aggiornamento promemoria non riuscito", err);
+      alert(err?.message || "Aggiornamento non riuscito.");
+      await loadReminders({ notify:false });
+    }
+  }
+
+  async function deleteReminder(taskId){
+    const task = tasks.find(item => String(item.id || "") === String(taskId || ""));
+    if (!task) return;
+    if (!task.done && !confirm(`Eliminare il promemoria “${task.text}”?`)) return;
+    try {
+      const res = await fetch(endpoint(`/${encodeURIComponent(taskId)}`), {
+        method:"DELETE",
+        headers:{ "Content-Type":"application/json" },
+        body:JSON.stringify({ clientId:stationId(), clientName:stationName() })
+      });
+      const data = await parseResponse(res);
+      tasks = Array.isArray(data?.state?.tasks) ? data.state.tasks : [];
+      clearFired(task);
+      render();
+    } catch (err) {
+      console.warn("Eliminazione promemoria non riuscita", err);
+      alert(err?.message || "Promemoria non eliminato.");
+      await loadReminders({ notify:false });
+    }
+  }
+
+  function setMinimized(minimized){
+    panel.classList.toggle("is-minimized", !!minimized);
+    if (toggleBtn) {
+      toggleBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      toggleBtn.setAttribute("aria-label", minimized ? "Mostra modulo Notifiche" : "Riduci a icona Notifiche");
+      toggleBtn.title = minimized ? "Mostra modulo Notifiche" : "Riduci a icona Notifiche";
+    }
+    try { localStorage.setItem(MIN_KEY, minimized ? "1" : "0"); } catch {}
+  }
+
+  try {
+    const stored = localStorage.getItem(SOUND_KEY);
+    soundEnabled = stored === null ? true : stored === "1";
+  } catch { soundEnabled = true; }
+  updateSoundButton();
+  armAudioUnlock();
+  setDefaultDue(true);
+  try { setMinimized(localStorage.getItem(MIN_KEY) === "1"); } catch { setMinimized(false); }
+
+  soundBtn?.addEventListener("click", () => {
+    soundEnabled = !soundEnabled;
+    try { localStorage.setItem(SOUND_KEY, soundEnabled ? "1" : "0"); } catch {}
+    if (soundEnabled) {
+      initReminderAudioContext({ resume:true });
+      setTimeout(playReminderBell, 80);
+    }
+    updateSoundButton();
+  });
+  toggleBtn?.addEventListener("click", () => setMinimized(!panel.classList.contains("is-minimized")));
+  refreshBtn?.addEventListener("click", () => loadReminders());
+  addBtn.addEventListener("click", addReminder);
+  input.addEventListener("keydown", event => {
+    if (event.key === "Enter") { event.preventDefault(); addReminder(); }
+  });
+  listEl.addEventListener("change", event => {
+    const check = event.target.closest?.(".notificationCheck");
+    if (!check) return;
+    const row = check.closest(".notificationTask");
+    const id = row?.dataset?.reminderId || "";
+    if (id) toggleReminder(id, check.checked);
+  });
+  listEl.addEventListener("click", event => {
+    const btn = event.target.closest?.(".notificationDeleteBtn");
+    if (!btn) return;
+    deleteReminder(btn.dataset?.deleteReminder || "");
+  });
+
+  loadReminders();
+  notificationCheckTimer = setInterval(() => loadReminders(), 5000);
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) loadReminders();
+  });
+  window.addEventListener("focus", () => loadReminders());
+})();
+</script>
+
 <style id="dogana-minimized-title-font-like-open-v3">
 /* === TITOLO RIDOTTO: stesso font/stile del titolo modulo aperto === */
 .doganaTableModuleCard.is-minimized,
@@ -19345,6 +20080,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#notificationToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 #serverConsoleToggle.doganaModuleSvgToggleBtn,
@@ -19356,6 +20092,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -19389,6 +20126,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 .serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
@@ -19400,6 +20138,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
+#notificationToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
 #serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg{
@@ -19412,6 +20151,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
+#notificationToggleBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path,
 #serverConsoleToggle.doganaModuleSvgToggleBtn .doganaModuleToggleSvg path{
@@ -19428,6 +20168,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     { id:"doganaMinimizeBtn", panel:".doganaTableModuleCard", reduce:"Riduci a icona Tabella", show:"Mostra modulo Tabella" },
     { id:"minimizeExtraBtn", panel:"#extraPanel,.extraPanel", reduce:"Riduci a icona Ricerca Contenitori", show:"Mostra modulo Ricerca Contenitori" },
     { id:"operativeChecklistToggleBtn", panel:"#operativeChecklistPanel,.operativeChecklistPanel", reduce:"Riduci a icona Checklist Operativa", show:"Mostra modulo Checklist Operativa" },
+    { id:"notificationToggleBtn", panel:"#notificationPanel,.notificationPanel", reduce:"Riduci a icona Notifiche", show:"Mostra modulo Notifiche" },
     { id:"minimizeShipsBtn", panel:"#shipPanel,.shipPanel", reduce:"Riduci a icona Previsione Navi", show:"Mostra modulo Previsione Navi" },
     { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Ricerca Booking", show:"Mostra modulo Ricerca Booking" },
     { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" }
@@ -19472,7 +20213,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   else normalizeAll();
 
   document.addEventListener("click", (event) => {
-    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
+    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
       setTimeout(normalizeAll, 0);
       setTimeout(normalizeAll, 80);
     }
@@ -19483,7 +20224,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
       const node = m.target;
       if (!node) continue;
       if (node.id && configs.some(c => c.id === node.id)) { scheduleNormalize(); return; }
-      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
+      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
     }
   });
   if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["class","aria-expanded","title","aria-label"] });
