@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-organizza-postit-r7"/>
+<meta name="doganatools-build" content="2026-08-19-organizza-gruppo-r8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -4905,6 +4905,148 @@ button.appSessionSync{
 
 
 
+/* === MODULO ORGANIZZA: contenitore sottomoduli === */
+.organizeModulePanel{
+  width:calc(100% - 32px) !important;
+  margin:18px auto !important;
+  padding:0;
+  overflow:hidden;
+  border:1px solid var(--grid-soft);
+  border-radius:22px;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  box-shadow:var(--shadow-soft);
+}
+.organizeModuleHead{
+  display:grid;
+  grid-template-columns:minmax(220px, 1fr) auto;
+  align-items:start;
+  gap:14px;
+  padding:16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-elevated) 100%);
+}
+.organizeModuleTitle{
+  color:var(--heading);
+  font-size:16px;
+  font-weight:950;
+  letter-spacing:.08em;
+  line-height:1.2;
+  text-transform:uppercase;
+}
+.organizeModuleSubtitle{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.4;
+  margin-top:5px;
+}
+.organizeModuleActions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  align-items:center;
+}
+.organizeModuleStats{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:36px;
+  padding:8px 11px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface);
+  color:var(--muted);
+  font-size:12px;
+  font-weight:900;
+  white-space:nowrap;
+}
+.organizeModuleStats::before{
+  content:"";
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:var(--accent);
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+.organizeModuleBody{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.organizeModuleChips{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+.organizeModuleChip{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  min-height:34px;
+  padding:8px 12px;
+  border:1px solid var(--grid-soft);
+  border-radius:999px;
+  background:var(--surface);
+  color:var(--heading);
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  text-decoration:none;
+  box-shadow:0 4px 12px rgba(15,23,42,.04);
+}
+.organizeModuleChip:hover{
+  transform:translateY(-1px);
+  border-color:color-mix(in srgb, var(--accent) 22%, var(--grid-soft));
+  background:color-mix(in srgb, var(--accent) 7%, var(--surface));
+}
+.organizeModuleChipCount{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:19px;
+  height:19px;
+  padding:0 6px;
+  border-radius:999px;
+  background:color-mix(in srgb, var(--danger) 12%, var(--surface));
+  color:var(--danger);
+  font-size:10px;
+  font-weight:900;
+}
+.organizeModuleBody .operativeChecklistPanel,
+.organizeModuleBody .notificationPanel,
+.organizeModuleBody .postItPanel{
+  width:100% !important;
+  margin:0 !important;
+}
+.organizeModulePanel.is-minimized .organizeModuleBody{ display:none; }
+.organizeModulePanel.is-minimized .organizeModuleSubtitle,
+.organizeModulePanel.is-minimized .organizeModuleActions > :not(#organizePanelToggleBtn){ display:none !important; }
+.organizeModulePanel.is-minimized{
+  padding:10px 12px !important;
+  border-radius:18px !important;
+}
+.organizeModulePanel.is-minimized .organizeModuleHead{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:0;
+  border-bottom:0;
+  background:transparent;
+}
+.organizeModulePanel.is-minimized .organizeModuleActions{ display:flex; }
+.organizeModulePanel.is-minimized #organizePanelToggleBtn{ display:inline-flex !important; }
+@media (max-width:900px){
+  .organizeModuleHead{ grid-template-columns:1fr; }
+  .organizeModuleActions{ justify-content:flex-start; }
+}
+@media (max-width:700px){
+  .organizeModulePanel{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
+  .organizeModuleBody{ padding:12px; }
+}
+
 /* === CHECKLIST OPERATIVA MULTIUTENTE === */
 .operativeChecklistPanel{
   width:calc(100% - 32px) !important;
@@ -7475,83 +7617,103 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
 </div>
 
-<section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
-  <div class="operativeChecklistHead">
+<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: checklist, notifiche e post-it">
+  <div class="organizeModuleHead">
     <div>
-      <div class="operativeChecklistTitle">Checklist Operativa</div>
-      <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
+      <div class="organizeModuleTitle">Organizza</div>
+      <div class="organizeModuleSubtitle">Raccoglie i tre sottomoduli operativi per promemoria e note rapide: Checklist, Notifiche e Post-it.</div>
     </div>
-    <div class="operativeChecklistActions">
-      <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
-      <button type="button" id="operativeChecklistRefreshBtn">Aggiorna</button>
-      <button type="button" id="operativeChecklistToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Checklist Operativa" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    <div class="organizeModuleActions">
+      <span class="organizeModuleStats" id="organizePanelStats">3 sottomoduli</span>
+      <button type="button" id="organizePanelToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Organizza" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
-  <div class="operativeChecklistBody">
-    <div class="operativeChecklistForm">
-      <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
-      <div class="operativeChecklistAttachmentBox">
-        <label class="operativeChecklistFileBtn" for="operativeChecklistFileInput">Allega</label>
-        <input class="operativeChecklistFileInput" id="operativeChecklistFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.xml,.txt,.csv,.xls,.xlsx,.doc,.docx" />
-        <span class="operativeChecklistFileName" id="operativeChecklistFileName">Nessun allegato</span>
-        <button class="operativeChecklistFileClear" type="button" id="operativeChecklistFileClearBtn" title="Rimuovi allegato selezionato">×</button>
+  <div class="organizeModuleBody" id="organizePanelBody">
+    <div class="organizeModuleChips" aria-label="Sottomoduli Organizza">
+      <a class="organizeModuleChip" href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
+      <a class="organizeModuleChip" href="#notificationPanel" data-jump-focus="#notificationTaskInput">Notifiche <span class="organizeModuleChipCount" id="organizeModuleReminderCount" hidden>0</span></a>
+      <a class="organizeModuleChip" href="#postItPanel" data-jump-focus="#postItInput">Post-it</a>
+    </div>
+
+    <section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
+      <div class="operativeChecklistHead">
+        <div>
+          <div class="operativeChecklistTitle">Checklist Operativa</div>
+          <div class="operativeChecklistSubtitle">Task condivisi tra postazioni.</div>
+        </div>
+        <div class="operativeChecklistActions">
+          <span class="operativeChecklistStats" id="operativeChecklistStats">0 aperti</span>
+          <button type="button" id="operativeChecklistRefreshBtn">Aggiorna</button>
+          <button type="button" id="operativeChecklistToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Checklist Operativa" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+        </div>
       </div>
-      <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
-    </div>
-    <div class="operativeChecklistList" id="operativeChecklistList">
-      <div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>
-    </div>
-  </div>
-</section>
+      <div class="operativeChecklistBody">
+        <div class="operativeChecklistForm">
+          <input class="operativeChecklistInput" id="operativeChecklistInput" type="text" placeholder="Scrivi un task operativo..." autocomplete="off" />
+          <div class="operativeChecklistAttachmentBox">
+            <label class="operativeChecklistFileBtn" for="operativeChecklistFileInput">Allega</label>
+            <input class="operativeChecklistFileInput" id="operativeChecklistFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.gif,.bmp,.xml,.txt,.csv,.xls,.xlsx,.doc,.docx" />
+            <span class="operativeChecklistFileName" id="operativeChecklistFileName">Nessun allegato</span>
+            <button class="operativeChecklistFileClear" type="button" id="operativeChecklistFileClearBtn" title="Rimuovi allegato selezionato">×</button>
+          </div>
+          <button class="primary" type="button" id="operativeChecklistAddBtn">+ Aggiungi task</button>
+        </div>
+        <div class="operativeChecklistList" id="operativeChecklistList">
+          <div class="operativeChecklistEmpty">Nessun task operativo inserito.</div>
+        </div>
+      </div>
+    </section>
 
-<section class="notificationPanel sectionJumpTarget" id="notificationPanel" aria-label="Promemoria e notifiche condivise">
-  <div class="notificationHead">
-    <div>
-      <div class="notificationTitle">Notifiche</div>
-      <div class="notificationSubtitle">Programma un task: all'orario impostato DoganaTools mostra un avviso e riproduce un chime dedicato.</div>
-    </div>
-    <div class="notificationActions">
-      <span class="notificationStats" id="notificationStats">0 programmati</span>
-      <button type="button" id="notificationSoundBtn" class="notificationSoundBtn sound-on" aria-pressed="true">🔔 Suono ON</button>
-      <button type="button" id="notificationRefreshBtn">Aggiorna</button>
-      <button type="button" id="notificationToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Notifiche" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
-    </div>
-  </div>
-  <div class="notificationBody">
-    <div class="notificationForm">
-      <input class="notificationTaskInput" id="notificationTaskInput" type="text" maxlength="240" placeholder="Task da ricordare..." autocomplete="off" />
-      <label class="notificationDateField"><span>Data</span><input id="notificationDateInput" type="date" /></label>
-      <label class="notificationDateField"><span>Ora</span><input id="notificationTimeInput" type="time" step="60" /></label>
-      <button class="primary" type="button" id="notificationAddBtn">+ Aggiungi promemoria</button>
-    </div>
-    <div class="notificationHint">Gli avvisi scattano sulle postazioni che hanno DoganaTools aperto. I task sono condivisi e restano salvati sul server.</div>
-    <div class="notificationList" id="notificationList">
-      <div class="notificationEmpty">Nessun promemoria programmato.</div>
-    </div>
-  </div>
-</section>
+    <section class="notificationPanel sectionJumpTarget" id="notificationPanel" aria-label="Promemoria e notifiche condivise">
+      <div class="notificationHead">
+        <div>
+          <div class="notificationTitle">Notifiche</div>
+          <div class="notificationSubtitle">Programma un task: all'orario impostato DoganaTools mostra un avviso e riproduce un chime dedicato.</div>
+        </div>
+        <div class="notificationActions">
+          <span class="notificationStats" id="notificationStats">0 programmati</span>
+          <button type="button" id="notificationSoundBtn" class="notificationSoundBtn sound-on" aria-pressed="true">🔔 Suono ON</button>
+          <button type="button" id="notificationRefreshBtn">Aggiorna</button>
+          <button type="button" id="notificationToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Notifiche" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+        </div>
+      </div>
+      <div class="notificationBody">
+        <div class="notificationForm">
+          <input class="notificationTaskInput" id="notificationTaskInput" type="text" maxlength="240" placeholder="Task da ricordare..." autocomplete="off" />
+          <label class="notificationDateField"><span>Data</span><input id="notificationDateInput" type="date" /></label>
+          <label class="notificationDateField"><span>Ora</span><input id="notificationTimeInput" type="time" step="60" /></label>
+          <button class="primary" type="button" id="notificationAddBtn">+ Aggiungi promemoria</button>
+        </div>
+        <div class="notificationHint">Gli avvisi scattano sulle postazioni che hanno DoganaTools aperto. I task sono condivisi e restano salvati sul server.</div>
+        <div class="notificationList" id="notificationList">
+          <div class="notificationEmpty">Nessun promemoria programmato.</div>
+        </div>
+      </div>
+    </section>
 
-<section class="postItPanel sectionJumpTarget" id="postItPanel" aria-label="Post-it condivisi">
-  <div class="postItHead">
-    <div>
-      <div class="postItTitle">Post-it</div>
-      <div class="postItSubtitle">Note rapide condivise tra le postazioni: scrivi qualcosa da ricordare e lascialo in bacheca.</div>
-    </div>
-    <div class="postItActions">
-      <span class="postItStats" id="postItStats">0 note</span>
-      <button type="button" id="postItRefreshBtn">Aggiorna</button>
-      <button type="button" id="postItToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Post-it" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
-    </div>
-  </div>
-  <div class="postItBody">
-    <div class="postItForm">
-      <textarea class="postItInput" id="postItInput" maxlength="1200" placeholder="Scrivi una nota da ricordare..."></textarea>
-      <button class="primary" type="button" id="postItAddBtn">+ Aggiungi post-it</button>
-    </div>
-    <div class="postItHint">Le note sono condivise e salvate sul server. Puoi modificarne il testo direttamente sulla bacheca: il salvataggio avviene quando esci dalla nota.</div>
-    <div class="postItBoard" id="postItBoard">
-      <div class="postItEmpty">Nessun post-it in bacheca.</div>
-    </div>
+    <section class="postItPanel sectionJumpTarget" id="postItPanel" aria-label="Post-it condivisi">
+      <div class="postItHead">
+        <div>
+          <div class="postItTitle">Post-it</div>
+          <div class="postItSubtitle">Note rapide condivise tra le postazioni: scrivi qualcosa da ricordare e lascialo in bacheca.</div>
+        </div>
+        <div class="postItActions">
+          <span class="postItStats" id="postItStats">0 note</span>
+          <button type="button" id="postItRefreshBtn">Aggiorna</button>
+          <button type="button" id="postItToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Post-it" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+        </div>
+      </div>
+      <div class="postItBody">
+        <div class="postItForm">
+          <textarea class="postItInput" id="postItInput" maxlength="1200" placeholder="Scrivi una nota da ricordare..."></textarea>
+          <button class="primary" type="button" id="postItAddBtn">+ Aggiungi post-it</button>
+        </div>
+        <div class="postItHint">Le note sono condivise e salvate sul server. Puoi modificarne il testo direttamente sulla bacheca: il salvataggio avviene quando esci dalla nota.</div>
+        <div class="postItBoard" id="postItBoard">
+          <div class="postItEmpty">Nessun post-it in bacheca.</div>
+        </div>
+      </div>
+    </section>
   </div>
 </section>
 
@@ -7749,7 +7911,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-ORGANIZZA-R7</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-ORGANIZZA-R8</strong></a>
   </div>
 </footer>
 </section>
@@ -18508,6 +18670,65 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
 </style>
 
 
+<script id="organize-panel-toggle-script">
+(function(){
+  function initOrganizePanel(){
+    const panel = document.getElementById("organizePanel");
+    const body = document.getElementById("organizePanelBody");
+    const btn = document.getElementById("organizePanelToggleBtn");
+    const stats = document.getElementById("organizePanelStats");
+    const chipCount = document.getElementById("organizeModuleReminderCount");
+    if (!panel || !body || !btn || btn.dataset.minimizeReady === "1") return;
+    btn.dataset.minimizeReady = "1";
+    const STORAGE_KEY = "doganatools_organize_panel_minimized_v1";
+
+    const updateStats = function(){
+      const dueCount = Number(document.getElementById("organizeNavCount")?.textContent || 0) || 0;
+      if (stats) stats.textContent = dueCount > 0 ? `3 sottomoduli · ${dueCount} promemoria` : "3 sottomoduli";
+      if (chipCount) {
+        chipCount.textContent = String(dueCount);
+        chipCount.hidden = dueCount <= 0;
+      }
+    };
+
+    const applyState = function(minimized){
+      panel.classList.toggle("is-minimized", !!minimized);
+      btn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
+      if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(btn, minimized);
+      btn.setAttribute("aria-expanded", minimized ? "false" : "true");
+      btn.setAttribute("aria-label", minimized ? "Mostra modulo Organizza" : "Riduci a icona Organizza");
+      btn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
+      try { localStorage.setItem(STORAGE_KEY, minimized ? "1" : "0"); } catch {}
+      updateStats();
+    };
+
+    function ensureExpandedForTarget(targetId){
+      if (!["organizePanel","operativeChecklistPanel","notificationPanel","postItPanel"].includes(String(targetId || "").replace(/^#/,""))) return;
+      if (panel.classList.contains("is-minimized")) applyState(false);
+      const target = document.getElementById(String(targetId || "").replace(/^#/,""));
+      if (target) setTimeout(() => target.scrollIntoView({ behavior:"smooth", block:"start" }), 60);
+    }
+
+    let saved = "0";
+    try { saved = localStorage.getItem(STORAGE_KEY) || "0"; } catch {}
+    applyState(saved === "1");
+    btn.addEventListener("click", function(){ applyState(!panel.classList.contains("is-minimized")); });
+    document.addEventListener("click", function(event){
+      const trigger = event.target.closest?.('a[href="#organizePanel"],a[href="#operativeChecklistPanel"],a[href="#notificationPanel"],a[href="#postItPanel"]');
+      if (!trigger) return;
+      ensureExpandedForTarget(trigger.getAttribute("href") || "");
+    }, true);
+    window.addEventListener("hashchange", function(){ ensureExpandedForTarget(location.hash || ""); });
+    if (location.hash) ensureExpandedForTarget(location.hash);
+    updateStats();
+    setInterval(updateStats, 2000);
+    window.doganaEnsureOrganizeExpanded = function(){ applyState(false); };
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initOrganizePanel);
+  else initOrganizePanel();
+})();
+</script>
+
 <script id="operative-checklist-minimize-script">
 (function(){
   function initOperativeChecklistMinimize(){
@@ -20890,7 +21111,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-ORGANIZZA-R7 con una semplice data.
+    // v2026.08.19-ORGANIZZA-R8 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
