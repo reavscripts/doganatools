@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-notifiche-r1"/>
+<meta name="doganatools-build" content="2026-08-19-notifiche-r4"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -7432,7 +7432,7 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R1</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-NOTIFICHE-R4</strong></a>
   </div>
 </footer>
 </section>
@@ -18417,10 +18417,25 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
 
   function endpoint(path = ""){
     const suffix = String(path || "");
+    const apiPath = `/api/reminders${suffix}`;
+
+    // NOTIFICHE R4: routing esplicito e indipendente dagli altri helper del frontend.
+    // Il frontend pubblico vive su dogana.reav.website, mentre le API Node sono
+    // esposte da dogana-api.reav.website. In locale/LAN restiamo same-origin.
     try {
-      if (typeof api === "function") return api(`/api/reminders${suffix}`);
+      const host = String(window.location.hostname || "").toLowerCase();
+      const isPublicFrontend =
+        host === "dogana.reav.website" ||
+        host === "doganatools.reav.website" ||
+        host.endsWith(".reav.website") ||
+        host.includes("vercel.app");
+
+      if (isPublicFrontend) {
+        return `https://dogana-api.reav.website${apiPath}`;
+      }
     } catch {}
-    return `/api/reminders${suffix}`;
+
+    return apiPath;
   }
 
   function esc(value){
@@ -18686,8 +18701,22 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   }
 
   async function parseResponse(res){
-    const data = await res.json().catch(() => null);
-    if (!res.ok) throw new Error(data?.error || "Operazione promemoria non riuscita");
+    const contentType = String(res.headers.get("content-type") || "");
+    let data = null;
+    let rawText = "";
+
+    if (contentType.includes("application/json")) {
+      data = await res.json().catch(() => null);
+    } else {
+      rawText = await res.text().catch(() => "");
+    }
+
+    if (!res.ok) {
+      const detail = data?.error || data?.message || rawText.trim().slice(0, 180);
+      throw new Error(detail || `Operazione promemoria non riuscita (HTTP ${res.status})`);
+    }
+
+    if (!data) throw new Error("Risposta promemoria non valida dal backend");
     return data;
   }
 
@@ -20274,9 +20303,10 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   }
 
   function applyVersion(date){
-    const version = makeVersion(date);
-    if (!version) return false;
-    textEl.textContent = version;
+    // NOTIFICHE R4: la versione visibile identifica la build reale del file.
+    // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
+    // v2026.08.19-NOTIFICHE-R4 con una semplice data.
+    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
     return true;
