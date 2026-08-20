@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-19-postit-desktop-r10"/>
+<meta name="doganatools-build" content="2026-08-20-sct-auto-dynamic-restore-r11"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -7608,11 +7608,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
       <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
     </div>
     <div class="miniToolbar extraTopToolbar">
-      <label class="autoCheckSwitch" title="Attiva o disattiva il controllo automatico con intervallo calcolato dal numero di container">
-        <input id="extraAutoCheckToggle" type="checkbox" />
-        <span class="autoCheckSlider"></span>
-        <span class="autoCheckText">Auto dinamico: <strong id="extraAutoCheckLabel">OFF · 3 min</strong></span>
-      </label>
+      <span id="extraAutoDynamicBadge" class="extraAutoSingleInterval" title="Controllo automatico sempre attivo: SCT dinamico per numero di container, CONATECO/TFG ogni 3 minuti">SCT 3m · C/TFG 3m</span>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
       <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button" style="display:none !important" aria-hidden="true" tabindex="-1">Controlla ora</button>
       <button id="minimizeExtraBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Contenitori" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
@@ -9506,7 +9502,7 @@ button.doganaModuleSvgToggleBtn:active,
     const EXTRA_AUTOCHECK_KEY = "peso_sheet_extra_autocheck_v1";
     let extraRows = [];
     let activeExtraTerminal = "sct";
-    let extraAutoCheckEnabled = false;
+    let extraAutoCheckEnabled = true;
     let extraAutoCheckTimer = null; // timer SCT dinamico
     let extraFastAutoCheckTimer = null; // timer CONATECO/TFG
     let extraCountdownTimer = null;
@@ -9515,8 +9511,10 @@ button.doganaModuleSvgToggleBtn:active,
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
-    const EXTRA_AUTO_SECONDS_PER_CONTAINER = 25;
-    const EXTRA_AUTO_MAX_MINUTES = 1440;
+    // SCT: ciclo dinamico a scaglioni di 5 container.
+    // 1-5 = 3 min, 6-10 = 6 min, 11-15 = 9 min, ecc.
+    const EXTRA_SCT_AUTOCHECK_GROUP_SIZE = 5;
+    const EXTRA_SCT_AUTOCHECK_GROUP_MINUTES = 3;
     const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
@@ -9728,8 +9726,6 @@ button.doganaModuleSvgToggleBtn:active,
     const clearExtraBtnBottom = document.getElementById("clearExtraBtnBottom");
     const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
     const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
-    const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
-    const extraAutoCheckLabel = document.getElementById("extraAutoCheckLabel");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
     const renameExtraStationBtn = document.getElementById("renameExtraStationBtn");
     const extraLastCheckText = document.getElementById("extraLastCheckText");
@@ -10490,17 +10486,13 @@ button.doganaModuleSvgToggleBtn:active,
         // Il tab attivo è locale: applicarlo qui causava il ritorno automatico su SCT
         // dopo un click su CONATECO/TFG o dopo una sincronizzazione periodica.
 
-        const remoteAutoCheckEnabled = !!state.extraAutoCheckEnabled;
-        // Se questa postazione ha appena premuto il toggle, un GET/SSE può arrivare
-        // prima del POST di conferma. In quel breve intervallo non deve ripristinare
-        // il vecchio valore server (era la causa del "primo click non funziona").
-        const hasPendingAutoMutation = extraAutoSavePendingValue !== null;
-        const autoChanged = !hasPendingAutoMutation && remoteAutoCheckEnabled !== extraAutoCheckEnabled;
-        if (hasPendingAutoMutation) {
-          extraAutoCheckEnabled = !!extraAutoSavePendingValue;
-        } else {
-          extraAutoCheckEnabled = remoteAutoCheckEnabled;
-        }
+        // AUTO-CHECK CONTENITORI SEMPRE ATTIVO.
+        // Ignoriamo eventuali valori OFF rimasti in shared_state.json o inviati
+        // da frontend precedenti: SCT deve continuare il ciclo dinamico senza toggle.
+        const autoChanged = extraAutoCheckEnabled !== true;
+        extraAutoCheckEnabled = true;
+        extraAutoSavePendingValue = null;
+        extraAutoSavePendingSeq = 0;
 
         const remoteLastChecks = normalizeExtraLastCheckMap(state.extraLastCheckAtByTerminal);
         const localLastChecks = normalizeExtraLastCheckMap(extraLastCheckAtByTerminal);
@@ -11234,6 +11226,10 @@ button.doganaModuleSvgToggleBtn:active,
 
             updateExtraTabs();
             saveExtraLocalOnly();
+            if (isExtraContainerField(key)) {
+              refreshExtraAutoCheckSchedule();
+              updateAutoCheckUI();
+            }
             scheduleSharedRowPatch(rowIndex, patch);
           });
 
@@ -11585,13 +11581,11 @@ button.doganaModuleSvgToggleBtn:active,
 
     function getExtraAutomaticCheckSeconds(){
       const containerCount = getExtraAutoContainerCount();
-      // SCT: 25 secondi di attesa per ogni container presente in lista.
-      // Esempi: 10 container = 250 s, 20 container = 500 s.
-      const effectiveCount = Math.max(1, containerCount);
-      return Math.min(
-        effectiveCount * EXTRA_AUTO_SECONDS_PER_CONTAINER,
-        EXTRA_AUTO_MAX_MINUTES * 60
-      );
+      // Ripristino logica SCT del 06/08/2026:
+      // 1-5 container = 3 min, 6-10 = 6 min, 11-15 = 9 min, ecc.
+      // Anche con lista vuota manteniamo il minimo tecnico di 3 minuti.
+      const groups = Math.max(1, Math.ceil(containerCount / EXTRA_SCT_AUTOCHECK_GROUP_SIZE));
+      return groups * EXTRA_SCT_AUTOCHECK_GROUP_MINUTES * 60;
     }
 
     function getExtraAutomaticCheckMinutes(){
@@ -11613,14 +11607,10 @@ button.doganaModuleSvgToggleBtn:active,
         extraFastAutoCheckTimer = null;
       }
 
-      if (!extraAutoCheckEnabled) {
-        extraAutoCheckScheduledInterval = null;
-        extraNextCheckAt = null;
-        extraFastNextCheckAt = null;
-        return;
-      }
+      // Il controllo automatico è sempre attivo: nessun toggle ON/OFF.
+      extraAutoCheckEnabled = true;
 
-      // SCT: intervallo lineare in base alle sole righe SCT (25 secondi per container).
+      // SCT: intervallo a scaglioni di 5 container (3 minuti per scaglione).
       const sctInterval = getExtraEffectiveCheckInterval();
       extraAutoCheckScheduledInterval = sctInterval;
       extraNextCheckAt = Date.now() + sctInterval;
@@ -11640,7 +11630,7 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function refreshExtraAutoCheckSchedule(){
-      if (!extraAutoCheckEnabled) return;
+      extraAutoCheckEnabled = true;
       const currentInterval = getExtraEffectiveCheckInterval();
       if (extraAutoCheckTimer && extraAutoCheckScheduledInterval === currentInterval) return;
       armExtraAutoCheckTimer();
@@ -11651,11 +11641,13 @@ button.doganaModuleSvgToggleBtn:active,
       const sctContainerCount = getExtraAutoContainerCount();
       const sctSeconds = getExtraAutomaticCheckSeconds();
       const fastMinutes = Math.round(EXTRA_FAST_CHECK_INTERVAL / 60000);
-      if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
-      if (extraAutoCheckLabel) {
-        extraAutoCheckLabel.textContent = extraAutoCheckEnabled
-          ? `ON · SCT ${sctSeconds} sec · CON/TFG ${fastMinutes} min`
-          : `OFF · SCT ${sctSeconds} sec · CON/TFG ${fastMinutes} min`;
+      const sctMinutes = Math.max(1, Math.round(sctSeconds / 60));
+      extraAutoCheckEnabled = true;
+
+      const dynamicBadge = document.getElementById("extraAutoDynamicBadge");
+      if (dynamicBadge) {
+        dynamicBadge.textContent = `SCT ${sctMinutes}m · C/TFG ${fastMinutes}m`;
+        dynamicBadge.title = `${sctContainerCount} container SCT: prossimo ciclo ogni ${sctMinutes} min · CONATECO/TFG ogni ${fastMinutes} min`;
       }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
@@ -11663,36 +11655,22 @@ button.doganaModuleSvgToggleBtn:active,
       if (extraLastCheckText) extraLastCheckText.textContent = activeLastCheckAt ? formatExtraClock(activeLastCheckAt) : "mai eseguito";
       extraLastCheckDot?.classList.toggle("ok", !!activeLastCheckAt);
 
-      if (extraAutoCheckEnabled) {
-        if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
-        if (!extraFastNextCheckAt) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+      if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
+      if (!extraFastNextCheckAt) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
 
-        const nextAt = activeExtraTerminal === "sct" ? extraNextCheckAt : extraFastNextCheckAt;
-        const remaining = Math.max(0, nextAt - Date.now());
-        if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
+      const nextAt = activeExtraTerminal === "sct" ? extraNextCheckAt : extraFastNextCheckAt;
+      const remaining = Math.max(0, nextAt - Date.now());
+      if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
 
-        if (extraAutoStatus) {
-          extraAutoStatus.textContent = activeLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctSeconds} sec · CONATECO/TFG: ${fastMinutes} min.`
-            : `Controllo automatico attivo. SCT: ${sctContainerCount} container / ${sctSeconds} sec · CONATECO/TFG: ${fastMinutes} min.`;
-        }
-      } else {
-        extraNextCheckAt = null;
-        extraFastNextCheckAt = null;
-        if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
-        if (extraAutoStatus) {
-          extraAutoStatus.textContent = activeLastCheckAt
-            ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · disattivato.`
-            : "Controllo automatico disattivato.";
-        }
+      if (extraAutoStatus) {
+        extraAutoStatus.textContent = activeLastCheckAt
+          ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
+          : `Controllo automatico sempre attivo. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`;
       }
     }
 
     function updateAutoCheckUI(){
       updateExtraCheckInfo();
-      if (typeof window.updateExtraSingleAutoButton === "function") {
-        window.updateExtraSingleAutoButton(extraAutoCheckEnabled);
-      }
     }
 
     function restartExtraCountdownTimer(){
@@ -11700,19 +11678,13 @@ button.doganaModuleSvgToggleBtn:active,
       extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
-    function setExtraAutoCheck(enabled, options = {}){
-      extraAutoCheckEnabled = !!enabled;
+    function setExtraAutoCheck(_enabled, options = {}){
+      // Compatibilità con chiamate di versioni precedenti: non è più possibile
+      // disattivare il controllo automatico dal frontend.
+      extraAutoCheckEnabled = true;
       armExtraAutoCheckTimer();
       restartExtraCountdownTimer();
       updateAutoCheckUI();
-      if (!options.skipSave) {
-        // Il valore Auto è un metadato globale condiviso e va scritto soltanto
-        // quando l'utente lo cambia esplicitamente.
-        saveExtra({ includeAuto: true, immediate: true });
-      }
-      if (!options.skipRender && typeof updateExtraSingleAutoButton === "function") {
-        updateExtraSingleAutoButton(extraAutoCheckEnabled);
-      }
     }
 
     addExtraRowBtn?.addEventListener("click", () => addExtraRows(1, true));
@@ -11767,7 +11739,6 @@ button.doganaModuleSvgToggleBtn:active,
       applyBookingLookupMinimizedState(nextMinimized);
     });
 
-    extraAutoCheckToggle?.addEventListener("change", (e) => setExtraAutoCheck(e.target.checked));
     renameExtraStationBtn?.addEventListener("click", async () => {
       const current = sanitizeExtraStationName(EXTRA_CLIENT_NAME);
       const next = sanitizeExtraStationName(prompt("Nome postazione:", current) || "");
@@ -11836,7 +11807,7 @@ button.doganaModuleSvgToggleBtn:active,
         showExtraToast("Backend condiviso non raggiungibile: cache locale contenitori disattivata.");
       }
 
-      setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true });
+      setExtraAutoCheck(true, { skipSave: true });
     })();
 
     // Aggiorna periodicamente dagli altri client, senza scaricare nuovamente i dati dai terminal.
@@ -13287,7 +13258,7 @@ window.runExtraAutoCheck = runAutoCheckAllTerminals;
 window.checkExtraAllRows = runAutoCheckAllTerminals;
 window.checkExtraContainers = runAutoCheckAllTerminals;
 window.doganaSetExtraAutoCheck = setExtraAutoCheck;
-window.doganaGetExtraAutoCheckEnabled = () => !!extraAutoCheckEnabled;
+window.doganaGetExtraAutoCheckEnabled = () => true;
 window.doganaGetExtraAutoIntervalMs = getExtraEffectiveCheckInterval;
 window.doganaGetExtraAutoSeconds = getExtraAutomaticCheckSeconds;
 window.doganaGetExtraAutoMinutes = getExtraAutomaticCheckMinutes;
@@ -16313,144 +16284,6 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
 })();
 </script>
 
-<script>
-(function(){
-  "use strict";
-
-  const ON_KEY = "doganatools_extra_auto_enabled";
-
-  function panel(){
-    return document.querySelector(".extraPanel") || document.getElementById("extraPanel");
-  }
-
-  function toolbar(){
-    const p = panel();
-    if (!p) return null;
-    return p.querySelector(".extraTopToolbar, .miniToolbar, .right, .toolbar") || p.querySelector(".miniHead");
-  }
-
-  function automaticSeconds(){
-    if (typeof window.doganaGetExtraAutoSeconds === "function") {
-      const value = Number(window.doganaGetExtraAutoSeconds());
-      if (Number.isFinite(value) && value >= 1) return Math.round(value);
-    }
-    if (typeof window.doganaGetExtraAutoIntervalMs === "function") {
-      const value = Number(window.doganaGetExtraAutoIntervalMs());
-      if (Number.isFinite(value) && value >= 1000) return Math.round(value / 1000);
-    }
-    return 25;
-  }
-
-  function containerCount(){
-    if (typeof window.doganaGetExtraAutoContainerCount === "function") {
-      const value = Number(window.doganaGetExtraAutoContainerCount());
-      if (Number.isFinite(value) && value >= 0) return value;
-    }
-    return 0;
-  }
-
-  async function runCheck(){
-    if (typeof window.runAutoCheckAllTerminals === "function") {
-      await window.runAutoCheckAllTerminals();
-      return true;
-    }
-
-    const p = panel();
-    const btn = p && Array.from(p.querySelectorAll("button")).find(b => {
-      const t = (b.textContent || "").trim();
-      return /controlla/i.test(t) && b.id !== "extraAutoSingleButton";
-    });
-
-    if (btn) {
-      btn.click();
-      return true;
-    }
-
-    return false;
-  }
-
-  function updateButton(on){
-    const btn = document.getElementById("extraAutoSingleButton");
-    const label = document.getElementById("extraAutoSingleState");
-    const intervalLabel = document.getElementById("extraAutoSingleInterval");
-    const seconds = automaticSeconds();
-    const rows = containerCount();
-
-    if (btn) {
-      btn.classList.toggle("is-on", !!on);
-      btn.classList.toggle("is-off", !on);
-      btn.setAttribute("aria-pressed", on ? "true" : "false");
-      btn.title = `${rows} container SCT: SCT ogni ${seconds} sec · CONATECO/TFG ogni 3 min`;
-    }
-
-    if (label) label.textContent = on ? "Auto ON" : "Auto OFF";
-    if (intervalLabel) intervalLabel.textContent = `SCT ${seconds}s · CON/TFG 3m`;
-  }
-
-  function setOn(on, runImmediately){
-    localStorage.setItem(ON_KEY, on ? "1" : "0");
-    updateButton(on);
-
-    if (typeof window.doganaSetExtraAutoCheck === "function") {
-      window.doganaSetExtraAutoCheck(!!on);
-    }
-
-    if (runImmediately && on) {
-      setTimeout(runCheck, 200);
-    }
-  }
-
-  window.updateExtraSingleAutoButton = function(on){
-    const realState = typeof window.doganaGetExtraAutoCheckEnabled === "function"
-      ? window.doganaGetExtraAutoCheckEnabled()
-      : !!on;
-    localStorage.setItem(ON_KEY, realState ? "1" : "0");
-    updateButton(realState);
-  };
-
-  function build(){
-    const tb = toolbar();
-    if (!tb) return;
-
-    const p = panel();
-    if (p) {
-      p.querySelectorAll(".doganaSessionChip").forEach(el => el.remove());
-      p.querySelectorAll(".extraAutoStatus").forEach(el => el.style.display = "none");
-      p.querySelectorAll(".autoCheckSwitch").forEach(el => el.style.display = "none");
-    }
-
-    let btn = document.getElementById("extraAutoSingleButton");
-    if (!btn) {
-      btn = document.createElement("button");
-      btn.type = "button";
-      btn.id = "extraAutoSingleButton";
-      btn.className = "extraAutoSingleButton is-off";
-      btn.innerHTML = `
-        <span class="extraAutoSingleButtonSwitch" aria-hidden="true"></span>
-        <span id="extraAutoSingleState">Auto OFF</span>
-        <span id="extraAutoSingleInterval" class="extraAutoSingleInterval">3 min</span>
-      `;
-      tb.insertBefore(btn, tb.firstChild);
-    }
-
-    btn.onclick = function(){
-      const nowOn = btn.classList.contains("is-on");
-      setOn(!nowOn, true);
-    };
-
-    const initialOn = typeof window.doganaGetExtraAutoCheckEnabled === "function"
-      ? window.doganaGetExtraAutoCheckEnabled()
-      : localStorage.getItem(ON_KEY) === "1";
-    updateButton(initialOn);
-    localStorage.setItem(ON_KEY, initialOn ? "1" : "0");
-  }
-
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
-  else build();
-
-  window.doganaExtraAutoCheckNow = runCheck;
-})();
-</script>
 
 
 <script>
