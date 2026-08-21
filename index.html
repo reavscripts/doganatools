@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:39 CEST | BUTTON-VISUAL-SYSTEM-R25 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:57 CEST | BUTTON-VISUAL-SYSTEM-R26 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R25 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R26 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R25"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R26"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R25";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R26";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R25</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R26</strong></a>
   </div>
 </footer>
 </section>
@@ -21314,7 +21314,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R25 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R26 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23124,6 +23124,229 @@ body[data-theme="dark"] #dogana-section::before{
 }
 </style>
 <!-- R25-TABELLA-TOPLINE-FINAL-REAL -->
+
+
+<style id="dogana-settings-overlay-r26">
+/* =========================================================
+   R26 — IMPOSTAZIONI: OVERLAY REALE + NUOVA UI
+   Forza il pannello nel viewport e usa lo stesso linguaggio
+   visivo della topbar/moduli, con colore dinamico postazione.
+   ========================================================= */
+#doganaSettingsBackdrop.doganaSettingsBackdrop{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:2147483000 !important;
+  display:none !important;
+  margin:0 !important;
+  background:rgba(15,23,42,.28) !important;
+  backdrop-filter:blur(5px) saturate(.96) !important;
+}
+#doganaSettingsBackdrop.doganaSettingsBackdrop.show{
+  display:block !important;
+}
+
+#doganaSettingsPanel.doganaSettingsPanel{
+  position:fixed !important;
+  top:74px !important;
+  right:24px !important;
+  bottom:auto !important;
+  left:auto !important;
+  z-index:2147483001 !important;
+  display:none !important;
+  width:min(540px, calc(100vw - 48px)) !important;
+  max-width:540px !important;
+  max-height:calc(100dvh - 98px) !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid color-mix(in srgb, var(--station-color, var(--accent-2)) 24%, var(--grid-soft)) !important;
+  border-radius:20px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 5%, var(--surface)) 0%,
+    var(--surface) 24%,
+    var(--surface-soft) 100%) !important;
+  box-shadow:
+    0 24px 60px rgba(15,23,42,.18),
+    0 8px 24px color-mix(in srgb, var(--station-color, var(--accent-2)) 10%, transparent) !important;
+  transform:none !important;
+  isolation:isolate !important;
+}
+#doganaSettingsPanel.doganaSettingsPanel.show{
+  display:block !important;
+}
+
+/* Linea top come appTopBar R22, con gradiente postazione -> celestino. */
+#doganaSettingsPanel.doganaSettingsPanel::before{
+  content:"" !important;
+  position:absolute !important;
+  z-index:5 !important;
+  top:0 !important;
+  left:24px !important;
+  right:24px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.78 !important;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 10%, transparent) 5%,
+    var(--station-color, var(--accent-2)) 24%,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 64%, #38bdf8) 58%,
+    #38bdf8 84%,
+    rgba(56,189,248,.08) 95%,
+    transparent 100%) !important;
+  box-shadow:
+    0 1px 5px color-mix(in srgb, var(--station-color, var(--accent-2)) 13%, transparent),
+    0 0 10px rgba(56,189,248,.06) !important;
+}
+
+#doganaSettingsPanel .doganaSettingsHead{
+  position:relative !important;
+  display:flex !important;
+  align-items:flex-start !important;
+  justify-content:space-between !important;
+  gap:14px !important;
+  padding:17px 18px 15px !important;
+  border-bottom:1px solid color-mix(in srgb, var(--station-color, var(--accent-2)) 12%, var(--grid-soft)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 6%, var(--surface)) 0%,
+    var(--surface) 100%) !important;
+}
+#doganaSettingsPanel .doganaSettingsTitle strong{
+  color:var(--heading) !important;
+  font-size:14px !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.07em !important;
+}
+#doganaSettingsPanel .doganaSettingsTitle span{
+  margin-top:3px !important;
+  color:var(--muted) !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+}
+#doganaSettingsPanel .doganaSettingsBody{
+  max-height:calc(100dvh - 168px) !important;
+  overflow:auto !important;
+  padding:14px 16px 16px !important;
+  gap:10px !important;
+  overscroll-behavior:contain !important;
+}
+#doganaSettingsPanel .doganaSettingCard{
+  border:1px solid color-mix(in srgb, var(--station-color, var(--accent-2)) 12%, var(--grid-soft)) !important;
+  border-radius:14px !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:0 5px 14px rgba(15,23,42,.035) !important;
+}
+#doganaSettingsPanel .doganaSettingCard:hover{
+  border-color:color-mix(in srgb, var(--station-color, var(--accent-2)) 26%, var(--grid-soft)) !important;
+}
+#doganaSettingsPanel .doganaSettingBadge,
+#doganaSettingsPanel .doganaSessionChip{
+  border-color:color-mix(in srgb, var(--station-color, var(--accent-2)) 28%, var(--grid-soft)) !important;
+  background:color-mix(in srgb, var(--station-color, var(--accent-2)) 8%, var(--surface)) !important;
+}
+
+/* Comandi del pannello: stessa visual UI, tonalità postazione. */
+#doganaSettingsPanel button:not(#doganaSettingsLogout){
+  border-color:color-mix(in srgb, var(--station-color, var(--accent-2)) 32%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 5%, var(--surface-soft)) 100%) !important;
+  color:color-mix(in srgb, var(--station-color, var(--accent-2)) 76%, var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 4px 11px color-mix(in srgb, var(--station-color, var(--accent-2)) 10%, transparent) !important;
+}
+#doganaSettingsPanel button:not(#doganaSettingsLogout):hover{
+  border-color:color-mix(in srgb, var(--station-color, var(--accent-2)) 50%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 19%, var(--surface)) 0%,
+    color-mix(in srgb, var(--station-color, var(--accent-2)) 8%, var(--surface-soft)) 100%) !important;
+}
+#doganaSettingsPanel #doganaSettingsLogout{
+  border-color:color-mix(in srgb, var(--danger) 36%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--danger) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--danger) 5%, var(--surface-soft)) 100%) !important;
+  color:var(--danger) !important;
+}
+
+body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel{
+  box-shadow:0 26px 64px rgba(0,0,0,.42), 0 8px 24px color-mix(in srgb, var(--station-color, var(--accent-2)) 8%, transparent) !important;
+}
+body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
+  opacity:.66 !important;
+  filter:saturate(.82) !important;
+}
+
+@media (max-width:700px){
+  #doganaSettingsPanel.doganaSettingsPanel{
+    top:12px !important;
+    right:12px !important;
+    left:12px !important;
+    width:auto !important;
+    max-width:none !important;
+    max-height:calc(100dvh - 24px) !important;
+  }
+  #doganaSettingsPanel .doganaSettingsBody{
+    max-height:calc(100dvh - 104px) !important;
+  }
+  #doganaSettingsPanel.doganaSettingsPanel::before{
+    left:16px !important;
+    right:16px !important;
+  }
+}
+</style>
+
+<script id="dogana-settings-overlay-position-r26">
+(function(){
+  function forceSettingsOverlayPosition(){
+    const panel = document.getElementById("doganaSettingsPanel");
+    const backdrop = document.getElementById("doganaSettingsBackdrop");
+    if (!panel || !backdrop) return;
+
+    /* Protezione anche contro eventuali vecchie regole CSS caricate dopo. */
+    panel.style.setProperty("position", "fixed", "important");
+    panel.style.setProperty("bottom", "auto", "important");
+    panel.style.setProperty("margin", "0", "important");
+    panel.style.setProperty("transform", "none", "important");
+    backdrop.style.setProperty("position", "fixed", "important");
+    backdrop.style.setProperty("inset", "0", "important");
+
+    if (window.matchMedia("(max-width: 700px)").matches){
+      panel.style.setProperty("top", "12px", "important");
+      panel.style.setProperty("right", "12px", "important");
+      panel.style.setProperty("left", "12px", "important");
+      return;
+    }
+
+    const settingsBtn = document.getElementById("doganaMenuSettingsBtn");
+    const rect = settingsBtn?.getBoundingClientRect?.();
+    const top = rect ? Math.max(12, Math.round(rect.bottom + 10)) : 74;
+    const right = rect ? Math.max(16, Math.round(window.innerWidth - rect.right)) : 24;
+    panel.style.setProperty("top", top + "px", "important");
+    panel.style.setProperty("right", right + "px", "important");
+    panel.style.setProperty("left", "auto", "important");
+  }
+
+  document.addEventListener("click", function(event){
+    if (!event.target.closest?.("#doganaMenuSettingsBtn, #doganaSettingsButton")) return;
+    setTimeout(forceSettingsOverlayPosition, 0);
+  }, true);
+
+  window.addEventListener("resize", function(){
+    if (document.getElementById("doganaSettingsPanel")?.classList.contains("show")) {
+      forceSettingsOverlayPosition();
+    }
+  });
+
+  const observer = new MutationObserver(function(){
+    const panel = document.getElementById("doganaSettingsPanel");
+    if (panel?.classList.contains("show")) forceSettingsOverlayPosition();
+  });
+  observer.observe(document.documentElement, {subtree:true, attributes:true, attributeFilter:["class"]});
+})();
+</script>
+<!-- R26-SETTINGS-OVERLAY-REAL -->
 
 </body>
 </html>
