@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R22 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:39 CEST | BUTTON-VISUAL-SYSTEM-R23 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R22 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R23 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R22"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R23"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R22";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R23";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R22</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R23</strong></a>
   </div>
 </footer>
 </section>
@@ -21314,7 +21314,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R22 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R23 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22697,5 +22697,227 @@ body[data-theme="dark"] .appTopBar::before{
 }
 </style>
 <!-- R22-TOPBAR-LINE-REFINED-REAL-DIFF -->
+
+
+<style id="dogana-module-toplines-r23">
+/* =========================================================
+   R23 — LINEE MODULI COME APP TOPBAR
+   Stessa geometria della .appTopBar::before R22:
+   linea 2px, inset 24px, estremità sfumate e glow leggero.
+   Cambia solo il gradiente in base al modulo.
+   ========================================================= */
+
+/* Base comune: intestazioni/pannelli che ospitano la linea. */
+#customs-ai-section.customsAiPanel,
+.doganaTableModuleCard .doganaTableTopToolbar,
+#extraPanel .miniHead,
+#extraPanel .extraHead,
+.organizeModulePanel .organizeModuleHead,
+.operativeChecklistPanel .operativeChecklistHead,
+.notificationPanel .notificationHead,
+.postItPanel .postItHead,
+#shipPanel .shipToolbar,
+.bookingStandalonePanel .bookingModuleHead,
+.serverConsolePanel .serverConsoleHead{
+  position:relative !important;
+  border-top:0 !important;
+  border-image:none !important;
+}
+
+/* Geometria comune, identica alla linea della topbar. */
+#customs-ai-section.customsAiPanel::before,
+.doganaTableModuleCard .doganaTableTopToolbar::before,
+#extraPanel .miniHead::before,
+#extraPanel .extraHead::before,
+.organizeModulePanel .organizeModuleHead::before,
+.operativeChecklistPanel .operativeChecklistHead::before,
+.notificationPanel .notificationHead::before,
+.postItPanel .postItHead::before,
+#shipPanel .shipToolbar::before,
+.bookingStandalonePanel .bookingModuleHead::before,
+.serverConsolePanel .serverConsoleHead::before{
+  content:"" !important;
+  position:absolute !important;
+  z-index:7 !important;
+  top:-1px !important;
+  left:24px !important;
+  right:24px !important;
+  width:auto !important;
+  height:2px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.72 !important;
+  filter:saturate(.88) !important;
+  transform:none !important;
+  background-size:100% 100% !important;
+  box-shadow:0 1px 5px rgba(15,23,42,.10) !important;
+}
+
+/* DOGANA AI — gradiente multicolor istituzionale del modulo. */
+#customs-ai-section.customsAiPanel::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.10) 4%,
+    #2563eb 14%,
+    #06b6d4 29%,
+    #22c55e 43%,
+    #f59e0b 57%,
+    #ec4899 71%,
+    #8b5cf6 86%,
+    rgba(37,99,235,.10) 96%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(56,189,248,.14), 0 0 10px rgba(139,92,246,.08) !important;
+}
+
+/* TABELLA — blu → celeste. */
+.doganaTableModuleCard .doganaTableTopToolbar::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.08) 5%,
+    #2563eb 22%,
+    #3b82f6 48%,
+    #38bdf8 78%,
+    rgba(56,189,248,.08) 95%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(37,99,235,.13), 0 0 9px rgba(56,189,248,.06) !important;
+}
+
+/* RICERCA CONTENITORI — celeste → verde. */
+#extraPanel .miniHead::before,
+#extraPanel .extraHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(14,165,233,.08) 5%,
+    #0ea5e9 22%,
+    #06b6d4 46%,
+    #10b981 72%,
+    #22c55e 88%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(6,182,212,.12), 0 0 9px rgba(34,197,94,.05) !important;
+}
+
+/* ORGANIZZA — viola → magenta. */
+.organizeModulePanel .organizeModuleHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(99,102,241,.08) 5%,
+    #6366f1 22%,
+    #8b5cf6 48%,
+    #a855f7 70%,
+    #ec4899 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(139,92,246,.12), 0 0 9px rgba(236,72,153,.05) !important;
+}
+
+/* CHECKLIST — emerald → ciano, più tenue. */
+.operativeChecklistPanel .operativeChecklistHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(16,185,129,.06) 7%,
+    #10b981 26%,
+    #14b8a6 54%,
+    #22d3ee 84%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(16,185,129,.10) !important;
+}
+
+/* NOTIFICHE — ambra → arancio. */
+.notificationPanel .notificationHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(245,158,11,.06) 7%,
+    #f59e0b 26%,
+    #f97316 58%,
+    #fb7185 86%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(245,158,11,.10) !important;
+}
+
+/* POST-IT — giallo oro → ambra. */
+.postItPanel .postItHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(234,179,8,.06) 7%,
+    #eab308 24%,
+    #facc15 52%,
+    #f59e0b 86%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(234,179,8,.09) !important;
+}
+
+/* PREVISIONE NAVI — ciano → blu oceano. */
+#shipPanel .shipToolbar::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(34,211,238,.07) 5%,
+    #22d3ee 20%,
+    #06b6d4 43%,
+    #0ea5e9 68%,
+    #2563eb 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(14,165,233,.12), 0 0 9px rgba(37,99,235,.05) !important;
+}
+
+/* BOOKING — ambra → arancio → corallo. */
+.bookingStandalonePanel .bookingModuleHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(245,158,11,.07) 5%,
+    #f59e0b 22%,
+    #f97316 50%,
+    #fb7185 82%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(249,115,22,.11), 0 0 9px rgba(251,113,133,.05) !important;
+}
+
+/* CONSOLE — slate → indaco. */
+.serverConsolePanel .serverConsoleHead::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(100,116,139,.07) 5%,
+    #64748b 20%,
+    #64748b 42%,
+    #6366f1 72%,
+    #818cf8 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(100,116,139,.10), 0 0 9px rgba(99,102,241,.05) !important;
+}
+
+body[data-theme="dark"] #customs-ai-section.customsAiPanel::before,
+body[data-theme="dark"] .doganaTableModuleCard .doganaTableTopToolbar::before,
+body[data-theme="dark"] #extraPanel .miniHead::before,
+body[data-theme="dark"] #extraPanel .extraHead::before,
+body[data-theme="dark"] .organizeModulePanel .organizeModuleHead::before,
+body[data-theme="dark"] .operativeChecklistPanel .operativeChecklistHead::before,
+body[data-theme="dark"] .notificationPanel .notificationHead::before,
+body[data-theme="dark"] .postItPanel .postItHead::before,
+body[data-theme="dark"] #shipPanel .shipToolbar::before,
+body[data-theme="dark"] .bookingStandalonePanel .bookingModuleHead::before,
+body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
+  opacity:.64 !important;
+  filter:saturate(.80) !important;
+}
+
+@media (max-width:700px){
+  #customs-ai-section.customsAiPanel::before,
+  .doganaTableModuleCard .doganaTableTopToolbar::before,
+  #extraPanel .miniHead::before,
+  #extraPanel .extraHead::before,
+  .organizeModulePanel .organizeModuleHead::before,
+  .operativeChecklistPanel .operativeChecklistHead::before,
+  .notificationPanel .notificationHead::before,
+  .postItPanel .postItHead::before,
+  #shipPanel .shipToolbar::before,
+  .bookingStandalonePanel .bookingModuleHead::before,
+  .serverConsolePanel .serverConsoleHead::before{
+    left:16px !important;
+    right:16px !important;
+    opacity:.62 !important;
+  }
+}
+</style>
+<!-- R23-MODULE-GRADIENT-LINES-REAL -->
+
 </body>
 </html>
