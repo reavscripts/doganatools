@@ -3,13 +3,13 @@
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R29 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R30 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R29"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R30"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R29";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R30";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8078,7 +8078,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R29</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R30</strong></a>
   </div>
 </footer>
 </div>
@@ -18723,7 +18723,8 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
       ensureExpandedForTarget(trigger.getAttribute("href") || "");
     }, true);
     window.addEventListener("hashchange", function(){ ensureExpandedForTarget(location.hash || ""); });
-    if (location.hash) ensureExpandedForTarget(location.hash);
+    // R30: al reload lo stato salvato ha priorità sull'hash già presente nell'URL.
+    // I click/hashchange successivi continuano ad espandere Organizza quando richiesto dall'utente.
     updateStats();
     setInterval(updateStats, 2000);
     window.doganaEnsureOrganizeExpanded = function(){ applyState(false); };
@@ -21316,7 +21317,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R29 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R30 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23683,7 +23684,7 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
 
 
 <style id="dogana-organizza-header-background-fix-r29">
-/* R29 — ORGANIZZA: header neutro, nessun background/gradient.
+/* R30 — ORGANIZZA: header neutro, nessun background/gradient.
    La sola identità cromatica resta affidata alla linea superiore. */
 #organizePanel.organizeModulePanel > .organizeModuleHead,
 #organizePanel.organizeModulePanel.is-minimized > .organizeModuleHead{
@@ -23691,5 +23692,31 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
   background-image:none !important;
 }
 </style>
+
+<style id="dogana-organizza-icon-memory-fix-r30">
+/* =========================================================
+   R30 — ORGANIZZA: niente icona DOGANA AI + persistenza stato
+   L'icona viene neutralizzata anche se definita dal tema esterno.
+   ========================================================= */
+body #organizePanel.organizeModulePanel .organizeModuleHead .organizeModuleTitle::before,
+body #organizePanel.organizeModulePanel .organizeModuleHead .organizeModuleTitle::after,
+body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::before,
+body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::after{
+  content:none !important;
+  display:none !important;
+  background:none !important;
+  background-image:none !important;
+  mask:none !important;
+  -webkit-mask:none !important;
+  box-shadow:none !important;
+}
+
+#organizePanel .organizeModuleTitle{
+  padding-left:0 !important;
+  margin-left:0 !important;
+  background-image:none !important;
+}
+</style>
+<!-- R30-ORGANIZZA-ICON-MEMORY-FIX -->
 </body>
 </html>
