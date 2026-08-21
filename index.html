@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 15:17 CEST | BUTTON-VISUAL-SYSTEM-R35 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 15:38 CEST | BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R35 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R35"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R35";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -4173,7 +4173,7 @@ background:var(--surface);
 }
 
 .extraPanel .autoCheckSwitch{
-  display:none !important;
+  display:inline-flex !important;
 }
 
 .extraAutoSingleButton{
@@ -7728,7 +7728,12 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
     </div>
     <div class="miniToolbar extraTopToolbar">
-      <span id="extraAutoDynamicBadge" class="extraAutoSingleInterval" title="Controllo automatico sempre attivo: SCT dinamico per numero di container, CONATECO/TFG ogni 3 minuti">SCT 3m · C/TFG 3m</span>
+      <span id="extraAutoDynamicBadge" class="extraAutoSingleInterval" title="SCT: 30 secondi per ogni riga · CONATECO/TFG ogni 3 minuti">SCT 30s/riga · C/TFG 3m</span>
+      <label id="extraAutoCheckSwitch" class="autoCheckSwitch extraAutoCheckToggle is-on" title="Attiva o disattiva la ricerca automatica contenitori">
+        <input id="extraAutoCheckToggle" type="checkbox" checked />
+        <span class="autoCheckSlider" aria-hidden="true"></span>
+        <span class="autoCheckText">Ricerca <strong id="extraAutoCheckToggleText">ON</strong></span>
+      </label>
       <button id="extraSoundNotifyBtn" class="soundNotifyBtn sound-off" type="button" title="Attiva/disattiva avviso sonoro">🔇 Suono OFF</button>
       <button id="extraCheckNowBtn" class="extraCheckNowMarked" type="button" style="display:none !important" aria-hidden="true" tabindex="-1">Controlla ora</button>
       <button id="minimizeExtraBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Contenitori" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
@@ -8078,7 +8083,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R35</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE</strong></a>
   </div>
 </footer>
 </div>
@@ -9633,10 +9638,9 @@ button.doganaModuleSvgToggleBtn:active,
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
-    // SCT: ciclo dinamico a scaglioni di 5 container.
-    // 1-5 = 3 min, 6-10 = 6 min, 11-15 = 9 min, ecc.
-    const EXTRA_SCT_AUTOCHECK_GROUP_SIZE = 5;
-    const EXTRA_SCT_AUTOCHECK_GROUP_MINUTES = 3;
+    // SCT: intervallo dinamico lineare. Ogni riga aggiunge 30 secondi.
+    // Esempi: 1 riga = 30s, 10 righe = 5m, 20 righe = 10m.
+    const EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW = 30;
     const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
@@ -9849,6 +9853,9 @@ button.doganaModuleSvgToggleBtn:active,
     const minimizeExtraBtn = document.getElementById("minimizeExtraBtn");
     const extraCheckNowBtn = document.getElementById("extraCheckNowBtn");
     const extraAutoStatus = document.getElementById("extraAutoStatus");
+    const extraAutoCheckSwitch = document.getElementById("extraAutoCheckSwitch");
+    const extraAutoCheckToggle = document.getElementById("extraAutoCheckToggle");
+    const extraAutoCheckToggleText = document.getElementById("extraAutoCheckToggleText");
     const renameExtraStationBtn = document.getElementById("renameExtraStationBtn");
     const extraLastCheckText = document.getElementById("extraLastCheckText");
     const extraNextCheckText = document.getElementById("extraNextCheckText");
@@ -10608,13 +10615,15 @@ button.doganaModuleSvgToggleBtn:active,
         // Il tab attivo è locale: applicarlo qui causava il ritorno automatico su SCT
         // dopo un click su CONATECO/TFG o dopo una sincronizzazione periodica.
 
-        // AUTO-CHECK CONTENITORI SEMPRE ATTIVO.
-        // Ignoriamo eventuali valori OFF rimasti in shared_state.json o inviati
-        // da frontend precedenti: SCT deve continuare il ciclo dinamico senza toggle.
-        const autoChanged = extraAutoCheckEnabled !== true;
-        extraAutoCheckEnabled = true;
-        extraAutoSavePendingValue = null;
-        extraAutoSavePendingSeq = 0;
+        // Toggle ricerca automatica condiviso tra le postazioni.
+        // Se è in corso un salvataggio locale, non sovrascriviamo temporaneamente
+        // l'intenzione dell'utente con uno stato remoto arrivato qualche ms prima.
+        const remoteAutoEnabled = state.extraAutoCheckEnabled !== false;
+        const desiredAutoEnabled = extraAutoSavePendingValue !== null
+          ? !!extraAutoSavePendingValue
+          : remoteAutoEnabled;
+        const autoChanged = extraAutoCheckEnabled !== desiredAutoEnabled;
+        extraAutoCheckEnabled = desiredAutoEnabled;
 
         const remoteLastChecks = normalizeExtraLastCheckMap(state.extraLastCheckAtByTerminal);
         const localLastChecks = normalizeExtraLastCheckMap(extraLastCheckAtByTerminal);
@@ -11701,17 +11710,18 @@ button.doganaModuleSvgToggleBtn:active,
       ).length;
     }
 
+    function getExtraAutoRowCount(terminalKey = "sct"){
+      return extraRows.filter(row => rowBelongsToTerminal(row, terminalKey)).length;
+    }
+
     function getExtraAutomaticCheckSeconds(){
-      const containerCount = getExtraAutoContainerCount();
-      // Ripristino logica SCT del 06/08/2026:
-      // 1-5 container = 3 min, 6-10 = 6 min, 11-15 = 9 min, ecc.
-      // Anche con lista vuota manteniamo il minimo tecnico di 3 minuti.
-      const groups = Math.max(1, Math.ceil(containerCount / EXTRA_SCT_AUTOCHECK_GROUP_SIZE));
-      return groups * EXTRA_SCT_AUTOCHECK_GROUP_MINUTES * 60;
+      // La cadenza SCT dipende dal NUMERO DI RIGHE, non dai soli container compilati.
+      // Ogni nuova riga aggiunge esattamente 30 secondi.
+      const rowCount = getExtraAutoRowCount("sct");
+      return Math.max(1, rowCount) * EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW;
     }
 
     function getExtraAutomaticCheckMinutes(){
-      // Compatibilità con eventuali componenti che leggono ancora il valore in minuti.
       return getExtraAutomaticCheckSeconds() / 60;
     }
 
@@ -11719,7 +11729,15 @@ button.doganaModuleSvgToggleBtn:active,
       return getExtraAutomaticCheckSeconds() * 1000;
     }
 
-    function armExtraAutoCheckTimer(){
+    function formatExtraIntervalCompact(seconds){
+      const total = Math.max(0, Math.round(Number(seconds || 0)));
+      if (total < 60) return `${total}s`;
+      const minutes = Math.floor(total / 60);
+      const rest = total % 60;
+      return rest ? `${minutes}m ${rest}s` : `${minutes}m`;
+    }
+
+    function clearExtraAutoCheckTimers(){
       if (extraAutoCheckTimer) {
         clearInterval(extraAutoCheckTimer);
         extraAutoCheckTimer = null;
@@ -11728,23 +11746,34 @@ button.doganaModuleSvgToggleBtn:active,
         clearInterval(extraFastAutoCheckTimer);
         extraFastAutoCheckTimer = null;
       }
+      extraAutoCheckScheduledInterval = null;
+    }
 
-      // Il controllo automatico è sempre attivo: nessun toggle ON/OFF.
-      extraAutoCheckEnabled = true;
+    function armExtraAutoCheckTimer(){
+      clearExtraAutoCheckTimers();
 
-      // SCT: intervallo a scaglioni di 5 container (3 minuti per scaglione).
+      if (!extraAutoCheckEnabled) {
+        extraNextCheckAt = null;
+        extraFastNextCheckAt = null;
+        updateExtraCheckInfo();
+        return;
+      }
+
+      // SCT: 30 secondi per ogni riga SCT.
       const sctInterval = getExtraEffectiveCheckInterval();
       extraAutoCheckScheduledInterval = sctInterval;
       extraNextCheckAt = Date.now() + sctInterval;
       extraAutoCheckTimer = setInterval(async () => {
+        if (!extraAutoCheckEnabled) return;
         await runAutoCheck("sct");
         extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
         updateExtraCheckInfo();
       }, sctInterval);
 
-      // CONATECO e TFG: non dipendono dal numero di righe e restano su un ciclo rapido fisso.
+      // CONATECO e TFG restano su ciclo rapido fisso: le verifiche sono istantanee.
       extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
       extraFastAutoCheckTimer = setInterval(async () => {
+        if (!extraAutoCheckEnabled) return;
         await runAutoCheckFastTerminals();
         extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
         updateExtraCheckInfo();
@@ -11752,7 +11781,14 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function refreshExtraAutoCheckSchedule(){
-      extraAutoCheckEnabled = true;
+      if (!extraAutoCheckEnabled) {
+        clearExtraAutoCheckTimers();
+        extraNextCheckAt = null;
+        extraFastNextCheckAt = null;
+        updateExtraCheckInfo();
+        return;
+      }
+
       const currentInterval = getExtraEffectiveCheckInterval();
       if (extraAutoCheckTimer && extraAutoCheckScheduledInterval === currentInterval) return;
       armExtraAutoCheckTimer();
@@ -11760,16 +11796,23 @@ button.doganaModuleSvgToggleBtn:active,
 
     function updateExtraCheckInfo(){
       const terminalLabel = EXTRA_TERMINALS?.[activeExtraTerminal]?.label || String(activeExtraTerminal || "sct").toUpperCase();
-      const sctContainerCount = getExtraAutoContainerCount();
+      const sctRowCount = getExtraAutoRowCount("sct");
       const sctSeconds = getExtraAutomaticCheckSeconds();
+      const sctIntervalLabel = formatExtraIntervalCompact(sctSeconds);
       const fastMinutes = Math.round(EXTRA_FAST_CHECK_INTERVAL / 60000);
-      const sctMinutes = Math.max(1, Math.round(sctSeconds / 60));
-      extraAutoCheckEnabled = true;
+
+      if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
+      if (extraAutoCheckToggleText) extraAutoCheckToggleText.textContent = extraAutoCheckEnabled ? "ON" : "OFF";
+      extraAutoCheckSwitch?.classList.toggle("is-on", !!extraAutoCheckEnabled);
+      extraAutoCheckSwitch?.classList.toggle("is-off", !extraAutoCheckEnabled);
+      extraAutoCheckSwitch?.setAttribute("title", extraAutoCheckEnabled
+        ? "Ricerca automatica attiva · clicca per disattivare"
+        : "Ricerca automatica disattivata · clicca per attivare");
 
       const dynamicBadge = document.getElementById("extraAutoDynamicBadge");
       if (dynamicBadge) {
-        dynamicBadge.textContent = `SCT ${sctMinutes}m · C/TFG ${fastMinutes}m`;
-        dynamicBadge.title = `${sctContainerCount} container SCT: prossimo ciclo ogni ${sctMinutes} min · CONATECO/TFG ogni ${fastMinutes} min`;
+        dynamicBadge.textContent = `SCT ${sctIntervalLabel} · ${sctRowCount} ${sctRowCount === 1 ? "riga" : "righe"} · C/TFG ${fastMinutes}m`;
+        dynamicBadge.title = `${sctRowCount} righe SCT × 30 secondi = controllo ogni ${sctIntervalLabel}. CONATECO/TFG ogni ${fastMinutes} min.`;
       }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
@@ -11777,17 +11820,27 @@ button.doganaModuleSvgToggleBtn:active,
       if (extraLastCheckText) extraLastCheckText.textContent = activeLastCheckAt ? formatExtraClock(activeLastCheckAt) : "mai eseguito";
       extraLastCheckDot?.classList.toggle("ok", !!activeLastCheckAt);
 
+      if (!extraAutoCheckEnabled) {
+        if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
+        extraNextCheckDot?.classList.remove("ok");
+        if (extraAutoStatus) {
+          extraAutoStatus.textContent = `Ricerca automatica disattivata. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`;
+        }
+        return;
+      }
+
       if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
       if (!extraFastNextCheckAt) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
 
       const nextAt = activeExtraTerminal === "sct" ? extraNextCheckAt : extraFastNextCheckAt;
       const remaining = Math.max(0, nextAt - Date.now());
       if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
+      extraNextCheckDot?.classList.add("ok");
 
       if (extraAutoStatus) {
         extraAutoStatus.textContent = activeLastCheckAt
-          ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`
-          : `Controllo automatico sempre attivo. SCT: ${sctContainerCount} container / ${sctMinutes} min · CONATECO/TFG: ${fastMinutes} min.`;
+          ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`
+          : `Ricerca automatica attiva. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`;
       }
     }
 
@@ -11800,14 +11853,34 @@ button.doganaModuleSvgToggleBtn:active,
       extraCountdownTimer = setInterval(updateExtraCheckInfo, 1000);
     }
 
-    function setExtraAutoCheck(_enabled, options = {}){
-      // Compatibilità con chiamate di versioni precedenti: non è più possibile
-      // disattivare il controllo automatico dal frontend.
-      extraAutoCheckEnabled = true;
-      armExtraAutoCheckTimer();
+    function setExtraAutoCheck(enabled, options = {}){
+      const nextEnabled = enabled !== false;
+      const changed = extraAutoCheckEnabled !== nextEnabled;
+      extraAutoCheckEnabled = nextEnabled;
+
+      if (extraAutoCheckEnabled) {
+        armExtraAutoCheckTimer();
+      } else {
+        clearExtraAutoCheckTimers();
+        extraNextCheckAt = null;
+        extraFastNextCheckAt = null;
+      }
+
       restartExtraCountdownTimer();
       updateAutoCheckUI();
+
+      if (changed && !options.skipSave) {
+        scheduleSharedMetaSave({
+          includeAuto: true,
+          includeLastChecks: false,
+          immediate: true
+        });
+      }
     }
+
+    extraAutoCheckToggle?.addEventListener("change", () => {
+      setExtraAutoCheck(!!extraAutoCheckToggle.checked);
+    });
 
     addExtraRowBtn?.addEventListener("click", () => addExtraRows(1, true));
     addExtra10Btn?.addEventListener("click", () => addExtraRows(10, true));
@@ -11929,7 +12002,7 @@ button.doganaModuleSvgToggleBtn:active,
         showExtraToast("Backend condiviso non raggiungibile: cache locale contenitori disattivata.");
       }
 
-      setExtraAutoCheck(true, { skipSave: true });
+      setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true });
     })();
 
     // Aggiorna periodicamente dagli altri client, senza scaricare nuovamente i dati dai terminal.
@@ -13380,11 +13453,12 @@ window.runExtraAutoCheck = runAutoCheckAllTerminals;
 window.checkExtraAllRows = runAutoCheckAllTerminals;
 window.checkExtraContainers = runAutoCheckAllTerminals;
 window.doganaSetExtraAutoCheck = setExtraAutoCheck;
-window.doganaGetExtraAutoCheckEnabled = () => true;
+window.doganaGetExtraAutoCheckEnabled = () => !!extraAutoCheckEnabled;
 window.doganaGetExtraAutoIntervalMs = getExtraEffectiveCheckInterval;
 window.doganaGetExtraAutoSeconds = getExtraAutomaticCheckSeconds;
 window.doganaGetExtraAutoMinutes = getExtraAutomaticCheckMinutes;
 window.doganaGetExtraAutoContainerCount = getExtraAutoContainerCount;
+window.doganaGetExtraAutoRowCount = getExtraAutoRowCount;
 window.doganaRefreshExtraAutoSchedule = refreshExtraAutoCheckSchedule;
 window.doganaUpdateExtraCheckInfo = updateExtraCheckInfo;
 
@@ -21317,7 +21391,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R35 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24259,6 +24333,61 @@ body[data-theme="dark"] .appQuickNav .appNavDropdown #organizeNavToggle[aria-exp
 }
 </style>
 <!-- R35-ORGANIZZA-HOVER-SKY-ACCENT-GLOW -->
+
+
+<style id="dogana-extra-autocheck-toggle-r36">
+/* R36 — Ricerca Contenitori: toggle ricerca automatica + timer 30s per riga SCT */
+#extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:8px !important;
+  min-height:36px !important;
+  height:36px !important;
+  padding:6px 10px !important;
+  border-radius:12px !important;
+  border:1px solid color-mix(in srgb, #64748b 30%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, #64748b 7%, var(--surface)) 0%,
+    color-mix(in srgb, #64748b 3%, var(--surface)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.65), 0 4px 12px rgba(15,23,42,.05) !important;
+  cursor:pointer !important;
+  user-select:none !important;
+}
+#extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle.is-on{
+  border-color:color-mix(in srgb, #16a34a 42%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, #16a34a 10%, var(--surface)) 0%,
+    color-mix(in srgb, #16a34a 4%, var(--surface)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.68), 0 4px 12px rgba(22,163,74,.08) !important;
+}
+#extraPanel #extraAutoCheckSwitch .autoCheckSlider{
+  width:40px !important;
+  height:22px !important;
+  flex:0 0 40px !important;
+}
+#extraPanel #extraAutoCheckSwitch .autoCheckSlider::after{
+  width:16px !important;
+  height:16px !important;
+}
+#extraPanel #extraAutoCheckSwitch input:checked + .autoCheckSlider::after{
+  transform:translateX(18px) !important;
+}
+#extraPanel #extraAutoCheckSwitch .autoCheckText{
+  font-size:10.8px !important;
+  letter-spacing:.055em !important;
+}
+#extraPanel #extraAutoCheckSwitch.is-on .autoCheckText strong{ color:#15803d !important; }
+#extraPanel #extraAutoCheckSwitch.is-off .autoCheckText strong{ color:var(--muted) !important; }
+body[data-theme="dark"] #extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 5px 14px rgba(0,0,0,.16) !important;
+}
+#extraPanel.is-minimized #extraAutoCheckSwitch,
+#extraPanel.minimized #extraAutoCheckSwitch,
+.extraPanel.is-minimized #extraAutoCheckSwitch,
+.extraPanel.minimized #extraAutoCheckSwitch{
+  display:none !important;
+}
+</style>
 
 </body>
 </html>
