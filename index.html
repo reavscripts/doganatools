@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:57 CEST | BUTTON-VISUAL-SYSTEM-R26 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 14:43 CEST | BUTTON-VISUAL-SYSTEM-R32 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R31 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R32 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R31"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R32"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R31";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R32";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8078,7 +8078,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R31</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R32</strong></a>
   </div>
 </footer>
 </div>
@@ -21317,7 +21317,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R31 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R32 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23750,5 +23750,380 @@ body[data-theme="dark"] .appQuickNav #organizeNavToggle{
     color-mix(in srgb, var(--topnav-sky, #38bdf8) 6%, var(--surface-soft)) 100%) !important;
 }
 </style>
+
+
+<style id="dogana-user-accent-r32">
+/* =========================================================
+   R32 — COLORE ACCENT PERSONALIZZABILE
+   L'accent scelto influenza:
+   - colore postazione/sessione
+   - hover comune di tutti i pulsanti
+   - pulsanti riduci/mostra modulo
+   I colori semantici di base (danger/success/etc.) restano intatti.
+   ========================================================= */
+:root{
+  --dogana-user-accent:#2563eb;
+}
+
+/* Selettore colore nelle Impostazioni */
+#doganaSettingsPanel .doganaAccentSettingCard{
+  gap:12px !important;
+}
+#doganaSettingsPanel .doganaAccentPickerWrap{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  gap:9px !important;
+  flex-wrap:wrap !important;
+}
+#doganaSettingsPanel .doganaAccentPicker{
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  min-height:38px !important;
+  padding:5px 10px 5px 6px !important;
+  border:1px solid color-mix(in srgb, var(--dogana-user-accent) 34%, var(--btn-border)) !important;
+  border-radius:12px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 8%, var(--surface)) 0%,
+    var(--surface) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.72), 0 3px 9px color-mix(in srgb, var(--dogana-user-accent) 7%, transparent) !important;
+  cursor:pointer !important;
+}
+#doganaSettingsPanel #doganaAccentColorInput{
+  width:30px !important;
+  height:30px !important;
+  min-width:30px !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:9px !important;
+  background:transparent !important;
+  cursor:pointer !important;
+  overflow:hidden !important;
+  box-shadow:none !important;
+}
+#doganaSettingsPanel #doganaAccentColorInput::-webkit-color-swatch-wrapper{
+  padding:0 !important;
+}
+#doganaSettingsPanel #doganaAccentColorInput::-webkit-color-swatch{
+  border:1px solid color-mix(in srgb, var(--dogana-user-accent) 42%, var(--btn-border)) !important;
+  border-radius:8px !important;
+}
+#doganaSettingsPanel #doganaAccentColorInput::-moz-color-swatch{
+  border:1px solid color-mix(in srgb, var(--dogana-user-accent) 42%, var(--btn-border)) !important;
+  border-radius:8px !important;
+}
+#doganaSettingsPanel .doganaAccentHex{
+  min-width:70px !important;
+  color:var(--heading) !important;
+  font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  letter-spacing:.03em !important;
+  text-transform:uppercase !important;
+}
+#doganaSettingsPanel .doganaAccentPreviewDot{
+  width:9px !important;
+  height:9px !important;
+  border-radius:999px !important;
+  background:var(--dogana-user-accent) !important;
+  box-shadow:0 0 0 4px color-mix(in srgb, var(--dogana-user-accent) 16%, transparent) !important;
+  flex:0 0 9px !important;
+}
+
+/* Hover globale: l'accent modifica il feedback senza cancellare
+   il colore funzionale di base del pulsante. */
+body button:not(:disabled):hover,
+body input[type="button"]:not(:disabled):hover,
+body input[type="submit"]:not(:disabled):hover,
+body input[type="reset"]:not(:disabled):hover,
+body [role="button"]:hover,
+body .appQuickNav > a:hover{
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 54%, var(--btn-border)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent),
+    0 7px 16px color-mix(in srgb, var(--dogana-user-accent) 15%, transparent) !important;
+}
+body[data-theme="dark"] button:not(:disabled):hover,
+body[data-theme="dark"] input[type="button"]:not(:disabled):hover,
+body[data-theme="dark"] input[type="submit"]:not(:disabled):hover,
+body[data-theme="dark"] input[type="reset"]:not(:disabled):hover,
+body[data-theme="dark"] [role="button"]:hover,
+body[data-theme="dark"] .appQuickNav > a:hover{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 12%, transparent),
+    0 7px 17px color-mix(in srgb, var(--dogana-user-accent) 17%, transparent) !important;
+}
+
+/* Toggle moduli: sostituisce definitivamente il lilla fisso di R28. */
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#notificationToggleBtn.doganaModuleSvgToggleBtn,
+#postItToggleBtn.doganaModuleSvgToggleBtn,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+#serverConsoleToggle.doganaModuleSvgToggleBtn,
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
+.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
+#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  --dogana-btn-tone:var(--dogana-user-accent) !important;
+  color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 3%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 3px 9px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent) !important;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn:hover,
+#organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:hover,
+#notificationToggleBtn.doganaModuleSvgToggleBtn:hover,
+#postItToggleBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
+#serverConsoleToggle.doganaModuleSvgToggleBtn:hover{
+  color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 6%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.90),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 10%, transparent),
+    0 6px 14px color-mix(in srgb, var(--dogana-user-accent) 16%, transparent) !important;
+}
+
+body[data-theme="dark"] #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  color:color-mix(in srgb, var(--dogana-user-accent) 56%, #f8fafc) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 5%, var(--surface)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 10px rgba(0,0,0,.16) !important;
+}
+</style>
+
+<script id="dogana-user-accent-script-r32">
+(function(){
+  const ACCENT_KEY = "doganatools_ui_accent_v1";
+  const STATION_COLOR_KEY = "dogana_multi_client_color_v3";
+  const FALLBACK = "#2563eb";
+
+  function normalizeHex(value){
+    const raw = String(value || "").trim();
+    if (/^#[0-9a-f]{6}$/i.test(raw)) return raw.toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(raw)) {
+      return ("#" + raw.slice(1).split("").map(ch => ch + ch).join("")).toLowerCase();
+    }
+    return "";
+  }
+
+  function cssColorToHex(value){
+    const direct = normalizeHex(value);
+    if (direct) return direct;
+    if (!document.body) return "";
+    const probe = document.createElement("span");
+    probe.style.cssText = "position:fixed;left:-9999px;top:-9999px;visibility:hidden;color:" + String(value || "") + ";";
+    document.body.appendChild(probe);
+    const rgb = getComputedStyle(probe).color;
+    probe.remove();
+    const match = rgb.match(/rgba?\(\s*(\d+(?:\.\d+)?)\s*[, ]\s*(\d+(?:\.\d+)?)\s*[, ]\s*(\d+(?:\.\d+)?)/i);
+    if (!match) return "";
+    const hex = [match[1], match[2], match[3]].map(v => {
+      const n = Math.max(0, Math.min(255, Math.round(Number(v))));
+      return n.toString(16).padStart(2, "0");
+    }).join("");
+    return "#" + hex;
+  }
+
+  function readAccent(){
+    try {
+      const saved = normalizeHex(localStorage.getItem(ACCENT_KEY));
+      if (saved) return saved;
+      const station = localStorage.getItem(STATION_COLOR_KEY);
+      const stationHex = cssColorToHex(station);
+      if (stationHex) return stationHex;
+    } catch {}
+    const cssAccent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+    return cssColorToHex(cssAccent) || FALLBACK;
+  }
+
+  function refreshAccentControl(color){
+    const hex = normalizeHex(color) || FALLBACK;
+    const input = document.getElementById("doganaAccentColorInput");
+    const value = document.getElementById("doganaAccentColorValue");
+    if (input && input.value.toLowerCase() !== hex) input.value = hex;
+    if (value) value.textContent = hex.toUpperCase();
+  }
+
+  function applyAccent(value, persist){
+    const color = normalizeHex(value) || cssColorToHex(value) || FALLBACK;
+    const root = document.documentElement;
+    root.style.setProperty("--dogana-user-accent", color);
+    root.style.setProperty("--station-color", color);
+    root.style.setProperty("--session-color", color);
+
+    const nav = document.querySelector(".appQuickNav");
+    nav?.style.setProperty("--station-color", color);
+
+    const settingsPanel = document.getElementById("doganaSettingsPanel");
+    settingsPanel?.style.setProperty("--station-color", color);
+
+    const sessionBtn = document.getElementById("doganaMenuSessionSync");
+    sessionBtn?.style.setProperty("--session-color", color);
+
+    document.querySelectorAll(".doganaSessionChip, #extraLiveBadge, .extraLiveBadge, .appSessionSync").forEach(el => {
+      el.style.setProperty("--session-color", color);
+      el.style.setProperty("--station-color", color);
+    });
+
+    if (window.DOGANA_MULTIUSER && typeof window.DOGANA_MULTIUSER === "object") {
+      window.DOGANA_MULTIUSER.clientColor = color;
+    }
+
+    if (persist !== false) {
+      try {
+        localStorage.setItem(ACCENT_KEY, color);
+        /* Il colore accent diventa anche il colore della postazione. */
+        localStorage.setItem(STATION_COLOR_KEY, color);
+      } catch {}
+    }
+
+    refreshAccentControl(color);
+    window.dispatchEvent(new CustomEvent("dogana-accent-change", { detail:{ color } }));
+    return color;
+  }
+
+  function installAccentSetting(){
+    const panel = document.getElementById("doganaSettingsPanel");
+    const body = panel?.querySelector(".doganaSettingsBody");
+    if (!panel || !body) return false;
+
+    if (!document.getElementById("doganaAccentSettingCard")) {
+      const card = document.createElement("div");
+      card.className = "doganaSettingCard doganaSettingCardColumn doganaAccentSettingCard";
+      card.id = "doganaAccentSettingCard";
+      card.innerHTML = `
+        <div class="doganaSettingRow">
+          <div class="doganaSettingInfo">
+            <strong>Colore accent</strong>
+            <span>Personalizza colore postazione, hover dei pulsanti e comandi riduci/mostra.</span>
+          </div>
+          <div class="doganaAccentPickerWrap">
+            <span class="doganaAccentPreviewDot" aria-hidden="true"></span>
+            <label class="doganaAccentPicker" for="doganaAccentColorInput" title="Scegli colore accent">
+              <input type="color" id="doganaAccentColorInput" aria-label="Colore accent" />
+              <span class="doganaAccentHex" id="doganaAccentColorValue">#2563EB</span>
+            </label>
+          </div>
+        </div>`;
+
+      const themeCard = panel.querySelector("#doganaThemeToggleSettings")?.closest(".doganaSettingCard");
+      if (themeCard?.parentNode === body) body.insertBefore(card, themeCard);
+      else body.appendChild(card);
+
+      const input = card.querySelector("#doganaAccentColorInput");
+      input?.addEventListener("input", event => applyAccent(event.target.value, true));
+      input?.addEventListener("change", event => applyAccent(event.target.value, true));
+    }
+
+    panel.style.setProperty("--station-color", readAccent());
+    refreshAccentControl(readAccent());
+    return true;
+  }
+
+  function init(){
+    const color = applyAccent(readAccent(), false);
+    /* Salva il colore corrente anche come colore postazione per le successive
+       inizializzazioni/rename già esistenti nel codice. */
+    try { localStorage.setItem(STATION_COLOR_KEY, color); } catch {}
+
+    if (!installAccentSetting()) {
+      const observer = new MutationObserver(() => {
+        if (installAccentSetting()) observer.disconnect();
+      });
+      observer.observe(document.documentElement, { childList:true, subtree:true });
+      setTimeout(() => observer.disconnect(), 15000);
+    }
+
+    const oldRefresh = window.doganaRefreshSettingsPanel;
+    if (!oldRefresh?.__doganaAccentWrapped) {
+      const wrapped = function(){
+        try { oldRefresh?.apply(this, arguments); } catch {}
+        installAccentSetting();
+        refreshAccentControl(readAccent());
+      };
+      wrapped.__doganaAccentWrapped = true;
+      window.doganaRefreshSettingsPanel = wrapped;
+    }
+
+    /* Hover runtime: garantisce l'accent anche sui pulsanti che hanno vecchi
+       selettori CSS con ID/!important più specifici. Al mouse-out ripristina
+       esattamente lo stile inline precedente. */
+    const hoverBackup = new WeakMap();
+    function getHoverTarget(node){
+      return node?.closest?.('button, input[type="button"], input[type="submit"], input[type="reset"], [role="button"], .appQuickNav > a') || null;
+    }
+    document.addEventListener("pointerover", event => {
+      const el = getHoverTarget(event.target);
+      if (!el || el.disabled || el.contains(event.relatedTarget)) return;
+      if (!hoverBackup.has(el)) {
+        hoverBackup.set(el, {
+          borderColor: el.style.getPropertyValue("border-color"),
+          borderPriority: el.style.getPropertyPriority("border-color"),
+          boxShadow: el.style.getPropertyValue("box-shadow"),
+          shadowPriority: el.style.getPropertyPriority("box-shadow")
+        });
+      }
+      el.style.setProperty("border-color", "color-mix(in srgb, var(--dogana-user-accent) 54%, var(--btn-border))", "important");
+      el.style.setProperty("box-shadow", "inset 0 1px 0 rgba(255,255,255,.78), 0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent), 0 7px 16px color-mix(in srgb, var(--dogana-user-accent) 15%, transparent)", "important");
+    }, true);
+    document.addEventListener("pointerout", event => {
+      const el = getHoverTarget(event.target);
+      if (!el || el.contains(event.relatedTarget)) return;
+      const old = hoverBackup.get(el);
+      if (!old) return;
+      if (old.borderColor) el.style.setProperty("border-color", old.borderColor, old.borderPriority);
+      else el.style.removeProperty("border-color");
+      if (old.boxShadow) el.style.setProperty("box-shadow", old.boxShadow, old.shadowPriority);
+      else el.style.removeProperty("box-shadow");
+      hoverBackup.delete(el);
+    }, true);
+
+    window.DOGANA_SET_ACCENT_COLOR = colorValue => applyAccent(colorValue, true);
+    window.DOGANA_GET_ACCENT_COLOR = () => readAccent();
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init, { once:true });
+  else init();
+})();
+</script>
+<!-- R32-ACCENT-COLOR-SETTINGS-HOVER-TOGGLES -->
+
 </body>
 </html>
