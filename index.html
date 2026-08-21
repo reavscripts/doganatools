@@ -3,7 +3,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-20-sct-auto-dynamic-restore-r11"/>
+<meta name="doganatools-build" content="2026-08-21-ui-bars-cooldown-r12"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -7955,7 +7955,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.19-POSTIT-DESKTOP-R10</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-UI-BARS-COOLDOWN-R12</strong></a>
   </div>
 </footer>
 </section>
@@ -21193,7 +21193,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.19-POSTIT-DESKTOP-R10 con una semplice data.
+    // v2026.08.21-UI-BARS-COOLDOWN-R12 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -21228,6 +21228,322 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   }
 })();
 </script>
+
+
+<style id="dogana-ui-bars-cooldown-r12">
+/* =========================================================
+   UI R12 — ACCENTI MODULI + COOLDOWN RICERCA CONTENITORI
+   DOGANA AI resta l'unico modulo con linea multicolor.
+   Gli altri moduli usano una firma monocromatica differente.
+   ========================================================= */
+
+/* --- DOGANA AI: unica linea multicolor --- */
+#customs-ai-section.customsAiPanel{
+  position:relative !important;
+  overflow:hidden !important;
+}
+#customs-ai-section.customsAiPanel::before{
+  content:"";
+  position:absolute;
+  z-index:8;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    #2563eb 0%,
+    #06b6d4 18%,
+    #22c55e 36%,
+    #f59e0b 55%,
+    #ec4899 74%,
+    #8b5cf6 90%,
+    #2563eb 100%);
+  box-shadow:0 1px 8px rgba(99,102,241,.26);
+}
+
+/* Tutte le altre barre: base neutra, niente bordo arcobaleno ereditato. */
+.doganaTableModuleCard .doganaTableTopToolbar,
+#extraPanel .miniHead,
+#extraPanel .extraHead,
+.organizeModulePanel .organizeModuleHead,
+.operativeChecklistPanel .operativeChecklistHead,
+.notificationPanel .notificationHead,
+.postItPanel .postItHead,
+#shipPanel .shipToolbar,
+.bookingStandalonePanel .bookingModuleHead,
+.serverConsolePanel .serverConsoleHead{
+  position:relative !important;
+  border-top:0 !important;
+  border-image:none !important;
+}
+
+/* --- Barra superiore dei moduli: multicolor solo su DOGANA AI --- */
+.appQuickNav > a,
+.appQuickNav .appNavDropdownToggle{
+  border:1px solid var(--btn-border) !important;
+  border-image:none !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+}
+
+/* DOGANA AI: unico comando della barra con bordo multicolor. */
+.appQuickNav > a[href="#customs-ai-section"]{
+  border:1px solid transparent !important;
+  background:
+    linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) padding-box,
+    linear-gradient(100deg, #2563eb, #06b6d4, #22c55e, #f59e0b, #ec4899, #8b5cf6) border-box !important;
+  box-shadow:0 5px 14px rgba(99,102,241,.10) !important;
+}
+
+/* Gli altri comandi hanno firme diverse ma monocromatiche e molto più sobrie. */
+.appQuickNav > a[href="#dogana-section"]{
+  box-shadow:inset 0 -2px 0 rgba(37,99,235,.72), 0 4px 12px rgba(15,23,42,.04) !important;
+}
+.appQuickNav > a[href="#extraPanel"]{
+  box-shadow:inset 3px 0 0 rgba(22,163,74,.72), 0 4px 12px rgba(15,23,42,.04) !important;
+}
+.appQuickNav .appNavDropdownToggle{
+  box-shadow:inset 0 -2px 0 rgba(124,58,237,.62), 0 4px 12px rgba(15,23,42,.04) !important;
+}
+.appQuickNav > a[href="#navi-section"]{
+  box-shadow:inset 0 -2px 0 rgba(14,165,233,.68), 0 4px 12px rgba(15,23,42,.04) !important;
+}
+.appQuickNav > a[href="#bookingLookupPanel"]{
+  box-shadow:inset -3px 0 0 rgba(245,158,11,.72), 0 4px 12px rgba(15,23,42,.04) !important;
+}
+
+/* Firma TABELLA: fascio blu centrale. */
+.doganaTableModuleCard .doganaTableTopToolbar::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.18) 16%,
+    #2563eb 50%,
+    rgba(37,99,235,.18) 84%,
+    transparent 100%);
+  box-shadow:0 1px 7px rgba(37,99,235,.16);
+}
+
+/* Firma CONTENITORI: linea verde con “segnale” centrale. */
+#extraPanel .miniHead::before,
+#extraPanel .extraHead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(22,163,74,.18) 10%,
+    rgba(22,163,74,.42) 32%,
+    #16a34a 48%,
+    #22c55e 52%,
+    rgba(22,163,74,.42) 68%,
+    rgba(22,163,74,.18) 90%,
+    transparent 100%);
+  box-shadow:0 1px 7px rgba(22,163,74,.14);
+}
+
+/* Firma ORGANIZZA: tre segmenti viola, richiamo ai tre sottomoduli. */
+.organizeModulePanel .organizeModuleHead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    transparent 0 7%,
+    rgba(124,58,237,.86) 7% 29%,
+    transparent 29% 38%,
+    rgba(124,58,237,.58) 38% 62%,
+    transparent 62% 71%,
+    rgba(124,58,237,.86) 71% 93%,
+    transparent 93% 100%);
+  box-shadow:0 1px 6px rgba(124,58,237,.12);
+}
+
+/* Sottomoduli Organizza: accenti singoli e sobri. */
+.operativeChecklistPanel .operativeChecklistHead::before,
+.notificationPanel .notificationHead::before,
+.postItPanel .postItHead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:16px;
+  right:16px;
+  height:2px;
+  border-radius:999px;
+  pointer-events:none;
+}
+.operativeChecklistPanel .operativeChecklistHead::before{
+  background:linear-gradient(90deg, transparent, rgba(16,185,129,.86), transparent);
+}
+.notificationPanel .notificationHead::before{
+  background:linear-gradient(90deg, transparent, rgba(245,158,11,.88), transparent);
+}
+.postItPanel .postItHead::before{
+  background:linear-gradient(90deg, transparent, rgba(234,179,8,.82), transparent);
+}
+
+/* Firma NAVI: piccoli tratti “radar”, sempre monocromatici. */
+#shipPanel .shipToolbar::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    rgba(14,165,233,.08) 0 10px,
+    rgba(14,165,233,.78) 10px 28px,
+    rgba(14,165,233,.08) 28px 42px);
+  opacity:.82;
+}
+
+/* Firma BOOKING: luce ambra concentrata sul lato operativo. */
+.bookingStandalonePanel .bookingModuleHead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:linear-gradient(90deg,
+    #f59e0b 0%,
+    rgba(245,158,11,.72) 18%,
+    rgba(245,158,11,.18) 58%,
+    transparent 100%);
+}
+
+/* Firma CONSOLE: scanline discreta color slate. */
+.serverConsolePanel .serverConsoleHead::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:2px;
+  pointer-events:none;
+  background:repeating-linear-gradient(90deg,
+    rgba(100,116,139,.78) 0 18px,
+    rgba(100,116,139,.12) 18px 28px);
+}
+
+/* --- Ricerca Contenitori: badge intervallo/cooldown ripristinato --- */
+#extraPanel .extraTopToolbar #extraAutoDynamicBadge.extraAutoSingleInterval{
+  position:relative !important;
+  order:10 !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:8px !important;
+  min-height:38px !important;
+  height:38px !important;
+  padding:0 12px 0 9px !important;
+  border:1px solid color-mix(in srgb, var(--accent) 38%, var(--btn-border)) !important;
+  border-radius:12px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--accent) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--accent) 4%, var(--surface)) 100%) !important;
+  color:var(--heading) !important;
+  font-family:var(--dogana-button-title-font, var(--font)) !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  letter-spacing:.055em !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 5px 14px rgba(37,99,235,.09) !important;
+  cursor:default !important;
+  user-select:none !important;
+}
+
+#extraPanel .extraTopToolbar #extraAutoDynamicBadge.extraAutoSingleInterval::before{
+  content:"⏱";
+  width:24px;
+  height:24px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 24px;
+  border-radius:8px;
+  background:color-mix(in srgb, var(--accent) 14%, var(--surface));
+  color:var(--accent);
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--accent) 20%, transparent);
+  font-size:13px;
+  line-height:1;
+  letter-spacing:0;
+}
+
+/* Il vero countdown “Prossimo” torna a distinguersi dagli altri box informativi. */
+#extraPanel .extraTabs .extraCheckInfoItem:nth-child(2){
+  border-color:color-mix(in srgb, #f59e0b 38%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, #f59e0b 8%, var(--surface)) 0%,
+    color-mix(in srgb, #f59e0b 3%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.68),
+    0 4px 12px rgba(245,158,11,.07) !important;
+}
+
+#extraPanel #extraNextCheckText{
+  color:color-mix(in srgb, #d97706 88%, var(--heading)) !important;
+  font-variant-numeric:tabular-nums !important;
+  letter-spacing:.035em !important;
+}
+
+body[data-theme="dark"] #extraPanel .extraTopToolbar #extraAutoDynamicBadge.extraAutoSingleInterval{
+  border-color:color-mix(in srgb, var(--accent) 46%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--accent) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--accent) 6%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 5px 14px rgba(0,0,0,.18) !important;
+}
+
+body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem:nth-child(2){
+  border-color:color-mix(in srgb, #f59e0b 42%, var(--btn-border)) !important;
+  background:color-mix(in srgb, #f59e0b 7%, var(--surface)) !important;
+}
+
+/* Stato ridotto: il badge cooldown non deve occupare spazio; resta solo l'icona espandi. */
+#extraPanel.is-minimized #extraAutoDynamicBadge,
+#extraPanel.minimized #extraAutoDynamicBadge,
+.extraPanel.is-minimized #extraAutoDynamicBadge,
+.extraPanel.minimized #extraAutoDynamicBadge{
+  display:none !important;
+}
+
+@media (max-width:700px){
+  #extraPanel .extraTopToolbar #extraAutoDynamicBadge.extraAutoSingleInterval{
+    min-height:36px !important;
+    height:36px !important;
+    padding:0 10px 0 8px !important;
+    font-size:10.5px !important;
+  }
+  #extraPanel .extraTopToolbar #extraAutoDynamicBadge.extraAutoSingleInterval::before{
+    width:22px;
+    height:22px;
+    flex-basis:22px;
+    font-size:12px;
+  }
+}
+</style>
 
 </body>
 </html>
