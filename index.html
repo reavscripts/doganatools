@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:34 CEST | BUTTON-VISUAL-SYSTEM-R15 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:50 CEST | BUTTON-VISUAL-SYSTEM-R16 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R15 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R16 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R15"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R16"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R15";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R16";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7260,6 +7260,94 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
 }
 </style>
 
+
+
+<style id="dogana-extra-info-visual-system-r16">
+/* === R16: Ricerca Contenitori - Ultimo controllo / Prossimo / Terminal nello stesso Visual System === */
+#extraPanel .extraTabs .extraCheckInfoItem{
+  position:relative !important;
+  min-height:40px !important;
+  border-radius:12px !important;
+  font-family:var(--dogana-button-title-font, var(--font)) !important;
+  font-weight:900 !important;
+  text-transform:uppercase !important;
+  letter-spacing:.055em !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.74),
+    0 5px 14px color-mix(in srgb, var(--extra-info-tone, var(--accent)) 10%, transparent) !important;
+  transition:border-color .16s ease, background .16s ease, box-shadow .16s ease, transform .16s ease !important;
+}
+
+/* 1. Ultimo controllo: blu/ciano. */
+#extraPanel .extraTabs .extraCheckInfoItem:nth-child(1){
+  --extra-info-tone:#0ea5e9;
+  border-color:color-mix(in srgb, var(--extra-info-tone) 40%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-info-tone) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-info-tone) 4%, var(--surface)) 100%) !important;
+}
+
+/* 2. Prossimo: ambra. */
+#extraPanel .extraTabs .extraCheckInfoItem:nth-child(2){
+  --extra-info-tone:#f59e0b;
+  border-color:color-mix(in srgb, var(--extra-info-tone) 40%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-info-tone) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-info-tone) 4%, var(--surface)) 100%) !important;
+}
+
+/* 3. Terminal: verde/emerald. */
+#extraPanel .extraTabs .extraCheckInfoItem:nth-child(3){
+  --extra-info-tone:#10b981;
+  border-color:color-mix(in srgb, var(--extra-info-tone) 40%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-info-tone) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-info-tone) 4%, var(--surface)) 100%) !important;
+}
+
+/* Indicatore: piccolo elemento luminoso coerente col colore della card. */
+#extraPanel .extraTabs .extraCheckInfoItem .extraCheckInfoDot{
+  width:10px !important;
+  height:10px !important;
+  flex:0 0 10px !important;
+  border-radius:999px !important;
+  background:var(--extra-info-tone) !important;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--extra-info-tone) 13%, transparent),
+    0 0 10px color-mix(in srgb, var(--extra-info-tone) 25%, transparent) !important;
+}
+
+#extraPanel .extraTabs .extraCheckInfoText{
+  color:color-mix(in srgb, var(--extra-info-tone) 45%, var(--muted)) !important;
+}
+
+#extraPanel .extraTabs .extraCheckInfoText strong{
+  color:color-mix(in srgb, var(--extra-info-tone) 88%, var(--heading)) !important;
+  font-weight:950 !important;
+  font-variant-numeric:tabular-nums !important;
+}
+
+#extraPanel .extraTabs .extraCheckInfoItem:hover{
+  border-color:color-mix(in srgb, var(--extra-info-tone) 56%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-info-tone) 15%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-info-tone) 7%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.80),
+    0 7px 17px color-mix(in srgb, var(--extra-info-tone) 15%, transparent) !important;
+}
+
+body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
+  border-color:color-mix(in srgb, var(--extra-info-tone) 44%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-info-tone) 11%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-info-tone) 5%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 5px 14px rgba(0,0,0,.18) !important;
+}
+</style>
+
 </head>
 <body class="dogana-auth-locked">
 
@@ -7987,7 +8075,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R15</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R16</strong></a>
   </div>
 </footer>
 </section>
@@ -21225,7 +21313,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R15 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R16 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
