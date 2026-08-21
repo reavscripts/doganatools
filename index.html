@@ -3,13 +3,13 @@
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R30 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R31 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R30"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R31"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R30";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R31";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8078,7 +8078,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R30</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R31</strong></a>
   </div>
 </footer>
 </div>
@@ -21317,7 +21317,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R30 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R31 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23718,5 +23718,37 @@ body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::a
 }
 </style>
 <!-- R30-ORGANIZZA-ICON-MEMORY-FIX -->
+
+<style id="dogana-organize-topnav-color-r31">
+/* R31 — ORGANIZZA usa esattamente il celestino degli altri moduli della topbar. */
+body .appQuickNav #organizeNavToggle{
+  --dogana-btn-tone:var(--topnav-sky, #38bdf8) !important;
+  color:color-mix(in srgb, #0369a1 82%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 42%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 6%, var(--surface-soft)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 4px 12px rgba(14,165,233,.08) !important;
+}
+body .appQuickNav #organizeNavToggle:hover,
+body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+  color:color-mix(in srgb, #075985 88%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 62%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 21%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 9%, var(--surface-soft)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.82), 0 6px 15px rgba(14,165,233,.13) !important;
+}
+body .appQuickNav #organizeNavToggle .appNavDropdownChevron{
+  color:inherit !important;
+}
+body[data-theme="dark"] .appQuickNav #organizeNavToggle{
+  color:#bae6fd !important;
+  border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 34%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky, #38bdf8) 6%, var(--surface-soft)) 100%) !important;
+}
+</style>
 </body>
 </html>
