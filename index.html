@@ -1,12 +1,15 @@
 <!DOCTYPE html>
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:24 CEST | BUTTON-VISUAL-SYSTEM-R13 -->
 
 <html lang="it">
 <head>
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R13 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="2026-08-21-ui-bars-cooldown-r12"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R13"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R13";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7955,7 +7958,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-UI-BARS-COOLDOWN-R12</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R13</strong></a>
   </div>
 </footer>
 </section>
@@ -21193,7 +21196,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-UI-BARS-COOLDOWN-R12 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R13 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -21541,6 +21544,281 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem:nth-child(2){
     height:22px;
     flex-basis:22px;
     font-size:12px;
+  }
+}
+</style>
+
+
+<style id="dogana-button-visual-system-r13">
+/* =========================================================
+   DOGANATOOLS — BUTTON VISUAL SYSTEM R13
+   Lo stile di “PROSSIMO: TRA…” diventa il linguaggio base
+   dei pulsanti. Forma coerente, colore semantico per funzione.
+   DOGANA AI mantiene il proprio trattamento multicolor dedicato.
+   ========================================================= */
+
+:root{
+  --dogana-btn-blue:#2563eb;
+  --dogana-btn-cyan:#0891b2;
+  --dogana-btn-green:#16a34a;
+  --dogana-btn-emerald:#059669;
+  --dogana-btn-amber:#d97706;
+  --dogana-btn-yellow:#ca8a04;
+  --dogana-btn-red:#dc2626;
+  --dogana-btn-purple:#7c3aed;
+  --dogana-btn-indigo:#4f46e5;
+  --dogana-btn-slate:#64748b;
+}
+
+/* Base: stesso volume visivo del box PROSSIMO, ma leggermente più interattivo. */
+button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop){
+  --dogana-btn-tone:var(--dogana-btn-blue);
+  position:relative;
+  border:1px solid color-mix(in srgb, var(--dogana-btn-tone) 34%, var(--btn-border)) !important;
+  border-radius:12px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-tone) 9%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-tone) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-btn-tone) 78%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.70),
+    0 4px 12px color-mix(in srgb, var(--dogana-btn-tone) 9%, transparent) !important;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease !important;
+}
+
+button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop):hover:not(:disabled){
+  border-color:color-mix(in srgb, var(--dogana-btn-tone) 52%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-tone) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-tone) 6%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-btn-tone) 90%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 7px 17px color-mix(in srgb, var(--dogana-btn-tone) 14%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+
+button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop):active:not(:disabled){
+  transform:translateY(0) !important;
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--dogana-btn-tone) 11%, transparent),
+    0 2px 7px color-mix(in srgb, var(--dogana-btn-tone) 8%, transparent) !important;
+}
+
+button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop):disabled{
+  opacity:.48 !important;
+  filter:saturate(.65) !important;
+  cursor:not-allowed !important;
+  transform:none !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35) !important;
+}
+
+/* AZIONI PRINCIPALI / RICERCA / AGGIORNAMENTO — blu */
+.primary,
+#doganaAuthSubmit,
+#refreshShipsBtn,
+#shipSearchBtn,
+#bookingLookupSearchBtn,
+#operativeChecklistRefreshBtn,
+#notificationRefreshBtn,
+#postItRefreshBtn,
+#serverConsoleReconnect,
+#extraCheckNowBtn,
+#doganaRenameSession{
+  --dogana-btn-tone:var(--dogana-btn-blue) !important;
+}
+
+/* AGGIUNTA / CONFERMA / APERTURA / DOWNLOAD — verde */
+.success,
+#addRowBtn,
+#add10Btn,
+#addExtraRowBtn,
+#addExtraRowBtnBottom,
+#addExtra10Btn,
+#addExtra10BtnBottom,
+#operativeChecklistAddBtn,
+#bookingLookupOpenBtn,
+#downloadAllExtraPdfsBtn,
+#downloadAllExtraPdfsBtnBottom,
+.deskSave,
+button[data-extra-empty-add]{
+  --dogana-btn-tone:var(--dogana-btn-green) !important;
+}
+
+/* NOTIFICHE — ambra coerente col modulo */
+#notificationAddBtn,
+#notificationSoundBtn{
+  --dogana-btn-tone:var(--dogana-btn-amber) !important;
+}
+#notificationSoundBtn.sound-on{
+  --dogana-btn-tone:var(--dogana-btn-green) !important;
+}
+
+/* POST-IT — giallo/ocra */
+#postItAddBtn,
+.postItDesktopBtn{
+  --dogana-btn-tone:var(--dogana-btn-yellow) !important;
+}
+
+/* ORGANIZZA — viola */
+#organizeNavToggle,
+#organizePanelToggleBtn{
+  --dogana-btn-tone:var(--dogana-btn-purple) !important;
+}
+
+/* COPIA / SINCRONIZZA — ciano */
+#copyColumnBtn,
+#copyExtraColumnBtn,
+#copyExtraColumnBtnBottom,
+#calcCopyBtn,
+#doganaSyncNow,
+#doganaMenuSessionSync{
+  --dogana-btn-tone:var(--dogana-btn-cyan) !important;
+}
+
+/* EXPORT / PDF / DOCUMENTI — indigo */
+#exportPdfBtn,
+#exportExcelBtn,
+#exportExtraPdfBtn,
+#exportExtraPdfBtnBottom,
+#rollFillFromCalc{
+  --dogana-btn-tone:var(--dogana-btn-indigo) !important;
+}
+
+/* PULIZIA NON DISTRUTTIVA — ambra */
+#calcClearBtn,
+#rollClearBtn,
+#shipSearchClearBtn,
+#serverConsoleClear{
+  --dogana-btn-tone:var(--dogana-btn-amber) !important;
+}
+
+/* DISTRUTTIVE — rosso */
+.danger,
+#clearBtn,
+#clearExtraBtn,
+#clearExtraBtnBottom,
+#doganaSettingsLogout,
+#doganaResetSession,
+.operativeChecklistDeleteBtn,
+.notificationDeleteBtn,
+.postItDeleteBtn,
+.operativeChecklistFileClear,
+.deskClose,
+.rowBtn{
+  --dogana-btn-tone:var(--dogana-btn-red) !important;
+}
+
+/* Comandi neutri / struttura / impostazioni — slate */
+.doganaModuleSvgToggleBtn,
+#doganaSettingsClose,
+#doganaThemeToggleSettings,
+#doganaMenuSettingsBtn{
+  --dogana-btn-tone:var(--dogana-btn-slate) !important;
+}
+
+/* Audio contenitori: verde ON, slate OFF. */
+#extraSoundNotifyBtn.sound-on{
+  --dogana-btn-tone:var(--dogana-btn-green) !important;
+}
+#extraSoundNotifyBtn.sound-off{
+  --dogana-btn-tone:var(--dogana-btn-slate) !important;
+}
+
+/* Tab terminali: neutre da inattive, blu quando selezionate. */
+.shipTab,
+.extraTab{
+  --dogana-btn-tone:var(--dogana-btn-slate) !important;
+}
+.shipTab.active,
+.extraTab.active{
+  --dogana-btn-tone:var(--dogana-btn-blue) !important;
+  border-color:color-mix(in srgb, var(--dogana-btn-blue) 55%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-blue) 17%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-blue) 8%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-btn-blue) 90%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 6px 15px rgba(37,99,235,.12) !important;
+}
+
+/* Calcolatrice: stessa profondità, senza perdere la gerarchia dei tasti. */
+.calcKey{
+  --dogana-btn-tone:var(--dogana-btn-slate);
+  border:1px solid color-mix(in srgb, var(--dogana-btn-tone) 27%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-tone) 6%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-tone) 2%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.68),
+    0 3px 9px color-mix(in srgb, var(--dogana-btn-tone) 7%, transparent) !important;
+}
+.calcKey.op{ --dogana-btn-tone:var(--dogana-btn-blue); color:var(--dogana-btn-blue) !important; }
+.calcKey.quick{ --dogana-btn-tone:var(--dogana-btn-green); color:var(--dogana-btn-green) !important; }
+.calcKey.equal{
+  --dogana-btn-tone:var(--dogana-btn-blue);
+  border-color:color-mix(in srgb, var(--dogana-btn-blue) 58%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-blue) 20%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-blue) 10%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-btn-blue) 92%, var(--heading)) !important;
+}
+.calcKey:hover:not(:disabled){
+  transform:translateY(-1px) !important;
+  border-color:color-mix(in srgb, var(--dogana-btn-tone) 46%, var(--btn-border)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.76),
+    0 6px 13px color-mix(in srgb, var(--dogana-btn-tone) 11%, transparent) !important;
+}
+
+/* DOGANA AI resta volutamente esclusa dal sistema semantico: mantiene il multicolor. */
+#customsAiSubmit.customsAiSubmit{
+  isolation:isolate;
+}
+
+/* Dark mode: stessa identità, riflesso più contenuto. */
+body[data-theme="dark"] button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop){
+  border-color:color-mix(in srgb, var(--dogana-btn-tone) 42%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-tone) 12%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-tone) 5%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-btn-tone) 72%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    0 5px 14px rgba(0,0,0,.18) !important;
+}
+body[data-theme="dark"] button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop):hover:not(:disabled){
+  border-color:color-mix(in srgb, var(--dogana-btn-tone) 58%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-btn-tone) 17%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-btn-tone) 8%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.065),
+    0 7px 17px color-mix(in srgb, var(--dogana-btn-tone) 14%, transparent) !important;
+}
+body[data-theme="dark"] .calcKey{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 3px 9px rgba(0,0,0,.16) !important;
+}
+
+/* Mantiene puliti e compatti i pulsanti solo-icona. */
+.doganaModuleSvgToggleBtn,
+.rowBtn,
+.operativeChecklistDeleteBtn,
+.notificationDeleteBtn,
+.postItDeleteBtn,
+.operativeChecklistFileClear,
+.deskClose,
+#doganaMenuSettingsBtn{
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+@media (max-width:700px){
+  button:not(.themeSwitch):not(.customsAiSubmit):not(.calcKey):not(.floatingBackTop){
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.55),
+      0 3px 9px color-mix(in srgb, var(--dogana-btn-tone) 8%, transparent) !important;
   }
 }
 </style>
