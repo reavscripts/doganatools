@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R21 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R22 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R21 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R22 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R21"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R22"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R21";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R22";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R21</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R22</strong></a>
   </div>
 </footer>
 </section>
@@ -21314,7 +21314,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R21 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R22 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22642,5 +22642,60 @@ body[data-theme="dark"] #doganaMenuSessionSync{
 </style>
 <!-- R21-CLEAN-TOPNAV-FINAL -->
 
+
+
+<style id="dogana-topbar-line-refined-r22">
+/* =========================================================
+   R22 — LINEA TOPBAR RAFFINATA
+   Solo .appTopBar::before: gradiente DOGANA AI più discreto,
+   corto, sfumato ai bordi e con glow leggero.
+   ========================================================= */
+.appTopBar{
+  position:sticky !important;
+  overflow:visible !important;
+}
+.appTopBar::before{
+  content:"" !important;
+  position:absolute !important;
+  z-index:3 !important;
+  top:-1px !important;
+  left:24px !important;
+  right:24px !important;
+  height:2px !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.72 !important;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.10) 4%,
+    #2563eb 14%,
+    #06b6d4 29%,
+    #22c55e 43%,
+    #f59e0b 57%,
+    #ec4899 71%,
+    #8b5cf6 86%,
+    rgba(37,99,235,.10) 96%,
+    transparent 100%) !important;
+  box-shadow:
+    0 1px 5px rgba(56,189,248,.14),
+    0 0 10px rgba(139,92,246,.08) !important;
+  filter:saturate(.88) !important;
+  transform:none !important;
+}
+body[data-theme="dark"] .appTopBar::before{
+  opacity:.64 !important;
+  box-shadow:
+    0 1px 6px rgba(56,189,248,.11),
+    0 0 12px rgba(139,92,246,.07) !important;
+}
+@media (max-width:700px){
+  .appTopBar::before{
+    left:16px !important;
+    right:16px !important;
+    opacity:.62 !important;
+  }
+}
+</style>
+<!-- R22-TOPBAR-LINE-REFINED-REAL-DIFF -->
 </body>
 </html>
