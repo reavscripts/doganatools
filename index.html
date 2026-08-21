@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:50 CEST | BUTTON-VISUAL-SYSTEM-R17 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 10:46 CEST | BUTTON-VISUAL-SYSTEM-R18 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R17 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R18 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R17"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R18"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R17";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R18";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7348,135 +7348,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 }
 </style>
 
-
-
-<style id="dogana-topnav-organizza-effect-r17">
-/* =========================================================
-   R17 — MENU SUPERIORE UNIFORME
-   Tutti i comandi della barra usano lo stesso effetto UI di
-   ORGANIZZA: gradiente leggero, bordo cromatico, profondità,
-   hover luminoso e pressione. Cambia solo il tono semantico.
-   ========================================================= */
-
-/* Tono predefinito */
-.appQuickNav > a,
-.appQuickNav > button,
-.appQuickNav .appNavDropdownToggle{
-  --dogana-menu-tone:var(--dogana-btn-blue, #2563eb);
-  position:relative !important;
-  border:1px solid color-mix(in srgb, var(--dogana-menu-tone) 34%, var(--btn-border)) !important;
-  border-image:none !important;
-  background:linear-gradient(180deg,
-    color-mix(in srgb, var(--dogana-menu-tone) 9%, var(--surface)) 0%,
-    color-mix(in srgb, var(--dogana-menu-tone) 3%, var(--surface)) 100%) !important;
-  color:color-mix(in srgb, var(--dogana-menu-tone) 78%, var(--heading)) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.70),
-    0 4px 12px color-mix(in srgb, var(--dogana-menu-tone) 9%, transparent) !important;
-  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease !important;
-}
-
-.appQuickNav > a:hover,
-.appQuickNav > button:hover:not(:disabled),
-.appQuickNav .appNavDropdownToggle:hover:not(:disabled),
-.appQuickNav .appNavDropdown.open .appNavDropdownToggle{
-  border-color:color-mix(in srgb, var(--dogana-menu-tone) 52%, var(--btn-border)) !important;
-  background:linear-gradient(180deg,
-    color-mix(in srgb, var(--dogana-menu-tone) 14%, var(--surface)) 0%,
-    color-mix(in srgb, var(--dogana-menu-tone) 6%, var(--surface)) 100%) !important;
-  color:color-mix(in srgb, var(--dogana-menu-tone) 90%, var(--heading)) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.78),
-    0 7px 17px color-mix(in srgb, var(--dogana-menu-tone) 14%, transparent) !important;
-  transform:translateY(-1px) !important;
-}
-
-.appQuickNav > a:active,
-.appQuickNav > button:active:not(:disabled),
-.appQuickNav .appNavDropdownToggle:active:not(:disabled){
-  transform:translateY(0) !important;
-  box-shadow:
-    inset 0 1px 2px color-mix(in srgb, var(--dogana-menu-tone) 11%, transparent),
-    0 2px 7px color-mix(in srgb, var(--dogana-menu-tone) 8%, transparent) !important;
-}
-
-.appQuickNav > a:focus-visible,
-.appQuickNav > button:focus-visible,
-.appQuickNav .appNavDropdownToggle:focus-visible{
-  outline:none !important;
-  border-color:color-mix(in srgb, var(--dogana-menu-tone) 62%, var(--btn-border)) !important;
-  box-shadow:
-    0 0 0 4px color-mix(in srgb, var(--dogana-menu-tone) 13%, transparent),
-    0 7px 17px color-mix(in srgb, var(--dogana-menu-tone) 12%, transparent) !important;
-}
-
-/* Colori dei moduli: stesso effetto, identità diversa. */
-.appQuickNav > a[href="#dogana-section"]{
-  --dogana-menu-tone:var(--dogana-btn-blue, #2563eb);
-}
-.appQuickNav > a[href="#extraPanel"]{
-  --dogana-menu-tone:var(--dogana-btn-green, #16a34a);
-}
-.appQuickNav .appNavDropdownToggle,
-#organizeNavToggle{
-  --dogana-menu-tone:var(--dogana-btn-purple, #7c3aed) !important;
-}
-.appQuickNav > a[href="#navi-section"]{
-  --dogana-menu-tone:var(--dogana-btn-cyan, #0891b2);
-}
-.appQuickNav > a[href="#bookingLookupPanel"]{
-  --dogana-menu-tone:var(--dogana-btn-amber, #d97706);
-}
-.appQuickNav .appMenuSettingsBtn.settingsIconOnly{
-  --dogana-menu-tone:var(--dogana-btn-indigo, #4f46e5) !important;
-}
-.appQuickNav .appSessionSync{
-  --dogana-menu-tone:var(--dogana-btn-cyan, #0891b2) !important;
-}
-
-/* DOGANA AI conserva l'unico bordo multicolor, ma con lo stesso volume/hover. */
-.appQuickNav > a[href="#customs-ai-section"]{
-  --dogana-menu-tone:var(--dogana-btn-indigo, #4f46e5);
-  border:1px solid transparent !important;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--dogana-menu-tone) 9%, var(--surface)) 0%,
-      color-mix(in srgb, var(--dogana-menu-tone) 3%, var(--surface)) 100%) padding-box,
-    linear-gradient(100deg, #2563eb, #06b6d4, #22c55e, #f59e0b, #ec4899, #8b5cf6) border-box !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.70),
-    0 4px 12px rgba(99,102,241,.12) !important;
-}
-.appQuickNav > a[href="#customs-ai-section"]:hover{
-  border:1px solid transparent !important;
-  background:
-    linear-gradient(180deg,
-      color-mix(in srgb, var(--dogana-menu-tone) 14%, var(--surface)) 0%,
-      color-mix(in srgb, var(--dogana-menu-tone) 6%, var(--surface)) 100%) padding-box,
-    linear-gradient(100deg, #2563eb, #06b6d4, #22c55e, #f59e0b, #ec4899, #8b5cf6) border-box !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.78),
-    0 7px 17px rgba(99,102,241,.17) !important;
-}
-
-/* Mantiene le dimensioni speciali del pulsante impostazioni. */
-.appQuickNav .appMenuSettingsBtn.settingsIconOnly{
-  width:42px !important;
-  min-width:42px !important;
-  max-width:42px !important;
-  flex:0 0 42px !important;
-  padding:0 !important;
-}
-
-body[data-theme="dark"] .appQuickNav > a,
-body[data-theme="dark"] .appQuickNav > button,
-body[data-theme="dark"] .appQuickNav .appNavDropdownToggle{
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.06),
-    0 5px 14px color-mix(in srgb, var(--dogana-menu-tone) 14%, transparent) !important;
-}
-</style>
-
 </head>
 <body class="dogana-auth-locked">
 
@@ -8204,7 +8075,7 @@ body[data-theme="dark"] .appQuickNav .appNavDropdownToggle{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R17</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R18</strong></a>
   </div>
 </footer>
 </section>
@@ -21442,7 +21313,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R17 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R18 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22258,6 +22129,120 @@ body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.045), 0 5px 14px rgba(0,0,0,.18) !important;
 }
 </style>
+
+
+
+<style id="dogana-topnav-organizza-effect-final-r18">
+/* =========================================================
+   R18 — MENU SUPERIORE: EFFETTO ORGANIZZA APPLICATO DAVVERO
+   QUESTO BLOCCO E' VOLUTAMENTE L'ULTIMO CSS DEL FILE.
+   Replica il volume del visual system pulsanti (usato da ORGANIZZA)
+   anche sui link <a> della barra superiore.
+   ========================================================= */
+
+/* Colore semantico dei singoli comandi. */
+.appQuickNav > a[href="#customs-ai-section"]{ --dogana-nav-tone:#4f46e5; }
+.appQuickNav > a[href="#dogana-section"]{ --dogana-nav-tone:#2563eb; }
+.appQuickNav > a[href="#extraPanel"]{ --dogana-nav-tone:#16a34a; }
+.appQuickNav #organizeNavToggle{ --dogana-nav-tone:#7c3aed; }
+.appQuickNav > a[href="#navi-section"]{ --dogana-nav-tone:#0891b2; }
+.appQuickNav > a[href="#bookingLookupPanel"]{ --dogana-nav-tone:#d97706; }
+.appQuickNav #doganaMenuSettingsBtn{ --dogana-nav-tone:#64748b; }
+.appQuickNav #doganaMenuSessionSync{ --dogana-nav-tone:#0891b2; }
+
+/* Stessa forma/profondita' di ORGANIZZA su TUTTI i comandi principali. */
+body .appQuickNav > a,
+body .appQuickNav > button,
+body .appQuickNav #organizeNavToggle,
+body .appQuickNav #doganaMenuSettingsBtn,
+body .appQuickNav #doganaMenuSessionSync{
+  --dogana-nav-tone:var(--dogana-nav-tone, #2563eb);
+  position:relative !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:34px !important;
+  border:1px solid color-mix(in srgb, var(--dogana-nav-tone) 34%, var(--btn-border)) !important;
+  border-image:none !important;
+  border-radius:12px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-nav-tone) 9%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-nav-tone) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-nav-tone) 78%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.70),
+    0 4px 12px color-mix(in srgb, var(--dogana-nav-tone) 9%, transparent) !important;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease !important;
+}
+
+/* Hover identico al pulsante ORGANIZZA del visual system. */
+body .appQuickNav > a:hover,
+body .appQuickNav > button:hover:not(:disabled),
+body .appQuickNav #organizeNavToggle:hover:not(:disabled),
+body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+  border-color:color-mix(in srgb, var(--dogana-nav-tone) 52%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-nav-tone) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-nav-tone) 6%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-nav-tone) 90%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.78),
+    0 7px 17px color-mix(in srgb, var(--dogana-nav-tone) 14%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+
+body .appQuickNav > a:active,
+body .appQuickNav > button:active:not(:disabled){
+  transform:translateY(0) !important;
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--dogana-nav-tone) 11%, transparent),
+    0 2px 7px color-mix(in srgb, var(--dogana-nav-tone) 8%, transparent) !important;
+}
+
+body .appQuickNav > a:focus-visible,
+body .appQuickNav > button:focus-visible{
+  outline:none !important;
+  border-color:color-mix(in srgb, var(--dogana-nav-tone) 62%, var(--btn-border)) !important;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--dogana-nav-tone) 13%, transparent),
+    0 7px 17px color-mix(in srgb, var(--dogana-nav-tone) 12%, transparent) !important;
+}
+
+/* DOGANA AI conserva il solo bordo multicolor, ma usa la stessa profondita'. */
+body .appQuickNav > a[href="#customs-ai-section"]{
+  border:1px solid transparent !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--dogana-nav-tone) 9%, var(--surface)) 0%,
+      color-mix(in srgb, var(--dogana-nav-tone) 3%, var(--surface)) 100%) padding-box,
+    linear-gradient(100deg,#2563eb,#06b6d4,#22c55e,#f59e0b,#ec4899,#8b5cf6) border-box !important;
+}
+body .appQuickNav > a[href="#customs-ai-section"]:hover{
+  border:1px solid transparent !important;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--dogana-nav-tone) 14%, var(--surface)) 0%,
+      color-mix(in srgb, var(--dogana-nav-tone) 6%, var(--surface)) 100%) padding-box,
+    linear-gradient(100deg,#2563eb,#06b6d4,#22c55e,#f59e0b,#ec4899,#8b5cf6) border-box !important;
+}
+
+/* Impostazioni resta quadrato, ma con lo stesso effetto. */
+body .appQuickNav #doganaMenuSettingsBtn.settingsIconOnly{
+  width:42px !important;
+  min-width:42px !important;
+  max-width:42px !important;
+  flex:0 0 42px !important;
+  padding:0 !important;
+}
+
+body[data-theme="dark"] .appQuickNav > a,
+body[data-theme="dark"] .appQuickNav > button{
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.055),
+    0 5px 14px color-mix(in srgb, var(--dogana-nav-tone) 14%, transparent) !important;
+}
+</style>
+<!-- R18-PROVA-DIFF-GITHUB: MENU-ORGANIZZA-EFFECT-APPLIED-TO-ALL-TOPNAV -->
 
 </body>
 </html>
