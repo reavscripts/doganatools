@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 14:43 CEST | BUTTON-VISUAL-SYSTEM-R32 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 14:43 CEST | BUTTON-VISUAL-SYSTEM-R33 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R32 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R33 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R32"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R33"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R32";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R33";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8078,7 +8078,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R32</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R33</strong></a>
   </div>
 </footer>
 </div>
@@ -21317,7 +21317,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R32 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R33 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24124,6 +24124,61 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
 })();
 </script>
 <!-- R32-ACCENT-COLOR-SETTINGS-HOVER-TOGGLES -->
+
+
+
+<style id="dogana-organize-accent-hover-r33">
+/* =========================================================
+   R33 — ORGANIZZA: hover coerente con il colore accent utente
+   La base topbar resta celestina; hover/menu aperto seguono
+   --dogana-user-accent. Anche il toggle del modulo è forzato.
+   ========================================================= */
+body .appQuickNav #organizeNavToggle:hover:not(:disabled),
+body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+  color:color-mix(in srgb, var(--dogana-user-accent) 88%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 62%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 20%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 8%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent),
+    0 6px 15px color-mix(in srgb, var(--dogana-user-accent) 15%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+body .appQuickNav #organizeNavToggle:hover .appNavDropdownChevron,
+body .appQuickNav .appNavDropdown.open #organizeNavToggle .appNavDropdownChevron{
+  color:inherit !important;
+}
+
+body #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled),
+body #organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
+  --dogana-btn-tone:var(--dogana-user-accent) !important;
+  color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 6%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.90),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 10%, transparent),
+    0 6px 14px color-mix(in srgb, var(--dogana-user-accent) 16%, transparent) !important;
+}
+
+body[data-theme="dark"] .appQuickNav #organizeNavToggle:hover:not(:disabled),
+body[data-theme="dark"] .appQuickNav .appNavDropdown.open #organizeNavToggle{
+  color:color-mix(in srgb, var(--dogana-user-accent) 52%, #f8fafc) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 60%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 18%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 8%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 12%, transparent),
+    0 7px 17px color-mix(in srgb, var(--dogana-user-accent) 17%, transparent) !important;
+}
+</style>
+<!-- R33-ORGANIZZA-ACCENT-HOVER-FIX -->
 
 </body>
 </html>
