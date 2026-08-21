@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 14:43 CEST | BUTTON-VISUAL-SYSTEM-R33 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 14:43 CEST | BUTTON-VISUAL-SYSTEM-R34 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R33 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R34 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R33"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R34"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R33";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R34";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8078,7 +8078,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R33</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R34</strong></a>
   </div>
 </footer>
 </div>
@@ -21317,7 +21317,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R33 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R34 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24179,6 +24179,44 @@ body[data-theme="dark"] .appQuickNav .appNavDropdown.open #organizeNavToggle{
 }
 </style>
 <!-- R33-ORGANIZZA-ACCENT-HOVER-FIX -->
+
+<style id="dogana-dark-row-hover-r34">
+/* =========================================================
+   R34 — DARK MODE: hover righe coerente con il tema
+   Tabella principale + Ricerca Contenitori.
+   ========================================================= */
+body[data-theme="dark"] #sheet tbody tr:hover,
+body[data-theme="dark"] #extraTable tbody tr:hover{
+  background:color-mix(in srgb, var(--dogana-user-accent) 7%, var(--surface-soft)) !important;
+}
+
+body[data-theme="dark"] #sheet tbody tr:hover > td,
+body[data-theme="dark"] #extraTable tbody tr:hover > td{
+  background:color-mix(in srgb, var(--dogana-user-accent) 7%, var(--surface-soft)) !important;
+  border-bottom-color:color-mix(in srgb, var(--dogana-user-accent) 15%, var(--grid-soft)) !important;
+}
+
+/* Gli input devono lasciare visibile il fondo scuro della riga. */
+body[data-theme="dark"] #sheet tbody tr:hover > td input,
+body[data-theme="dark"] #extraTable tbody tr:hover > td input{
+  background:transparent !important;
+  color:var(--text) !important;
+}
+
+/* Anche celle/elementi generati dinamicamente non devono riportare il bianco. */
+body[data-theme="dark"] #sheet tbody tr:hover > td .cell,
+body[data-theme="dark"] #extraTable tbody tr:hover > td .cell{
+  background:transparent !important;
+}
+
+/* Focus durante l'hover: leggermente più evidente ma sempre dark. */
+body[data-theme="dark"] #sheet tbody tr:hover > td input:focus,
+body[data-theme="dark"] #extraTable tbody tr:hover > td input:focus{
+  background:color-mix(in srgb, var(--dogana-user-accent) 10%, var(--surface-elevated)) !important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--dogana-user-accent) 28%, transparent) !important;
+}
+</style>
+<!-- R34-DARK-TABLE-EXTRA-ROW-HOVER -->
 
 </body>
 </html>
