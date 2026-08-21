@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:40 CEST | BUTTON-VISUAL-SYSTEM-R14 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:34 CEST | BUTTON-VISUAL-SYSTEM-R15 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R14 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R15 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R14"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R15"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R14";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R15";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7987,7 +7987,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R14</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R15</strong></a>
   </div>
 </footer>
 </section>
@@ -21225,7 +21225,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R14 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R15 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -21849,6 +21849,196 @@ body[data-theme="dark"] .calcKey{
       inset 0 1px 0 rgba(255,255,255,.55),
       0 3px 9px color-mix(in srgb, var(--dogana-btn-tone) 8%, transparent) !important;
   }
+}
+</style>
+
+
+
+<style id="dogana-extra-buttons-visual-r15">
+/* =========================================================
+   R15 — RICERCA CONTENITORI: VISUAL SYSTEM COMPLETO
+   Override ad alta specificità delle vecchie regole toolbar.
+   Tutti i controlli interattivi del modulo usano la stessa
+   profondità del badge "PROSSIMO", con colore semantico.
+   ========================================================= */
+
+#extraPanel{
+  --extra-btn-blue:#2563eb;
+  --extra-btn-cyan:#0891b2;
+  --extra-btn-green:#16a34a;
+  --extra-btn-emerald:#059669;
+  --extra-btn-amber:#d97706;
+  --extra-btn-red:#dc2626;
+  --extra-btn-indigo:#4f46e5;
+  --extra-btn-slate:#64748b;
+}
+
+/* Base definitiva: toolbar superiore, inferiore, tab, stato vuoto e azioni riga. */
+#extraPanel .extraTopToolbar button,
+#extraPanel .extraBottomToolbar button,
+#extraPanel .extraTabs button.extraTab,
+#extraPanel .extraEmptyCompactActions button,
+#extraPanel #extraTbody button.rowBtn{
+  --extra-btn-tone:var(--extra-btn-blue);
+  position:relative !important;
+  border:1px solid color-mix(in srgb, var(--extra-btn-tone) 34%, var(--btn-border)) !important;
+  border-radius:12px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-tone) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-tone) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-tone) 82%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 4px 12px color-mix(in srgb, var(--extra-btn-tone) 10%, transparent) !important;
+  text-shadow:none !important;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease !important;
+}
+
+#extraPanel .extraTopToolbar button:hover:not(:disabled),
+#extraPanel .extraBottomToolbar button:hover:not(:disabled),
+#extraPanel .extraTabs button.extraTab:hover:not(:disabled),
+#extraPanel .extraEmptyCompactActions button:hover:not(:disabled),
+#extraPanel #extraTbody button.rowBtn:hover:not(:disabled){
+  border-color:color-mix(in srgb, var(--extra-btn-tone) 56%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-tone) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-tone) 7%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-tone) 94%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.80),
+    0 7px 17px color-mix(in srgb, var(--extra-btn-tone) 15%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+
+#extraPanel .extraTopToolbar button:active:not(:disabled),
+#extraPanel .extraBottomToolbar button:active:not(:disabled),
+#extraPanel .extraTabs button.extraTab:active:not(:disabled),
+#extraPanel .extraEmptyCompactActions button:active:not(:disabled),
+#extraPanel #extraTbody button.rowBtn:active:not(:disabled){
+  transform:translateY(0) !important;
+  box-shadow:
+    inset 0 1px 2px color-mix(in srgb, var(--extra-btn-tone) 13%, transparent),
+    0 2px 7px color-mix(in srgb, var(--extra-btn-tone) 8%, transparent) !important;
+}
+
+/* Colori per funzione. */
+#extraPanel #extraCheckNowBtn{ --extra-btn-tone:var(--extra-btn-blue) !important; }
+#extraPanel #copyExtraColumnBtn,
+#extraPanel #copyExtraColumnBtnBottom{ --extra-btn-tone:var(--extra-btn-cyan) !important; }
+#extraPanel #exportExtraPdfBtn,
+#extraPanel #exportExtraPdfBtnBottom{ --extra-btn-tone:var(--extra-btn-indigo) !important; }
+#extraPanel #downloadAllExtraPdfsBtn,
+#extraPanel #downloadAllExtraPdfsBtnBottom{ --extra-btn-tone:var(--extra-btn-emerald) !important; }
+#extraPanel #addExtraRowBtn,
+#extraPanel #addExtraRowBtnBottom,
+#extraPanel #addExtra10Btn,
+#extraPanel #addExtra10BtnBottom,
+#extraPanel .extraEmptyCompactActions [data-extra-empty-add]{ --extra-btn-tone:var(--extra-btn-green) !important; }
+#extraPanel #clearExtraBtn,
+#extraPanel #clearExtraBtnBottom,
+#extraPanel #extraTbody .rowBtn{ --extra-btn-tone:var(--extra-btn-red) !important; }
+#extraPanel #minimizeExtraBtn{ --extra-btn-tone:var(--extra-btn-slate) !important; }
+#extraPanel #extraSoundNotifyBtn.sound-off{ --extra-btn-tone:var(--extra-btn-slate) !important; }
+#extraPanel #extraSoundNotifyBtn.sound-on{ --extra-btn-tone:var(--extra-btn-green) !important; }
+
+/* Terminal: neutri inattivi, blu quello selezionato. */
+#extraPanel .extraTabs button.extraTab{ --extra-btn-tone:var(--extra-btn-slate) !important; }
+#extraPanel .extraTabs button.extraTab.active{
+  --extra-btn-tone:var(--extra-btn-blue) !important;
+  border-color:color-mix(in srgb, var(--extra-btn-blue) 58%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-blue) 18%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-blue) 8%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-blue) 94%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.76),
+    0 6px 15px rgba(37,99,235,.13) !important;
+}
+
+/* Riduci/espandi mantiene la forma quadrata del sistema moduli. */
+#extraPanel #minimizeExtraBtn.doganaModuleSvgToggleBtn{
+  width:38px !important;
+  min-width:38px !important;
+  height:38px !important;
+  min-height:38px !important;
+  padding:0 !important;
+  border-radius:13px !important;
+}
+#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn{
+  --extra-btn-tone:var(--extra-btn-blue) !important;
+}
+
+/* Elimina riga: compatto ma con lo stesso volume/luce. */
+#extraPanel #extraTbody button.rowBtn{
+  width:34px !important;
+  min-width:34px !important;
+  height:34px !important;
+  min-height:34px !important;
+  padding:0 !important;
+  border-radius:10px !important;
+  letter-spacing:0 !important;
+  text-transform:none !important;
+}
+
+/* Anche i link PDF nello stato SCT/CONATECO/TFG diventano action-pill coerenti. */
+#extraPanel .sctPdfActions{
+  display:flex !important;
+  flex-wrap:wrap !important;
+  gap:6px !important;
+  align-items:center !important;
+}
+#extraPanel .sctPdfActions a,
+#extraPanel #extraTbody td a[href]{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:5px !important;
+  min-height:30px !important;
+  padding:6px 9px !important;
+  border:1px solid color-mix(in srgb, var(--extra-btn-indigo) 34%, var(--btn-border)) !important;
+  border-radius:10px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-indigo) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-indigo) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-indigo) 86%, var(--heading)) !important;
+  font-size:10.5px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.70), 0 4px 10px rgba(79,70,229,.09) !important;
+  transition:.16s ease !important;
+}
+#extraPanel .sctPdfActions a:hover,
+#extraPanel #extraTbody td a[href]:hover{
+  transform:translateY(-1px) !important;
+  border-color:color-mix(in srgb, var(--extra-btn-indigo) 54%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-indigo) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-indigo) 7%, var(--surface)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.78), 0 7px 15px rgba(79,70,229,.13) !important;
+}
+#extraPanel .sctPdfActions .sctPdfCacheLink{
+  border-color:color-mix(in srgb, var(--extra-btn-cyan) 36%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-cyan) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-cyan) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-cyan) 86%, var(--heading)) !important;
+}
+
+/* Dark mode dedicata, per battere le vecchie regole del modulo. */
+body[data-theme="dark"] #extraPanel .extraTopToolbar button,
+body[data-theme="dark"] #extraPanel .extraBottomToolbar button,
+body[data-theme="dark"] #extraPanel .extraTabs button.extraTab,
+body[data-theme="dark"] #extraPanel .extraEmptyCompactActions button,
+body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
+  border-color:color-mix(in srgb, var(--extra-btn-tone) 44%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--extra-btn-tone) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--extra-btn-tone) 5%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--extra-btn-tone) 74%, var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.045), 0 5px 14px rgba(0,0,0,.18) !important;
 }
 </style>
 
