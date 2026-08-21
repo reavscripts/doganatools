@@ -3,13 +3,13 @@
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R27 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R28 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R27"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R28"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R27";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R28";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8065,6 +8065,9 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <pre class="serverConsoleOutput" id="serverConsoleOutput">Console pronta. In attesa dell'output di server.js...</pre>
   </div>
 </section>
+
+</section>
+
 <footer class="appFooter" aria-label="Footer Utility Doganalista">
   <div class="appFooterBrand">
     <span class="appFooterLogo" aria-hidden="true"><img class="appFooterLogoImg" src="./img/logo.svg" alt="" loading="eager" decoding="async" /></span>
@@ -8075,10 +8078,9 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R27</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R28</strong></a>
   </div>
 </footer>
-</section>
 </div>
 
 <style id="dogana-module-svg-toggle-base-style">
@@ -21314,7 +21316,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R27 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R28 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23528,6 +23530,156 @@ body[data-theme="dark"] #extraPanel.minimized::before{
 }
 </style>
 <!-- R27-MINIMIZED-MODULES-REAL-FIX -->
+
+
+
+<style id="dogana-module-toggle-organizza-style-r28">
+/* =========================================================
+   R28 — TOGGLE MODULI UNIFORMI
+   Tutti i pulsanti riduci/mostra usano ESATTAMENTE la stessa
+   famiglia visiva di Organizza: viola tenue, fondo chiaro,
+   bordo viola e ombra minima. Vale sia aperto sia ridotto.
+   ========================================================= */
+:root{
+  --module-toggle-purple:#7c3aed;
+  --module-toggle-purple-dark:#6d28d9;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+#notificationToggleBtn.doganaModuleSvgToggleBtn,
+#postItToggleBtn.doganaModuleSvgToggleBtn,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+#serverConsoleToggle.doganaModuleSvgToggleBtn,
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+#organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
+.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
+#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  --dogana-btn-tone:var(--module-toggle-purple) !important;
+  width:38px !important;
+  height:38px !important;
+  min-width:38px !important;
+  min-height:38px !important;
+  max-width:38px !important;
+  max-height:38px !important;
+  flex:0 0 38px !important;
+  padding:0 !important;
+  border-radius:13px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  letter-spacing:0 !important;
+  overflow:hidden !important;
+  color:var(--module-toggle-purple-dark) !important;
+  border:1px solid color-mix(in srgb, var(--module-toggle-purple) 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--module-toggle-purple) 9%, var(--surface)) 0%,
+    color-mix(in srgb, var(--module-toggle-purple) 3%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 3px 9px rgba(124,58,237,.07) !important;
+  transform:none !important;
+  filter:none !important;
+  transition:background .16s ease, border-color .16s ease, color .16s ease, box-shadow .16s ease, transform .16s ease !important;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn:hover,
+#organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:hover,
+#notificationToggleBtn.doganaModuleSvgToggleBtn:hover,
+#postItToggleBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
+#serverConsoleToggle.doganaModuleSvgToggleBtn:hover{
+  color:#5b21b6 !important;
+  border-color:color-mix(in srgb, var(--module-toggle-purple) 70%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--module-toggle-purple) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--module-toggle-purple) 5%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.90),
+    0 5px 13px rgba(124,58,237,.11) !important;
+  transform:translateY(-1px) !important;
+}
+
+#doganaMinimizeBtn.doganaModuleSvgToggleBtn:active,
+#minimizeExtraBtn.doganaModuleSvgToggleBtn:active,
+#organizePanelToggleBtn.doganaModuleSvgToggleBtn:active,
+#operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:active,
+#notificationToggleBtn.doganaModuleSvgToggleBtn:active,
+#postItToggleBtn.doganaModuleSvgToggleBtn:active,
+#minimizeShipsBtn.doganaModuleSvgToggleBtn:active,
+#minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:active,
+#serverConsoleToggle.doganaModuleSvgToggleBtn:active{
+  transform:translateY(0) !important;
+  box-shadow:inset 0 1px 2px rgba(91,33,182,.08), 0 2px 6px rgba(124,58,237,.06) !important;
+}
+
+#doganaMinimizeBtn .doganaModuleToggleSvg,
+#minimizeExtraBtn .doganaModuleToggleSvg,
+#organizePanelToggleBtn .doganaModuleToggleSvg,
+#operativeChecklistToggleBtn .doganaModuleToggleSvg,
+#notificationToggleBtn .doganaModuleToggleSvg,
+#postItToggleBtn .doganaModuleToggleSvg,
+#minimizeShipsBtn .doganaModuleToggleSvg,
+#minimizeBookingLookupBtn .doganaModuleToggleSvg,
+#serverConsoleToggle .doganaModuleToggleSvg{
+  width:19px !important;
+  height:19px !important;
+  display:block !important;
+}
+
+#doganaMinimizeBtn .doganaModuleToggleSvg path,
+#minimizeExtraBtn .doganaModuleToggleSvg path,
+#organizePanelToggleBtn .doganaModuleToggleSvg path,
+#operativeChecklistToggleBtn .doganaModuleToggleSvg path,
+#notificationToggleBtn .doganaModuleToggleSvg path,
+#postItToggleBtn .doganaModuleToggleSvg path,
+#minimizeShipsBtn .doganaModuleToggleSvg path,
+#minimizeBookingLookupBtn .doganaModuleToggleSvg path,
+#serverConsoleToggle .doganaModuleToggleSvg path{
+  stroke:currentColor !important;
+  stroke-width:1.9 !important;
+}
+
+body[data-theme="dark"] #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  color:#c4b5fd !important;
+  border-color:color-mix(in srgb, #8b5cf6 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, #8b5cf6 13%, var(--surface)) 0%,
+    color-mix(in srgb, #8b5cf6 5%, var(--surface)) 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05), 0 4px 10px rgba(0,0,0,.16) !important;
+}
+
+/* Footer separato dai moduli: mantiene la propria card ma vive fuori da #dogana-section. */
+.wrap > .appFooter{
+  margin-top:18px !important;
+  margin-bottom:0 !important;
+}
+</style>
+<!-- R28-UNIFORM-ORGANIZZA-TOGGLES-FOOTER-OUTSIDE -->
 
 </body>
 </html>
