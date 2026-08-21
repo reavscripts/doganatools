@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R20 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R21 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R20 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R21 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R20"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R21"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R20";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R21";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R20</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R21</strong></a>
   </div>
 </footer>
 </section>
@@ -16275,6 +16275,7 @@ document.addEventListener("DOMContentLoaded", initExtraSoundNotify);
     if (sessionName) sessionName.textContent = String(name || "NOME-SESSIONE").toUpperCase();
     if (sessionBtn) {
       sessionBtn.style.setProperty("--session-color", color);
+      document.querySelector(".appQuickNav")?.style.setProperty("--station-color", color || "var(--accent-2)");
       sessionBtn.title = "Rinomina postazione";
       sessionBtn.setAttribute("aria-label", `Rinomina postazione ${name}`);
     }
@@ -21313,7 +21314,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R20 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R21 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22451,6 +22452,195 @@ body[data-theme="dark"] #doganaNavBookingBtn{
 }
 </style>
 <!-- R20-FOUR-TOPNAV-BUTTONS-REAL-DIFF -->
+
+
+
+<style id="dogana-topnav-clean-r21">
+/* =========================================================
+   R21 — TOPBAR SOBRIA
+   - DOGANA AI: bottone pieno con lo stesso gradiente della linea AI.
+   - TABELLA / CONTENITORI / ORGANIZZA / NAVI / BOOKING: unico celestino.
+   - IMPOSTAZIONI / POSTAZIONE: colore dinamico della postazione.
+   - Nessuna linea/pseudo-elemento multicolor nel menu.
+   ========================================================= */
+
+.appQuickNav{
+  --topnav-sky:#38bdf8;
+  --station-color:var(--accent-2);
+}
+
+/* Elimina definitivamente le linee decorative dei vecchi visual system. */
+body .appQuickNav > a::before,
+body .appQuickNav > a::after,
+body .appQuickNav > button::before,
+body .appQuickNav > button::after,
+body .appQuickNav #organizeNavToggle::before,
+body .appQuickNav #organizeNavToggle::after,
+body .appQuickNav #doganaMenuSettingsBtn::before,
+body .appQuickNav #doganaMenuSettingsBtn::after,
+body .appQuickNav #doganaMenuSessionSync::before,
+body .appQuickNav #doganaMenuSessionSync::after{
+  content:none !important;
+  display:none !important;
+}
+
+/* Base comune: più piatta e pulita del precedente effetto R20. */
+body .appQuickNav > a,
+body .appQuickNav > button,
+body .appQuickNav #organizeNavToggle,
+body .appQuickNav #doganaMenuSettingsBtn,
+body .appQuickNav #doganaMenuSessionSync{
+  position:relative !important;
+  overflow:hidden !important;
+  border-width:1px !important;
+  border-style:solid !important;
+  border-radius:12px !important;
+  transform:none !important;
+  filter:none !important;
+  transition:background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease, filter .16s ease !important;
+}
+
+/* Celestino unico per i moduli operativi. */
+body #doganaNavTableBtn,
+body #doganaNavContainersBtn,
+body #organizeNavToggle,
+body #doganaNavShipsBtn,
+body #doganaNavBookingBtn{
+  color:color-mix(in srgb, #0369a1 82%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--topnav-sky) 42%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky) 6%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.74),
+    0 4px 12px rgba(14,165,233,.08) !important;
+}
+
+body #doganaNavTableBtn:hover,
+body #doganaNavContainersBtn:hover,
+body #organizeNavToggle:hover,
+body .appNavDropdown.open #organizeNavToggle,
+body #doganaNavShipsBtn:hover,
+body #doganaNavBookingBtn:hover{
+  color:color-mix(in srgb, #075985 88%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--topnav-sky) 62%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky) 21%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky) 9%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 6px 15px rgba(14,165,233,.13) !important;
+  transform:translateY(-1px) !important;
+}
+
+body #doganaNavTableBtn:active,
+body #doganaNavContainersBtn:active,
+body #organizeNavToggle:active,
+body #doganaNavShipsBtn:active,
+body #doganaNavBookingBtn:active{
+  transform:translateY(0) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.62), 0 2px 7px rgba(14,165,233,.09) !important;
+}
+
+/* DOGANA AI: il gradiente è esattamente quello della linea del modulo AI. */
+body .appQuickNav > a[href="#customs-ai-section"]{
+  color:#fff !important;
+  border-color:rgba(255,255,255,.24) !important;
+  background:linear-gradient(90deg,
+    #2563eb 0%,
+    #06b6d4 18%,
+    #22c55e 36%,
+    #f59e0b 55%,
+    #ec4899 74%,
+    #8b5cf6 90%,
+    #2563eb 100%) !important;
+  text-shadow:0 1px 2px rgba(15,23,42,.24) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.30),
+    0 5px 14px rgba(79,70,229,.18) !important;
+}
+body .appQuickNav > a[href="#customs-ai-section"]:hover{
+  color:#fff !important;
+  border-color:rgba(255,255,255,.36) !important;
+  background:linear-gradient(90deg,
+    #2563eb 0%,
+    #06b6d4 18%,
+    #22c55e 36%,
+    #f59e0b 55%,
+    #ec4899 74%,
+    #8b5cf6 90%,
+    #2563eb 100%) !important;
+  filter:saturate(1.04) brightness(1.035) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.36),
+    0 7px 17px rgba(79,70,229,.23) !important;
+  transform:translateY(-1px) !important;
+}
+body .appQuickNav > a[href="#customs-ai-section"]:active{
+  transform:translateY(0) !important;
+  filter:saturate(1.01) brightness(.99) !important;
+}
+
+/* Impostazioni + postazione: stesso colore dinamico della postazione. */
+body #doganaMenuSettingsBtn,
+body #doganaMenuSessionSync{
+  color:color-mix(in srgb, var(--station-color) 78%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--station-color) 40%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--station-color) 6%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.72),
+    0 4px 12px color-mix(in srgb, var(--station-color) 12%, transparent) !important;
+}
+body #doganaMenuSettingsBtn:hover,
+body #doganaMenuSessionSync:hover{
+  color:color-mix(in srgb, var(--station-color) 90%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--station-color) 60%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--station-color) 21%, var(--surface)) 0%,
+    color-mix(in srgb, var(--station-color) 9%, var(--surface-soft)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.80),
+    0 6px 15px color-mix(in srgb, var(--station-color) 17%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+body #doganaMenuSessionSync .appSessionDot{
+  background:var(--station-color) !important;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--station-color) 17%, transparent) !important;
+}
+
+/* Focus uniforme, senza reintrodurre colori extra. */
+body .appQuickNav > a:focus-visible,
+body .appQuickNav > button:focus-visible{
+  outline:none !important;
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--topnav-sky) 20%, transparent), 0 5px 14px rgba(15,23,42,.08) !important;
+}
+body #doganaMenuSettingsBtn:focus-visible,
+body #doganaMenuSessionSync:focus-visible{
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--station-color) 20%, transparent), 0 5px 14px rgba(15,23,42,.08) !important;
+}
+body .appQuickNav > a[href="#customs-ai-section"]:focus-visible{
+  box-shadow:0 0 0 3px rgba(99,102,241,.20), 0 6px 16px rgba(79,70,229,.20) !important;
+}
+
+body[data-theme="dark"] #doganaNavTableBtn,
+body[data-theme="dark"] #doganaNavContainersBtn,
+body[data-theme="dark"] #organizeNavToggle,
+body[data-theme="dark"] #doganaNavShipsBtn,
+body[data-theme="dark"] #doganaNavBookingBtn{
+  color:#bae6fd !important;
+  border-color:color-mix(in srgb, var(--topnav-sky) 34%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--topnav-sky) 13%, var(--surface)) 0%,
+    color-mix(in srgb, var(--topnav-sky) 6%, var(--surface-soft)) 100%) !important;
+}
+body[data-theme="dark"] #doganaMenuSettingsBtn,
+body[data-theme="dark"] #doganaMenuSessionSync{
+  color:color-mix(in srgb, var(--station-color) 62%, #f8fafc) !important;
+}
+</style>
+<!-- R21-CLEAN-TOPNAV-FINAL -->
 
 </body>
 </html>
