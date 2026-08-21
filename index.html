@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:24 CEST | BUTTON-VISUAL-SYSTEM-R13 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 09:40 CEST | BUTTON-VISUAL-SYSTEM-R14 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R13 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R14 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R13"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R14"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R13";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R14";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7229,6 +7229,35 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   #postItAddBtn{ min-width:0; min-height:44px; }
   .postItBoard{ grid-template-columns:1fr; }
 }
+
+/* === FIX R14: pulsante mostra/nascondi dei sottomoduli Organizza sempre allineato a destra === */
+.operativeChecklistPanel.is-minimized .operativeChecklistHead,
+.notificationPanel.is-minimized .notificationHead,
+.postItPanel.is-minimized .postItHead{
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) auto !important;
+  align-items:center !important;
+  gap:12px !important;
+  width:100% !important;
+}
+.operativeChecklistPanel.is-minimized .operativeChecklistHead > :first-child,
+.notificationPanel.is-minimized .notificationHead > :first-child,
+.postItPanel.is-minimized .postItHead > :first-child{
+  min-width:0;
+}
+.operativeChecklistPanel.is-minimized .operativeChecklistActions,
+.notificationPanel.is-minimized .notificationActions,
+.postItPanel.is-minimized .postItActions{
+  margin-left:auto !important;
+  justify-content:flex-end !important;
+  align-self:center !important;
+  flex-wrap:nowrap !important;
+}
+.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+.notificationPanel.is-minimized #notificationToggleBtn,
+.postItPanel.is-minimized #postItToggleBtn{
+  margin-left:0 !important;
+}
 </style>
 
 </head>
@@ -7958,7 +7987,7 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R13</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R14</strong></a>
   </div>
 </footer>
 </section>
@@ -21196,7 +21225,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R13 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R14 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
