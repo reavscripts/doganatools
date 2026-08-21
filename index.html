@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:00 CEST | BUTTON-VISUAL-SYSTEM-R19 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:03 CEST | BUTTON-VISUAL-SYSTEM-R20 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R19 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R20 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R19"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R20"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R19";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R20";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7520,8 +7520,8 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <nav class="appQuickNav" aria-label="Scorciatoie">
     <a href="#customs-ai-section" data-jump-focus="#customsAiInput">DOGANA AI</a>
-    <a href="#dogana-section">TABELLA</a>
-    <a href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
+    <a id="doganaNavTableBtn" href="#dogana-section">TABELLA</a>
+    <a id="doganaNavContainersBtn" href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
     <div class="appNavDropdown" id="organizeNavDropdown">
       <button type="button" class="appNavDropdownToggle" id="organizeNavToggle" aria-expanded="false" aria-haspopup="true" aria-controls="organizeNavMenu">
         ORGANIZZA <span class="organizeNavCount" id="organizeNavCount" hidden>0</span><span class="appNavDropdownChevron" aria-hidden="true">⌄</span>
@@ -7532,8 +7532,8 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
       </div>
     </div>
-    <a href="#navi-section">NAVI</a>
-    <a href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
+    <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
+    <a id="doganaNavBookingBtn" href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn settingsIconOnly" aria-label="Impostazioni" title="Impostazioni"><span aria-hidden="true">⚙</span></button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R19</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R20</strong></a>
   </div>
 </footer>
 </section>
@@ -21313,7 +21313,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R19 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R20 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22132,12 +22132,12 @@ body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
 
 
 
-<!-- R19-MENU-TERMINAL-FIX-VERIFICATO -->
+<!-- R20-TOPNAV-FOUR-BUTTONS-VERIFICATO -->
 
 
-<style id="dogana-topnav-organizza-effect-final-r19">
+<style id="dogana-topnav-organizza-effect-base-r20">
 /* =========================================================
-   R19 — MENU SUPERIORE: effetto ORGANIZZA realmente uniforme
+   R20 — MENU SUPERIORE: base effetto ORGANIZZA uniforme
    Nessuna custom property auto-referenziale: ogni comando ha
    una tonalità esplicita e usa lo stesso volume/hover/focus.
    ========================================================= */
@@ -22271,7 +22271,7 @@ body[data-theme="dark"] .appQuickNav > button{
 }
 
 /* =========================================================
-   R19 — CONTATORI TERMINAL RICERCA CONTENITORI
+   R20 — CONTATORI TERMINAL RICERCA CONTENITORI
    Il tab attivo ora ha fondo chiaro: niente più bianco su bianco.
    ========================================================= */
 #extraPanel .extraTabs button.extraTab .extraTabCount{
@@ -22308,7 +22308,149 @@ body[data-theme="dark"] #extraPanel .extraTabs button.extraTab.active .extraTabC
   color:#bfdbfe !important;
 }
 </style>
-<!-- R19-REAL-FINAL-OVERRIDE: TOPNAV-ORGANIZZA-STYLE + EXTRA-TAB-COUNT-CONTRAST -->
+<!-- R20-REAL-FINAL-OVERRIDE: TOPNAV-ORGANIZZA-STYLE + EXTRA-TAB-COUNT-CONTRAST -->
+
+
+
+<!-- R20-TOPNAV-FOUR-BUTTONS-EXPLICIT -->
+<style id="dogana-topnav-four-buttons-explicit-r20">
+/* =========================================================
+   R20 — TABELLA / CONTENITORI / NAVI / BOOKING
+   Regole esplicite con ID: stessa UI di ORGANIZZA.
+   Evita che i vecchi stili degli <a> prevalgano sul visual system.
+   ========================================================= */
+body #doganaNavTableBtn,
+body #doganaNavContainersBtn,
+body #doganaNavShipsBtn,
+body #doganaNavBookingBtn{
+  position:relative !important;
+  isolation:isolate !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:36px !important;
+  padding:9px 13px !important;
+  border-radius:12px !important;
+  border-style:solid !important;
+  border-width:1px !important;
+  border-image:none !important;
+  font-family:var(--font) !important;
+  font-size:11px !important;
+  font-weight:800 !important;
+  line-height:1.15 !important;
+  letter-spacing:.07em !important;
+  text-transform:uppercase !important;
+  text-decoration:none !important;
+  white-space:nowrap !important;
+  text-shadow:none !important;
+  transform:translateY(0) !important;
+  transition:transform .16s ease, border-color .16s ease, background .16s ease, box-shadow .16s ease, color .16s ease !important;
+}
+
+/* TABELLA — blu */
+body #doganaNavTableBtn{
+  border-color:color-mix(in srgb,#2563eb 44%,var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,#2563eb 15%,var(--surface)) 0%,
+    color-mix(in srgb,#2563eb 6%,var(--surface)) 100%) !important;
+  color:color-mix(in srgb,#2563eb 86%,var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84), inset 0 -1px 0 rgba(37,99,235,.11), 0 5px 14px rgba(37,99,235,.14) !important;
+}
+/* CONTENITORI — verde */
+body #doganaNavContainersBtn{
+  border-color:color-mix(in srgb,#16a34a 44%,var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,#16a34a 15%,var(--surface)) 0%,
+    color-mix(in srgb,#16a34a 6%,var(--surface)) 100%) !important;
+  color:color-mix(in srgb,#15803d 88%,var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84), inset 0 -1px 0 rgba(22,163,74,.11), 0 5px 14px rgba(22,163,74,.14) !important;
+}
+/* NAVI — ciano */
+body #doganaNavShipsBtn{
+  border-color:color-mix(in srgb,#0891b2 44%,var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,#0891b2 15%,var(--surface)) 0%,
+    color-mix(in srgb,#0891b2 6%,var(--surface)) 100%) !important;
+  color:color-mix(in srgb,#0e7490 88%,var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84), inset 0 -1px 0 rgba(8,145,178,.11), 0 5px 14px rgba(8,145,178,.14) !important;
+}
+/* BOOKING — ambra */
+body #doganaNavBookingBtn{
+  border-color:color-mix(in srgb,#d97706 46%,var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb,#d97706 16%,var(--surface)) 0%,
+    color-mix(in srgb,#d97706 6%,var(--surface)) 100%) !important;
+  color:color-mix(in srgb,#b45309 90%,var(--heading)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.84), inset 0 -1px 0 rgba(217,119,6,.12), 0 5px 14px rgba(217,119,6,.15) !important;
+}
+
+/* Riflesso superiore uguale a ORGANIZZA. */
+body #doganaNavTableBtn::before,
+body #doganaNavContainersBtn::before,
+body #doganaNavShipsBtn::before,
+body #doganaNavBookingBtn::before{
+  content:"" !important;
+  position:absolute !important;
+  left:10px !important;
+  right:10px !important;
+  top:2px !important;
+  height:1px !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.75 !important;
+  z-index:1 !important;
+}
+body #doganaNavTableBtn::before{ background:linear-gradient(90deg,transparent,rgba(96,165,250,.88),transparent) !important; }
+body #doganaNavContainersBtn::before{ background:linear-gradient(90deg,transparent,rgba(74,222,128,.88),transparent) !important; }
+body #doganaNavShipsBtn::before{ background:linear-gradient(90deg,transparent,rgba(34,211,238,.88),transparent) !important; }
+body #doganaNavBookingBtn::before{ background:linear-gradient(90deg,transparent,rgba(251,191,36,.90),transparent) !important; }
+
+body #doganaNavTableBtn:hover{
+  border-color:#2563eb !important;
+  background:linear-gradient(180deg,color-mix(in srgb,#2563eb 22%,var(--surface)),color-mix(in srgb,#2563eb 9%,var(--surface))) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 9px 20px rgba(37,99,235,.20) !important;
+  transform:translateY(-1px) !important;
+}
+body #doganaNavContainersBtn:hover{
+  border-color:#16a34a !important;
+  background:linear-gradient(180deg,color-mix(in srgb,#16a34a 22%,var(--surface)),color-mix(in srgb,#16a34a 9%,var(--surface))) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 9px 20px rgba(22,163,74,.20) !important;
+  transform:translateY(-1px) !important;
+}
+body #doganaNavShipsBtn:hover{
+  border-color:#0891b2 !important;
+  background:linear-gradient(180deg,color-mix(in srgb,#0891b2 22%,var(--surface)),color-mix(in srgb,#0891b2 9%,var(--surface))) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 9px 20px rgba(8,145,178,.20) !important;
+  transform:translateY(-1px) !important;
+}
+body #doganaNavBookingBtn:hover{
+  border-color:#d97706 !important;
+  background:linear-gradient(180deg,color-mix(in srgb,#d97706 23%,var(--surface)),color-mix(in srgb,#d97706 9%,var(--surface))) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.92),0 9px 20px rgba(217,119,6,.21) !important;
+  transform:translateY(-1px) !important;
+}
+body #doganaNavTableBtn:active,
+body #doganaNavContainersBtn:active,
+body #doganaNavShipsBtn:active,
+body #doganaNavBookingBtn:active{
+  transform:translateY(0) !important;
+}
+body #doganaNavTableBtn:focus-visible,
+body #doganaNavContainersBtn:focus-visible,
+body #doganaNavShipsBtn:focus-visible,
+body #doganaNavBookingBtn:focus-visible{
+  outline:none !important;
+  box-shadow:0 0 0 4px color-mix(in srgb,currentColor 14%,transparent),0 8px 18px rgba(15,23,42,.10) !important;
+}
+
+body[data-theme="dark"] #doganaNavTableBtn,
+body[data-theme="dark"] #doganaNavContainersBtn,
+body[data-theme="dark"] #doganaNavShipsBtn,
+body[data-theme="dark"] #doganaNavBookingBtn{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 6px 16px rgba(0,0,0,.22) !important;
+}
+</style>
+<!-- R20-FOUR-TOPNAV-BUTTONS-REAL-DIFF -->
 
 </body>
 </html>
