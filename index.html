@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 15:38 CEST | BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 15:38 CEST | BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7728,7 +7728,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <div class="extraSubtitle" id="extraTerminalSubtitle">Seleziona il terminal e controlla i container inseriti.</div>
     </div>
     <div class="miniToolbar extraTopToolbar">
-      <span id="extraAutoDynamicBadge" class="extraAutoSingleInterval" title="SCT: 30 secondi per ogni riga · CONATECO/TFG ogni 3 minuti">SCT 30s/riga · C/TFG 3m</span>
+      <span id="extraAutoDynamicBadge" class="extraAutoSingleInterval" title="Timer automatico del terminal selezionato">SCT · CICLO DINAMICO</span>
       <label id="extraAutoCheckSwitch" class="autoCheckSwitch extraAutoCheckToggle is-on" title="Attiva o disattiva la ricerca automatica contenitori">
         <input id="extraAutoCheckToggle" type="checkbox" checked />
         <span class="autoCheckSlider" aria-hidden="true"></span>
@@ -8083,7 +8083,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL</strong></a>
   </div>
 </footer>
 </div>
@@ -11799,7 +11799,11 @@ button.doganaModuleSvgToggleBtn:active,
       const sctRowCount = getExtraAutoRowCount("sct");
       const sctSeconds = getExtraAutomaticCheckSeconds();
       const sctIntervalLabel = formatExtraIntervalCompact(sctSeconds);
-      const fastMinutes = Math.round(EXTRA_FAST_CHECK_INTERVAL / 60000);
+      const fastSeconds = Math.round(EXTRA_FAST_CHECK_INTERVAL / 1000);
+      const fastIntervalLabel = formatExtraIntervalCompact(fastSeconds);
+      const activeIsSct = activeExtraTerminal === "sct";
+      const activeIntervalMs = activeIsSct ? getExtraEffectiveCheckInterval() : EXTRA_FAST_CHECK_INTERVAL;
+      const activeIntervalLabel = formatExtraIntervalCompact(Math.round(activeIntervalMs / 1000));
 
       if (extraAutoCheckToggle) extraAutoCheckToggle.checked = !!extraAutoCheckEnabled;
       if (extraAutoCheckToggleText) extraAutoCheckToggleText.textContent = extraAutoCheckEnabled ? "ON" : "OFF";
@@ -11809,38 +11813,51 @@ button.doganaModuleSvgToggleBtn:active,
         ? "Ricerca automatica attiva · clicca per disattivare"
         : "Ricerca automatica disattivata · clicca per attivare");
 
-      const dynamicBadge = document.getElementById("extraAutoDynamicBadge");
-      if (dynamicBadge) {
-        dynamicBadge.textContent = `SCT ${sctIntervalLabel} · ${sctRowCount} ${sctRowCount === 1 ? "riga" : "righe"} · C/TFG ${fastMinutes}m`;
-        dynamicBadge.title = `${sctRowCount} righe SCT × 30 secondi = controllo ogni ${sctIntervalLabel}. CONATECO/TFG ogni ${fastMinutes} min.`;
-      }
       if (extraCheckTerminalText) extraCheckTerminalText.textContent = terminalLabel;
 
       const activeLastCheckAt = getExtraLastCheckAt(activeExtraTerminal);
       if (extraLastCheckText) extraLastCheckText.textContent = activeLastCheckAt ? formatExtraClock(activeLastCheckAt) : "mai eseguito";
       extraLastCheckDot?.classList.toggle("ok", !!activeLastCheckAt);
 
+      const dynamicBadge = document.getElementById("extraAutoDynamicBadge");
+
       if (!extraAutoCheckEnabled) {
+        if (dynamicBadge) {
+          dynamicBadge.textContent = `${terminalLabel} · RICERCA OFF`;
+          dynamicBadge.title = `Ricerca automatica ${terminalLabel} disattivata.`;
+        }
         if (extraNextCheckText) extraNextCheckText.textContent = "disattivato";
         extraNextCheckDot?.classList.remove("ok");
         if (extraAutoStatus) {
-          extraAutoStatus.textContent = `Ricerca automatica disattivata. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`;
+          extraAutoStatus.textContent = `Ricerca automatica ${terminalLabel} disattivata.`;
         }
         return;
       }
 
+      // Inizializza i riferimenti temporali solo se mancanti, senza spostare un ciclo già armato.
       if (!extraNextCheckAt) extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
       if (!extraFastNextCheckAt) extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
 
-      const nextAt = activeExtraTerminal === "sct" ? extraNextCheckAt : extraFastNextCheckAt;
+      const nextAt = activeIsSct ? extraNextCheckAt : extraFastNextCheckAt;
       const remaining = Math.max(0, nextAt - Date.now());
-      if (extraNextCheckText) extraNextCheckText.textContent = `tra ${formatExtraCountdown(remaining)}`;
+      const remainingLabel = formatExtraCountdown(remaining);
+
+      // Badge contestuale: mostra soltanto il terminal attualmente selezionato.
+      // SCT mantiene la cadenza dinamica 30s × riga; CONATECO e TFG mostrano il loro ciclo rapido.
+      if (dynamicBadge) {
+        dynamicBadge.textContent = `${terminalLabel} · ${activeIntervalLabel} · TRA ${remainingLabel}`;
+        dynamicBadge.title = activeIsSct
+          ? `${sctRowCount} ${sctRowCount === 1 ? "riga SCT" : "righe SCT"} × 30 secondi = ciclo ogni ${sctIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`
+          : `${terminalLabel}: ciclo automatico ogni ${fastIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`;
+      }
+
+      if (extraNextCheckText) extraNextCheckText.textContent = `tra ${remainingLabel}`;
       extraNextCheckDot?.classList.add("ok");
 
       if (extraAutoStatus) {
         extraAutoStatus.textContent = activeLastCheckAt
-          ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · prossimo tra ${formatExtraCountdown(remaining)}. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`
-          : `Ricerca automatica attiva. SCT: ${sctRowCount} righe / ${sctIntervalLabel} · CONATECO/TFG: ${fastMinutes} min.`;
+          ? `Ultimo controllo ${terminalLabel}: ${formatExtraClock(activeLastCheckAt)} · ciclo ${activeIntervalLabel} · prossimo tra ${remainingLabel}.`
+          : `Ricerca automatica ${terminalLabel} attiva · ciclo ${activeIntervalLabel} · prossimo tra ${remainingLabel}.`;
       }
     }
 
@@ -13350,7 +13367,8 @@ async function runAutoCheckTerminal(terminalToCheck) {
     if (terminalToCheck === "sct") {
       extraNextCheckAt = Date.now() + getExtraEffectiveCheckInterval();
     } else if (terminalToCheck === "conateco" || terminalToCheck === "flavio") {
-      extraFastNextCheckAt = Date.now() + EXTRA_FAST_CHECK_INTERVAL;
+      // Il controllo manuale non deve spostare il countdown del ciclo automatico rapido.
+      // extraFastNextCheckAt viene aggiornato dal vero timer CONATECO/TFG.
     }
   }
   if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
@@ -21391,7 +21409,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R36-AUTO-30S-TOGGLE con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
