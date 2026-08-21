@@ -98,7 +98,8 @@ test("un prodotto incompleto restituisce subito il miglior codice con ipotesi di
   assert.ok(result.classification.assumptions.length >= 1);
   const materialQuestion = result.missingDetails.find(question => question.id === "material");
   assert.ok(materialQuestion);
-  assert.equal(materialQuestion.required, false);
+  assert.equal(materialQuestion.required, true);
+  assert.equal(result.classification.decisionStatus, "provisional");
   assert.equal(
     result.classification.relativePercentage +
       result.alternatives.reduce((sum, candidate) => sum + candidate.relativePercentage, 0),
@@ -116,7 +117,72 @@ test("pomodori pelati 600 g restituisce immediatamente la voce dedicata", async 
   assert.equal(result.classification.code, "2002101900");
   assert.match(result.classification.description, /inferiore o uguale a 1 kg/i);
   assert.equal(result.classification.normativeVerified, true);
+  assert.equal(result.classification.decisionStatus, "complete");
+  assert.equal(result.clarification.activeQuestion, null);
   assert.equal(result.dataset.status, "official");
+});
+
+test("pomodori pelati senza peso chiede soltanto il dato che separa le sottovoci", async () => {
+  const result = await service().classificationEngine.classify({
+    description: "pomodori pelati",
+    answers: {},
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(result.status, "classified");
+  assert.equal(result.classification.decisionStatus, "provisional");
+  assert.equal(result.clarification.activeQuestion.id, "net_weight");
+  assert.match(result.clarification.activeQuestion.text, /peso netto/i);
+  assert.deepEqual(result.missingDetails.map(question => question.id), ["net_weight"]);
+});
+
+test("la risposta guidata completa la classificazione senza ricominciare la ricerca", async () => {
+  const currentService = service();
+  const lightPack = await currentService.classificationEngine.classify({
+    description: "pomodori pelati",
+    answers: { net_weight: "600 g" },
+    classificationDate: "2026-08-19"
+  });
+  const bulkPack = await currentService.classificationEngine.classify({
+    description: "pomodori pelati",
+    answers: { net_weight: "2 kg" },
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(lightPack.classification.code, "2002101900");
+  assert.equal(bulkPack.classification.code, "2002101100");
+  assert.equal(lightPack.classification.decisionStatus, "complete");
+  assert.equal(bulkPack.classification.decisionStatus, "complete");
+});
+
+test("un dettaglio già risposto non viene richiesto di nuovo dal livello semantico", async () => {
+  const result = await service({
+    aiProvider: semanticProvider({
+      canonicalProduct: "pomodori pelati conservati",
+      function: "ortaggio preparato o conservato",
+      use: "alimentazione umana",
+      officialSearchConcepts: ["pomodori preparati", "pomodori interi o in pezzi"],
+      excludedCandidateConcepts: ["pomodori freschi"],
+      decisiveDetails: ["peso netto esatto", "materiale del contenitore"],
+      suggestedHs4Codes: ["2002"]
+    }, ["200210", "2002"])
+  }).classificationEngine.classify({
+    description: "pomodori pelati",
+    answers: { net_weight: "600 g" },
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(result.classification.code, "2002101900");
+  assert.equal(result.classification.decisionStatus, "complete");
+  assert.equal(result.clarification.activeQuestion, null);
+});
+
+test("un dato non disponibile mantiene il risultato esplicitamente provvisorio", async () => {
+  const result = await service().classificationEngine.classify({
+    description: "pomodori pelati",
+    answers: { net_weight: "Non disponibile" },
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(result.classification.decisionStatus, "provisional");
+  assert.equal(result.clarification.activeQuestion, null);
+  assert.equal(result.clarification.unresolvedAnswers.length, 1);
 });
 
 test("il peso della confezione riordina correttamente i pomodori pelati", async () => {
@@ -139,7 +205,7 @@ test("pasta senza glutine restituisce immediatamente un risultato con assunzioni
   assert.equal(result.status, "classified");
   assert.equal(result.classification.code, "1902191090");
   assert.ok(result.classification.assumptions.length >= 1);
-  assert.ok(result.missingDetails.some(question => question.id === "pasta_state"));
+  assert.ok(result.missingDetails.some(question => question.id === "product_state"));
 });
 
 test("motore diesel auto si ferma al ramo HS6 quando manca la potenza", async () => {
@@ -163,7 +229,7 @@ test("motore diesel auto si ferma al ramo HS6 quando manca la potenza", async ()
   assert.equal(result.classification.level, "HS6");
   assert.equal(result.classification.completeTaric, false);
   assert.match(result.classification.description, /propulsione di veicoli del capitolo 87/i);
-  assert.ok(result.missingDetails.some(question => question.id === "semantic_detail_1" && question.required));
+  assert.ok(result.missingDetails.some(question => question.id === "power" && question.required));
   assert.equal(result.alternatives.some(item => item.code.startsWith("8703")), false);
 });
 
@@ -188,6 +254,27 @@ test("motore diesel auto con potenza restituisce la TARIC della fascia corretta"
   assert.equal(result.classification.level, "TARIC");
   assert.match(result.classification.description, /superiore a 100 kW ma inferiore o uguale a 200 kW/i);
   assert.ok(result.alternatives.every(item => item.code.startsWith("840820")));
+});
+
+test("il ramo ufficiale recupera le proprie sottovoci anche se non erano nei primi risultati lessicali", async () => {
+  const result = await service({
+    aiProvider: semanticProvider({
+      canonicalProduct: "motore diesel",
+      function: "organo propulsore per veicoli a motore",
+      use: "alimentazione energia meccanica",
+      officialSearchConcepts: ["motori diesel", "parti di motori", "mezzi di trasporto su strada"],
+      excludedCandidateConcepts: ["veicolo completo", "motore marino"],
+      decisiveDetails: ["tipo di veicolo", "potenza nominale in kW"],
+      suggestedHs4Codes: ["8708", "8407", "8501"]
+    }, ["840820", "8408"])
+  }).classificationEngine.classify({
+    description: "motore diesel auto",
+    answers: { power: "200 kW" },
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(result.status, "classified");
+  assert.equal(result.classification.code, "8408205700");
+  assert.equal(result.classification.decisionStatus, "complete");
 });
 
 test("la ricerca semantica distingue il cibo per cavalli dai cavalli vivi", async () => {
@@ -317,6 +404,18 @@ test("provider OpenAI senza API key resta disattivato e il fallback è disponibi
   });
   assert.equal(provider.available, false);
   assert.equal(provider.reason, "api_key_missing");
+});
+
+test("DOGANA AI risponde anche alle domande doganali basilari", async () => {
+  const result = await service().classificationEngine.classify({
+    description: "Qual è la differenza tra HS, CN e TARIC?",
+    answers: {},
+    classificationDate: "2026-08-19"
+  });
+  assert.equal(result.status, "answered");
+  assert.match(result.answer.title, /HS, CN e TARIC/i);
+  assert.ok(result.answer.bullets.some(item => /10 cifre/i.test(item)));
+  assert.match(result.answer.source.url, /^https:\/\/taxation-customs\.ec\.europa\.eu\//);
 });
 
 test("endpoint analyze e measures sono collegati", async () => {

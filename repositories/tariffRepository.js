@@ -195,6 +195,10 @@ class TariffRepository {
       options.product?.material,
       options.product?.function,
       options.product?.use,
+      options.product?.composition,
+      options.product?.dimensions,
+      options.product?.power,
+      options.product?.displacement,
       ...(options.product?.semanticTerms || []),
       ...(options.product?.additionalCharacteristics || [])
     ].filter(Boolean).join(" ");
@@ -203,10 +207,12 @@ class TariffRepository {
     const queryTokenSet = new Set(queryTokens);
     const expandedTokens = tokenizeForSearch(expandQuery(primaryText)).filter(token => !queryTokenSet.has(token));
     const date = options.classificationDate || new Date().toISOString().slice(0, 10);
+    const requiredPrefix = normalizeCode(options.prefix);
     const candidates = [];
     for (const indexed of this.searchIndex || []) {
       const record = indexed.record;
       if (record.level !== "TARIC" || !this.isValidOn(record, date)) continue;
+      if (requiredPrefix && !record.code.startsWith(requiredPrefix)) continue;
       const matchDetails = scoreTokenCoverage(queryTokens, indexed, this.documentFrequency, this.searchIndex.length);
       const expandedCoverage = expandedTokens.length
         ? scoreTokenCoverage(expandedTokens, indexed, this.documentFrequency, this.searchIndex.length).coverage

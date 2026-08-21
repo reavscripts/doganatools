@@ -9,7 +9,8 @@ class TariffSearchService {
     return this.repository.searchTariffCodes(query, {
       product,
       classificationDate: options.classificationDate,
-      limit: options.limit || 25
+      limit: options.limit || 25,
+      prefix: options.prefix
     });
   }
 

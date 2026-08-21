@@ -8,6 +8,25 @@ class ClassificationEngine {
   }
 
   async classify(input) {
+    const knowledgeAnswer = Object.keys(input.answers || {}).length === 0
+      ? this.knowledgeService?.answer(input.description)
+      : null;
+    if (knowledgeAnswer) {
+      const response = {
+        module: "DOGANA AI",
+        moduleVersion: this.moduleVersion,
+        classificationDate: input.classificationDate,
+        originalDescription: input.description,
+        status: "answered",
+        dataset: this.repository.getDatasetInfo(),
+        ai: this.aiProvider?.getStatus?.() || null,
+        answer: knowledgeAnswer,
+        message: "Domanda doganale riconosciuta."
+      };
+      this.writeHistory(input, response, []);
+      return response;
+    }
+
     const analysis = await this.productAnalyzer.analyze(input.description, input.answers);
     const datasetInfo = this.repository.getDatasetInfo();
     const base = {
@@ -45,7 +64,7 @@ class ClassificationEngine {
     );
     const topCandidate = candidates[0] || null;
     if (semanticBranch && shouldReturnBranch(semanticBranch, topCandidate, input.description, analysis.product)) {
-      const response = this.buildBranchResponse(input, analysis, datasetInfo, base, semanticBranch);
+      const response = this.buildBranchResponse(input, analysis, datasetInfo, base, semanticBranch, candidates);
       this.writeHistory(input, response, candidates);
       return response;
     }
@@ -90,7 +109,15 @@ class ClassificationEngine {
 
     const sourceResult = this.sourceService.getSources(top.record, datasetInfo);
     const reasons = buildReasons(analysis.product, top, validation, datasetInfo);
-    const assumptions = buildAssumptions(analysis.questions, top.record);
+    const clarification = this.clarificationService.build({
+      input,
+      product: analysis.product,
+      classification: { code: top.record.code, level: "TARIC" },
+      candidates,
+      legacyQuestions: analysis.questions,
+      semanticDetails: analysis.product.decisiveDetails
+    });
+    const assumptions = buildAssumptions(clarification.questions, top.record);
     const comparableCandidates = attachRelativePercentages(selectComparableCandidates(candidates));
     const relativeByCode = new Map(comparableCandidates.map(candidate => [candidate.record.code, candidate.relativePercentage]));
     const classification = {
@@ -104,6 +131,9 @@ class ClassificationEngine {
       reasons,
       assumptions,
       resultNotes: Array.isArray(top.record.result_notes) ? top.record.result_notes : [],
+      decisionStatus: clarification.needed ? "provisional" : "complete",
+      completeTaric: !clarification.needed,
+      nextQuestion: clarification.activeQuestion?.text || null,
       normativeVerified: validation.normativeVerified && sourceResult.normativeVerified,
       validFrom: top.record.valid_from,
       validTo: top.record.valid_to,
@@ -122,14 +152,15 @@ class ClassificationEngine {
       dataset: datasetInfo,
       classification,
       alternatives,
-      missingDetails: analysis.questions,
-      provisional: assumptions.length > 0 || !classification.normativeVerified,
+      missingDetails: clarification.questions,
+      clarification,
+      provisional: clarification.needed || !classification.normativeVerified,
       percentageType: "relative_compatibility",
       sources: sourceResult.available,
       unavailableSources: sourceResult.unavailable,
       warnings: [...validation.warnings, ...(analysis.ai.warning ? [analysis.ai.warning] : [])],
-      message: assumptions.length
-        ? "Risultato immediato basato sulle ipotesi più probabili. Aggiungi dettagli nella ricerca per affinarlo."
+      message: clarification.needed
+        ? "Ho individuato il miglior candidato attuale. Rispondi al dettaglio richiesto per verificare la sottovoce esatta."
         : "Risultato immediato basato sui dati disponibili.",
       disclaimer: "La classificazione proposta costituisce uno strumento di supporto operativo e non sostituisce un'Informazione Tariffaria Vincolante (ITV/BTI) o la valutazione dell'autorità doganale competente."
     };
@@ -137,7 +168,7 @@ class ClassificationEngine {
     return response;
   }
 
-  buildBranchResponse(input, analysis, datasetInfo, base, branch) {
+  buildBranchResponse(input, analysis, datasetInfo, base, branch, candidates = []) {
     const branchRecord = branch.record;
     const branchCode = branchRecord.code;
     const hs4Record = this.repository.findByCode(branchCode.slice(0, 4));
@@ -158,7 +189,6 @@ class ClassificationEngine {
       legalCertainty: false,
       explanation: "La percentuale riguarda la compatibilità con il ramo HS/CN individuato; non indica che la TARIC a 10 cifre sia già determinata."
     };
-    const missingDetails = semanticQuestions(analysis.product.decisiveDetails);
     const classification = {
       code: branchCode,
       level: branchRecord.level,
@@ -181,14 +211,26 @@ class ClassificationEngine {
       ],
       assumptions: [],
       resultNotes: [],
-      needsDetails: missingDetails,
-      nextQuestion: buildNextQuestion(analysis.product.decisiveDetails),
+      needsDetails: [],
+      nextQuestion: null,
+      decisionStatus: "branch",
       completeTaric: false,
       normativeVerified: datasetInfo.isOfficial && sourceResult.normativeVerified,
       validFrom: branchRecord.valid_from || null,
       validTo: branchRecord.valid_to || null,
       dataVersion: datasetInfo.version || null
     };
+    const clarification = this.clarificationService.build({
+      input,
+      product: analysis.product,
+      classification,
+      candidates,
+      legacyQuestions: analysis.questions,
+      semanticDetails: analysis.product.decisiveDetails
+    });
+    const missingDetails = clarification.questions;
+    classification.needsDetails = missingDetails;
+    classification.nextQuestion = clarification.activeQuestion?.text || buildNextQuestion(analysis.product.decisiveDetails);
     return {
       ...base,
       status: "classified",
@@ -197,6 +239,7 @@ class ClassificationEngine {
       classification,
       alternatives: branchAlternatives(branch),
       missingDetails,
+      clarification,
       provisional: true,
       percentageType: "branch_compatibility",
       sources: sourceResult.available,
@@ -215,7 +258,13 @@ class ClassificationEngine {
     );
     if (preferredPrefix) {
       const preferredResults = searchResults.filter(result => result.record.code.startsWith(preferredPrefix));
-      if (preferredResults.length) searchResults = preferredResults;
+      searchResults = preferredResults.length
+        ? preferredResults
+        : this.tariffSearchService.searchTariffCodes(
+          input.description,
+          product,
+          { classificationDate: input.classificationDate, limit: 25, prefix: preferredPrefix }
+        );
     }
     if (!searchResults.length) return [];
     const aiAdjustments = await this.getAIAdjustments(product, searchResults);
@@ -325,20 +374,36 @@ async function findSemanticBranch(repository, aiProvider, query, product) {
     parentPrefix: selectedHs4Record.code,
     limit: 30
   });
-  const chosenHs6 = hs6Results[0];
-  const nextHs6 = hs6Results[1];
+  const hs6Selection = hs6Results.length
+    ? await aiProvider?.selectHierarchyBranch?.(
+      query,
+      product,
+      hs6Results.map(item => compactHierarchyCandidate(item.record)),
+      selectedHs4Record.code
+    )
+    : null;
+  const aiSelectedHs6 = hs6Selection?.selectedCode
+    ? hs6Results.find(item => item.record.code === hs6Selection.selectedCode)
+    : null;
+  const chosenHs6 = aiSelectedHs6 || hs6Results[0];
+  const nextHs6 = hs6Results.find(item => item.record.code !== chosenHs6?.record.code);
   const hs6Margin = chosenHs6 ? chosenHs6.score - (nextHs6?.score || 0) : 0;
   if (
     chosenHs6 &&
-    chosenHs6.ownSpecificity >= 0.28 &&
-    (hs6Margin >= 0.025 || chosenHs6.ownSpecificity >= 0.68) &&
-    hasHierarchySpecificEvidence(selectedHs4Record, chosenHs6.record, query, product)
+    (
+      Boolean(aiSelectedHs6) ||
+      (
+        chosenHs6.ownSpecificity >= 0.28 &&
+        (hs6Margin >= 0.025 || chosenHs6.ownSpecificity >= 0.68) &&
+        hasHierarchySpecificEvidence(selectedHs4Record, chosenHs6.record, query, product)
+      )
+    )
   ) {
       selected = chosenHs6;
       alternatives = hs6Results
         .filter(item => item.record.code !== chosenHs6.record.code)
         .slice(0, 4);
-      selected.selectionReason = hs4Selection?.reason || null;
+      selected.selectionReason = hs6Selection?.reason || hs4Selection?.reason || null;
   } else {
     selected.selectionReason = hs4Selection?.reason || null;
   }
@@ -425,18 +490,25 @@ function shareLongRoot(left, right) {
   return common >= 7;
 }
 
-function shouldReturnBranch(branch, topCandidate, description) {
+function shouldReturnBranch(branch, topCandidate, description, product) {
   if (!topCandidate) return true;
   if (!topCandidate.record.code.startsWith(branch.record.code)) return true;
-  return !hasSpecificLeafEvidence(topCandidate, description, branch.record);
+  return !hasSpecificLeafEvidence(topCandidate, description, branch.record, product);
 }
 
-function hasSpecificLeafEvidence(candidate, description, branchRecord) {
+function hasSpecificLeafEvidence(candidate, description, branchRecord, product = {}) {
   if (candidate?.searchResult?.exactCode) return true;
   if ((candidate?.searchResult?.facetAdjustment || 0) > 0.08) return true;
   const record = candidate?.record || {};
   const branchTokens = tokenize(branchRecord?.description || "");
-  const queryTokens = tokenize(description).filter(token => (
+  const queryTokens = tokenize([
+    description,
+    product.material,
+    product.composition,
+    product.power,
+    product.displacement,
+    ...(product.additionalCharacteristics || [])
+  ].filter(Boolean).join(" ")).filter(token => (
     token.length >= 3 &&
     !/^\d+$/.test(token) &&
     !branchTokens.some(branchToken => tokensRelated(token, branchToken) || shareLongRoot(token, branchToken))

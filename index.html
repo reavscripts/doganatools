@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V21.08.26 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V21.08.26-PREVIEW1 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V21.08.26"/>
+<meta name="doganatools-build" content="V21.08.26-PREVIEW1"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V21.08.26";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V21.08.26-PREVIEW1";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -6723,18 +6723,100 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
   .doganaAuthField{ display:block; margin:14px 0; }
   .doganaAuthField > span{ display:block; margin-bottom:7px; color:#c7d3e5; font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.07em; }
   .doganaAuthField input[type="text"],
-  .doganaAuthField input[type="password"]{
+  .doganaAuthField input[type="password"],
+  .doganaAuthPasswordWrap input{
     width:100%;
     height:48px;
     padding:0 14px;
-    border:1px solid #29405f;
+    border:1px solid #5f7597;
     border-radius:12px;
-    background:#132038;
-    color:#f8fbff;
-    font:600 15px var(--font, system-ui);
+    background:#0f1c30;
+    color:#f8fbff !important;
+    -webkit-text-fill-color:#f8fbff !important;
+    caret-color:#ffffff;
+    font:700 15px var(--font, system-ui);
+    letter-spacing:.01em;
     outline:none;
+    opacity:1 !important;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
   }
-  .doganaAuthField input:focus{ border-color:#60a5fa; box-shadow:0 0 0 4px rgba(96,165,250,.12); }
+  .doganaAuthPasswordWrap{
+    position:relative;
+    width:100%;
+  }
+  .doganaAuthPasswordWrap #doganaAuthPassword{
+    padding-right:54px !important;
+  }
+  #doganaAuthPasswordToggle{
+    position:absolute !important;
+    top:50% !important;
+    right:7px !important;
+    transform:translateY(-50%) !important;
+    width:36px !important;
+    min-width:36px !important;
+    max-width:36px !important;
+    height:36px !important;
+    min-height:36px !important;
+    max-height:36px !important;
+    padding:0 !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    border:1px solid rgba(142,197,255,.30) !important;
+    border-radius:9px !important;
+    background:rgba(96,165,250,.08) !important;
+    color:#b9dbff !important;
+    box-shadow:none !important;
+    cursor:pointer !important;
+    z-index:2;
+  }
+  #doganaAuthPasswordToggle:hover{
+    transform:translateY(-50%) !important;
+    border-color:#8ec5ff !important;
+    background:rgba(96,165,250,.16) !important;
+    color:#ffffff !important;
+    box-shadow:0 0 0 3px rgba(96,165,250,.10) !important;
+  }
+  #doganaAuthPasswordToggle:focus-visible{
+    outline:none !important;
+    border-color:#8ec5ff !important;
+    box-shadow:0 0 0 3px rgba(96,165,250,.18) !important;
+  }
+  #doganaAuthPasswordToggle svg{
+    width:18px;
+    height:18px;
+    fill:none;
+    stroke:currentColor;
+    stroke-width:1.9;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+    pointer-events:none;
+  }
+  #doganaAuthPasswordToggle .doganaAuthEyeOff{ display:none; }
+  #doganaAuthPasswordToggle[aria-pressed="true"] .doganaAuthEye{ display:none; }
+  #doganaAuthPasswordToggle[aria-pressed="true"] .doganaAuthEyeOff{ display:block; }
+  .doganaAuthField input::placeholder{
+    color:#9fb4d2 !important;
+    -webkit-text-fill-color:#9fb4d2 !important;
+    opacity:1 !important;
+  }
+  .doganaAuthField input:focus{
+    border-color:#8ec5ff;
+    background:#11233d;
+    color:#ffffff !important;
+    -webkit-text-fill-color:#ffffff !important;
+    box-shadow:0 0 0 4px rgba(96,165,250,.16), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .doganaAuthField input:-webkit-autofill,
+  .doganaAuthField input:-webkit-autofill:hover,
+  .doganaAuthField input:-webkit-autofill:focus,
+  .doganaAuthField input:-webkit-autofill:active{
+    -webkit-text-fill-color:#f8fbff !important;
+    caret-color:#ffffff !important;
+    transition:background-color 99999s ease-in-out 0s;
+    -webkit-box-shadow:0 0 0 1000px #0f1c30 inset, 0 0 0 4px rgba(96,165,250,.0) !important;
+    box-shadow:0 0 0 1000px #0f1c30 inset !important;
+  }
   .doganaAuthRemember{ display:flex; align-items:center; gap:10px; margin:14px 0 18px; color:#c7d3e5; font-size:13px; }
   .doganaAuthRemember input{ width:18px; height:18px; accent-color:#2563eb; }
   #doganaAuthSubmit{
@@ -6748,6 +6830,32 @@ body[data-theme="dark"] .bookingStandalonePanel.minimized #minimizeBookingLookup
     cursor:pointer;
   }
   #doganaAuthSubmit:disabled{ opacity:.6; cursor:wait; }
+  #doganaAuthPreviewBtn{
+    width:100%;
+    min-height:44px;
+    margin-top:10px;
+    border:1px solid rgba(96,165,250,.42) !important;
+    border-radius:12px !important;
+    background:rgba(96,165,250,.08) !important;
+    color:#bfdbfe !important;
+    font-weight:900 !important;
+    letter-spacing:.05em !important;
+    box-shadow:none !important;
+  }
+  #doganaAuthPreviewBtn:hover{
+    border-color:#60a5fa !important;
+    background:rgba(96,165,250,.15) !important;
+    color:#ffffff !important;
+    box-shadow:0 0 0 4px rgba(96,165,250,.09) !important;
+  }
+  #doganaAuthPreviewBtn[hidden]{ display:none !important; }
+  .doganaAuthPreviewHint{
+    margin:8px 0 0;
+    color:#8fa8c8;
+    font-size:10.5px;
+    text-align:center;
+    line-height:1.4;
+  }
   #doganaAuthStatus{ min-height:20px; margin-top:13px; color:#fca5a5; font-size:13px; text-align:center; }
   #doganaAuthStatus.ok{ color:#86efac; }
   .doganaAuthSecurity{ margin:18px 0 0; color:#8396b2; font-size:11px; line-height:1.45; text-align:center; }
@@ -7353,7 +7461,13 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 
     <label class="doganaAuthField">
       <span>Password</span>
-      <input id="doganaAuthPassword" name="password" type="password" autocomplete="current-password" required maxlength="200" />
+      <div class="doganaAuthPasswordWrap">
+        <input id="doganaAuthPassword" name="password" type="password" autocomplete="current-password" required maxlength="200" />
+        <button id="doganaAuthPasswordToggle" type="button" aria-label="Mostra password" aria-pressed="false" title="Mostra password">
+          <svg class="doganaAuthEye" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z"/><circle cx="12" cy="12" r="2.75"/></svg>
+          <svg class="doganaAuthEyeOff" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 3l18 18"/><path d="M10.6 6.15A10.7 10.7 0 0 1 12 6c6 0 9.5 6 9.5 6a16.3 16.3 0 0 1-2.05 2.75"/><path d="M17.15 17.15A10.3 10.3 0 0 1 12 18c-6 0-9.5-6-9.5-6a16.4 16.4 0 0 1 3.15-3.75"/><path d="M9.9 9.9A3 3 0 0 0 14.1 14.1"/></svg>
+        </button>
+      </div>
     </label>
 
     <label class="doganaAuthRemember">
@@ -7362,6 +7476,8 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </label>
 
     <button id="doganaAuthSubmit" type="submit">Accedi</button>
+    <button id="doganaAuthPreviewBtn" type="button" hidden>Anteprima locale</button>
+    <div class="doganaAuthPreviewHint" id="doganaAuthPreviewHint" hidden>Disponibile solo da localhost sulla stessa macchina del server.</div>
     <div id="doganaAuthStatus" role="status" aria-live="polite"></div>
     <p class="doganaAuthSecurity">La password viene verificata dal server e non viene salvata nel browser dall’applicazione.</p>
   </form>
@@ -7376,9 +7492,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   const form = document.getElementById("doganaAuthForm");
   const usernameInput = document.getElementById("doganaAuthUsername");
   const passwordInput = document.getElementById("doganaAuthPassword");
+  const passwordToggle = document.getElementById("doganaAuthPasswordToggle");
   const rememberInput = document.getElementById("doganaAuthRemember");
   const submitBtn = document.getElementById("doganaAuthSubmit");
+  const previewBtn = document.getElementById("doganaAuthPreviewBtn");
+  const previewHint = document.getElementById("doganaAuthPreviewHint");
   const statusEl = document.getElementById("doganaAuthStatus");
+
+  const isLocalPreviewHost = ["localhost", "127.0.0.1", "::1"].includes(String(location.hostname || "").toLowerCase());
+  if (isLocalPreviewHost) {
+    if (previewBtn) previewBtn.hidden = false;
+    if (previewHint) previewHint.hidden = false;
+  }
 
   function setStatus(message, ok){
     statusEl.textContent = String(message || "");
@@ -7473,6 +7598,28 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     }
   }
 
+  async function enterLocalPreview(){
+    if (!isLocalPreviewHost) return setStatus("Anteprima disponibile solo da localhost.");
+    if (!previewBtn) return;
+    previewBtn.disabled = true;
+    previewBtn.textContent = "Apro anteprima...";
+    setStatus("");
+    try {
+      const response = await authFetch("/preview", { method: "POST" });
+      const data = await response.json().catch(() => null);
+      if (!response.ok || !data?.success) {
+        setStatus(data?.error || `Anteprima non disponibile (${response.status})`);
+        return;
+      }
+      unlock(data.user || { username:"preview", displayName:"PREVIEW LOCALE", role:"preview", preview:true });
+    } catch {
+      setStatus("Backend non raggiungibile. Verifica che server.js sia avviato.");
+    } finally {
+      previewBtn.disabled = false;
+      previewBtn.textContent = "Anteprima locale";
+    }
+  }
+
   async function logout(){
     try { await authFetch("/logout", { method: "POST" }); } catch {}
     const userEl = document.getElementById("doganaSettingsAuthUser");
@@ -7483,7 +7630,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   window.doganaLogout = logout;
 
   try { usernameInput.value = localStorage.getItem(LAST_USER_KEY) || ""; } catch {}
+  passwordToggle?.addEventListener("click", () => {
+    const show = passwordInput.type === "password";
+    passwordInput.type = show ? "text" : "password";
+    passwordToggle.setAttribute("aria-pressed", show ? "true" : "false");
+    passwordToggle.setAttribute("aria-label", show ? "Nascondi password" : "Mostra password");
+    passwordToggle.title = show ? "Nascondi password" : "Mostra password";
+    passwordInput.focus({ preventScroll:true });
+    try { passwordInput.setSelectionRange(passwordInput.value.length, passwordInput.value.length); } catch {}
+  });
+
   form.addEventListener("submit", login);
+  previewBtn?.addEventListener("click", enterLocalPreview);
   window.addEventListener("dogana-auth-required", () => lock("Sessione scaduta. Accedi nuovamente."));
 
   if (document.readyState === "loading") {
@@ -7532,7 +7690,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <form id="customsAiForm" class="customsAiSearch">
       <div class="customsAiSearchShell">
         <span class="customsAiSearchBrand" aria-hidden="true"><span>✦</span> DOGANA AI</span>
-        <input id="customsAiInput" class="customsAiInput" type="search" maxlength="2000" autocomplete="off" placeholder="Cerca un prodotto, es. pomodori pelati 600 g" aria-label="Cerca un prodotto da classificare" />
+        <input id="customsAiInput" class="customsAiInput" type="search" maxlength="2000" autocomplete="off" placeholder="Cerca un prodotto o fai una domanda, es. pomodori pelati" aria-label="Cerca un prodotto da classificare o fai una domanda doganale" />
         <button id="customsAiSubmit" class="customsAiSubmit" type="submit" aria-label="Cerca codice TARIC" title="Cerca codice TARIC"><span aria-hidden="true">→</span></button>
       </div>
     </form>
@@ -8068,7 +8226,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V21.08.26</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V21.08.26-PREVIEW1</strong></a>
   </div>
 </footer>
 </div>
@@ -21136,7 +21294,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V21.08.26.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V21.08.26-PREVIEW1.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);

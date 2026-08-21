@@ -4,6 +4,8 @@ const path = require("path");
 const { MODULE_VERSION } = require("./constants");
 const { createAIProvider } = require("./aiProvider");
 const { ProductAnalyzer } = require("./productAnalyzer");
+const { ClarificationService } = require("./clarificationService");
+const { CustomsKnowledgeService } = require("./customsKnowledgeService");
 const { TariffSearchService } = require("./tariffSearchService");
 const { TariffHierarchyService } = require("./tariffHierarchyService");
 const { ConfidenceService } = require("./confidenceService");
@@ -23,6 +25,8 @@ function createCustomsAIService(options = {}) {
   if (options.preloadDataset !== false && repository.isInstalled()) repository.load();
   const aiProvider = options.aiProvider || createAIProvider({ env: options.env, fetch: options.fetch });
   const productAnalyzer = new ProductAnalyzer({ aiProvider });
+  const clarificationService = new ClarificationService({ repository });
+  const knowledgeService = new CustomsKnowledgeService();
   const tariffSearchService = new TariffSearchService(repository);
   const hierarchyService = new TariffHierarchyService(repository);
   const confidenceService = new ConfidenceService();
@@ -37,6 +41,8 @@ function createCustomsAIService(options = {}) {
     repository,
     aiProvider,
     productAnalyzer,
+    clarificationService,
+    knowledgeService,
     tariffSearchService,
     confidenceService,
     classificationValidator,
@@ -49,6 +55,8 @@ function createCustomsAIService(options = {}) {
     repository,
     aiProvider,
     productAnalyzer,
+    clarificationService,
+    knowledgeService,
     tariffSearchService,
     hierarchyService,
     confidenceService,
