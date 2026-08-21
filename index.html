@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:39 CEST | BUTTON-VISUAL-SYSTEM-R23 -->
+<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 11:39 CEST | BUTTON-VISUAL-SYSTEM-R24 -->
 
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R23 -->
+<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R24 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R23"/>
+<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R24"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R23";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R24";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8075,7 +8075,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R23</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R24</strong></a>
   </div>
 </footer>
 </section>
@@ -21314,7 +21314,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   function applyVersion(date){
     // ORGANIZZA R7: la versione visibile identifica la build reale del file.
     // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R23 con una semplice data.
+    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R24 con una semplice data.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22918,6 +22918,144 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
 }
 </style>
 <!-- R23-MODULE-GRADIENT-LINES-REAL -->
+
+
+<style id="dogana-module-toplines-root-fix-r24">
+/* =========================================================
+   R24 — FIX LINEE MODULI PRINCIPALI
+   Per i moduli con header complessi la linea viene disegnata
+   direttamente sul pannello principale, non sull'header interno.
+   ========================================================= */
+
+/* Disattiva i vecchi pseudo-elementi R23 solo sui 5 header interessati. */
+.doganaTableModuleCard .doganaTableTopToolbar::before,
+.organizeModulePanel .organizeModuleHead::before,
+#shipPanel .shipToolbar::before,
+.bookingStandalonePanel .bookingModuleHead::before,
+.serverConsolePanel .serverConsoleHead::before{
+  content:none !important;
+  display:none !important;
+}
+
+/* Il pannello principale diventa il riferimento della linea. */
+.doganaTableModuleCard,
+#organizePanel.organizeModulePanel,
+#shipPanel.shipPanel,
+#bookingLookupPanel.bookingStandalonePanel,
+#serverConsolePanel.serverConsolePanel{
+  position:relative !important;
+}
+
+/* Geometria identica alla .appTopBar::before R22. */
+.doganaTableModuleCard::before,
+#organizePanel.organizeModulePanel::before,
+#shipPanel.shipPanel::before,
+#bookingLookupPanel.bookingStandalonePanel::before,
+#serverConsolePanel.serverConsolePanel::before{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  z-index:25 !important;
+  top:0 !important;
+  left:24px !important;
+  right:24px !important;
+  width:auto !important;
+  height:2px !important;
+  border:0 !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.74 !important;
+  filter:saturate(.88) !important;
+  transform:none !important;
+  background-size:100% 100% !important;
+}
+
+/* TABELLA — blu -> celeste */
+.doganaTableModuleCard::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.08) 5%,
+    #2563eb 22%,
+    #3b82f6 48%,
+    #38bdf8 78%,
+    rgba(56,189,248,.08) 95%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(37,99,235,.14),0 0 10px rgba(56,189,248,.07) !important;
+}
+
+/* ORGANIZZA PRINCIPALE — viola -> magenta */
+#organizePanel.organizeModulePanel::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(99,102,241,.08) 5%,
+    #6366f1 22%,
+    #8b5cf6 48%,
+    #a855f7 70%,
+    #ec4899 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(139,92,246,.13),0 0 10px rgba(236,72,153,.06) !important;
+}
+
+/* PREVISIONE NAVI — ciano -> blu oceano */
+#shipPanel.shipPanel::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(34,211,238,.07) 5%,
+    #22d3ee 20%,
+    #06b6d4 43%,
+    #0ea5e9 68%,
+    #2563eb 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(14,165,233,.13),0 0 10px rgba(37,99,235,.06) !important;
+}
+
+/* RICERCA BOOKING — ambra -> arancio -> corallo */
+#bookingLookupPanel.bookingStandalonePanel::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(245,158,11,.07) 5%,
+    #f59e0b 22%,
+    #f97316 50%,
+    #fb7185 82%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(249,115,22,.12),0 0 10px rgba(251,113,133,.06) !important;
+}
+
+/* CONSOLE — slate -> indaco */
+#serverConsolePanel.serverConsolePanel::before{
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(100,116,139,.07) 5%,
+    #64748b 20%,
+    #64748b 42%,
+    #6366f1 72%,
+    #818cf8 90%,
+    transparent 100%) !important;
+  box-shadow:0 1px 5px rgba(100,116,139,.11),0 0 10px rgba(99,102,241,.06) !important;
+}
+
+body[data-theme="dark"] .doganaTableModuleCard::before,
+body[data-theme="dark"] #organizePanel.organizeModulePanel::before,
+body[data-theme="dark"] #shipPanel.shipPanel::before,
+body[data-theme="dark"] #bookingLookupPanel.bookingStandalonePanel::before,
+body[data-theme="dark"] #serverConsolePanel.serverConsolePanel::before{
+  opacity:.66 !important;
+  filter:saturate(.82) !important;
+}
+
+@media (max-width:700px){
+  .doganaTableModuleCard::before,
+  #organizePanel.organizeModulePanel::before,
+  #shipPanel.shipPanel::before,
+  #bookingLookupPanel.bookingStandalonePanel::before,
+  #serverConsolePanel.serverConsolePanel::before{
+    left:16px !important;
+    right:16px !important;
+    opacity:.64 !important;
+  }
+}
+</style>
+<!-- R24-MODULE-TOPLINES-ROOT-FIX-REAL -->
 
 </body>
 </html>
