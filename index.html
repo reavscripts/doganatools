@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<!-- FILE CONSEGNA VERIFICATO: 2026-08-21 15:38 CEST | BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL -->
-
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL -->
+<!-- DOGANATOOLS FRONTEND BUILD: V21.08.26 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL"/>
+<meta name="doganatools-build" content="V21.08.26"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V21.08.26";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -5784,19 +5782,6 @@ if (window.pdfjsLib) {
       return true;
     }
 
-    function jumpTo(selector, focusSelector){
-      const targetEl = document.querySelector(selector);
-      if (!targetEl) {
-        showHint("Modulo non trovato.");
-        return;
-      }
-      close();
-      targetEl.scrollIntoView({ behavior:"smooth", block:"start" });
-      if (focusSelector) {
-        setTimeout(() => document.querySelector(focusSelector)?.focus(), 280);
-      }
-    }
-
     const themeBtn = panel.querySelector("#doganaThemeToggleSettings");
     function refreshThemeButton(){
       if (themeBtn) themeBtn.textContent = currentTheme() === "dark" ? "Tema chiaro" : "Tema scuro";
@@ -8083,7 +8068,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V21.08.26</strong></a>
   </div>
 </footer>
 </div>
@@ -10021,12 +10006,6 @@ button.doganaModuleSvgToggleBtn:active,
       return rowTerm === term;
     }
 
-    function getExtraRowContainer(row, termKey = null){
-      const term = EXTRA_TERMINALS[termKey] ? termKey : inferExtraTerminal(row);
-      const cfg = EXTRA_TERMINALS[term] || EXTRA_TERMINALS.sct;
-      return normalizeExtraContainerValue(row?.[cfg.containerField] || "");
-    }
-
     function getExtraRowDedupKey(row){
       const normalized = normalizeExtraRow(row);
 
@@ -10125,10 +10104,6 @@ button.doganaModuleSvgToggleBtn:active,
         };
       }
       return { rowId: "", field: "" };
-    }
-
-    function getFocusedExtraRowId(){
-      return getFocusedExtraCell().rowId;
     }
 
     function buildExtraStatusPatch(row, termKey = null){
@@ -10689,17 +10664,6 @@ button.doganaModuleSvgToggleBtn:active,
         extraRows = extraRows.filter(row => !createdIds.has(String(row.__id || "")));
         renderExtra();
         showExtraToast("Backend condiviso non raggiungibile: riga non salvata.");
-      }
-    }
-
-    function addExtraRowsLocalOnly(count, focusLast=false){
-      // Fallback locale disattivato: senza backend condiviso non creiamo righe
-      // che potrebbero poi rientrare come dati vecchi.
-      clearExtraLocalCache();
-      renderExtra();
-      if (focusLast) {
-        const last = extraTbody.querySelector("tr:last-child input[data-extra-field]");
-        if(last) last.focus();
       }
     }
 
@@ -12291,31 +12255,6 @@ async function checkContainerSCT(container) {
     };
   }
 }
-async function ottieniPdf(container) {
-    try {
-        const response = await fetch(
-      apiUrl(`/api/get-pdf?container=${encodeURIComponent(container)}&_=${Date.now()}`),
-      {
-        method: "GET",
-        mode: "cors",
-        credentials: "omit",
-        cache: "no-store",
-        headers: { "Accept": "application/json" }
-      }
-    );
-        const result = await response.json();
-        
-        if (result.pdfUrl) {
-            const directPdfUrl = normalizeJmtPdfUrl(result.jmtPdfUrl || result.pdfUrl);
-            window.open(directPdfUrl || getPublicPdfUrl(container), '_blank');
-        } else {
-            alert("Errore: PDF non trovato.");
-        }
-    } catch (e) {
-        alert("Ponte non raggiungibile. Verifica che server.js sia avviato.");
-    }
-}
-
 let conatecoLogoDataUrlPromise = null;
 
 function safeConatecoPdfText(value) {
@@ -12530,10 +12469,6 @@ function getConatecoTrackingStatus(tracking) {
 
   const notaTipo = getConatecoNotaTipo(tracking);
   return notaTipo ? `ENTRATO (${notaTipo})` : "ENTRATO";
-}
-
-function getConatecoTrackingNote(tracking) {
-  return getConatecoNotaTipo(tracking);
 }
 
 
@@ -13479,160 +13414,6 @@ window.doganaGetExtraAutoContainerCount = getExtraAutoContainerCount;
 window.doganaGetExtraAutoRowCount = getExtraAutoRowCount;
 window.doganaRefreshExtraAutoSchedule = refreshExtraAutoCheckSchedule;
 window.doganaUpdateExtraCheckInfo = updateExtraCheckInfo;
-
-async function downloadPDF(container) {
-
-  const { jsPDF } = window.jspdf;
-
-  try {
-
-    const url =
-      `https://api.conateco.it/ConatecoServicesApi/NewTrackingContainer?codice=${container}&tipo=E`;
-
-    const res = await fetch(url);
-
-    const data = await res.json();
-
-    if (!data) {
-      alert("Nessun dato");
-      return;
-    }
-
-    const pdfContainer = document.getElementById("pdfExportContainer");
-
-    const now = new Date();
-
-    const formattedDate =
-      now.toLocaleDateString("it-IT") + " " +
-      now.toLocaleTimeString("it-IT", {
-        hour: "2-digit",
-        minute: "2-digit"
-      });
-
-    pdfContainer.innerHTML = `
-
-      <div class="pdfExportArea">
-
-        <div class="pdfHeader">
-
-          <div class="pdfHeaderLeft">
-
-            <img
-              class="pdfLogo"
-              src="https://www.conateco.it/media/1031/logo-small2newr.png"
-              crossorigin="anonymous"
-            >
-
-            <div class="pdfTitleWrap">
-              <h1>Tracking Container</h1>
-              <p>CO.NA.TE.CO. S.p.A.</p>
-            </div>
-
-          </div>
-
-          <div style="font-size:12px; color:#555; text-align:right;">
-            PDF generato il<br>
-            <b>${formattedDate}</b>
-          </div>
-
-        </div>
-
-        <div class="pdfInfo">
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Container</div>
-            <div class="pdfInfoValue">${data.CodiceContainer || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Nave</div>
-            <div class="pdfInfoValue">${data.NomeNave || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Viaggio</div>
-            <div class="pdfInfoValue">${data.IdViaggio || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Armatore</div>
-            <div class="pdfInfoValue">${data.Armatore || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Tipo</div>
-            <div class="pdfInfoValue">${data.Tipo || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Dimensione</div>
-            <div class="pdfInfoValue">${data.Dimensione || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Stato</div>
-            <div class="pdfInfoValue">${data.Stato || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Stato esteso</div>
-            <div class="pdfInfoValue">${data.StatoEsteso || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Ingresso</div>
-            <div class="pdfInfoValue">${data.DataIngresso || "-"}</div>
-          </div>
-
-          <div class="pdfInfoRow">
-            <div class="pdfInfoLabel">Ora</div>
-            <div class="pdfInfoValue">${data.Ora || "-"}</div>
-          </div>
-
-          ${
-            isConatecoLuogoApprovatoOrRetroporto(data)
-            ? `
-            <div class="pdfInfoRow">
-              <div class="pdfInfoLabel">Nota</div>
-              <div class="pdfInfoValue">
-                GIACENTE A RETROPORTO
-              </div>
-            </div>
-            `
-            : ""
-          }
-
-        </div>
-
-      </div>
-    `;
-
-    const canvas = await html2canvas(pdfContainer.firstElementChild, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: "#ffffff"
-    });
-
-    const imgData = canvas.toDataURL("image/png");
-
-    const pdf = new jsPDF("p", "mm", "a4");
-
-    const imgWidth = 190;
-
-    const imgHeight =
-      canvas.height * imgWidth / canvas.width;
-
-    pdf.addImage(imgData, "PNG", 10, 10, imgWidth, imgHeight);
-
-    pdf.save(`${container}.pdf`);
-
-  } catch (e) {
-
-    console.error(e);
-
-    alert("Errore PDF");
-  }
-}
 
 
 function initShipTabs(){
@@ -14899,39 +14680,6 @@ function markExtraNotifyFired(terminal, container){
     raw[key] = Array.isArray(raw[key]) ? raw[key] : [];
     if (!raw[key].map(v => String(v).toUpperCase()).includes(code)) raw[key].push(code);
     sessionStorage.setItem("doganatools_notified_containers_v2", JSON.stringify(raw));
-  } catch {}
-}
-
-function notifyExtraPdfReadyFromCheck(terminal, container){
-  const key = normalizeExtraNotifyTerminal(terminal);
-  const code = normalizeExtraNotifyContainer(container);
-  if (!/^[A-Z]{4}\d{7}$/.test(code)) return;
-  if (hasExtraNotifyAlreadyFired(key, code)) return;
-
-  const terminalLabel = EXTRA_TERMINALS?.[key]?.label || key.toUpperCase();
-  markExtraNotifyFired(key, code);
-
-  try {
-    showExtraToast?.("Container entrato", `${code} - PDF disponibile (${terminalLabel})`, "success");
-  } catch {}
-
-  try {
-    if ("Notification" in window && Notification.permission === "granted") {
-      new Notification("Container entrato", {
-        body: `${code} - PDF disponibile (${terminalLabel})`,
-        tag: `container-${key}-${code}`,
-        requireInteraction: false
-      });
-    }
-  } catch {}
-
-  try {
-    const soundOn =
-      localStorage.getItem("doganatools_container_sound") === "1" ||
-      document.getElementById("extraSoundNotifyBtn")?.classList.contains("sound-on");
-    if (soundOn && typeof playExtraContainerSound === "function") {
-      setTimeout(playExtraContainerSound, 80);
-    }
   } catch {}
 }
 
@@ -21373,26 +21121,6 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   const GITHUB_LATEST_COMMIT_API = "https://api.github.com/repos/reavscripts/doganatools/commits?per_page=1";
   const TIME_ZONE = "Europe/Rome";
 
-  function readDatePart(parts, type){
-    return parts.find(part => part.type === type)?.value || "";
-  }
-
-  function makeVersion(date){
-    if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
-    const parts = new Intl.DateTimeFormat("it-IT", {
-      timeZone: TIME_ZONE,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).formatToParts(date);
-
-    const year = readDatePart(parts, "year");
-    const month = readDatePart(parts, "month");
-    const day = readDatePart(parts, "day");
-    if (!year || !month || !day) return "";
-    return `v${year}.${month}.${day}`;
-  }
-
   function makeTitle(date){
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "Apri gli ultimi commit su GitHub";
     const formatted = new Intl.DateTimeFormat("it-IT", {
@@ -21407,9 +21135,8 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   }
 
   function applyVersion(date){
-    // ORGANIZZA R7: la versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto il tooltip/data commit e non deve sovrascrivere
-    // v2026.08.21-BUTTON-VISUAL-SYSTEM-R37-TIMER-PER-TERMINAL con una semplice data.
+    // La versione visibile identifica la build reale del file.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V21.08.26.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -22225,12 +21952,6 @@ body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.045), 0 5px 14px rgba(0,0,0,.18) !important;
 }
 </style>
-
-
-
-<!-- R20-TOPNAV-FOUR-BUTTONS-VERIFICATO -->
-
-
 <style id="dogana-topnav-organizza-effect-base-r20">
 /* =========================================================
    R20 — MENU SUPERIORE: base effetto ORGANIZZA uniforme
@@ -22405,10 +22126,6 @@ body[data-theme="dark"] #extraPanel .extraTabs button.extraTab.active .extraTabC
 }
 </style>
 <!-- R20-REAL-FINAL-OVERRIDE: TOPNAV-ORGANIZZA-STYLE + EXTRA-TAB-COUNT-CONTRAST -->
-
-
-
-<!-- R20-TOPNAV-FOUR-BUTTONS-EXPLICIT -->
 <style id="dogana-topnav-four-buttons-explicit-r20">
 /* =========================================================
    R20 — TABELLA / CONTENITORI / NAVI / BOOKING
@@ -22546,10 +22263,6 @@ body[data-theme="dark"] #doganaNavBookingBtn{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.07),0 6px 16px rgba(0,0,0,.22) !important;
 }
 </style>
-<!-- R20-FOUR-TOPNAV-BUTTONS-REAL-DIFF -->
-
-
-
 <style id="dogana-topnav-clean-r21">
 /* =========================================================
    R21 — TOPBAR SOBRIA
@@ -22735,10 +22448,6 @@ body[data-theme="dark"] #doganaMenuSessionSync{
   color:color-mix(in srgb, var(--station-color) 62%, #f8fafc) !important;
 }
 </style>
-<!-- R21-CLEAN-TOPNAV-FINAL -->
-
-
-
 <style id="dogana-topbar-line-refined-r22">
 /* =========================================================
    R22 — LINEA TOPBAR RAFFINATA
@@ -22791,9 +22500,6 @@ body[data-theme="dark"] .appTopBar::before{
   }
 }
 </style>
-<!-- R22-TOPBAR-LINE-REFINED-REAL-DIFF -->
-
-
 <style id="dogana-module-toplines-r23">
 /* =========================================================
    R23 — LINEE MODULI COME APP TOPBAR
@@ -23012,9 +22718,6 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
   }
 }
 </style>
-<!-- R23-MODULE-GRADIENT-LINES-REAL -->
-
-
 <style id="dogana-module-toplines-root-fix-r24">
 /* =========================================================
    R24 — FIX LINEE MODULI PRINCIPALI
@@ -23150,9 +22853,6 @@ body[data-theme="dark"] #serverConsolePanel.serverConsolePanel::before{
   }
 }
 </style>
-<!-- R25-MODULE-TOPLINES-ROOT-FIX-BASE -->
-
-
 <style id="dogana-tabella-topline-final-r25">
 /* =========================================================
    R25 — TABELLA: LINEA TOP DEFINITIVA
@@ -23218,9 +22918,6 @@ body[data-theme="dark"] #dogana-section::before{
   }
 }
 </style>
-<!-- R25-TABELLA-TOPLINE-FINAL-REAL -->
-
-
 <style id="dogana-settings-overlay-r26">
 /* =========================================================
    R26 — IMPOSTAZIONI: OVERLAY REALE + NUOVA UI
@@ -23441,9 +23138,6 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
   observer.observe(document.documentElement, {subtree:true, attributes:true, attributeFilter:["class"]});
 })();
 </script>
-<!-- R26-SETTINGS-OVERLAY-REAL -->
-
-
 <style id="dogana-minimized-modules-fix-r27">
 /* =========================================================
    R27 — MODULI RIDOTTI: LINEE + COOLDOWN + OMBRA ORGANIZZA
@@ -23622,10 +23316,6 @@ body[data-theme="dark"] #extraPanel.minimized::before{
   }
 }
 </style>
-<!-- R27-MINIMIZED-MODULES-REAL-FIX -->
-
-
-
 <style id="dogana-module-toggle-organizza-style-r28">
 /* =========================================================
    R28 — TOGGLE MODULI UNIFORMI
@@ -23772,9 +23462,6 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
   margin-bottom:0 !important;
 }
 </style>
-<!-- R28-UNIFORM-ORGANIZZA-TOGGLES-FOOTER-OUTSIDE -->
-
-
 <style id="dogana-organizza-header-background-fix-r29">
 /* R30 — ORGANIZZA: header neutro, nessun background/gradient.
    La sola identità cromatica resta affidata alla linea superiore. */
@@ -23809,8 +23496,6 @@ body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::a
   background-image:none !important;
 }
 </style>
-<!-- R30-ORGANIZZA-ICON-MEMORY-FIX -->
-
 <style id="dogana-organize-topnav-color-r31">
 /* R31 — ORGANIZZA usa esattamente il celestino degli altri moduli della topbar. */
 body .appQuickNav #organizeNavToggle{
@@ -24215,10 +23900,6 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
   else init();
 })();
 </script>
-<!-- R32-ACCENT-COLOR-SETTINGS-HOVER-TOGGLES -->
-
-
-
 <style id="dogana-organize-accent-hover-r33">
 /* =========================================================
    R33 — ORGANIZZA: hover coerente con il colore accent utente
@@ -24270,8 +23951,6 @@ body[data-theme="dark"] .appQuickNav .appNavDropdown.open #organizeNavToggle{
     0 7px 17px color-mix(in srgb, var(--dogana-user-accent) 17%, transparent) !important;
 }
 </style>
-<!-- R33-ORGANIZZA-ACCENT-HOVER-FIX -->
-
 <style id="dogana-dark-row-hover-r34">
 /* =========================================================
    R34 — DARK MODE: hover righe coerente con il tema
@@ -24308,10 +23987,6 @@ body[data-theme="dark"] #extraTable tbody tr:hover > td input:focus{
   box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--dogana-user-accent) 28%, transparent) !important;
 }
 </style>
-<!-- R34-DARK-TABLE-EXTRA-ROW-HOVER -->
-
-
-
 <style id="dogana-organize-hover-final-r35">
 /* =========================================================
    R35 — TOPBAR ORGANIZZA: hover identico agli altri pulsanti.
@@ -24350,9 +24025,6 @@ body[data-theme="dark"] .appQuickNav .appNavDropdown #organizeNavToggle[aria-exp
     0 7px 17px color-mix(in srgb, var(--dogana-user-accent) 17%, transparent) !important;
 }
 </style>
-<!-- R35-ORGANIZZA-HOVER-SKY-ACCENT-GLOW -->
-
-
 <style id="dogana-extra-autocheck-toggle-r36">
 /* R36 — Ricerca Contenitori: toggle ricerca automatica + timer 30s per riga SCT */
 #extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle{
