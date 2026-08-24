@@ -73,21 +73,45 @@ function validateDate(value) {
 
 function validateMeasuresPayload(body = {}) {
   const code = String(body.code ?? "").replace(/\D/g, "");
-  if (code.length !== 10) {
-    throw new CustomsInputError("Per le misure è necessario un codice TARIC di 10 cifre.");
+  if (![8, 10].includes(code.length)) {
+    throw new CustomsInputError("Per le misure è necessario un codice CN di 8 cifre o TARIC di 10 cifre.");
   }
   const flow = sanitizeText(body.flow || "import", 10).toLowerCase();
   if (!['import', 'export'].includes(flow)) {
     throw new CustomsInputError("Il flusso deve essere import oppure export.");
   }
+  const additionalCode = sanitizeText(body.additionalCode, 4).toUpperCase() || null;
+  if (additionalCode && !/^[A-Z0-9]{4}$/.test(additionalCode)) {
+    throw new CustomsInputError("Il codice addizionale comunitario deve contenere 4 caratteri alfanumerici.");
+  }
+  const originCountry = validateCountry(body.originCountry, "paese di origine");
+  const dispatchCountry = validateCountry(body.dispatchCountry, "paese di spedizione");
+  const destinationCountry = validateCountry(body.destinationCountry, "paese di destinazione");
+  if (flow === "export" && !destinationCountry) {
+    throw new CustomsInputError("Per l'esportazione è necessario il paese di destinazione.");
+  }
+  if (flow === "import" && !originCountry) {
+    throw new CustomsInputError("Per l'importazione è necessario il paese di origine.");
+  }
   return {
-    code,
-    originCountry: sanitizeText(body.originCountry, 2).toUpperCase() || null,
-    dispatchCountry: sanitizeText(body.dispatchCountry, 2).toUpperCase() || null,
-    destinationCountry: sanitizeText(body.destinationCountry, 2).toUpperCase() || null,
+    code: code.length === 8 ? `${code}00` : code,
+    cnCode: code.slice(0, 8),
+    additionalCode,
+    originCountry,
+    dispatchCountry,
+    destinationCountry,
     flow,
     operationDate: validateDate(body.operationDate)
   };
+}
+
+function validateCountry(value, label) {
+  if (value == null || value === "") return null;
+  const country = sanitizeText(value, 2).toUpperCase();
+  if (!/^[A-Z]{2}$/.test(country)) {
+    throw new CustomsInputError(`Il ${label} deve essere un codice ISO a 2 lettere.`);
+  }
+  return country;
 }
 
 module.exports = {

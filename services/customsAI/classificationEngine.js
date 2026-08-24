@@ -267,7 +267,8 @@ class ClassificationEngine {
         );
     }
     if (!searchResults.length) return [];
-    const aiAdjustments = await this.getAIAdjustments(product, searchResults);
+    // La TARIC resta deterministica: l'AI interviene solo come spareggio HS.
+    const aiAdjustments = new Map();
     return searchResults.map(searchResult => {
       const record = searchResult.record;
       const examples = this.repository.getClassificationExamples(record.code);
@@ -348,11 +349,28 @@ async function findSemanticBranch(repository, aiProvider, query, product) {
   }
   const allHs4Records = Array.from(candidateMap.values());
   const headConstrainedRecords = constrainByProductHead(allHs4Records, product.product);
-  const hs4Candidates = headConstrainedRecords.map(compactHierarchyCandidate);
-  const hs4Selection = await aiProvider?.selectHierarchyBranch?.(query, product, hs4Candidates, null);
+  const allowedHs4Codes = new Set(headConstrainedRecords.map(record => record.code));
+  const rankedHs4Results = hs4Results.filter(item => allowedHs4Codes.has(item.record.code));
+  const hs4Ambiguity = ambiguousHierarchyResults(rankedHs4Results, {
+    maximumMargin: 0.055,
+    minimumRunnerScore: 0.34,
+    minimumRunnerRatio: 0.9
+  });
+  let hierarchyAIUsed = false;
+  let hs4Selection = null;
+  if (canUseHierarchyAI(aiProvider) && hs4Ambiguity.length >= 2) {
+    hierarchyAIUsed = true;
+    hs4Selection = await safeSelectHierarchyBranch(
+      aiProvider,
+      query,
+      product,
+      hs4Ambiguity.map(item => compactHierarchyCandidate(item.record)),
+      null
+    );
+  }
   const selectedHs4Record = hs4Selection?.selectedCode
     ? candidateMap.get(hs4Selection.selectedCode)
-    : headConstrainedRecords[0];
+    : (rankedHs4Results[0]?.record || headConstrainedRecords[0]);
   if (!selectedHs4Record) return null;
   const hs4ScoreEntry = hs4Results.find(item => item.record.code === selectedHs4Record.code);
   let selected = hs4ScoreEntry || {
@@ -374,14 +392,22 @@ async function findSemanticBranch(repository, aiProvider, query, product) {
     parentPrefix: selectedHs4Record.code,
     limit: 30
   });
-  const hs6Selection = hs6Results.length
-    ? await aiProvider?.selectHierarchyBranch?.(
+  const hs6Ambiguity = ambiguousHierarchyResults(hs6Results, {
+    maximumMargin: 0.04,
+    minimumRunnerScore: 0.3,
+    minimumRunnerRatio: 0.92
+  });
+  let hs6Selection = null;
+  if (!hierarchyAIUsed && canUseHierarchyAI(aiProvider) && hs6Ambiguity.length >= 2) {
+    hierarchyAIUsed = true;
+    hs6Selection = await safeSelectHierarchyBranch(
+      aiProvider,
       query,
       product,
-      hs6Results.map(item => compactHierarchyCandidate(item.record)),
+      hs6Ambiguity.map(item => compactHierarchyCandidate(item.record)),
       selectedHs4Record.code
-    )
-    : null;
+    );
+  }
   const aiSelectedHs6 = hs6Selection?.selectedCode
     ? hs6Results.find(item => item.record.code === hs6Selection.selectedCode)
     : null;
@@ -422,6 +448,42 @@ function compactHierarchyCandidate(record) {
     level: record.level,
     description: sanitizeText(record.description, 280)
   };
+}
+
+function canUseHierarchyAI(aiProvider) {
+  return Boolean(aiProvider?.available && typeof aiProvider.selectHierarchyBranch === "function");
+}
+
+async function safeSelectHierarchyBranch(aiProvider, query, product, candidates, currentCode) {
+  try {
+    return await aiProvider.selectHierarchyBranch(query, product, candidates, currentCode);
+  } catch {
+    return null;
+  }
+}
+
+function ambiguousHierarchyResults(results, options = {}) {
+  const ranked = (Array.isArray(results) ? results : [])
+    .filter(item => item?.record?.code && Number.isFinite(Number(item.score)))
+    .slice()
+    .sort((left, right) => Number(right.score) - Number(left.score));
+  if (ranked.length < 2) return [];
+  const maximumMargin = Number(options.maximumMargin ?? 0.05);
+  const minimumRunnerScore = Number(options.minimumRunnerScore ?? 0.32);
+  const minimumRunnerRatio = Number(options.minimumRunnerRatio ?? 0.9);
+  const topScore = Number(ranked[0].score);
+  const runnerScore = Number(ranked[1].score);
+  if (runnerScore < minimumRunnerScore) return [];
+  if ((topScore - runnerScore) > maximumMargin) return [];
+  if (topScore > 0 && (runnerScore / topScore) < minimumRunnerRatio) return [];
+  return ranked.filter(item => {
+    const score = Number(item.score);
+    return (
+      score >= minimumRunnerScore &&
+      (topScore - score) <= maximumMargin &&
+      (topScore <= 0 || (score / topScore) >= minimumRunnerRatio)
+    );
+  }).slice(0, 3);
 }
 
 function constrainByProductHead(records, productName) {
@@ -675,5 +737,6 @@ module.exports = {
   buildAssumptions,
   candidateSummary,
   selectComparableCandidates,
-  attachRelativePercentages
+  attachRelativePercentages,
+  ambiguousHierarchyResults
 };

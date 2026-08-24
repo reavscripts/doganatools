@@ -444,7 +444,12 @@ test("endpoint analyze e measures sono collegati", async () => {
     const measures = await fetch(`${base}/api/customs-ai/measures`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: "4419900000", flow: "import", operationDate: "2026-08-19" })
+      body: JSON.stringify({
+        code: "4419900000",
+        flow: "import",
+        originCountry: "US",
+        operationDate: "2026-08-19"
+      })
     });
     const measuresBody = await measures.json();
     assert.equal(measures.status, 200);

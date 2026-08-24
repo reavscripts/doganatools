@@ -336,20 +336,87 @@ class TariffRepository {
   }
 
   getMeasures(code, date, context = {}) {
-    return (this.load()?.taric_measures || []).filter(item => (
-      item.code === code &&
-      this.isValidOn(item, date) &&
-      (!item.flow || item.flow === context.flow) &&
-      matchesGeography(item.origin_countries, context.originCountry) &&
-      matchesGeography(item.dispatch_countries, context.dispatchCountry) &&
-      matchesGeography(item.destination_countries, context.destinationCountry)
-    ));
+    const dataset = this.load();
+    if (!dataset) return [];
+    const requestedCode = normalizeCode(code).padEnd(10, "0");
+    const additionalCode = String(context.additionalCode || "").toUpperCase();
+    return (dataset.taric_measures || [])
+      .filter(item => (
+        measureAppliesToCode(item.code, requestedCode) &&
+        this.isValidOn(item, date) &&
+        (!item.flow || item.flow === context.flow) &&
+        matchesMeasureGeography(item, context, dataset.geographical_areas || []) &&
+        (!additionalCode || !item.additional_code || item.additional_code === additionalCode)
+      ))
+      .map(item => enrichMeasure(item, dataset))
+      .sort((left, right) => (
+        effectiveCodeLength(right.code) - effectiveCodeLength(left.code) ||
+        String(left.measure_type_code || "").localeCompare(String(right.measure_type_code || ""))
+      ));
   }
 }
 
 function matchesGeography(allowed, actual) {
   if (!Array.isArray(allowed) || !allowed.length || allowed.includes("*")) return true;
   return Boolean(actual && allowed.includes(actual));
+}
+
+function measureAppliesToCode(measureCode, requestedCode) {
+  const measure = normalizeCode(measureCode).padEnd(10, "0");
+  const requested = normalizeCode(requestedCode).padEnd(10, "0");
+  if (!measure || !requested) return false;
+  return requested.startsWith(measure.slice(0, effectiveCodeLength(measure)));
+}
+
+function effectiveCodeLength(value) {
+  const code = normalizeCode(value).padEnd(10, "0");
+  let length = 10;
+  while (length > 2 && code.slice(length - 2, length) === "00") length -= 2;
+  return length;
+}
+
+function matchesMeasureGeography(measure, context, geographicalAreas) {
+  const country = measure.flow === "export"
+    ? context.destinationCountry
+    : (context.originCountry || context.dispatchCountry);
+  if (!country) return true;
+  const excluded = new Set([
+    ...(measure.excluded_countries || []),
+    ...(measure.exclusions || []).map(item => item.country_code || item.iso_code)
+  ].filter(Boolean));
+  if (excluded.has(country)) return false;
+  const direct = measure.flow === "export" ? measure.destination_countries : measure.origin_countries;
+  if (Array.isArray(direct) && direct.length) return matchesGeography(direct, country);
+  const areaCode = String(measure.geographical_area_code || "").toUpperCase();
+  if (!areaCode || areaCode === "*" || areaCode === "1011" || /ALLTC/i.test(areaCode)) return true;
+  if (/^[A-Z]{2}$/.test(areaCode)) return areaCode === country;
+  const area = geographicalAreas.find(item => String(item.code || item.group_code) === areaCode);
+  return Boolean(area && (area.members || []).some(member => (
+    String(member.code || member.iso_code || member).toUpperCase() === country &&
+    (!member.valid_from || member.valid_from <= context.operationDate) &&
+    (!member.valid_to || member.valid_to >= context.operationDate)
+  )));
+}
+
+function enrichMeasure(measure, dataset) {
+  const additional = measure.additional_code
+    ? (dataset.additional_codes || []).find(item => item.code === measure.additional_code)
+    : null;
+  const documentByCode = new Map((dataset.document_codes || []).map(item => [item.code, item]));
+  const footnoteByCode = new Map((dataset.footnotes || []).map(item => [item.code, item]));
+  return {
+    ...measure,
+    additional_code_description: additional?.description || measure.additional_code_description || null,
+    conditions: (measure.conditions || []).map(condition => ({
+      ...condition,
+      document: condition.certificate_code ? documentByCode.get(condition.certificate_code) || null : null
+    })),
+    footnotes: (measure.footnotes || []).map(footnote => (
+      typeof footnote === "string"
+        ? { code: footnote, description: footnoteByCode.get(footnote)?.description || null }
+        : { ...footnote, description: footnote.description || footnoteByCode.get(footnote.code)?.description || null }
+    ))
+  };
 }
 
 function scoreTokenCoverage(queryTokens, indexed, documentFrequency, documentCount) {
@@ -511,6 +578,8 @@ module.exports = {
   TariffRepository,
   REQUIRED_TABLES,
   matchesGeography,
+  measureAppliesToCode,
+  matchesMeasureGeography,
   scoreTokenCoverage,
   tokenSimilarity,
   extractQueryFacets,

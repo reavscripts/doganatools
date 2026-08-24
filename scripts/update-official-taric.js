@@ -9,7 +9,7 @@ function parseArgs(argv) {
     const item = argv[index];
     if (!item.startsWith("--")) continue;
     const key = item.slice(2);
-    if (["dry-run", "force", "no-aida"].includes(key)) args[key] = true;
+    if (["dry-run", "force", "no-aida", "no-measures"].includes(key)) args[key] = true;
     else args[key] = argv[++index];
   }
   return args;
@@ -27,7 +27,8 @@ async function main() {
     month: args.month,
     dryRun: args["dry-run"] === true,
     force: args.force === true,
-    aida: args["no-aida"] !== true
+    aida: args["no-aida"] !== true,
+    measures: args["no-measures"] !== true
   });
   console.log(JSON.stringify(report, null, 2));
 }

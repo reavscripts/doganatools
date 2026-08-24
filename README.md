@@ -9,7 +9,7 @@ classificazione HS/CN/TARIC.
 - monitoraggio navi in chiusura e ricerca booking;
 - generazione ed esportazione documenti operativi;
 - stato condiviso, checklist, notifiche e post-it;
-- **DOGANA AI — MVP 0.1.0**: ricerca TARIC istantanea da una sola barra,
+- **DOGANA AI — V0.4.0**: ricerca TARIC istantanea da una sola barra,
   classificazione gerarchica, ipotesi esplicite, alternative, fonti e storico.
 
 ## Avvio locale
@@ -107,6 +107,36 @@ Per disattivare esplicitamente ogni modello usare
 `CUSTOMS_AI_PROVIDER=disabled`. Il fallback lessicale rimane operativo. Nessun
 provider può creare una TARIC o diventare la fonte normativa.
 
+Per le richieste brevi Ollama usa valori ottimizzati (`num_predict=200`,
+`num_ctx=2048`, `keep_alive=4h`) e una cache temporale per interpretazione e
+spareggi HS. Le variabili `CUSTOMS_AI_NUM_PREDICT`, `CUSTOMS_AI_NUM_CTX`,
+`CUSTOMS_AI_KEEP_ALIVE`, `CUSTOMS_AI_CACHE_TTL_MS` e
+`CUSTOMS_AI_CACHE_MAX_ENTRIES` consentono di modificarli. La selezione TARIC
+finale resta locale; una seconda chiamata AI viene eseguita soltanto quando i
+primi due rami HS sono realmente vicini.
+
+### Misure TARIC per paese
+
+`POST /api/customs-ai/measures` accetta un codice CN a 8 cifre o TARIC a 10,
+il flusso, la data e il paese interessato. Per l'esportazione è obbligatorio
+`destinationCountry`; per l'importazione è obbligatorio `originCountry`.
+
+```json
+{
+  "code": "39051200",
+  "flow": "export",
+  "destinationCountry": "US",
+  "operationDate": "2026-08-24",
+  "additionalCode": null
+}
+```
+
+La risposta distingue misure, restrizioni, condizioni, codici documento/certificato
+(per esempio `Y923`), note, riferimenti normativi e opzioni di codice addizionale
+comunitario (per esempio `4099`). I gruppi geografici e le relative esclusioni
+sono risolti per la data dell'operazione. Il campo `decisionStatus` indica se le
+condizioni devono essere verificate; non sostituisce la valutazione doganale.
+
 ### Import dati doganali
 
 Per aggiornare automaticamente la nomenclatura dalla fonte ufficiale della
@@ -117,10 +147,13 @@ npm run update-taric
 ```
 
 Lo script individua da solo l'ultimo mese completo, scarica gli Excel ufficiali,
-confronta i codici dichiarabili, recupera da AIDA le eventuali descrizioni IT non
-ancora presenti nell'Excel mensile, valida conteggi e duplicati e sostituisce il
-dataset in modo transazionale. `--dry-run` esegue l'intero controllo senza
-scrivere; `--no-aida` mantiene il fallback inglese per le righe IT mancanti.
+confronta i codici dichiarabili e importa anche Duties Import/Export, condizioni,
+esclusioni, note, gruppi geografici, codici documento e codici addizionali.
+Recupera da AIDA le eventuali descrizioni IT non ancora presenti nell'Excel
+mensile, valida conteggi e duplicati e sostituisce il dataset in modo
+transazionale. `--dry-run` esegue l'intero controllo senza scrivere;
+`--no-aida` mantiene il fallback inglese per le righe IT mancanti e
+`--no-measures` aggiorna soltanto la nomenclatura.
 
 L'import è separato dall'avvio del server e supporta JSON normalizzato o CSV:
 
@@ -137,13 +170,15 @@ Il contratto sorgente è descritto in `data/customs/imports/README.md`.
 
 ## Copertura e limiti
 
-La nomenclatura completa è installata. Restano moduli distinti da aggiungere se si
-vuole calcolare anche il trattamento doganale completo per origine e data:
+La nomenclatura completa è installata. L'importatore V0.4 aggiunge le misure
+comunitarie presenti nelle estrazioni TARIC; il dataset va rigenerato con
+`npm run update-taric` dopo l'aggiornamento del codice. Restano fonti e moduli
+distinti da integrare per un trattamento doganale completo:
 
-- note di sezione, capitolo, voce e sottovoce;
-- Note Esplicative CN, regolamenti UE, CLASS e ITV/BTI;
-- misure TARIC, paesi, preferenze, contingenti, antidumping, restrizioni,
-  certificati, codici addizionali e unità supplementari.
+- misure nazionali (IVA, accise e altri tributi non contenuti in TARIC), Note
+  Esplicative CN complete, CLASS e ITV/BTI;
+- valutazione documentale della singola operazione, contingenti con saldo in
+  tempo reale e controlli delle autorità competenti.
 
 La struttura JSON dell'MVP è dietro un repository dedicato, quindi potrà essere
 sostituita da PostgreSQL e ricerca vettoriale senza spostare query nel frontend o

@@ -598,6 +598,84 @@ body[data-theme="dark"] .customsAiAnswerFooter .is-test{
   text-underline-offset:2px;
 }
 
+.customsAiMeasures{
+  border-top:1px solid var(--grid-soft);
+  margin-top:14px;
+  padding-top:14px;
+}
+
+.customsAiMeasuresHeading{ display:grid; gap:3px; }
+.customsAiMeasuresHeading strong{ color:var(--heading); font-size:12px; }
+.customsAiMeasuresHeading span{ color:var(--muted); font-size:10px; line-height:1.45; }
+
+.customsAiMeasuresForm{
+  display:grid;
+  gap:7px;
+  grid-template-columns:1fr 1.2fr 1.35fr 1.15fr auto;
+  margin-top:10px;
+}
+
+.customsAiMeasuresField{
+  background:var(--input-bg);
+  border:1px solid var(--grid);
+  border-radius:8px;
+  color:var(--text);
+  font:inherit;
+  font-size:10px;
+  min-height:34px;
+  min-width:0;
+  padding:0 9px;
+}
+
+.customsAiMeasuresField:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 15%,transparent);
+  outline:none;
+}
+
+.customsAiMeasuresSubmit{
+  background:var(--accent);
+  border:0;
+  border-radius:8px;
+  color:#fff;
+  cursor:pointer;
+  font-size:10px;
+  font-weight:850;
+  min-height:34px;
+  padding:0 12px;
+}
+
+.customsAiMeasuresSubmit:disabled{ cursor:wait; opacity:.65; }
+.customsAiMeasuresOutput{ margin-top:10px; }
+.customsAiMeasuresLoading,
+.customsAiMeasuresEmpty,
+.customsAiMeasuresError{ color:var(--muted); font-size:10px; line-height:1.5; margin:0; }
+.customsAiMeasuresError{ color:#c0392b; }
+
+.customsAiMeasuresSummary{
+  align-items:flex-start;
+  background:color-mix(in srgb,var(--accent) 6%,var(--panel));
+  border:1px solid color-mix(in srgb,var(--accent) 18%,var(--grid));
+  border-radius:9px;
+  display:flex;
+  gap:10px;
+  justify-content:space-between;
+  padding:9px 10px;
+}
+
+.customsAiMeasuresSummary strong{ color:var(--heading); font-size:11px; }
+.customsAiMeasuresSummary span{ color:var(--muted); font-size:9px; text-align:right; }
+.customsAiAdditionalCodes{ background:var(--input-bg); border-radius:8px; margin-top:8px; padding:9px 10px; }
+.customsAiAdditionalCodes strong{ color:var(--heading); font-size:10px; }
+.customsAiAdditionalCodes p{ color:var(--text); font-size:9px; line-height:1.45; margin:5px 0 0; }
+.customsAiAdditionalCodes code{ color:var(--accent); font-size:10px; font-weight:900; }
+.customsAiMeasureList{ display:grid; gap:7px; margin-top:8px; }
+.customsAiMeasure{ border:1px solid var(--grid-soft); border-radius:9px; padding:9px 10px; }
+.customsAiMeasureTitle{ color:var(--heading); display:block; font-size:10px; line-height:1.4; }
+.customsAiMeasureAction{ color:var(--text); font-size:10px; font-weight:750; margin:5px 0 0; }
+.customsAiMeasureMeta{ color:var(--muted); font-size:9px; line-height:1.45; margin:4px 0 0; }
+.customsAiConditionList{ color:var(--text); font-size:9px; line-height:1.45; margin:6px 0 0; padding-left:18px; }
+
 @media (max-width:680px){
   .customsAiBody{ padding:12px; }
   .customsAiSearchShell{
@@ -625,4 +703,8 @@ body[data-theme="dark"] .customsAiAnswerFooter .is-test{
   .customsAiClarification{ padding:12px 10px; }
   .customsAiFollowUp{ grid-template-columns:1fr; }
   .customsAiFollowUpSubmit{ min-height:36px; }
+  .customsAiMeasuresForm{ grid-template-columns:1fr 1fr; }
+  .customsAiMeasuresSubmit{ grid-column:1 / -1; }
+  .customsAiMeasuresSummary{ display:grid; }
+  .customsAiMeasuresSummary span{ text-align:left; }
 }

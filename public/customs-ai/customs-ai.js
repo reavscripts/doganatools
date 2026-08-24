@@ -169,6 +169,10 @@
       card.appendChild(renderAlternatives(data.alternatives));
     }
 
+    if (String(classification.code || "").replace(/\D/g, "").length >= 8) {
+      card.appendChild(renderMeasuresLookup(classification.code, data.classificationDate));
+    }
+
     var footer = element("div", "customsAiAnswerFooter");
     var testData = data.dataset && data.dataset.status === "test";
     var sourceLabel = testData
@@ -290,6 +294,146 @@
       details.appendChild(row);
     });
     return details;
+  }
+
+  function renderMeasuresLookup(code, classificationDate){
+    var section = element("section", "customsAiMeasures");
+    var heading = element("div", "customsAiMeasuresHeading");
+    heading.append(
+      element("strong", "", "Misure import/export per paese"),
+      element("span", "", "Restrizioni, documenti e codici addizionali dalla banca dati TARIC")
+    );
+    var form = element("form", "customsAiMeasuresForm");
+    var flow = element("select", "customsAiMeasuresField");
+    flow.setAttribute("aria-label", "Flusso doganale");
+    [["export", "Esportazione"], ["import", "Importazione"]].forEach(function(item){
+      var option = element("option", "", item[1]);
+      option.value = item[0];
+      flow.appendChild(option);
+    });
+    var country = element("input", "customsAiMeasuresField");
+    country.type = "text";
+    country.maxLength = 2;
+    country.placeholder = "Paese (es. US)";
+    country.setAttribute("aria-label", "Codice ISO del paese");
+    country.autocapitalize = "characters";
+    var date = element("input", "customsAiMeasuresField");
+    date.type = "date";
+    date.value = classificationDate || new Date().toISOString().slice(0, 10);
+    date.setAttribute("aria-label", "Data operazione");
+    var additional = element("input", "customsAiMeasuresField");
+    additional.type = "text";
+    additional.maxLength = 4;
+    additional.placeholder = "Cod. addizionale";
+    additional.setAttribute("aria-label", "Codice addizionale comunitario opzionale");
+    additional.autocapitalize = "characters";
+    var submit = element("button", "customsAiMeasuresSubmit", "Verifica misure");
+    submit.type = "submit";
+    form.append(flow, country, date, additional, submit);
+    var output = element("div", "customsAiMeasuresOutput");
+    form.addEventListener("submit", function(event){
+      event.preventDefault();
+      var countryCode = country.value.trim().toUpperCase();
+      if (!/^[A-Z]{2}$/.test(countryCode)) {
+        output.replaceChildren(element("p", "customsAiMeasuresError", "Inserisci un codice paese ISO a 2 lettere, per esempio US."));
+        country.focus();
+        return;
+      }
+      runMeasuresLookup({
+        code:code,
+        flow:flow.value,
+        originCountry:flow.value === "import" ? countryCode : null,
+        destinationCountry:flow.value === "export" ? countryCode : null,
+        operationDate:date.value,
+        additionalCode:additional.value.trim().toUpperCase() || null
+      }, output, submit);
+    });
+    section.append(heading, form, output);
+    return section;
+  }
+
+  async function runMeasuresLookup(payload, output, submit){
+    submit.disabled = true;
+    submit.textContent = "Verifica…";
+    output.replaceChildren(element("p", "customsAiMeasuresLoading", "Consulto le misure TARIC locali…"));
+    try {
+      var response = await fetch(api("/api/customs-ai/measures"), {
+        method:"POST",
+        credentials:"include",
+        cache:"no-store",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body:JSON.stringify(payload)
+      });
+      var data = await response.json().catch(function(){ return null; });
+      if (!response.ok || !data || !data.success) {
+        throw new Error(data && data.error || "Errore API (" + response.status + ")");
+      }
+      renderMeasuresResponse(data, output);
+    } catch (error) {
+      output.replaceChildren(element("p", "customsAiMeasuresError", error && error.message || "Misure non disponibili."));
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "Verifica misure";
+    }
+  }
+
+  function renderMeasuresResponse(data, output){
+    output.replaceChildren();
+    if (!data.dataAvailable) {
+      output.appendChild(element("p", "customsAiMeasuresEmpty", data.message || "Nessuna misura trovata per i parametri indicati."));
+      return;
+    }
+    var summary = element("div", "customsAiMeasuresSummary");
+    summary.append(
+      element("strong", "", (data.measures || []).length + " misure applicabili"),
+      element("span", "", decisionStatusLabel(data.decisionStatus))
+    );
+    output.appendChild(summary);
+    if (Array.isArray(data.additionalCodes) && data.additionalCodes.length) {
+      var codes = element("div", "customsAiAdditionalCodes");
+      codes.appendChild(element("strong", "", "Codici addizionali comunitari"));
+      data.additionalCodes.forEach(function(item){
+        var row = element("p", "");
+        row.append(element("code", "", item.code), document.createTextNode(" " + (item.description || "Descrizione da verificare")));
+        codes.appendChild(row);
+      });
+      output.appendChild(codes);
+    }
+    var list = element("div", "customsAiMeasureList");
+    (data.measures || []).forEach(function(measure){ list.appendChild(renderMeasure(measure)); });
+    output.appendChild(list);
+  }
+
+  function renderMeasure(measure){
+    var item = element("article", "customsAiMeasure");
+    item.appendChild(element("strong", "customsAiMeasureTitle", measure.measure_type || "Misura TARIC " + (measure.measure_type_code || "")));
+    if (measure.duty) item.appendChild(element("p", "customsAiMeasureAction", measure.duty));
+    if (measure.legal_reference) item.appendChild(element("p", "customsAiMeasureMeta", "Regolamento/atto: " + measure.legal_reference));
+    if (measure.additional_code) {
+      item.appendChild(element("p", "customsAiMeasureMeta", "Codice addizionale: " + measure.additional_code + (measure.additional_code_description ? " — " + measure.additional_code_description : "")));
+    }
+    var conditions = Array.isArray(measure.conditions) ? measure.conditions : [];
+    if (conditions.length) {
+      var conditionList = element("ul", "customsAiConditionList");
+      conditions.forEach(function(condition){
+        var documentLabel = condition.certificate_code
+          ? condition.certificate_code + (condition.document && condition.document.description ? " — " + condition.document.description : "")
+          : "Condizione " + (condition.condition_code || "da verificare");
+        conditionList.appendChild(element("li", "", documentLabel));
+      });
+      item.appendChild(conditionList);
+    }
+    var footnotes = Array.isArray(measure.footnotes) ? measure.footnotes : [];
+    if (footnotes.length) {
+      item.appendChild(element("p", "customsAiMeasureMeta", "Note: " + footnotes.map(function(note){ return note.code; }).join(", ")));
+    }
+    return item;
+  }
+
+  function decisionStatusLabel(status){
+    if (status === "prohibited_or_exception_required") return "Possibile divieto o eccezione: verifica obbligatoria";
+    if (status === "conditions_to_verify") return "Sono presenti condizioni/documenti da verificare";
+    return "Misure disponibili: verifica il dettaglio prima dell'operazione";
   }
 
   function renderNoResult(data){

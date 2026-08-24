@@ -2,7 +2,6 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const ExcelJS = require("exceljs");
 const { AidaNomenclatureClient } = require("./aidaNomenclatureClient");
 const { aliasesForRecord, inferMaterials } = require("./searchLexicon");
 const { normalizeCode, normalizeText, sanitizeText, uniqueStrings } = require("./textUtils");
@@ -33,7 +32,14 @@ class OfficialTaricImporter {
     const files = {
       nomenclatureEn: path.join(cacheDir, `${currentPrefix}-nomenclature-en.xlsx`),
       declarableCodes: path.join(cacheDir, `${currentPrefix}-declarable-codes.xlsx`),
-      nomenclatureIt: path.join(cacheDir, `${italianPrefix}-nomenclature-it.xlsx`)
+      nomenclatureIt: path.join(cacheDir, `${italianPrefix}-nomenclature-it.xlsx`),
+      additionalCodes: path.join(cacheDir, `${currentPrefix}-additional-codes.xlsx`),
+      documentCodes: path.join(cacheDir, `${currentPrefix}-box-44-codes.xlsx`),
+      geographicalAreas: path.join(cacheDir, `${currentPrefix}-geographical-areas.xlsx`),
+      footnotes: path.join(cacheDir, `${currentPrefix}-footnotes.xlsx`),
+      measureExclusions: path.join(cacheDir, `${currentPrefix}-measure-exclusions.xlsx`),
+      measureFootnotes: path.join(cacheDir, `${currentPrefix}-measure-footnotes.xlsx`),
+      measureConditions: path.join(cacheDir, `${currentPrefix}-measure-conditions.xlsx`)
     };
 
     const refreshFiles = options.reuseCache !== true;
@@ -41,10 +47,39 @@ class OfficialTaricImporter {
     await this.download(snapshot.current.files.get("Declarable codes.xlsx"), files.declarableCodes, refreshFiles || options.force);
     await this.download(snapshot.italian.files.get("Nomenclature IT.xlsx"), files.nomenclatureIt, refreshFiles || options.force);
 
-    const [englishRows, italianRows, declarableRows] = await Promise.all([
+    const measuresEnabled = options.measures !== false;
+    let measureFiles = null;
+    if (measuresEnabled) {
+      const requiredMeasureFiles = {
+        additionalCodes: findSnapshotFile(snapshot.current.files, /^Additional codes\.xlsx$/i),
+        documentCodes: findSnapshotFile(snapshot.current.files, /^(Box 44|Supporting document).*\.xlsx$/i),
+        geographicalAreas: findSnapshotFile(snapshot.current.files, /^Geographical Area Composition\.xlsx$/i),
+        footnotes: findSnapshotFile(snapshot.current.files, /^Footnotes\.xlsx$/i),
+        measureExclusions: findSnapshotFile(snapshot.current.files, /^Measure exclusions\.xlsx$/i),
+        measureFootnotes: findSnapshotFile(snapshot.current.files, /^Measure footnotes\.xlsx$/i),
+        measureConditions: findSnapshotFile(snapshot.current.files, /^Measure conditions\.xlsx$/i)
+      };
+      const dutiesImport = findSnapshotFiles(snapshot.current.files, /^Duties Import.*\.xlsx$/i);
+      const dutiesExport = findSnapshotFiles(snapshot.current.files, /^Duties Export.*\.xlsx$/i);
+      const missing = Object.entries(requiredMeasureFiles).filter(([, file]) => !file).map(([name]) => name);
+      if (!dutiesImport.length) missing.push("dutiesImport");
+      if (!dutiesExport.length) missing.push("dutiesExport");
+      if (missing.length) {
+        throw new Error(`Snapshot TARIC incompleto per le misure: ${missing.join(", ")}.`);
+      }
+      await Promise.all(Object.entries(requiredMeasureFiles).map(([name, file]) => (
+        this.download(file, files[name], refreshFiles || options.force)
+      )));
+      const importPaths = await downloadMeasureSeries(this, dutiesImport, cacheDir, currentPrefix, "duties-import", refreshFiles || options.force);
+      const exportPaths = await downloadMeasureSeries(this, dutiesExport, cacheDir, currentPrefix, "duties-export", refreshFiles || options.force);
+      measureFiles = { ...files, importPaths, exportPaths };
+    }
+
+    const [englishRows, italianRows, declarableRows, measureTables] = await Promise.all([
       readNomenclatureWorkbook(files.nomenclatureEn),
       readNomenclatureWorkbook(files.nomenclatureIt),
-      readDeclarableWorkbook(files.declarableCodes)
+      readDeclarableWorkbook(files.declarableCodes),
+      measureFiles ? readTaricMeasureWorkbooks(measureFiles) : null
     ]);
     let supplementedItalianRows = italianRows;
     let aidaSupplementedRows = 0;
@@ -82,8 +117,12 @@ class OfficialTaricImporter {
       aidaSupplementedRows,
       aidaDataDate,
       aidaWarning,
+      measureTables,
       retrievedAt
     });
+    if (measuresEnabled && dataset.taric_measures.length === 0) {
+      throw new Error("Le estrazioni ufficiali non hanno prodotto alcuna misura TARIC.");
+    }
     validateOfficialDataset(dataset, declarableRows);
 
     const report = {
@@ -96,6 +135,8 @@ class OfficialTaricImporter {
       nomenclatureRows: dataset.tariff_descriptions.length,
       italianRows: dataset.coverage.italian_rows,
       fallbackEnglishRows: dataset.coverage.english_fallback_rows,
+      measures: dataset.taric_measures.length,
+      additionalCodes: dataset.additional_codes.length,
       aidaSupplementedRows,
       aidaDataDate,
       aidaWarning,
@@ -154,7 +195,9 @@ class OfficialTaricImporter {
       const entries = await this.listChildren(month.nodeId);
       const files = new Map(entries.filter(item => item.mimeType).map(item => [canonicalFileName(item.title), item]));
       const enriched = { ...month, files };
-      if (!current && files.has("Nomenclature EN.xlsx") && files.has("Declarable codes.xlsx")) current = enriched;
+      const baseFilesComplete = files.has("Nomenclature EN.xlsx") && files.has("Declarable codes.xlsx");
+      const measuresComplete = options.measures === false || snapshotHasMeasureFiles(files);
+      if (!current && baseFilesComplete && measuresComplete) current = enriched;
       if (!italian && files.has("Nomenclature IT.xlsx")) italian = enriched;
       if (current && italian && `${italian.year}${italian.month}` <= `${current.year}${current.month}`) break;
     }
@@ -195,7 +238,7 @@ class OfficialTaricImporter {
 }
 
 async function readNomenclatureWorkbook(filePath) {
-  const workbook = new ExcelJS.Workbook();
+  const workbook = createWorkbook();
   await workbook.xlsx.readFile(filePath);
   const sheet = workbook.worksheets[0];
   if (!sheet) throw new Error(`Foglio mancante in ${filePath}.`);
@@ -221,7 +264,7 @@ async function readNomenclatureWorkbook(filePath) {
 }
 
 async function readDeclarableWorkbook(filePath) {
-  const workbook = new ExcelJS.Workbook();
+  const workbook = createWorkbook();
   await workbook.xlsx.readFile(filePath);
   const sheet = workbook.worksheets[0];
   if (!sheet) throw new Error(`Foglio mancante in ${filePath}.`);
@@ -240,6 +283,256 @@ async function readDeclarableWorkbook(filePath) {
     });
   });
   return rows;
+}
+
+async function readTaricMeasureWorkbooks(files) {
+  const [
+    additionalRows,
+    documentRows,
+    geographicalRows,
+    footnoteRows,
+    exclusionRows,
+    measureFootnoteRows,
+    conditionRows,
+    importRows,
+    exportRows
+  ] = await Promise.all([
+    readPlainWorkbook(files.additionalCodes),
+    readPlainWorkbook(files.documentCodes),
+    readPlainWorkbook(files.geographicalAreas),
+    readPlainWorkbook(files.footnotes),
+    readPlainWorkbook(files.measureExclusions),
+    readPlainWorkbook(files.measureFootnotes),
+    readPlainWorkbook(files.measureConditions),
+    readWorkbookSeries(files.importPaths),
+    readWorkbookSeries(files.exportPaths)
+  ]);
+  return buildTaricMeasureTables({
+    additionalRows,
+    documentRows,
+    geographicalRows,
+    footnoteRows,
+    exclusionRows,
+    measureFootnoteRows,
+    conditionRows,
+    importRows,
+    exportRows
+  });
+}
+
+async function readWorkbookSeries(paths) {
+  const groups = await Promise.all((paths || []).map(readPlainWorkbook));
+  return groups.flat();
+}
+
+async function readPlainWorkbook(filePath) {
+  const workbook = createWorkbook();
+  await workbook.xlsx.readFile(filePath);
+  const rows = [];
+  for (const sheet of workbook.worksheets) {
+    sheet.eachRow((row, rowNumber) => {
+      if (rowNumber === 1) return;
+      const values = [];
+      for (let index = 1; index <= Math.max(15, row.cellCount); index += 1) {
+        values.push(sanitizeText(cellText(row.getCell(index).value), 2000));
+      }
+      if (values.some(Boolean)) rows.push(values);
+    });
+  }
+  return rows;
+}
+
+function buildTaricMeasureTables(input = {}) {
+  const additional_codes = descriptionsByLanguage(input.additionalRows, "additional_code");
+  const document_codes = descriptionsByLanguage(input.documentRows, "document_code", true);
+  const footnotes = descriptionsByLanguage(input.footnoteRows, "footnote");
+  const geographical_areas = buildGeographicalAreas(input.geographicalRows || []);
+  const conditions = groupMeasureRows(input.conditionRows || [], parseMeasureCondition);
+  const exclusions = groupMeasureRows(input.exclusionRows || [], parseMeasureExclusion);
+  const measureFootnotes = groupMeasureRows(input.measureFootnoteRows || [], parseMeasureFootnote);
+  const footnoteByCode = new Map(footnotes.map(item => [item.code, item]));
+  const parseDuties = (rows, flow) => (rows || []).map(row => {
+    const code = normalizeCode(row[0]).padEnd(10, "0");
+    const additionalCode = sanitizeText(row[1], 4).toUpperCase() || null;
+    const orderNumber = sanitizeText(row[2], 24) || null;
+    const validFrom = toIsoDate(row[3]);
+    const validTo = toIsoDate(row[4]) || null;
+    const geographicalAreaCode = sanitizeText(row[10], 24) || null;
+    const measureTypeCode = sanitizeText(row[11], 12) || null;
+    if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
+    const key = measureIdentity(code, additionalCode, orderNumber, validFrom, geographicalAreaCode, measureTypeCode);
+    return {
+      id: `${flow}:${key}`,
+      code,
+      additional_code: additionalCode,
+      order_number: orderNumber,
+      valid_from: validFrom,
+      valid_to: validTo,
+      reduction_indicator: sanitizeText(row[5], 20) || null,
+      geographical_area: sanitizeText(row[6], 300) || null,
+      geographical_area_code: geographicalAreaCode,
+      measure_type: sanitizeText(row[7], 500) || null,
+      measure_type_code: measureTypeCode,
+      legal_reference: sanitizeText(row[8], 500) || null,
+      duty: sanitizeText(row[9], 1000) || null,
+      action: sanitizeText(row[9], 1000) || null,
+      flow,
+      conditions: conditions.get(key) || [],
+      exclusions: exclusions.get(key) || [],
+      excluded_countries: uniqueStrings((exclusions.get(key) || []).map(item => item.country_code), 8),
+      footnotes: (measureFootnotes.get(key) || []).map(item => ({
+        code: item.code,
+        description: footnoteByCode.get(item.code)?.description || null
+      })),
+      source_id: "eu-taric-circabc"
+    };
+  }).filter(Boolean);
+  return {
+    taric_measures: [...parseDuties(input.importRows, "import"), ...parseDuties(input.exportRows, "export")],
+    additional_codes,
+    document_codes,
+    footnotes,
+    geographical_areas
+  };
+}
+
+function descriptionsByLanguage(rows, type, withDates = false) {
+  const grouped = new Map();
+  for (const row of rows || []) {
+    const code = sanitizeText(row[0], 24).toUpperCase();
+    const language = sanitizeText(row[1], 4).toUpperCase();
+    const description = sanitizeText(row[2], 2000);
+    if (!code || !description) continue;
+    const current = grouped.get(code);
+    const preferred = !current || language === "IT" || (current.language !== "IT" && language === "EN");
+    if (preferred) {
+      grouped.set(code, {
+        code,
+        type,
+        language,
+        description,
+        ...(withDates ? { valid_from: toIsoDate(row[3]), valid_to: toIsoDate(row[4]) || null } : {})
+      });
+    }
+  }
+  return Array.from(grouped.values()).sort((left, right) => left.code.localeCompare(right.code));
+}
+
+function buildGeographicalAreas(rows) {
+  const groups = new Map();
+  for (const row of rows || []) {
+    const code = sanitizeText(row[0], 24);
+    const language = sanitizeText(row[2], 4).toUpperCase();
+    const memberCode = sanitizeText(row[6], 8).toUpperCase();
+    if (!code || !memberCode) continue;
+    if (!groups.has(code)) {
+      groups.set(code, {
+        code,
+        valid_from: toIsoDate(row[1]),
+        acronym: sanitizeText(row[3], 24) || null,
+        description: sanitizeText(row[4], 500) || null,
+        language,
+        members: []
+      });
+    }
+    const group = groups.get(code);
+    if (language === "IT" || !group.description) {
+      group.acronym = sanitizeText(row[3], 24) || group.acronym;
+      group.description = sanitizeText(row[4], 500) || group.description;
+      group.language = language || group.language;
+    }
+    if (!group.members.some(member => member.code === memberCode && member.valid_from === toIsoDate(row[8]))) {
+      group.members.push({
+        code: memberCode,
+        description: sanitizeText(row[7], 300) || null,
+        valid_from: toIsoDate(row[8]),
+        valid_to: toIsoDate(row[9]) || null
+      });
+    }
+  }
+  return Array.from(groups.values());
+}
+
+function groupMeasureRows(rows, parser) {
+  const result = new Map();
+  for (const row of rows) {
+    const parsed = parser(row);
+    if (!parsed) continue;
+    const list = result.get(parsed.key) || [];
+    list.push(parsed.value);
+    result.set(parsed.key, list);
+  }
+  return result;
+}
+
+function parseMeasureCondition(row) {
+  const code = normalizeCode(row[0]).padEnd(10, "0");
+  const validFrom = toIsoDate(row[3]);
+  const areaCode = sanitizeText(row[5], 24) || null;
+  const measureTypeCode = sanitizeText(row[6], 12) || null;
+  if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
+  return {
+    key: measureIdentity(code, row[1], row[2], validFrom, areaCode, measureTypeCode),
+    value: {
+      condition_code: sanitizeText(row[7], 8) || null,
+      sequence: Number(row[8]) || null,
+      certificate_code: sanitizeText(row[9], 24).toUpperCase() || null,
+      amount: sanitizeText(row[10], 80) || null,
+      monetary_unit: sanitizeText(row[11], 20) || null,
+      measurement_unit: sanitizeText(row[12], 20) || null,
+      measurement_unit_qualifier: sanitizeText(row[13], 20) || null,
+      action_code: sanitizeText(row[14], 20) || null
+    }
+  };
+}
+
+function parseMeasureExclusion(row) {
+  const code = normalizeCode(row[0]).padEnd(10, "0");
+  const validFrom = toIsoDate(row[3]);
+  const areaCode = sanitizeText(row[8], 24) || null;
+  const measureTypeCode = sanitizeText(row[9], 12) || null;
+  if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
+  return {
+    key: measureIdentity(code, row[1], row[2], validFrom, areaCode, measureTypeCode),
+    value: {
+      country: sanitizeText(row[7], 300) || null,
+      country_code: sanitizeText(row[10], 8).toUpperCase() || null
+    }
+  };
+}
+
+function parseMeasureFootnote(row) {
+  const code = normalizeCode(row[0]).padEnd(10, "0");
+  const validFrom = toIsoDate(row[4]);
+  const areaCode = sanitizeText(row[3], 24) || null;
+  const measureTypeCode = sanitizeText(row[6], 12) || null;
+  const footnoteCode = sanitizeText(row[9], 24).toUpperCase();
+  if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode || !footnoteCode) return null;
+  return {
+    key: measureIdentity(code, row[1], row[2], validFrom, areaCode, measureTypeCode),
+    value: { code: footnoteCode }
+  };
+}
+
+function measureIdentity(code, additionalCode, orderNumber, validFrom, areaCode, measureTypeCode) {
+  return [
+    normalizeCode(code).padEnd(10, "0"),
+    sanitizeText(additionalCode, 4).toUpperCase(),
+    sanitizeText(orderNumber, 24),
+    validFrom || "",
+    sanitizeText(areaCode, 24),
+    sanitizeText(measureTypeCode, 12)
+  ].join("|");
+}
+
+function emptyMeasureTables() {
+  return {
+    taric_measures: [],
+    additional_codes: [],
+    document_codes: [],
+    footnotes: [],
+    geographical_areas: []
+  };
 }
 
 function buildOfficialDataset(input) {
@@ -312,8 +605,9 @@ function buildOfficialDataset(input) {
   const hierarchy = buildHierarchyTable(records, sourceMetadata);
   for (const record of records) delete record._hierarchy;
   const italianCount = combinedRows.filter(row => row.descriptionIt).length;
+  const measureTables = input.measureTables || emptyMeasureTables();
   return {
-    schema_version: 2,
+    schema_version: 3,
     dataset_status: "official",
     notice: "Nomenclatura TARIC ufficiale. La classificazione automatica resta un supporto operativo e non sostituisce una ITV/BTI o la verifica dell'autorità doganale.",
     coverage: {
@@ -326,7 +620,11 @@ function buildOfficialDataset(input) {
       aida_supplemented_rows: Number(input.aidaSupplementedRows || 0),
       aida_data_date: input.aidaDataDate || null,
       aida_warning: input.aidaWarning || null,
-      measures_imported: false
+      measures_imported: measureTables.taric_measures.length > 0,
+      measures: measureTables.taric_measures.length,
+      additional_codes: measureTables.additional_codes.length,
+      document_codes: measureTables.document_codes.length,
+      geographical_areas: measureTables.geographical_areas.length
     },
     sources: [
       {
@@ -376,7 +674,11 @@ function buildOfficialDataset(input) {
     classification_examples: [],
     classification_regulations: [],
     bti_examples: [],
-    taric_measures: [],
+    taric_measures: measureTables.taric_measures,
+    additional_codes: measureTables.additional_codes,
+    document_codes: measureTables.document_codes,
+    footnotes: measureTables.footnotes,
+    geographical_areas: measureTables.geographical_areas,
     data_versions: [{
       id: `eu-taric-${currentVersion}`,
       active: true,
@@ -492,6 +794,9 @@ function validateOfficialDataset(dataset, declarableRows) {
   if (codes.some(record => !/^\d{10}$/.test(record.code))) errors.push("sono presenti codici non composti da 10 cifre");
   if (codes.some(record => !record.description)) errors.push("sono presenti descrizioni vuote");
   if (!codes.every(record => record.source_id === "eu-taric-circabc")) errors.push("fonte puntuale mancante");
+  if ((dataset.taric_measures || []).some(measure => !/^\d{10}$/.test(measure.code) || !measure.flow || !measure.measure_type_code)) {
+    errors.push("sono presenti misure TARIC incomplete o con codice non valido");
+  }
   if (errors.length) throw new Error(`Dataset TARIC ufficiale non valido: ${errors.join("; ")}.`);
   return true;
 }
@@ -517,6 +822,49 @@ function parseAtomChildren(xml) {
 
 function canonicalFileName(value) {
   return String(value || "").replace(/\s*\(\d+\)(?=\.xlsx$)/i, "");
+}
+
+function createWorkbook() {
+  const { Workbook } = require("exceljs");
+  return new Workbook();
+}
+
+function findSnapshotFile(files, pattern) {
+  for (const [name, file] of files || []) {
+    if (pattern.test(name)) return file;
+  }
+  return null;
+}
+
+function findSnapshotFiles(files, pattern) {
+  return Array.from(files || [])
+    .filter(([name]) => pattern.test(name))
+    .map(([, file]) => file)
+    .sort((left, right) => String(left.title).localeCompare(String(right.title)));
+}
+
+function snapshotHasMeasureFiles(files) {
+  return Boolean(
+    findSnapshotFile(files, /^Additional codes\.xlsx$/i) &&
+    findSnapshotFile(files, /^(Box 44|Supporting document).*\.xlsx$/i) &&
+    findSnapshotFile(files, /^Geographical Area Composition\.xlsx$/i) &&
+    findSnapshotFile(files, /^Footnotes\.xlsx$/i) &&
+    findSnapshotFile(files, /^Measure exclusions\.xlsx$/i) &&
+    findSnapshotFile(files, /^Measure footnotes\.xlsx$/i) &&
+    findSnapshotFile(files, /^Measure conditions\.xlsx$/i) &&
+    findSnapshotFiles(files, /^Duties Import.*\.xlsx$/i).length &&
+    findSnapshotFiles(files, /^Duties Export.*\.xlsx$/i).length
+  );
+}
+
+async function downloadMeasureSeries(importer, entries, cacheDir, prefix, stem, force) {
+  const targets = [];
+  for (let index = 0; index < entries.length; index += 1) {
+    const target = path.join(cacheDir, `${prefix}-${stem}-${String(index + 1).padStart(2, "0")}.xlsx`);
+    await importer.download(entries[index], target, force);
+    targets.push(target);
+  }
+  return targets;
 }
 
 function decodeXml(value) {
@@ -547,7 +895,9 @@ function toIsoDate(value) {
   const match = text.match(/^(\d{2})-(\d{2})-(\d{4})$/);
   if (match) return `${match[3]}-${match[2]}-${match[1]}`;
   const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})/);
-  return iso ? iso[0] : null;
+  if (iso) return iso[0];
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
 }
 
 function safeTimestamp() {
@@ -562,5 +912,8 @@ module.exports = {
   parseAtomChildren,
   readNomenclatureWorkbook,
   readDeclarableWorkbook,
+  readTaricMeasureWorkbooks,
+  buildTaricMeasureTables,
+  measureIdentity,
   validateOfficialDataset
 };
