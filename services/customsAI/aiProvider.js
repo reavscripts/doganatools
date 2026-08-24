@@ -221,36 +221,63 @@ class OllamaProvider {
   }
 
   async ensureServer() {
-    if (!this.autoStart || Date.now() < this.retryAfter) return;
-    if (await isOllamaReachable(this.fetch, this.baseUrl)) return;
+    if (await isOllamaReachable(this.fetch, this.baseUrl)) return true;
+
+    if (!this.autoStart || Date.now() < this.retryAfter) return false;
+
     if (!this.startPromise) {
       this.startPromise = new Promise(resolve => {
+        let settled = false;
+
+        const finish = value => {
+          if (settled) return;
+          settled = true;
+          resolve(value);
+        };
+
         try {
           const child = spawn("ollama", ["serve"], {
             detached: true,
             stdio: "ignore",
             windowsHide: true
           });
-          child.unref();
-        } catch {}
-        resolve();
-      }).then(async () => {
+
+          child.once("error", () => {
+            this.retryAfter = Date.now() + 30000;
+            finish(false);
+          });
+
+          child.once("spawn", () => {
+            try { child.unref(); } catch {}
+            finish(true);
+          });
+        } catch {
+          this.retryAfter = Date.now() + 30000;
+          finish(false);
+        }
+      }).then(async started => {
+        if (!started) return false;
+
         for (let attempt = 0; attempt < 15; attempt += 1) {
           await delay(250);
           if (await isOllamaReachable(this.fetch, this.baseUrl)) return true;
         }
+
         this.retryAfter = Date.now() + 30000;
         return false;
       }).finally(() => {
         this.startPromise = null;
       });
     }
-    await this.startPromise;
+
+    return this.startPromise;
   }
 
   async requestStructured(schema, systemText, payload) {
     if (!this.available) return null;
-    await this.ensureServer();
+
+    const serverReady = await this.ensureServer();
+    if (!serverReady) return null;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
     try {
