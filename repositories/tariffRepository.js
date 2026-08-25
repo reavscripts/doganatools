@@ -27,20 +27,20 @@ const REQUIRED_TABLES = [
 
 class TariffRepository {
   constructor(options = {}) {
-    this.datasetPath = options.datasetPath || path.join(
-      options.rootDir || path.resolve(__dirname, ".."),
-      "data",
-      "customs",
-      "processed",
-      "customs-dataset.json"
-    );
     this.fs = options.fs || fs;
+    const rootDir = options.rootDir || path.resolve(__dirname, "..");
+    const runtimeDatasetPath = path.join(rootDir, "data", "customs", "runtime", "customs-dataset.json");
+    const bundledDatasetPath = path.join(rootDir, "data", "customs", "processed", "customs-dataset.json");
+    this.datasetPath = options.datasetPath || (
+      this.fs.existsSync(runtimeDatasetPath) ? runtimeDatasetPath : bundledDatasetPath
+    );
     this.cache = null;
     this.cacheMtimeMs = null;
     this.codeIndex = null;
     this.searchIndex = null;
     this.hierarchySearchIndex = null;
     this.documentFrequency = null;
+    this.measureChapterCache = new Map();
   }
 
   isInstalled() {
@@ -55,6 +55,7 @@ class TariffRepository {
     this.validateDataset(parsed);
     this.cache = parsed;
     this.cacheMtimeMs = stat.mtimeMs;
+    this.measureChapterCache.clear();
     this.buildIndexes(parsed);
     return parsed;
   }
@@ -343,7 +344,7 @@ class TariffRepository {
     if (!dataset) return [];
     const requestedCode = normalizeCode(code).padEnd(10, "0");
     const additionalCode = String(context.additionalCode || "").toUpperCase();
-    return (dataset.taric_measures || [])
+    return this.getMeasureCandidates(dataset, requestedCode)
       .filter(item => (
         measureAppliesToCode(item.code, requestedCode) &&
         this.isValidOn(item, date) &&
@@ -356,6 +357,28 @@ class TariffRepository {
         effectiveCodeLength(right.code) - effectiveCodeLength(left.code) ||
         String(left.measure_type_code || "").localeCompare(String(right.measure_type_code || ""))
       ));
+  }
+
+  getMeasureCandidates(dataset, requestedCode) {
+    if ((dataset.taric_measures || []).length) return dataset.taric_measures;
+    if (dataset.coverage?.measures_storage !== "chapter_files") return [];
+    const chapter = normalizeCode(requestedCode).slice(0, 2);
+    if (!/^\d{2}$/.test(chapter)) return [];
+    if (this.measureChapterCache.has(chapter)) return this.measureChapterCache.get(chapter);
+    const directoryName = String(dataset.coverage.measures_directory || "taric-measures");
+    if (!/^[a-z0-9._-]+$/i.test(directoryName)) {
+      throw new Error("Percorso delle misure TARIC esterne non valido.");
+    }
+    const shardPath = path.join(path.dirname(this.datasetPath), directoryName, `${chapter}.json`);
+    if (!this.fs.existsSync(shardPath)) {
+      this.measureChapterCache.set(chapter, []);
+      return [];
+    }
+    const parsed = JSON.parse(this.fs.readFileSync(shardPath, "utf8"));
+    const measures = Array.isArray(parsed) ? parsed : parsed?.measures;
+    if (!Array.isArray(measures)) throw new Error(`Archivio misure TARIC non valido per il capitolo ${chapter}.`);
+    this.measureChapterCache.set(chapter, measures);
+    return measures;
   }
 }
 

@@ -32,11 +32,13 @@ class OfficialTaricImporter {
   }
 
   async update(options = {}) {
+    const onProgress = typeof options.onProgress === "function" ? options.onProgress : () => {};
     const rootDir = path.resolve(options.rootDir || path.resolve(__dirname, "../.."));
     const cacheDir = path.resolve(options.cacheDir || path.join(rootDir, "cache", "taric-official"));
-    const targetPath = path.resolve(options.targetPath || path.join(rootDir, "data", "customs", "processed", "customs-dataset.json"));
+    const targetPath = path.resolve(options.targetPath || path.join(rootDir, "data", "customs", "runtime", "customs-dataset.json"));
     this.fs.mkdirSync(cacheDir, { recursive: true });
 
+    onProgress("Ricerca dell'ultimo snapshot TARIC completo");
     const snapshot = await this.resolveSnapshot(options);
     const currentPrefix = `${snapshot.current.year}-${snapshot.current.month}`;
     const italianPrefix = `${snapshot.italian.year}-${snapshot.italian.month}`;
@@ -54,6 +56,7 @@ class OfficialTaricImporter {
     };
 
     const refreshFiles = options.reuseCache !== true;
+    onProgress("Download della nomenclatura ufficiale");
     await this.download(snapshot.current.files.get("Nomenclature EN.xlsx"), files.nomenclatureEn, refreshFiles || options.force);
     await this.download(snapshot.current.files.get("Declarable codes.xlsx"), files.declarableCodes, refreshFiles || options.force);
     await this.download(snapshot.italian.files.get("Nomenclature IT.xlsx"), files.nomenclatureIt, refreshFiles || options.force);
@@ -78,20 +81,19 @@ class OfficialTaricImporter {
       if (missing.length) {
         throw new Error(`Snapshot TARIC incompleto per le misure: ${missing.join(", ")}.`);
       }
-      await Promise.all(Object.entries(requiredMeasureFiles).map(([name, file]) => (
-        this.download(file, files[name], refreshFiles || options.force)
-      )));
+      onProgress("Download delle tabelle import/export e delle condizioni");
+      for (const [name, file] of Object.entries(requiredMeasureFiles)) {
+        await this.download(file, files[name], refreshFiles || options.force);
+      }
       const importPaths = await downloadMeasureSeries(this, dutiesImport, cacheDir, currentPrefix, "duties-import", refreshFiles || options.force);
       const exportPaths = await downloadMeasureSeries(this, dutiesExport, cacheDir, currentPrefix, "duties-export", refreshFiles || options.force);
       measureFiles = { ...files, importPaths, exportPaths };
     }
 
-    const [englishRows, italianRows, declarableRows, measureTables] = await Promise.all([
-      readNomenclatureWorkbook(files.nomenclatureEn),
-      readNomenclatureWorkbook(files.nomenclatureIt),
-      readDeclarableWorkbook(files.declarableCodes),
-      measureFiles ? readTaricMeasureWorkbooks(measureFiles) : null
-    ]);
+    onProgress("Lettura sequenziale della nomenclatura");
+    let englishRows = await readNomenclatureWorkbook(files.nomenclatureEn);
+    let italianRows = await readNomenclatureWorkbook(files.nomenclatureIt);
+    let declarableRows = await readDeclarableWorkbook(files.declarableCodes);
     let supplementedItalianRows = italianRows;
     let aidaSupplementedRows = 0;
     let aidaDataDate = null;
@@ -119,6 +121,8 @@ class OfficialTaricImporter {
       }
     }
     const retrievedAt = this.now().toISOString();
+    const declarableLeafCount = declarableRows.filter(row => row.isLeaf).length;
+    onProgress("Costruzione dell'indice doganale");
     const dataset = buildOfficialDataset({
       englishRows,
       italianRows: supplementedItalianRows,
@@ -128,13 +132,22 @@ class OfficialTaricImporter {
       aidaSupplementedRows,
       aidaDataDate,
       aidaWarning,
-      measureTables,
+      measureTables: null,
       retrievedAt
     });
-    if (measuresEnabled && dataset.taric_measures.length === 0) {
+    englishRows = null;
+    italianRows = null;
+    supplementedItalianRows = null;
+    declarableRows = null;
+
+    if (measureFiles) {
+      onProgress("Importazione streaming delle misure TARIC");
+      attachTaricMeasureTables(dataset, await readTaricMeasureWorkbooks(measureFiles, onProgress));
+    }
+    if (measuresEnabled && dataset.coverage.measures === 0) {
       throw new Error("Le estrazioni ufficiali non hanno prodotto alcuna misura TARIC.");
     }
-    validateOfficialDataset(dataset, declarableRows);
+    validateOfficialDataset(dataset, declarableLeafCount);
 
     const report = {
       success: true,
@@ -146,38 +159,82 @@ class OfficialTaricImporter {
       nomenclatureRows: dataset.tariff_descriptions.length,
       italianRows: dataset.coverage.italian_rows,
       fallbackEnglishRows: dataset.coverage.english_fallback_rows,
-      measures: dataset.taric_measures.length,
+      measures: dataset.coverage.measures,
       additionalCodes: dataset.additional_codes.length,
       aidaSupplementedRows,
       aidaDataDate,
       aidaWarning,
       retrievedAt,
-      backupPath: null
+      backupPath: null,
+      measureBackupPath: null
     };
     if (options.dryRun) return { dataset, report };
 
-    this.fs.mkdirSync(path.dirname(targetPath), { recursive: true });
+    const targetDirectory = path.dirname(targetPath);
+    this.fs.mkdirSync(targetDirectory, { recursive: true });
     const tempPath = `${targetPath}.tmp-${process.pid}-${Date.now()}`;
-    this.fs.writeFileSync(tempPath, `${JSON.stringify(dataset)}\n`, "utf8");
-    let backupPath = null;
+    const measureDirectoryName = "taric-measures";
+    const measureDirectory = path.join(targetDirectory, measureDirectoryName);
+    const tempMeasureDirectory = `${measureDirectory}.tmp-${process.pid}-${Date.now()}`;
+    let hasTemporaryMeasures = false;
     try {
-      if (this.fs.existsSync(targetPath)) {
-        const backupDir = path.join(path.dirname(targetPath), "backups");
+      if (dataset.coverage.measures > 0) {
+        onProgress("Scrittura delle misure separate per capitolo HS");
+        await writeMeasureShards(this.fs, tempMeasureDirectory, dataset.taric_measures, {
+          sourceVersion: currentPrefix,
+          retrievedAt
+        });
+        hasTemporaryMeasures = true;
+        dataset.taric_measures = [];
+        dataset.coverage.measures_storage = "chapter_files";
+        dataset.coverage.measures_directory = measureDirectoryName;
+      }
+      onProgress("Scrittura progressiva del database locale");
+      await writeJsonFile(this.fs, tempPath, dataset);
+    } catch (error) {
+      try { if (this.fs.existsSync(tempPath)) this.fs.unlinkSync(tempPath); } catch {}
+      try { if (this.fs.existsSync(tempMeasureDirectory)) this.fs.rmSync(tempMeasureDirectory, { recursive: true, force: true }); } catch {}
+      throw error;
+    }
+    let backupPath = null;
+    let measureBackupPath = null;
+    let measuresActivated = false;
+    try {
+      const backupDir = path.join(targetDirectory, "backups");
+      if (this.fs.existsSync(targetPath) || (hasTemporaryMeasures && this.fs.existsSync(measureDirectory))) {
         this.fs.mkdirSync(backupDir, { recursive: true });
+      }
+      if (this.fs.existsSync(targetPath)) {
         backupPath = path.join(backupDir, `customs-dataset-${safeTimestamp()}.json`);
         this.fs.renameSync(targetPath, backupPath);
+      }
+      if (hasTemporaryMeasures) {
+        if (this.fs.existsSync(measureDirectory)) {
+          measureBackupPath = path.join(backupDir, `taric-measures-${safeTimestamp()}`);
+          this.fs.renameSync(measureDirectory, measureBackupPath);
+        }
+        this.fs.renameSync(tempMeasureDirectory, measureDirectory);
+        measuresActivated = true;
       }
       this.fs.renameSync(tempPath, targetPath);
     } catch (error) {
       try {
+        if (measuresActivated && this.fs.existsSync(measureDirectory)) {
+          this.fs.rmSync(measureDirectory, { recursive: true, force: true });
+        }
+        if (measureBackupPath && !this.fs.existsSync(measureDirectory) && this.fs.existsSync(measureBackupPath)) {
+          this.fs.renameSync(measureBackupPath, measureDirectory);
+        }
         if (backupPath && !this.fs.existsSync(targetPath) && this.fs.existsSync(backupPath)) {
           this.fs.renameSync(backupPath, targetPath);
         }
       } catch {}
       try { if (this.fs.existsSync(tempPath)) this.fs.unlinkSync(tempPath); } catch {}
+      try { if (this.fs.existsSync(tempMeasureDirectory)) this.fs.rmSync(tempMeasureDirectory, { recursive: true, force: true }); } catch {}
       throw error;
     }
     report.backupPath = backupPath;
+    report.measureBackupPath = measureBackupPath;
     return { dataset, report };
   }
 
@@ -249,13 +306,9 @@ class OfficialTaricImporter {
 }
 
 async function readNomenclatureWorkbook(filePath) {
-  const workbook = createWorkbook();
-  await workbook.xlsx.readFile(filePath);
-  const sheet = workbook.worksheets[0];
-  if (!sheet) throw new Error(`Foglio mancante in ${filePath}.`);
   const rows = [];
-  sheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return;
+  await forEachWorkbookRow(filePath, (row, sheetIndex) => {
+    if (sheetIndex !== 0 || row.number === 1) return;
     const key = sanitizeText(cellText(row.getCell(1).value), 40);
     if (!key) return;
     rows.push({
@@ -270,18 +323,14 @@ async function readNomenclatureWorkbook(filePath) {
       description: cleanDescription(cellText(row.getCell(7).value)),
       descriptionStartDate: toIsoDate(cellText(row.getCell(8).value))
     });
-  });
+  }, { firstSheetOnly: true });
   return rows;
 }
 
 async function readDeclarableWorkbook(filePath) {
-  const workbook = createWorkbook();
-  await workbook.xlsx.readFile(filePath);
-  const sheet = workbook.worksheets[0];
-  if (!sheet) throw new Error(`Foglio mancante in ${filePath}.`);
   const rows = [];
-  sheet.eachRow((row, rowNumber) => {
-    if (rowNumber === 1) return;
+  await forEachWorkbookRow(filePath, (row, sheetIndex) => {
+    if (sheetIndex !== 0 || row.number === 1) return;
     const key = sanitizeText(cellText(row.getCell(1).value), 40);
     if (!key) return;
     rows.push({
@@ -292,65 +341,78 @@ async function readDeclarableWorkbook(filePath) {
       isLeaf: String(cellText(row.getCell(4).value)).trim() === "1",
       endDate: toIsoDate(cellText(row.getCell(5).value)) || null
     });
-  });
+  }, { firstSheetOnly: true });
   return rows;
 }
 
-async function readTaricMeasureWorkbooks(files) {
-  const [
-    additionalRows,
-    documentRows,
-    geographicalRows,
-    footnoteRows,
-    exclusionRows,
-    measureFootnoteRows,
-    conditionRows,
-    importRows,
-    exportRows
-  ] = await Promise.all([
-    readPlainWorkbook(files.additionalCodes),
-    readPlainWorkbook(files.documentCodes),
-    readPlainWorkbook(files.geographicalAreas),
-    readPlainWorkbook(files.footnotes),
-    readPlainWorkbook(files.measureExclusions),
-    readPlainWorkbook(files.measureFootnotes),
-    readPlainWorkbook(files.measureConditions),
-    readWorkbookSeries(files.importPaths),
-    readWorkbookSeries(files.exportPaths)
-  ]);
-  return buildTaricMeasureTables({
-    additionalRows,
-    documentRows,
-    geographicalRows,
-    footnoteRows,
-    exclusionRows,
-    measureFootnoteRows,
-    conditionRows,
-    importRows,
-    exportRows
-  });
-}
-
-async function readWorkbookSeries(paths) {
-  const groups = await Promise.all((paths || []).map(readPlainWorkbook));
-  return groups.flat();
+async function readTaricMeasureWorkbooks(files, onProgress = () => {}) {
+  onProgress("Indicizzazione dei codici addizionali");
+  const additional_codes = descriptionsByLanguage(
+    await readPlainWorkbook(files.additionalCodes),
+    "additional_code",
+    true
+  );
+  onProgress("Indicizzazione dei documenti doganali");
+  const document_codes = descriptionsByLanguage(
+    await readPlainWorkbook(files.documentCodes),
+    "document_code",
+    true
+  );
+  const geographical_areas = buildGeographicalAreas(await readPlainWorkbook(files.geographicalAreas));
+  onProgress("Indicizzazione delle note TARIC");
+  const footnotes = descriptionsByLanguage(await readPlainWorkbook(files.footnotes), "footnote", true);
+  const exclusions = groupMeasureRows(await readPlainWorkbook(files.measureExclusions), parseMeasureExclusion);
+  const measureFootnotes = groupMeasureRows(await readPlainWorkbook(files.measureFootnotes), parseMeasureFootnote);
+  const conditions = groupMeasureRows(await readPlainWorkbook(files.measureConditions), parseMeasureCondition);
+  const context = createDutyParsingContext({ conditions, exclusions, measureFootnotes, footnotes });
+  const taric_measures = [];
+  await appendDutyWorkbookSeries(files.importPaths, "import", context, taric_measures, onProgress);
+  await appendDutyWorkbookSeries(files.exportPaths, "export", context, taric_measures, onProgress);
+  return { taric_measures, additional_codes, document_codes, footnotes, geographical_areas };
 }
 
 async function readPlainWorkbook(filePath) {
-  const workbook = createWorkbook();
-  await workbook.xlsx.readFile(filePath);
   const rows = [];
-  for (const sheet of workbook.worksheets) {
-    sheet.eachRow((row, rowNumber) => {
-      if (rowNumber === 1) return;
-      const values = [];
-      for (let index = 1; index <= Math.max(15, row.cellCount); index += 1) {
-        values.push(sanitizeText(cellText(row.getCell(index).value), 2000));
-      }
-      if (values.some(Boolean)) rows.push(values);
+  await forEachWorkbookRow(filePath, row => {
+    if (row.number === 1) return;
+    const values = plainRowValues(row);
+    if (values.some(Boolean)) rows.push(values);
+  });
+  return rows;
+}
+
+async function appendDutyWorkbookSeries(paths, flow, context, target, onProgress) {
+  for (let index = 0; index < (paths || []).length; index += 1) {
+    onProgress(`Lettura misure ${flow} (${index + 1}/${paths.length})`);
+    await forEachWorkbookRow(paths[index], row => {
+      if (row.number === 1) return;
+      const values = plainRowValues(row);
+      if (!values.some(Boolean)) return;
+      const measure = parseDutyRow(values, flow, context);
+      if (measure) target.push(measure);
     });
   }
-  return rows;
+}
+
+async function forEachWorkbookRow(filePath, visitor, options = {}) {
+  const workbook = createWorkbookReader(filePath);
+  let sheetCount = 0;
+  for await (const sheet of workbook) {
+    const sheetIndex = sheetCount;
+    sheetCount += 1;
+    for await (const row of sheet) {
+      if (!options.firstSheetOnly || sheetIndex === 0) visitor(row, sheetIndex);
+    }
+  }
+  if (!sheetCount) throw new Error(`Foglio mancante in ${filePath}.`);
+}
+
+function plainRowValues(row) {
+  const values = [];
+  for (let index = 1; index <= Math.max(15, row.cellCount); index += 1) {
+    values.push(sanitizeText(cellText(row.getCell(index).value), 2000));
+  }
+  return values;
 }
 
 function buildTaricMeasureTables(input = {}) {
@@ -361,50 +423,8 @@ function buildTaricMeasureTables(input = {}) {
   const conditions = groupMeasureRows(input.conditionRows || [], parseMeasureCondition);
   const exclusions = groupMeasureRows(input.exclusionRows || [], parseMeasureExclusion);
   const measureFootnotes = groupMeasureRows(input.measureFootnoteRows || [], parseMeasureFootnote);
-  const footnoteByCode = new Map(footnotes.map(item => [item.code, item]));
-  const parseDuties = (rows, flow) => (rows || []).map(row => {
-    const code = normalizeCode(row[0]).padEnd(10, "0");
-    const additionalCode = sanitizeText(row[1], 4).toUpperCase() || null;
-    const orderNumber = sanitizeText(row[2], 24) || null;
-    const validFrom = toIsoDate(row[3]);
-    const validTo = toIsoDate(row[4]) || null;
-    const geographicalAreaCode = sanitizeText(row[10], 24) || null;
-    const measureTypeCode = sanitizeText(row[11], 12) || null;
-    if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
-    const key = measureIdentity(code, additionalCode, orderNumber, validFrom, geographicalAreaCode, measureTypeCode);
-    const duty = sanitizeText(row[9], 1000) || null;
-    const parsedConditions = mergeMeasureConditions(
-      conditions.get(key) || [],
-      parseInlineMeasureConditions(duty)
-    );
-    const measureType = sanitizeText(row[7], 500) || null;
-    return {
-      id: `${flow}:${key}`,
-      code,
-      additional_code: additionalCode,
-      order_number: orderNumber,
-      valid_from: validFrom,
-      valid_to: validTo,
-      reduction_indicator: sanitizeText(row[5], 20) || null,
-      geographical_area: sanitizeText(row[6], 300) || null,
-      geographical_area_code: geographicalAreaCode,
-      measure_type: measureType,
-      measure_type_code: measureTypeCode,
-      legal_reference: sanitizeText(row[8], 500) || null,
-      duty,
-      action: duty,
-      flow,
-      conditions: parsedConditions,
-      supplementary_units: parseSupplementaryUnits(measureType, duty, parsedConditions),
-      exclusions: exclusions.get(key) || [],
-      excluded_countries: uniqueStrings((exclusions.get(key) || []).map(item => item.country_code), 8),
-      footnotes: (measureFootnotes.get(key) || []).map(item => ({
-        code: item.code,
-        description: footnoteByCode.get(item.code)?.description || null
-      })),
-      source_id: "eu-taric-circabc"
-    };
-  }).filter(Boolean);
+  const context = createDutyParsingContext({ conditions, exclusions, measureFootnotes, footnotes });
+  const parseDuties = (rows, flow) => (rows || []).map(row => parseDutyRow(row, flow, context)).filter(Boolean);
   return {
     taric_measures: [...parseDuties(input.importRows, "import"), ...parseDuties(input.exportRows, "export")],
     additional_codes,
@@ -412,6 +432,64 @@ function buildTaricMeasureTables(input = {}) {
     footnotes,
     geographical_areas
   };
+}
+
+function createDutyParsingContext(input) {
+  return {
+    conditions: input.conditions || new Map(),
+    exclusions: input.exclusions || new Map(),
+    measureFootnotes: input.measureFootnotes || new Map(),
+    footnoteByCode: new Map((input.footnotes || []).map(item => [item.code, item]))
+  };
+}
+
+function parseDutyRow(row, flow, context) {
+  const code = normalizeCode(row[0]).padEnd(10, "0");
+  const additionalCode = sanitizeText(row[1], 4).toUpperCase() || null;
+  const orderNumber = sanitizeText(row[2], 24) || null;
+  const validFrom = toIsoDate(row[3]);
+  const validTo = toIsoDate(row[4]) || null;
+  const geographicalAreaCode = sanitizeText(row[10], 24) || null;
+  const measureTypeCode = sanitizeText(row[11], 12) || null;
+  if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
+  const key = measureIdentity(code, additionalCode, orderNumber, validFrom, geographicalAreaCode, measureTypeCode);
+  const duty = sanitizeText(row[9], 1000) || null;
+  const parsedConditions = mergeMeasureConditions(
+    context.conditions.get(key) || [],
+    parseInlineMeasureConditions(duty)
+  );
+  const measureType = sanitizeText(row[7], 500) || null;
+  const exclusions = context.exclusions.get(key) || [];
+  return compactObject({
+    id: `${flow}:${key}`,
+    code,
+    additional_code: additionalCode,
+    order_number: orderNumber,
+    valid_from: validFrom,
+    valid_to: validTo,
+    reduction_indicator: sanitizeText(row[5], 20) || null,
+    geographical_area: sanitizeText(row[6], 300) || null,
+    geographical_area_code: geographicalAreaCode,
+    measure_type: measureType,
+    measure_type_code: measureTypeCode,
+    legal_reference: sanitizeText(row[8], 500) || null,
+    duty,
+    flow,
+    conditions: parsedConditions,
+    supplementary_units: parseSupplementaryUnits(measureType, duty, parsedConditions),
+    exclusions,
+    excluded_countries: uniqueStrings(exclusions.map(item => item.country_code), 8),
+    footnotes: (context.measureFootnotes.get(key) || []).map(item => ({
+      code: item.code,
+      description: context.footnoteByCode.get(item.code)?.description || null
+    }))
+  });
+}
+
+function compactObject(value) {
+  return Object.fromEntries(Object.entries(value).filter(([, item]) => (
+    item !== null && item !== undefined && item !== "" && (!Array.isArray(item) || item.length > 0)
+  )));
 }
 
 function descriptionsByLanguage(rows, type, withDates = false) {
@@ -642,6 +720,21 @@ function emptyMeasureTables() {
     footnotes: [],
     geographical_areas: []
   };
+}
+
+function attachTaricMeasureTables(dataset, tables) {
+  const measureTables = tables || emptyMeasureTables();
+  dataset.taric_measures = measureTables.taric_measures;
+  dataset.additional_codes = measureTables.additional_codes;
+  dataset.document_codes = measureTables.document_codes;
+  dataset.footnotes = measureTables.footnotes;
+  dataset.geographical_areas = measureTables.geographical_areas;
+  dataset.coverage.measures_imported = measureTables.taric_measures.length > 0;
+  dataset.coverage.measures = measureTables.taric_measures.length;
+  dataset.coverage.additional_codes = measureTables.additional_codes.length;
+  dataset.coverage.document_codes = measureTables.document_codes.length;
+  dataset.coverage.geographical_areas = measureTables.geographical_areas.length;
+  return dataset;
 }
 
 function buildOfficialDataset(input) {
@@ -894,7 +987,9 @@ function inferRequiredAttributes(description) {
 }
 
 function validateOfficialDataset(dataset, declarableRows) {
-  const expected = declarableRows.filter(row => row.isLeaf).length;
+  const expected = Array.isArray(declarableRows)
+    ? declarableRows.filter(row => row.isLeaf).length
+    : Number(declarableRows);
   const codes = dataset.tariff_codes;
   const unique = new Set(codes.map(record => record.code));
   const errors = [];
@@ -933,9 +1028,18 @@ function canonicalFileName(value) {
   return String(value || "").replace(/\s*\(\d+\)(?=\.xlsx$)/i, "");
 }
 
-function createWorkbook() {
-  const { Workbook } = require("exceljs");
-  return new Workbook();
+function createWorkbookReader(filePath) {
+  const { stream } = require("exceljs");
+  if (!stream?.xlsx?.WorkbookReader) {
+    throw new Error("La versione di exceljs installata non supporta la lettura streaming. Aggiorna exceljs alla versione 4.");
+  }
+  return new stream.xlsx.WorkbookReader(filePath, {
+    worksheets: "emit",
+    sharedStrings: "cache",
+    hyperlinks: "ignore",
+    styles: "ignore",
+    entries: "ignore"
+  });
 }
 
 function findSnapshotFile(files, pattern) {
@@ -1007,6 +1111,87 @@ function toIsoDate(value) {
   if (iso) return iso[0];
   const parsed = new Date(text);
   return Number.isNaN(parsed.getTime()) ? null : parsed.toISOString().slice(0, 10);
+}
+
+async function writeJsonFile(fsModule, filePath, value) {
+  if (typeof fsModule.createWriteStream !== "function") {
+    fsModule.writeFileSync(filePath, `${JSON.stringify(value)}\n`, "utf8");
+    return;
+  }
+  const output = fsModule.createWriteStream(filePath, { encoding: "utf8" });
+  let streamError = null;
+  output.on("error", error => { streamError = error; });
+  const waitFor = eventName => new Promise((resolve, reject) => {
+    if (streamError) return reject(streamError);
+    const onEvent = () => {
+      output.off("error", onError);
+      resolve();
+    };
+    const onError = error => {
+      output.off(eventName, onEvent);
+      reject(error);
+    };
+    output.once(eventName, onEvent);
+    output.once("error", onError);
+  });
+  const write = async chunk => {
+    if (streamError) throw streamError;
+    if (!output.write(chunk)) await waitFor("drain");
+  };
+  const entries = Object.entries(value);
+  await write("{");
+  for (let entryIndex = 0; entryIndex < entries.length; entryIndex += 1) {
+    const [key, item] = entries[entryIndex];
+    if (entryIndex) await write(",");
+    await write(`${JSON.stringify(key)}:`);
+    if (!Array.isArray(item)) {
+      await write(JSON.stringify(item));
+      continue;
+    }
+    let buffer = "[";
+    for (let itemIndex = 0; itemIndex < item.length; itemIndex += 1) {
+      const serialized = `${itemIndex ? "," : ""}${JSON.stringify(item[itemIndex])}`;
+      if (buffer.length + serialized.length > 256 * 1024) {
+        await write(buffer);
+        buffer = "";
+      }
+      buffer += serialized;
+    }
+    buffer += "]";
+    await write(buffer);
+  }
+  await write("}\n");
+  const finished = waitFor("finish");
+  output.end();
+  await finished;
+}
+
+async function writeMeasureShards(fsModule, directoryPath, measures, metadata = {}) {
+  fsModule.mkdirSync(directoryPath, { recursive: true });
+  const chapters = new Map();
+  for (const measure of measures || []) {
+    const chapter = normalizeCode(measure.code).slice(0, 2);
+    if (!/^\d{2}$/.test(chapter)) continue;
+    const list = chapters.get(chapter) || [];
+    list.push(measure);
+    chapters.set(chapter, list);
+  }
+  const manifestChapters = {};
+  for (const [chapter, chapterMeasures] of Array.from(chapters.entries()).sort()) {
+    manifestChapters[chapter] = chapterMeasures.length;
+    await writeJsonFile(fsModule, path.join(directoryPath, `${chapter}.json`), {
+      schema_version: 1,
+      chapter,
+      measures: chapterMeasures
+    });
+  }
+  await writeJsonFile(fsModule, path.join(directoryPath, "manifest.json"), {
+    schema_version: 1,
+    source_version: metadata.sourceVersion || null,
+    retrieved_at: metadata.retrievedAt || null,
+    measures: measures.length,
+    chapters: manifestChapters
+  });
 }
 
 function safeTimestamp() {

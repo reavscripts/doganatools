@@ -28,7 +28,10 @@ async function main() {
     dryRun: args["dry-run"] === true,
     force: args.force === true,
     aida: args["no-aida"] !== true,
-    measures: args["no-measures"] !== true
+    measures: args["no-measures"] !== true,
+    onProgress(message) {
+      console.error(`[TARIC] ${message}…`);
+    }
   });
   console.log(JSON.stringify(report, null, 2));
 }

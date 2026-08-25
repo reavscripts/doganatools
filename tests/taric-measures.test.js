@@ -175,6 +175,56 @@ test("restituisce il codice addizionale comunitario applicabile", () => {
   assert.deepEqual(result.additionalCodes, [{ code: "4099", description: "Altri: nessuna restrizione specifica" }]);
 });
 
+test("carica soltanto il file misure del capitolo TARIC richiesto", () => {
+  writeDataset();
+  const dataset = JSON.parse(fs.readFileSync(datasetPath, "utf8"));
+  const chapterDirectory = path.join(tempRoot, "taric-measures");
+  fs.mkdirSync(chapterDirectory, { recursive: true });
+  fs.writeFileSync(path.join(chapterDirectory, "44.json"), JSON.stringify({
+    schema_version: 1,
+    chapter: "44",
+    measures: dataset.taric_measures.filter(item => item.code.startsWith("44"))
+  }));
+  dataset.taric_measures = [];
+  dataset.coverage = {
+    measures_imported: true,
+    measures: 1,
+    measures_storage: "chapter_files",
+    measures_directory: "taric-measures"
+  };
+  fs.writeFileSync(datasetPath, JSON.stringify(dataset));
+  const repository = new TariffRepository({ datasetPath });
+  const result = new TaricMeasuresService(repository).getMeasures({
+    code: "4401310000",
+    cnCode: "44013100",
+    flow: "export",
+    destinationCountry: "US",
+    operationDate: "2026-08-24",
+    additionalCode: "4099"
+  });
+  assert.equal(result.status, "available");
+  assert.equal(result.measures.length, 1);
+  assert.equal(repository.measureChapterCache.size, 1);
+});
+
+test("preferisce il database runtime senza modificare il dataset incluso in Git", () => {
+  writeDataset();
+  const selectionRoot = path.join(tempRoot, "runtime-selection");
+  const processedDirectory = path.join(selectionRoot, "data", "customs", "processed");
+  const runtimeDirectory = path.join(selectionRoot, "data", "customs", "runtime");
+  fs.mkdirSync(processedDirectory, { recursive: true });
+  fs.mkdirSync(runtimeDirectory, { recursive: true });
+  const bundled = JSON.parse(fs.readFileSync(datasetPath, "utf8"));
+  bundled.data_versions[0].id = "bundled";
+  const runtime = structuredClone(bundled);
+  runtime.data_versions[0].id = "runtime";
+  fs.writeFileSync(path.join(processedDirectory, "customs-dataset.json"), JSON.stringify(bundled));
+  fs.writeFileSync(path.join(runtimeDirectory, "customs-dataset.json"), JSON.stringify(runtime));
+  const repository = new TariffRepository({ rootDir: selectionRoot });
+  assert.equal(repository.getDatasetInfo().version.id, "runtime");
+  assert.match(repository.datasetPath, /data[\\/]customs[\\/]runtime[\\/]customs-dataset\.json$/);
+});
+
 test("normalizza le estrazioni ufficiali e collega condizioni e note", () => {
   const tables = buildTaricMeasureTables({
     additionalRows: [["4099", "IT", "Altri"]],
@@ -287,7 +337,12 @@ test("Ollama usa i limiti rapidi e mette in cache l'interpretazione", async () =
   let requestBody = null;
   const provider = new OllamaProvider({
     fetch: async (url, options = {}) => {
-      if (url.endsWith("/api/tags")) return { ok: true };
+      if (url.endsWith("/api/tags")) {
+        return {
+          ok: true,
+          async json() { return { models: [{ name: "qwen3.5:9b" }] }; }
+        };
+      }
       chatCalls += 1;
       requestBody = JSON.parse(options.body);
       return {
@@ -315,7 +370,52 @@ test("Ollama usa i limiti rapidi e mette in cache l'interpretazione", async () =
   assert.equal(requestBody.options.num_ctx, 2048);
 });
 
-test("richiede l'AI gerarchica solo per candidati realmente vicini", () => {
+test("Ollama usa un modello locale compatibile e ritenta soltanto una risposta JSON troncata", async () => {
+  let chatCalls = 0;
+  const requestBodies = [];
+  const provider = new OllamaProvider({
+    fetch: async (url, options = {}) => {
+      if (url.endsWith("/api/tags")) {
+        return {
+          ok: true,
+          async json() { return { models: [{ name: "qwen3:8b" }] }; }
+        };
+      }
+      chatCalls += 1;
+      requestBodies.push(JSON.parse(options.body));
+      return {
+        ok: true,
+        async json() {
+          return {
+            message: {
+              content: chatCalls === 1
+                ? "{\"canonicalProduct\":\"pellet"
+                : JSON.stringify({
+                  canonicalProduct: "pellet di legno",
+                  function: null,
+                  use: null,
+                  officialSearchConcepts: ["legno", "pellet"],
+                  excludedCandidateConcepts: [],
+                  decisiveDetails: [],
+                  suggestedHs4Codes: ["4401"]
+                })
+            }
+          };
+        }
+      };
+    },
+    autoStart: false
+  });
+  const intent = await provider.analyzeSearchIntent("pellet di legno", {});
+  assert.equal(intent.canonicalProduct, "pellet di legno");
+  assert.equal(chatCalls, 2);
+  assert.equal(requestBodies[0].model, "qwen3:8b");
+  assert.equal(requestBodies[0].options.num_predict, 200);
+  assert.ok(requestBodies[1].options.num_predict > 200);
+  assert.equal(provider.getStatus().modelFallback, "qwen3:8b");
+});
+
+test("rileva come ambigui soltanto i candidati gerarchici realmente vicini", () => {
   const record = code => ({ code });
   assert.equal(ambiguousHierarchyResults([
     { record: record("3905"), score: 0.8 },

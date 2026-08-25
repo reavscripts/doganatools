@@ -9,7 +9,7 @@ classificazione HS/CN/TARIC.
 - monitoraggio navi in chiusura e ricerca booking;
 - generazione ed esportazione documenti operativi;
 - stato condiviso, checklist, notifiche e post-it;
-- **DOGANA AI — V0.4.1**: ricerca TARIC istantanea da una sola barra,
+- **DOGANA AI — V0.4.2**: ricerca TARIC istantanea da una sola barra,
   classificazione gerarchica, ipotesi esplicite, alternative, fonti e storico.
 
 ## Avvio locale
@@ -146,7 +146,7 @@ Per aggiornare automaticamente la nomenclatura dalla fonte ufficiale della
 Commissione europea e integrare le righe italiane più recenti da AIDA:
 
 ```text
-npm run update-taric
+node scripts/update-official-taric.js --force
 ```
 
 Lo script individua da solo l'ultimo mese completo, scarica gli Excel ufficiali,
@@ -158,6 +158,8 @@ mensile, valida conteggi e duplicati e sostituisce il dataset in modo
 transazionale. `--dry-run` esegue l'intero controllo senza scrivere;
 `--no-aida` mantiene il fallback inglese per le righe IT mancanti e
 `--no-measures` aggiorna soltanto la nomenclatura.
+
+Su sistemi a 32 bit l'importazione usa lettura sequenziale degli Excel e scrittura progressiva. Il database aggiornato viene salvato in `data/customs/runtime/`, esclusa da Git; le misure sono suddivise per capitolo HS e il server carica soltanto il capitolo richiesto. La ricerca e il ranking restano quelli della V0.4.1.
 
 L'import è separato dall'avvio del server e supporta JSON normalizzato o CSV:
 
@@ -174,9 +176,9 @@ Il contratto sorgente è descritto in `data/customs/imports/README.md`.
 
 ## Copertura e limiti
 
-La nomenclatura completa è installata. L'importatore V0.4.1 aggiunge le misure
+La nomenclatura completa è installata. L'importatore V0.4.2 aggiunge le misure
 comunitarie presenti nelle estrazioni TARIC; il dataset va rigenerato con
-`npm run update-taric` dopo l'aggiornamento del codice. Restano fonti e moduli
+`node scripts/update-official-taric.js --force` dopo l'aggiornamento del codice. Restano fonti e moduli
 distinti da integrare per un trattamento doganale completo:
 
 - misure nazionali (IVA, accise e altri tributi non contenuti in TARIC), Note

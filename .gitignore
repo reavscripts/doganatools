@@ -9,4 +9,5 @@ package-lock.json
 data/auth/
 data/customs/processed/backups/
 data/customs/processed/*.tmp-*
+data/customs/runtime/
 data/customs/history/*.jsonl
