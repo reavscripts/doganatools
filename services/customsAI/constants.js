@@ -1,6 +1,6 @@
 "use strict";
 
-const MODULE_VERSION = "0.4.0";
+const MODULE_VERSION = "0.4.1";
 const MAX_DESCRIPTION_LENGTH = 2000;
 const MAX_ANSWER_LENGTH = 500;
 const MAX_ANSWERS = 30;

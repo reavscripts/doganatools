@@ -11,6 +11,17 @@ const CIRCABC_API = "https://circabc.europa.eu/service/api/node/workspace/Spaces
 const OFFICIAL_TARIC_PAGE = "https://taxation-customs.ec.europa.eu/customs/common-customs-tariff-cct/tariff-classification-goods/eu-customs-tariff-taric_en?prefLang=it";
 const AIDA_TARIC_PAGE = "https://aidaonline7.adm.gov.it/nsitaricinternet/TaricServlet";
 
+const SUPPLEMENTARY_UNIT_METADATA = Object.freeze({
+  GRM: { description: "Grammo", symbol: "g" },
+  KGM: { description: "Chilogrammo", symbol: "kg" },
+  LTR: { description: "Litro", symbol: "l" },
+  MTK: { description: "Metro quadrato", symbol: "m²" },
+  MTQ: { description: "Metro cubo", symbol: "m³" },
+  MTR: { description: "Metro", symbol: "m" },
+  MWH: { description: "Megawattora", symbol: "MWh" },
+  NAR: { description: "Numero di pezzi", symbol: "p/st", declaration_code: "PCE" }
+});
+
 class OfficialTaricImporter {
   constructor(options = {}) {
     this.fetch = options.fetch || global.fetch;
@@ -51,10 +62,10 @@ class OfficialTaricImporter {
     let measureFiles = null;
     if (measuresEnabled) {
       const requiredMeasureFiles = {
-        additionalCodes: findSnapshotFile(snapshot.current.files, /^Additional codes\.xlsx$/i),
+        additionalCodes: findSnapshotFile(snapshot.current.files, /^Additional codes(?: descriptions)?\.xlsx$/i),
         documentCodes: findSnapshotFile(snapshot.current.files, /^(Box 44|Supporting document).*\.xlsx$/i),
-        geographicalAreas: findSnapshotFile(snapshot.current.files, /^Geographical Area Composition\.xlsx$/i),
-        footnotes: findSnapshotFile(snapshot.current.files, /^Footnotes\.xlsx$/i),
+        geographicalAreas: findSnapshotFile(snapshot.current.files, /^Geographical areas? composition\.xlsx$/i),
+        footnotes: findSnapshotFile(snapshot.current.files, /^Footnotes(?: descriptions)?\.xlsx$/i),
         measureExclusions: findSnapshotFile(snapshot.current.files, /^Measure exclusions\.xlsx$/i),
         measureFootnotes: findSnapshotFile(snapshot.current.files, /^Measure footnotes\.xlsx$/i),
         measureConditions: findSnapshotFile(snapshot.current.files, /^Measure conditions\.xlsx$/i)
@@ -343,9 +354,9 @@ async function readPlainWorkbook(filePath) {
 }
 
 function buildTaricMeasureTables(input = {}) {
-  const additional_codes = descriptionsByLanguage(input.additionalRows, "additional_code");
+  const additional_codes = descriptionsByLanguage(input.additionalRows, "additional_code", true);
   const document_codes = descriptionsByLanguage(input.documentRows, "document_code", true);
-  const footnotes = descriptionsByLanguage(input.footnoteRows, "footnote");
+  const footnotes = descriptionsByLanguage(input.footnoteRows, "footnote", true);
   const geographical_areas = buildGeographicalAreas(input.geographicalRows || []);
   const conditions = groupMeasureRows(input.conditionRows || [], parseMeasureCondition);
   const exclusions = groupMeasureRows(input.exclusionRows || [], parseMeasureExclusion);
@@ -361,6 +372,12 @@ function buildTaricMeasureTables(input = {}) {
     const measureTypeCode = sanitizeText(row[11], 12) || null;
     if (!/^\d{10}$/.test(code) || !validFrom || !measureTypeCode) return null;
     const key = measureIdentity(code, additionalCode, orderNumber, validFrom, geographicalAreaCode, measureTypeCode);
+    const duty = sanitizeText(row[9], 1000) || null;
+    const parsedConditions = mergeMeasureConditions(
+      conditions.get(key) || [],
+      parseInlineMeasureConditions(duty)
+    );
+    const measureType = sanitizeText(row[7], 500) || null;
     return {
       id: `${flow}:${key}`,
       code,
@@ -371,13 +388,14 @@ function buildTaricMeasureTables(input = {}) {
       reduction_indicator: sanitizeText(row[5], 20) || null,
       geographical_area: sanitizeText(row[6], 300) || null,
       geographical_area_code: geographicalAreaCode,
-      measure_type: sanitizeText(row[7], 500) || null,
+      measure_type: measureType,
       measure_type_code: measureTypeCode,
       legal_reference: sanitizeText(row[8], 500) || null,
-      duty: sanitizeText(row[9], 1000) || null,
-      action: sanitizeText(row[9], 1000) || null,
+      duty,
+      action: duty,
       flow,
-      conditions: conditions.get(key) || [],
+      conditions: parsedConditions,
+      supplementary_units: parseSupplementaryUnits(measureType, duty, parsedConditions),
       exclusions: exclusions.get(key) || [],
       excluded_countries: uniqueStrings((exclusions.get(key) || []).map(item => item.country_code), 8),
       footnotes: (measureFootnotes.get(key) || []).map(item => ({
@@ -411,7 +429,11 @@ function descriptionsByLanguage(rows, type, withDates = false) {
         type,
         language,
         description,
-        ...(withDates ? { valid_from: toIsoDate(row[3]), valid_to: toIsoDate(row[4]) || null } : {})
+        ...(withDates ? {
+          valid_from: toIsoDate(row[3]),
+          description_valid_from: toIsoDate(row[4]),
+          valid_to: toIsoDate(row[5]) || null
+        } : {})
       });
     }
   }
@@ -484,6 +506,93 @@ function parseMeasureCondition(row) {
       action_code: sanitizeText(row[14], 20) || null
     }
   };
+}
+
+function parseInlineMeasureConditions(value) {
+  const duty = sanitizeText(value, 2000);
+  if (!/^Cond\s*:/i.test(duty)) return [];
+  const sequences = new Map();
+  return duty.replace(/^Cond\s*:\s*/i, "")
+    .split(";")
+    .map(rawPart => sanitizeText(rawPart, 500))
+    .filter(Boolean)
+    .map(rawPart => {
+      const match = rawPart.match(/^([A-Z])(?:\s+cert\s*:\s*([A-Z0-9-]+))?\s*(.*)$/i);
+      if (!match) return null;
+      const conditionCode = match[1].toUpperCase();
+      const certificateCode = String(match[2] || "").replace(/[^A-Z0-9]/gi, "").toUpperCase() || null;
+      const expression = sanitizeText(match[3], 400);
+      const actionMatch = expression.match(/\((\d{2})\)\s*:/);
+      const rateExpression = sanitizeText(expression.replace(/\(\d{2}\)\s*:[\s\S]*$/, ""), 200) || null;
+      const monetaryAndMeasurement = rateExpression?.match(/\b([A-Z]{3})\s*\/\s*([A-Z]{3})(?:\s+([A-Z]))?/i);
+      const measurementOnly = monetaryAndMeasurement
+        ? null
+        : rateExpression?.match(/\/\s*([A-Z]{3})(?:\s+([A-Z]))?/i);
+      const amountMatch = rateExpression?.match(/[+-]?\d+(?:[.,]\d+)?/);
+      const sequence = (sequences.get(conditionCode) || 0) + 1;
+      sequences.set(conditionCode, sequence);
+      return {
+        condition_code: conditionCode,
+        sequence,
+        certificate_code: certificateCode,
+        amount: amountMatch?.[0] || null,
+        monetary_unit: monetaryAndMeasurement?.[1]?.toUpperCase() || null,
+        measurement_unit: (monetaryAndMeasurement?.[2] || measurementOnly?.[1] || "").toUpperCase() || null,
+        measurement_unit_qualifier: (monetaryAndMeasurement?.[3] || measurementOnly?.[2] || "").toUpperCase() || null,
+        action_code: actionMatch?.[1] || null,
+        expression: rateExpression,
+        raw: rawPart,
+        source: "duty_expression"
+      };
+    })
+    .filter(Boolean);
+}
+
+function mergeMeasureConditions(...groups) {
+  const merged = [];
+  const seen = new Set();
+  for (const condition of groups.flat()) {
+    const key = [
+      condition.condition_code,
+      condition.certificate_code,
+      condition.amount,
+      condition.monetary_unit,
+      condition.measurement_unit,
+      condition.measurement_unit_qualifier,
+      condition.action_code
+    ].map(value => String(value || "").toUpperCase()).join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(condition);
+  }
+  return merged;
+}
+
+function parseSupplementaryUnits(measureType, duty, conditions = []) {
+  if (!/supplementary\s+unit|unit[àa]\s+supplementare/i.test(String(measureType || ""))) return [];
+  const units = [];
+  const direct = String(duty || "").trim().match(/^([A-Z]{3})(?:\s+([A-Z]))?$/i);
+  if (direct) units.push({ code: direct[1].toUpperCase(), qualifier: direct[2]?.toUpperCase() || null });
+  for (const condition of conditions) {
+    if (!condition.measurement_unit) continue;
+    units.push({
+      code: String(condition.measurement_unit).toUpperCase(),
+      qualifier: String(condition.measurement_unit_qualifier || "").toUpperCase() || null
+    });
+  }
+  const unique = new Map();
+  for (const unit of units) {
+    const metadata = SUPPLEMENTARY_UNIT_METADATA[unit.code] || {};
+    const normalized = {
+      code: unit.code,
+      qualifier: unit.qualifier,
+      declaration_code: metadata.declaration_code || null,
+      description: metadata.description || null,
+      symbol: metadata.symbol || null
+    };
+    unique.set(`${normalized.code}|${normalized.qualifier || ""}`, normalized);
+  }
+  return Array.from(unique.values());
 }
 
 function parseMeasureExclusion(row) {
@@ -845,10 +954,10 @@ function findSnapshotFiles(files, pattern) {
 
 function snapshotHasMeasureFiles(files) {
   return Boolean(
-    findSnapshotFile(files, /^Additional codes\.xlsx$/i) &&
+    findSnapshotFile(files, /^Additional codes(?: descriptions)?\.xlsx$/i) &&
     findSnapshotFile(files, /^(Box 44|Supporting document).*\.xlsx$/i) &&
-    findSnapshotFile(files, /^Geographical Area Composition\.xlsx$/i) &&
-    findSnapshotFile(files, /^Footnotes\.xlsx$/i) &&
+    findSnapshotFile(files, /^Geographical areas? composition\.xlsx$/i) &&
+    findSnapshotFile(files, /^Footnotes(?: descriptions)?\.xlsx$/i) &&
     findSnapshotFile(files, /^Measure exclusions\.xlsx$/i) &&
     findSnapshotFile(files, /^Measure footnotes\.xlsx$/i) &&
     findSnapshotFile(files, /^Measure conditions\.xlsx$/i) &&
@@ -914,6 +1023,8 @@ module.exports = {
   readDeclarableWorkbook,
   readTaricMeasureWorkbooks,
   buildTaricMeasureTables,
+  parseInlineMeasureConditions,
+  parseSupplementaryUnits,
   measureIdentity,
   validateOfficialDataset
 };

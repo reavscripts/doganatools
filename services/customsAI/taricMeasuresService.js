@@ -16,6 +16,19 @@ class TaricMeasuresService {
         message: "Il database TARIC non è ancora stato importato; le misure non sono disponibili."
       };
     }
+    if (datasetInfo.measuresImported === false) {
+      return {
+        status: "measures_dataset_missing",
+        dataAvailable: false,
+        input,
+        measures: [],
+        restrictions: [],
+        additionalCodes: [],
+        documentCodes: [],
+        supplementaryUnits: [],
+        message: "La nomenclatura è installata, ma le tabelle ufficiali delle misure non sono ancora state importate. Esegui l'aggiornamento TARIC completo."
+      };
+    }
     const measures = this.repository.getMeasures(input.code, input.operationDate, input);
     const additionalCodes = uniqueByCode(measures
       .filter(item => item.additional_code)
@@ -29,6 +42,7 @@ class TaricMeasuresService {
           condition: condition.condition_code || null
         }))
     )));
+    const supplementaryUnits = uniqueByUnit(measures.flatMap(item => item.supplementary_units || []));
     const restrictions = measures.filter(item => isRestriction(item));
     const decisionStatus = measureDecisionStatus(measures, restrictions);
     return {
@@ -40,6 +54,7 @@ class TaricMeasuresService {
       restrictions,
       additionalCodes,
       documentCodes,
+      supplementaryUnits,
       dataVersion: datasetInfo.version || null,
       message: measures.length
         ? null
@@ -52,7 +67,15 @@ function uniqueByCode(items) {
   return Array.from(new Map(items.map(item => [item.code, item])).values());
 }
 
+function uniqueByUnit(items) {
+  return Array.from(new Map(items.map(item => [
+    `${item.code || ""}|${item.qualifier || ""}`,
+    item
+  ])).values());
+}
+
 function isRestriction(measure) {
+  if (/supplementary\s+unit|unit[àa]\s+supplementare/i.test(String(measure.measure_type || ""))) return false;
   const text = [measure.measure_type, measure.description, measure.action, measure.duty]
     .filter(Boolean).join(" ").toLowerCase();
   return Boolean((measure.conditions || []).length || /controll|restri|proib|diviet|licen|autoriz|certificat/.test(text));

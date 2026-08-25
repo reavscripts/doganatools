@@ -665,10 +665,15 @@ body[data-theme="dark"] .customsAiAnswerFooter .is-test{
 
 .customsAiMeasuresSummary strong{ color:var(--heading); font-size:11px; }
 .customsAiMeasuresSummary span{ color:var(--muted); font-size:9px; text-align:right; }
-.customsAiAdditionalCodes{ background:var(--input-bg); border-radius:8px; margin-top:8px; padding:9px 10px; }
-.customsAiAdditionalCodes strong{ color:var(--heading); font-size:10px; }
-.customsAiAdditionalCodes p{ color:var(--text); font-size:9px; line-height:1.45; margin:5px 0 0; }
-.customsAiAdditionalCodes code{ color:var(--accent); font-size:10px; font-weight:900; }
+.customsAiAdditionalCodes,
+.customsAiSupplementaryUnits{ background:var(--input-bg); border-radius:8px; margin-top:8px; padding:9px 10px; }
+.customsAiSupplementaryUnits{ border-left:3px solid var(--accent); }
+.customsAiAdditionalCodes strong,
+.customsAiSupplementaryUnits strong{ color:var(--heading); font-size:10px; }
+.customsAiAdditionalCodes p,
+.customsAiSupplementaryUnits p{ color:var(--text); font-size:9px; line-height:1.45; margin:5px 0 0; }
+.customsAiAdditionalCodes code,
+.customsAiSupplementaryUnits code{ color:var(--accent); font-size:10px; font-weight:900; }
 .customsAiMeasureList{ display:grid; gap:7px; margin-top:8px; }
 .customsAiMeasure{ border:1px solid var(--grid-soft); border-radius:9px; padding:9px 10px; }
 .customsAiMeasureTitle{ color:var(--heading); display:block; font-size:10px; line-height:1.4; }

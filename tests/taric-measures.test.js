@@ -9,7 +9,11 @@ const path = require("node:path");
 const { TariffRepository } = require("../repositories/tariffRepository");
 const { TaricMeasuresService } = require("../services/customsAI/taricMeasuresService");
 const { validateMeasuresPayload, CustomsInputError } = require("../services/customsAI/inputValidator");
-const { buildTaricMeasureTables } = require("../services/customsAI/officialTaricImporter");
+const {
+  buildTaricMeasureTables,
+  parseInlineMeasureConditions,
+  parseSupplementaryUnits
+} = require("../services/customsAI/officialTaricImporter");
 const { OllamaProvider } = require("../services/customsAI/aiProvider");
 const { ambiguousHierarchyResults } = require("../services/customsAI/classificationEngine");
 
@@ -186,6 +190,96 @@ test("normalizza le estrazioni ufficiali e collega condizioni e note", () => {
   assert.equal(tables.taric_measures.length, 1);
   assert.equal(tables.taric_measures[0].conditions[0].certificate_code, "Y923");
   assert.equal(tables.taric_measures[0].footnotes[0].description, "Nota");
+});
+
+test("estrae condizioni incorporate e unità supplementari senza eccezioni per codice", () => {
+  const conditions = parseInlineMeasureConditions("Cond: R 0.036/KGM(28):; R 0.000/KGM(10):");
+  assert.equal(conditions.length, 2);
+  assert.deepEqual(conditions.map(item => item.measurement_unit), ["KGM", "KGM"]);
+  assert.deepEqual(conditions.map(item => item.action_code), ["28", "10"]);
+  assert.deepEqual(parseSupplementaryUnits("Supplementary unit", "Cond: R 0.036/KGM(28):; R 0.000/KGM(10):", conditions), [{
+    code: "KGM",
+    qualifier: null,
+    declaration_code: null,
+    description: "Chilogrammo",
+    symbol: "kg"
+  }]);
+});
+
+test("restituisce per 44152020 le misure export ereditate, i CADD e l'unità supplementare", () => {
+  const tables = buildTaricMeasureTables({
+    additionalRows: [
+      ["4056", "IT", "Beni soggetti al regolamento (CE) n. 1210/2003", "01-01-2007", "01-01-2007", ""],
+      ["4099", "IT", "Altri: nessuna restrizione", "01-01-2007", "01-01-2007", ""]
+    ],
+    documentRows: [
+      ["Y935", "IT", "Merci fuori dal campo del regolamento (UE) n. 1332/2013", "15-12-2013", "15-12-2013", ""],
+      ["E012", "IT", "Licenza di esportazione di beni culturali", "02-03-2009", "02-03-2009", ""],
+      ["Y903", "IT", "Merci non comprese nell'elenco dei beni culturali", "02-03-2009", "02-03-2009", ""]
+    ],
+    geographicalRows: [["1008", "01-01-2000", "IT", "ALLTC", "Tutti i paesi terzi", "1", "US", "Stati Uniti", "01-01-2000", ""]],
+    footnoteRows: [],
+    conditionRows: [],
+    exclusionRows: [],
+    measureFootnoteRows: [],
+    importRows: [],
+    exportRows: [
+      ["4400000000", "4056", "", "01-01-2007", "", "", "All third countries", "Restriction on export", "Regulation 1210/03", "", "1008", "467"],
+      ["4400000000", "4099", "", "01-01-2007", "", "", "All third countries", "Restriction on export", "Regulation 1210/03", "", "1008", "467"],
+      ["4400000000", "", "", "15-12-2013", "", "", "All third countries", "Export authorization", "Regulation 1332/13", "Cond: B cert: Y-935 (25):; B (05):", "1008", "473"],
+      ["4415000000", "", "", "02-03-2009", "", "", "All third countries", "Export control on cultural goods", "Regulation 0116/09", "Cond: Y cert: E-012 (29):; Y cert: Y-903 (29):; Y (09):", "1008", "735"],
+      ["4415202000", "", "", "01-01-2008", "", "", "ERGA OMNES", "Supplementary unit", "Regulation 1734/96", "NAR", "1011", "109"]
+    ]
+  });
+  assert.equal(tables.taric_measures.length, 5);
+  assert.deepEqual(
+    tables.taric_measures.find(item => item.measure_type_code === "473").conditions.map(item => item.certificate_code),
+    ["Y935", null]
+  );
+  assert.deepEqual(
+    tables.taric_measures.find(item => item.measure_type_code === "735").conditions.map(item => item.certificate_code),
+    ["E012", "Y903", null]
+  );
+  assert.deepEqual(tables.taric_measures.find(item => item.measure_type_code === "109").supplementary_units, [{
+    code: "NAR",
+    qualifier: null,
+    declaration_code: "PCE",
+    description: "Numero di pezzi",
+    symbol: "p/st"
+  }]);
+
+  writeDataset();
+  const dataset = JSON.parse(fs.readFileSync(datasetPath, "utf8"));
+  dataset.tariff_codes.push({
+    code: "4415202000",
+    level: "TARIC",
+    description: "Palette di carico semplici in legno",
+    valid_from: "2026-01-01",
+    valid_to: null,
+    source: "EU TARIC — DG TAXUD",
+    source_version: "2026-08",
+    retrieved_at: "2026-08-24T00:00:00.000Z"
+  });
+  dataset.taric_measures = tables.taric_measures;
+  dataset.additional_codes = tables.additional_codes;
+  dataset.document_codes = tables.document_codes;
+  dataset.footnotes = tables.footnotes;
+  dataset.geographical_areas = tables.geographical_areas;
+  fs.writeFileSync(datasetPath, JSON.stringify(dataset));
+
+  const result = new TaricMeasuresService(new TariffRepository({ datasetPath })).getMeasures({
+    code: "4415202000",
+    cnCode: "44152020",
+    flow: "export",
+    destinationCountry: "US",
+    operationDate: "2026-08-24",
+    additionalCode: null
+  });
+  assert.equal(result.status, "available");
+  assert.ok(result.additionalCodes.some(item => item.code === "4099"));
+  assert.deepEqual(result.documentCodes.map(item => item.code).sort(), ["E012", "Y903", "Y935"]);
+  assert.deepEqual(result.supplementaryUnits.map(item => [item.declaration_code, item.code]), [["PCE", "NAR"]]);
+  assert.ok(!result.restrictions.some(item => item.measure_type_code === "109"));
 });
 
 test("Ollama usa i limiti rapidi e mette in cache l'interpretazione", async () => {

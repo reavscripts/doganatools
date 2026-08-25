@@ -399,6 +399,20 @@
       });
       output.appendChild(codes);
     }
+    if (Array.isArray(data.supplementaryUnits) && data.supplementaryUnits.length) {
+      var units = element("div", "customsAiSupplementaryUnits");
+      units.appendChild(element("strong", "", "Unità supplementare da dichiarare"));
+      data.supplementaryUnits.forEach(function(item){
+        var row = element("p", "");
+        var codes = [item.declaration_code, item.code].filter(Boolean);
+        row.append(
+          element("code", "", codes.join(" / ")),
+          document.createTextNode(" " + (item.description || "Unità TARIC") + (item.symbol ? " (" + item.symbol + ")" : "") + (item.qualifier ? " — qualificatore " + item.qualifier : ""))
+        );
+        units.appendChild(row);
+      });
+      output.appendChild(units);
+    }
     var list = element("div", "customsAiMeasureList");
     (data.measures || []).forEach(function(measure){ list.appendChild(renderMeasure(measure)); });
     output.appendChild(list);
@@ -412,15 +426,24 @@
     if (measure.additional_code) {
       item.appendChild(element("p", "customsAiMeasureMeta", "Codice addizionale: " + measure.additional_code + (measure.additional_code_description ? " — " + measure.additional_code_description : "")));
     }
+    var conditionGroups = Array.isArray(measure.condition_groups) ? measure.condition_groups : [];
     var conditions = Array.isArray(measure.conditions) ? measure.conditions : [];
-    if (conditions.length) {
+    if (conditionGroups.length || conditions.length) {
       var conditionList = element("ul", "customsAiConditionList");
-      conditions.forEach(function(condition){
-        var documentLabel = condition.certificate_code
-          ? condition.certificate_code + (condition.document && condition.document.description ? " — " + condition.document.description : "")
-          : "Condizione " + (condition.condition_code || "da verificare");
-        conditionList.appendChild(element("li", "", documentLabel));
-      });
+      if (conditionGroups.length) {
+        conditionGroups.forEach(function(group){
+          var options = Array.isArray(group.options) ? group.options : [];
+          if (options.length) {
+            var optionText = options.map(conditionDocumentLabel).join(" oppure ");
+            conditionList.appendChild(element("li", "", (options.length > 1 ? "Alternative: " : "Documento/condizione: ") + optionText));
+          }
+          (group.fallback || []).forEach(function(condition){
+            conditionList.appendChild(element("li", "", conditionFallbackLabel(condition)));
+          });
+        });
+      } else {
+        conditions.forEach(function(condition){ conditionList.appendChild(element("li", "", conditionDocumentLabel(condition))); });
+      }
       item.appendChild(conditionList);
     }
     var footnotes = Array.isArray(measure.footnotes) ? measure.footnotes : [];
@@ -428,6 +451,20 @@
       item.appendChild(element("p", "customsAiMeasureMeta", "Note: " + footnotes.map(function(note){ return note.code; }).join(", ")));
     }
     return item;
+  }
+
+  function conditionDocumentLabel(condition){
+    if (condition.certificate_code) {
+      return condition.certificate_code + (condition.document && condition.document.description ? " — " + condition.document.description : "");
+    }
+    return conditionFallbackLabel(condition);
+  }
+
+  function conditionFallbackLabel(condition){
+    var label = "Condizione " + (condition.condition_code || "da verificare");
+    if (condition.action_code) label += " — azione TARIC " + condition.action_code;
+    if (condition.expression) label += " — " + condition.expression;
+    return label;
   }
 
   function decisionStatusLabel(status){

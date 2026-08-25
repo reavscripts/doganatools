@@ -157,6 +157,9 @@ class TariffRepository {
       installed: true,
       status: dataset.dataset_status || "unknown",
       isOfficial: dataset.dataset_status === "official" && currentVersion?.is_official === true,
+      measuresImported: dataset.coverage && Object.prototype.hasOwnProperty.call(dataset.coverage, "measures_imported")
+        ? dataset.coverage.measures_imported === true
+        : null,
       version: currentVersion,
       recordCount: dataset.tariff_codes.length,
       message: dataset.dataset_status === "test"
@@ -404,19 +407,35 @@ function enrichMeasure(measure, dataset) {
     : null;
   const documentByCode = new Map((dataset.document_codes || []).map(item => [item.code, item]));
   const footnoteByCode = new Map((dataset.footnotes || []).map(item => [item.code, item]));
+  const conditions = (measure.conditions || []).map(condition => ({
+    ...condition,
+    document: condition.certificate_code ? documentByCode.get(condition.certificate_code) || null : null
+  }));
   return {
     ...measure,
     additional_code_description: additional?.description || measure.additional_code_description || null,
-    conditions: (measure.conditions || []).map(condition => ({
-      ...condition,
-      document: condition.certificate_code ? documentByCode.get(condition.certificate_code) || null : null
-    })),
+    conditions,
+    condition_groups: groupConditions(conditions),
     footnotes: (measure.footnotes || []).map(footnote => (
       typeof footnote === "string"
         ? { code: footnote, description: footnoteByCode.get(footnote)?.description || null }
         : { ...footnote, description: footnote.description || footnoteByCode.get(footnote.code)?.description || null }
     ))
   };
+}
+
+function groupConditions(conditions) {
+  const groups = new Map();
+  for (const condition of conditions || []) {
+    const code = condition.condition_code || "_";
+    if (!groups.has(code)) {
+      groups.set(code, { condition_code: condition.condition_code || null, operator: "OR", options: [], fallback: [] });
+    }
+    const group = groups.get(code);
+    if (condition.certificate_code) group.options.push(condition);
+    else group.fallback.push(condition);
+  }
+  return Array.from(groups.values());
 }
 
 function scoreTokenCoverage(queryTokens, indexed, documentFrequency, documentCount) {

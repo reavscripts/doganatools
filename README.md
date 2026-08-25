@@ -9,7 +9,7 @@ classificazione HS/CN/TARIC.
 - monitoraggio navi in chiusura e ricerca booking;
 - generazione ed esportazione documenti operativi;
 - stato condiviso, checklist, notifiche e post-it;
-- **DOGANA AI — V0.4.0**: ricerca TARIC istantanea da una sola barra,
+- **DOGANA AI — V0.4.1**: ricerca TARIC istantanea da una sola barra,
   classificazione gerarchica, ipotesi esplicite, alternative, fonti e storico.
 
 ## Avvio locale
@@ -131,11 +131,14 @@ il flusso, la data e il paese interessato. Per l'esportazione è obbligatorio
 }
 ```
 
-La risposta distingue misure, restrizioni, condizioni, codici documento/certificato
-(per esempio `Y923`), note, riferimenti normativi e opzioni di codice addizionale
-comunitario (per esempio `4099`). I gruppi geografici e le relative esclusioni
-sono risolti per la data dell'operazione. Il campo `decisionStatus` indica se le
-condizioni devono essere verificate; non sostituisce la valutazione doganale.
+La risposta distingue misure, restrizioni, condizioni alternative, codici
+documento/certificato (per esempio `Y923`), note, riferimenti normativi, opzioni
+di codice addizionale comunitario (per esempio `4099`) e unità supplementari
+quando previste. Le misure impostate su livelli superiori della nomenclatura
+sono ereditate dal codice TARIC richiesto. I gruppi geografici e le relative
+esclusioni sono risolti per la data dell'operazione. Il campo `decisionStatus`
+indica se le condizioni devono essere verificate; non sostituisce la valutazione
+doganale.
 
 ### Import dati doganali
 
@@ -147,8 +150,9 @@ npm run update-taric
 ```
 
 Lo script individua da solo l'ultimo mese completo, scarica gli Excel ufficiali,
-confronta i codici dichiarabili e importa anche Duties Import/Export, condizioni,
-esclusioni, note, gruppi geografici, codici documento e codici addizionali.
+confronta i codici dichiarabili e importa anche Duties Import/Export, condizioni
+separate o incorporate nell'espressione della misura, esclusioni, note, gruppi
+geografici, codici documento, codici addizionali e unità supplementari.
 Recupera da AIDA le eventuali descrizioni IT non ancora presenti nell'Excel
 mensile, valida conteggi e duplicati e sostituisce il dataset in modo
 transazionale. `--dry-run` esegue l'intero controllo senza scrivere;
@@ -170,7 +174,7 @@ Il contratto sorgente è descritto in `data/customs/imports/README.md`.
 
 ## Copertura e limiti
 
-La nomenclatura completa è installata. L'importatore V0.4 aggiunge le misure
+La nomenclatura completa è installata. L'importatore V0.4.1 aggiunge le misure
 comunitarie presenti nelle estrazioni TARIC; il dataset va rigenerato con
 `npm run update-taric` dopo l'aggiornamento del codice. Restano fonti e moduli
 distinti da integrare per un trattamento doganale completo:
