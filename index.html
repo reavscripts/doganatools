@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R48 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R49 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R48"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R49"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R48";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R49";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -1757,13 +1757,6 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   background:rgba(255,255,255,.22);
   color:inherit;
 }
-.shipPanel.is-minimized .shipContent{
-  display:none;
-}
-.shipPanel.is-minimized .shipTabs{
-  border-bottom:0;
-  padding-bottom:16px;
-}
 .shipGrid{
   grid-template-columns:1fr;
   padding:16px;
@@ -2141,8 +2134,6 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   color:#fff;
 }
 .extraContent{ display:block; }
-.extraPanel.minimized .extraContent{ display:none; }
-.extraPanel.minimized .extraTabs{ padding-bottom:16px; }
 .autoCheckSwitch{
   display:inline-flex;
   align-items:center;
@@ -4357,7 +4348,6 @@ background:var(--surface);
   overflow-wrap:anywhere;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
 }
-.serverConsolePanel.is-minimized .serverConsoleBody{ display:none; }
 @media (max-width:700px){
   .serverConsolePanel{ width:100%; margin:16px 0; }
   .serverConsoleOutput{ height:260px; }
@@ -4592,124 +4582,6 @@ background:var(--surface);
   font-size:12px;
   font-weight:900;
   white-space:nowrap;
-}
-
-.doganaTableModuleCard.is-minimized{
-  width:auto !important;
-  min-width:0 !important;
-  display:inline-block !important;
-  margin:16px !important;
-  border-radius:18px !important;
-}
-
-#dogana-section:has(.doganaTableModuleCard.is-minimized){
-  display:flex;
-  align-items:flex-start;
-  justify-content:flex-start;
-  min-height:86px;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTableTitleBar,
-.doganaTableModuleCard.is-minimized .doganaTableGridCard,
-.doganaTableModuleCard.is-minimized .doganaBottomToolbar,
-.doganaTableModuleCard.is-minimized .calcMainPanel{
-  display:none !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
-  padding:10px !important;
-  border-bottom:0 !important;
-  border-radius:18px !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTopButtons{
-  width:auto !important;
-  justify-content:flex-start !important;
-  gap:8px !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTopButtons button:not(#doganaMinimizeBtn){
-  display:none !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
-  display:inline-flex !important;
-}
-
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn{
-  background:linear-gradient(180deg, #3374f0, #2563eb) !important;
-  border-color:#2563eb !important;
-  color:#fff !important;
-}
-
-@media (max-width:700px){
-  .doganaTableModuleCard.is-minimized{
-    width:auto !important;
-    margin:12px !important;
-  }
-  .doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
-    max-width:190px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-}
-
-
-/* === FIX MINIMIZZA TABELLA: stesso comportamento degli altri moduli === */
-.doganaTableModuleCard.is-minimized{
-  width:calc(100% - 32px) !important;
-  min-width:0 !important;
-  display:block !important;
-  margin:16px auto !important;
-  border-radius:20px !important;
-}
-
-#dogana-section:has(.doganaTableModuleCard.is-minimized){
-  display:block !important;
-  min-height:0 !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTableTitleBar,
-.doganaTableModuleCard.is-minimized .doganaTableGridCard,
-.doganaTableModuleCard.is-minimized .doganaBottomToolbar,
-.doganaTableModuleCard.is-minimized .calcMainPanel{
-  display:none !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTableTopToolbar{
-  padding:14px 16px !important;
-  border-bottom:0 !important;
-  border-radius:20px !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTopButtons{
-  width:100% !important;
-  justify-content:flex-end !important;
-  gap:8px !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaTopButtons button:not(#doganaMinimizeBtn){
-  display:inline-flex !important;
-}
-
-.doganaTableModuleCard.is-minimized .doganaModuleMiniInfo{
-  display:none !important;
-}
-
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn{
-  background:var(--tbody-bg) !important;
-  color:var(--text) !important;
-  border-color:#d7e1ee !important;
-}
-
-@media (max-width:700px){
-  .doganaTableModuleCard.is-minimized{
-    width:100% !important;
-    margin:12px 0 !important;
-  }
-  .doganaTableModuleCard.is-minimized .doganaTopButtons{
-    justify-content:flex-start !important;
-  }
 }
 
 
@@ -5024,24 +4896,6 @@ button.appSessionSync{
   width:100% !important;
   margin:0 !important;
 }
-.organizeModulePanel.is-minimized .organizeModuleBody{ display:none; }
-.organizeModulePanel.is-minimized .organizeModuleSubtitle,
-.organizeModulePanel.is-minimized .organizeModuleActions > :not(#organizePanelToggleBtn){ display:none !important; }
-.organizeModulePanel.is-minimized{
-  padding:10px 12px !important;
-  border-radius:18px !important;
-}
-.organizeModulePanel.is-minimized .organizeModuleHead{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  padding:0;
-  border-bottom:0;
-  background:transparent;
-}
-.organizeModulePanel.is-minimized .organizeModuleActions{ display:flex; }
-.organizeModulePanel.is-minimized #organizePanelToggleBtn{ display:inline-flex !important; }
 @media (max-width:900px){
   .organizeModuleHead{ grid-template-columns:1fr; }
   .organizeModuleActions{ justify-content:flex-start; }
@@ -6948,25 +6802,6 @@ document.addEventListener("DOMContentLoaded", () => {
 .extraToast.reminder strong::before{
   content:"🔔 ";
 }
-.notificationPanel.is-minimized .notificationBody,
-.notificationPanel.is-minimized .notificationSubtitle,
-.notificationPanel.is-minimized .notificationActions > :not(#notificationToggleBtn){ display:none !important; }
-.notificationPanel.is-minimized{
-  width:auto !important;
-  min-width:180px;
-  margin:18px 16px !important;
-  display:inline-block;
-  vertical-align:top;
-}
-.notificationPanel.is-minimized .notificationHead{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border-bottom:0;
-}
-.notificationPanel.is-minimized .notificationActions{ display:flex; }
-.notificationPanel.is-minimized #notificationToggleBtn{ display:inline-flex !important; }
 @media (max-width:900px){
   .notificationForm{ grid-template-columns:1fr 1fr; }
   .notificationTaskInput{ grid-column:1 / -1; }
@@ -7162,19 +6997,6 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   font-size:12px;
   font-weight:800;
 }
-.postItPanel.is-minimized .postItBody,
-.postItPanel.is-minimized .postItSubtitle,
-.postItPanel.is-minimized .postItActions > :not(#postItToggleBtn){ display:none !important; }
-.postItPanel.is-minimized{
-  width:auto !important;
-  min-width:180px;
-  margin:18px 16px !important;
-  display:inline-block;
-  vertical-align:top;
-}
-.postItPanel.is-minimized .postItHead{ display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:0; }
-.postItPanel.is-minimized .postItActions{ display:flex; }
-.postItPanel.is-minimized #postItToggleBtn{ display:inline-flex !important; }
 @media (max-width:700px){
   .postItPanel{ width:100% !important; margin-left:0 !important; margin-right:0 !important; }
   .postItHead{ grid-template-columns:1fr; }
@@ -7182,35 +7004,6 @@ body[data-theme="dark"] .postItMeta{ color:rgba(255,243,183,.62); }
   .postItForm{ grid-template-columns:1fr; }
   #postItAddBtn{ min-width:0; min-height:44px; }
   .postItBoard{ grid-template-columns:1fr; }
-}
-
-/* === FIX R14: pulsante mostra/nascondi dei sottomoduli Organizza sempre allineato a destra === */
-.operativeChecklistPanel.is-minimized .operativeChecklistHead,
-.notificationPanel.is-minimized .notificationHead,
-.postItPanel.is-minimized .postItHead{
-  display:grid !important;
-  grid-template-columns:minmax(0, 1fr) auto !important;
-  align-items:center !important;
-  gap:12px !important;
-  width:100% !important;
-}
-.operativeChecklistPanel.is-minimized .operativeChecklistHead > :first-child,
-.notificationPanel.is-minimized .notificationHead > :first-child,
-.postItPanel.is-minimized .postItHead > :first-child{
-  min-width:0;
-}
-.operativeChecklistPanel.is-minimized .operativeChecklistActions,
-.notificationPanel.is-minimized .notificationActions,
-.postItPanel.is-minimized .postItActions{
-  margin-left:auto !important;
-  justify-content:flex-end !important;
-  align-self:center !important;
-  flex-wrap:nowrap !important;
-}
-.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
-.notificationPanel.is-minimized #notificationToggleBtn,
-.postItPanel.is-minimized #postItToggleBtn{
-  margin-left:0 !important;
 }
 </style>
 
@@ -8093,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R48</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R49</strong></a>
   </div>
 </footer>
 </div>
@@ -17707,30 +17500,6 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     width:100% !important;
   }
 
-  /* Moduli ridotti: su mobile restano compatti ma leggibili */
-  .doganaTableModuleCard.is-minimized .doganaTableTopToolbar,
-  #shipPanel.is-minimized .shipToolbar,
-  .shipPanel.is-minimized .shipToolbar,
-  #extraPanel.is-minimized .miniHead,
-  #extraPanel.minimized .miniHead,
-  .extraPanel.is-minimized .miniHead,
-  .extraPanel.minimized .miniHead{
-    min-height:54px !important;
-    padding:10px 12px !important;
-    flex-direction:row !important;
-    align-items:center !important;
-  }
-
-  .doganaTableModuleCard.is-minimized .doganaModuleTitle,
-  #shipPanel.is-minimized .shipToolbarTitle h2,
-  .shipPanel.is-minimized .shipToolbarTitle h2,
-  #extraPanel.is-minimized .miniTitle,
-  #extraPanel.minimized .miniTitle{
-    white-space:nowrap !important;
-    overflow:hidden !important;
-    text-overflow:ellipsis !important;
-  }
-
   .floatingBackTop{
     right:max(10px, env(safe-area-inset-right)) !important;
     bottom:max(10px, env(safe-area-inset-bottom)) !important;
@@ -19340,14 +19109,6 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   white-space:nowrap !important;
 }
 
-/* Stato ridotto: la ricerca navi deve scomparire come il resto del contenuto */
-#shipPanel.is-minimized #shipQuickSearch,
-.shipPanel.is-minimized #shipQuickSearch,
-#shipPanel.is-minimized #shipSearchResults,
-.shipPanel.is-minimized #shipSearchResults{
-  display:none !important;
-}
-
 @media (max-width:700px){
   .shipPanel #shipQuickSearch.shipQuickSearch{
     width:calc(100% - 24px) !important;
@@ -19789,37 +19550,6 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   color:var(--accent);
 }
 
-
-/* FIX: quando Ricerca Contenitori è ridotto a icona, nasconde il pulsante CONTROLLA ORA evidenziato */
-.extraPanel.minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
-.extraPanel.minimized .extraTopToolbar #extraCheckNowBtn{
-  display:none !important;
-}
-
-
-/* FIX DEFINITIVO: il pulsante CONTROLLA ORA evidenziato non deve apparire in modalità ridotta */
-#extraPanel.is-minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
-#extraPanel.minimized .extraTopToolbar #extraCheckNowBtn.extraCheckNowMarked,
-#extraPanel.is-minimized .miniToolbar #extraCheckNowBtn.extraCheckNowMarked,
-#extraPanel.minimized .miniToolbar #extraCheckNowBtn.extraCheckNowMarked,
-#extraPanel.is-minimized #extraCheckNowBtn,
-#extraPanel.minimized #extraCheckNowBtn{
-  display:none !important;
-  visibility:hidden !important;
-  opacity:0 !important;
-  width:0 !important;
-  min-width:0 !important;
-  max-width:0 !important;
-  height:0 !important;
-  min-height:0 !important;
-  max-height:0 !important;
-  padding:0 !important;
-  margin:0 !important;
-  border:0 !important;
-  overflow:hidden !important;
-  pointer-events:none !important;
-}
-
 </style>
 
 
@@ -19972,20 +19702,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 #postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-#serverConsoleToggle.doganaModuleSvgToggleBtn,
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
-#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-.extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-.extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
-.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
-.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+#serverConsoleToggle.doganaModuleSvgToggleBtn{
   width:38px !important;
   height:38px !important;
   min-width:38px !important;
@@ -20006,24 +19723,6 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   color:var(--accent) !important;
   border:1px solid color-mix(in srgb, var(--accent) 30%, var(--btn-border)) !important;
   box-shadow:0 1px 0 rgba(255,255,255,.70), 0 4px 12px rgba(15,23,42,.05) !important;
-}
-
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
-#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-.extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-.extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
-.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
-.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
-  background:linear-gradient(180deg, #3374f0 0%, #2563eb 100%) !important;
-  color:#fff !important;
-  border-color:#2563eb !important;
 }
 
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn .doganaModuleToggleSvg,
@@ -20149,7 +19848,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R48.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R49.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -20475,14 +20174,6 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraAutoDynamicBadge.extr
 body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem:nth-child(2){
   border-color:color-mix(in srgb, #f59e0b 42%, var(--btn-border)) !important;
   background:color-mix(in srgb, #f59e0b 7%, var(--surface)) !important;
-}
-
-/* Stato ridotto: il badge cooldown non deve occupare spazio; resta solo l'icona espandi. */
-#extraPanel.is-minimized #extraAutoDynamicBadge,
-#extraPanel.minimized #extraAutoDynamicBadge,
-.extraPanel.is-minimized #extraAutoDynamicBadge,
-.extraPanel.minimized #extraAutoDynamicBadge{
-  display:none !important;
 }
 
 @media (max-width:700px){
@@ -20887,10 +20578,6 @@ body[data-theme="dark"] .calcKey{
   min-height:38px !important;
   padding:0 !important;
   border-radius:13px !important;
-}
-#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn{
-  --extra-btn-tone:var(--extra-btn-blue) !important;
 }
 
 /* Elimina riga: compatto ma con lo stesso volume/luce. */
@@ -22171,18 +21858,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-#serverConsoleToggle.doganaModuleSvgToggleBtn,
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
-#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
-.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
-.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
-.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
-#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+#serverConsoleToggle.doganaModuleSvgToggleBtn{
   --dogana-btn-tone:var(--module-toggle-purple) !important;
   width:38px !important;
   height:38px !important;
@@ -22300,8 +21976,7 @@ body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
 <style id="dogana-organizza-header-background-fix-r29">
 /* R30 — ORGANIZZA: header neutro, nessun background/gradient.
    La sola identità cromatica resta affidata alla linea superiore. */
-#organizePanel.organizeModulePanel > .organizeModuleHead,
-#organizePanel.organizeModulePanel.is-minimized > .organizeModuleHead{
+#organizePanel.organizeModulePanel > .organizeModuleHead{
   background:transparent !important;
   background-image:none !important;
 }
@@ -22479,18 +22154,7 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 #postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-#serverConsoleToggle.doganaModuleSvgToggleBtn,
-.doganaTableModuleCard.is-minimized #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
-#extraPanel.is-minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#extraPanel.minimized #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
-.operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
-.notificationPanel.is-minimized #notificationToggleBtn.doganaModuleSvgToggleBtn,
-.postItPanel.is-minimized #postItToggleBtn.doganaModuleSvgToggleBtn,
-#shipPanel.is-minimized #minimizeShipsBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.is-minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.bookingStandalonePanel.minimized #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-.serverConsolePanel.is-minimized #serverConsoleToggle.doganaModuleSvgToggleBtn{
+#serverConsoleToggle.doganaModuleSvgToggleBtn{
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
@@ -22759,8 +22423,7 @@ body .appQuickNav .appNavDropdown.open #organizeNavToggle .appNavDropdownChevron
   color:inherit !important;
 }
 
-body #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled),
-body #organizePanel.is-minimized #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
+body #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
@@ -22905,12 +22568,6 @@ body[data-theme="dark"] .appQuickNav .appNavDropdown #organizeNavToggle[aria-exp
 #extraPanel #extraAutoCheckSwitch.is-off .autoCheckText strong{ color:var(--muted) !important; }
 body[data-theme="dark"] #extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.04), 0 5px 14px rgba(0,0,0,.16) !important;
-}
-#extraPanel.is-minimized #extraAutoCheckSwitch,
-#extraPanel.minimized #extraAutoCheckSwitch,
-.extraPanel.is-minimized #extraAutoCheckSwitch,
-.extraPanel.minimized #extraAutoCheckSwitch{
-  display:none !important;
 }
 </style>
 
@@ -24280,7 +23937,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
 
 
-<style id="doganatools-collapsed-only-r48">
+<style id="doganatools-collapsed-only-r49">
 :root{
   --dogana-collapsed-height:64px;
   --dogana-collapsed-radius:16px;
@@ -24418,6 +24075,39 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   left:0 !important;
   height:2px !important;
   border-radius:var(--dogana-collapsed-radius) var(--dogana-collapsed-radius) 0 0 !important;
+  content:"" !important;
+  position:absolute !important;
+  z-index:7 !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  opacity:1 !important;
+  filter:none !important;
+  pointer-events:none !important;
+  background:linear-gradient(90deg,
+    #2563eb 0%,
+    #06b6d4 20%,
+    #22c55e 40%,
+    #f59e0b 60%,
+    #ec4899 80%,
+    #8b5cf6 100%) !important;
+  box-shadow:none !important;
+}
+
+/* Nei moduli ridotti la linea vive soltanto sull'intestazione: disattiva i vecchi duplicati sul pannello. */
+#dogana-section:has(.doganaTableModuleCard.is-minimized)::before,
+#organizePanel.is-minimized::before,
+#shipPanel.is-minimized::before,
+#bookingLookupPanel.is-minimized::before,
+#bookingLookupPanel.minimized::before,
+#serverConsolePanel.is-minimized::before{
+  content:none !important;
+  display:none !important;
+  background:none !important;
+  box-shadow:none !important;
 }
 
 /* Contenitore titolo: altezza completa della barra e centratura verticale nativa. */
@@ -24495,25 +24185,25 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
 /* Gli elementi secondari non partecipano al layout ridotto. */
 .doganaTableModuleCard.is-minimized .doganaTitleSeparator,
-.doganaTableModuleCard.is-minimized .doganaTopButtons > :not(#doganaMinimizeBtn),
+.doganaTableModuleCard.is-minimized .doganaTopButtons > button:not(#doganaMinimizeBtn),
 #extraPanel.is-minimized .extraSubtitle,
 #extraPanel.minimized .extraSubtitle,
-#extraPanel.is-minimized .extraTopToolbar > :not(#minimizeExtraBtn),
-#extraPanel.minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+#extraPanel.is-minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
+#extraPanel.minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
 #organizePanel.is-minimized .organizeModuleSubtitle,
-#organizePanel.is-minimized .organizeModuleActions > :not(#organizePanelToggleBtn),
+#organizePanel.is-minimized .organizeModuleActions > *:not(#organizePanelToggleBtn),
 #shipPanel.is-minimized .shipTerminalTabsBlock,
-#shipPanel.is-minimized .shipToolbarActions > :not(#minimizeShipsBtn),
+#shipPanel.is-minimized .shipToolbarActions > *:not(#minimizeShipsBtn),
 #bookingLookupPanel.is-minimized .bookingModuleSubtitle,
 #bookingLookupPanel.minimized .bookingModuleSubtitle,
 #serverConsolePanel.is-minimized .serverConsoleSubtitle,
-#serverConsolePanel.is-minimized .serverConsoleActions > :not(#serverConsoleToggle),
+#serverConsolePanel.is-minimized .serverConsoleActions > *:not(#serverConsoleToggle),
 #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
 #organizePanel .notificationPanel.is-minimized .notificationSubtitle,
 #organizePanel .postItPanel.is-minimized .postItSubtitle,
-#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions > :not(#operativeChecklistToggleBtn),
-#organizePanel .notificationPanel.is-minimized .notificationActions > :not(#notificationToggleBtn),
-#organizePanel .postItPanel.is-minimized .postItActions > :not(#postItToggleBtn){
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions > *:not(#operativeChecklistToggleBtn),
+#organizePanel .notificationPanel.is-minimized .notificationActions > *:not(#notificationToggleBtn),
+#organizePanel .postItPanel.is-minimized .postItActions > *:not(#postItToggleBtn){
   display:none !important;
 }
 
