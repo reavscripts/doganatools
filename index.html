@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R38 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R39 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R38"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R39"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R38";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R39";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7661,7 +7661,12 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <span>Utility operativa doganale</span>
     </div>
   </div>
-  <nav class="appQuickNav" aria-label="Scorciatoie">
+  <button type="button" id="doganaMobileNavToggle" class="doganaMobileNavToggle" aria-controls="doganaMobileNav" aria-expanded="false" aria-label="Apri menu">
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
+  </button>
+  <nav class="appQuickNav" id="doganaMobileNav" aria-label="Scorciatoie">
     <a href="#customs-ai-section" data-jump-focus="#customsAiInput">DOGANA AI</a>
     <a id="doganaNavTableBtn" href="#dogana-section">TABELLA</a>
     <a id="doganaNavContainersBtn" href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
@@ -7684,6 +7689,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </button>
   </nav>
 </div>
+<button type="button" id="doganaMobileNavBackdrop" class="doganaMobileNavBackdrop" aria-label="Chiudi menu" aria-hidden="true" tabindex="-1"></button>
 
 <section class="panel sectionJumpTarget customsAiPanel" id="customs-ai-section" aria-label="DOGANA AI classificatore TARIC">
   <div class="customsAiBody">
@@ -8226,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R38</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R39</strong></a>
   </div>
 </footer>
 </div>
@@ -11335,6 +11341,7 @@ button.doganaModuleSvgToggleBtn:active,
         row.__terminal = activeExtraTerminal;
         extraRows[idx] = row;
         const tr = document.createElement("tr");
+        tr.classList.add("extraMobileCardRow");
         tr.dataset.extraRowId = row.__id || "";
         // ID stabile condiviso anche con il layer realtime dei lock.
         tr.dataset.rowId = row.__id || "";
@@ -11361,7 +11368,8 @@ button.doganaModuleSvgToggleBtn:active,
         });
 
         const tdIndex = document.createElement("td");
-        tdIndex.className = "cell";
+        tdIndex.className = "cell extraMobileCardHeader";
+        tdIndex.dataset.extraLabel = "Riga";
         tdIndex.style.color = "var(--muted)";
         tdIndex.style.padding = "12px 10px";
 
@@ -11396,9 +11404,10 @@ button.doganaModuleSvgToggleBtn:active,
         tdIndex.appendChild(indexWrap);
         tr.appendChild(tdIndex);
 
-        const makeExtraInput = (value, field, placeholder="") => {
+        const makeExtraInput = (value, field, placeholder="", mobileLabel="") => {
           const td = document.createElement("td");
-          td.className = "cell";
+          td.className = "cell extraMobileField";
+          td.dataset.extraLabel = mobileLabel || placeholder || field;
           const input = document.createElement("input");
           input.value = value ?? "";
           input.placeholder = placeholder;
@@ -11514,15 +11523,18 @@ button.doganaModuleSvgToggleBtn:active,
           return td;
         };
 
-        tr.appendChild(makeExtraInput(row[cfg.clientField], cfg.clientField, "CLIENTE"));
-        tr.appendChild(makeExtraInput(row[cfg.containerField], cfg.containerField, cfg.placeholder));
+        tr.appendChild(makeExtraInput(row[cfg.clientField], cfg.clientField, "CLIENTE", "Cliente"));
+        tr.appendChild(makeExtraInput(row[cfg.containerField], cfg.containerField, cfg.placeholder, cfg.title || cfg.label || "Container"));
 
         const statusTd = document.createElement("td");
         renderExtraStatusCell(statusTd, row, cfg, row[cfg.containerField]);
+        statusTd.classList.add("extraMobileField", "extraMobileStatus");
+        statusTd.dataset.extraLabel = "Stato";
         tr.appendChild(statusTd);
 
         const tdActions = document.createElement("td");
-        tdActions.className = "actions";
+        tdActions.className = "actions extraMobileCardActions";
+        tdActions.dataset.extraLabel = "Azioni";
         const btn = document.createElement("button");
         btn.className = "rowBtn";
         btn.title = "Elimina riga";
@@ -21294,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R38.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R39.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24838,6 +24850,466 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   }
 }
 </style>
+
+
+<style id="doganatools-mobile-drawer-cards-r39">
+/* I nuovi controlli non modificano la vista desktop. */
+.doganaMobileNavToggle,
+.doganaMobileNavBackdrop{
+  display:none;
+}
+
+@media screen and (max-width:768px){
+  html{
+    scroll-padding-top:78px !important;
+  }
+
+  body.mobileNavOpen{
+    overflow:hidden !important;
+    overscroll-behavior:none !important;
+  }
+
+  /* Barra Android: marchio compatto e pulsante hamburger. */
+  .appTopBar{
+    z-index:1510 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 44px !important;
+    align-items:center !important;
+    gap:8px !important;
+    min-height:58px !important;
+    padding:7px 8px 7px 10px !important;
+  }
+
+  .appTopBar .appBrand{
+    grid-column:1 !important;
+    width:auto !important;
+    min-width:0 !important;
+  }
+
+  .doganaMobileNavToggle{
+    position:relative !important;
+    z-index:1530 !important;
+    grid-column:2 !important;
+    display:inline-flex !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-direction:column !important;
+    gap:5px !important;
+    padding:0 !important;
+    border:1px solid color-mix(in srgb, var(--dogana-user-accent) 38%, var(--grid)) !important;
+    border-radius:13px !important;
+    background:color-mix(in srgb, var(--dogana-user-accent) 10%, var(--surface)) !important;
+    color:var(--heading) !important;
+    box-shadow:0 5px 14px rgba(15,23,42,.10) !important;
+    cursor:pointer !important;
+    -webkit-tap-highlight-color:transparent !important;
+  }
+
+  .doganaMobileNavToggle span{
+    display:block !important;
+    width:20px !important;
+    height:2px !important;
+    flex:0 0 2px !important;
+    border-radius:999px !important;
+    background:currentColor !important;
+    transition:transform .22s ease, opacity .18s ease !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavToggle span:nth-child(1){
+    transform:translateY(7px) rotate(45deg) !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavToggle span:nth-child(2){
+    opacity:0 !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavToggle span:nth-child(3){
+    transform:translateY(-7px) rotate(-45deg) !important;
+  }
+
+  .appQuickNav#doganaMobileNav{
+    position:fixed !important;
+    z-index:1520 !important;
+    inset:0 auto 0 0 !important;
+    display:flex !important;
+    width:min(86vw, 330px) !important;
+    min-width:0 !important;
+    max-width:330px !important;
+    height:100vh !important;
+    height:100dvh !important;
+    flex-direction:column !important;
+    flex-wrap:nowrap !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:7px !important;
+    padding:
+      max(22px, env(safe-area-inset-top))
+      14px
+      max(20px, env(safe-area-inset-bottom))
+      max(14px, env(safe-area-inset-left)) !important;
+    overflow-x:hidden !important;
+    overflow-y:auto !important;
+    overscroll-behavior:contain !important;
+    border:0 !important;
+    border-right:1px solid var(--grid) !important;
+    border-radius:0 22px 22px 0 !important;
+    background:var(--panel) !important;
+    box-shadow:18px 0 48px rgba(15,23,42,.24) !important;
+    transform:translate3d(-105%,0,0) !important;
+    transition:transform .24s cubic-bezier(.2,.8,.2,1) !important;
+    scroll-snap-type:none !important;
+    -webkit-overflow-scrolling:touch !important;
+  }
+
+  .appQuickNav#doganaMobileNav::before{
+    content:"MENU";
+    display:block !important;
+    flex:0 0 auto !important;
+    padding:2px 5px 11px !important;
+    color:var(--muted) !important;
+    font-size:11px !important;
+    font-weight:900 !important;
+    letter-spacing:.16em !important;
+  }
+
+  .appQuickNav#doganaMobileNav.is-open{
+    transform:translate3d(0,0,0) !important;
+  }
+
+  .appQuickNav#doganaMobileNav > a,
+  .appQuickNav#doganaMobileNav > button,
+  .appQuickNav#doganaMobileNav > .appNavDropdown > .appNavDropdownToggle,
+  .appQuickNav#doganaMobileNav .appSessionSync{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:48px !important;
+    flex:0 0 auto !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:9px !important;
+    padding:11px 13px !important;
+    overflow:visible !important;
+    border-radius:13px !important;
+    text-align:left !important;
+    text-overflow:clip !important;
+    white-space:normal !important;
+    scroll-snap-align:none !important;
+  }
+
+  .appQuickNav#doganaMobileNav > .appNavDropdown{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    flex:0 0 auto !important;
+  }
+
+  .appQuickNav#doganaMobileNav .appNavDropdownChevron{
+    margin-left:auto !important;
+  }
+
+  .appQuickNav#doganaMobileNav .appNavDropdownMenu{
+    position:static !important;
+    inset:auto !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:5px 0 2px !important;
+    padding:6px !important;
+    overflow:visible !important;
+    border:1px solid var(--grid-soft) !important;
+    border-radius:12px !important;
+    background:var(--surface-soft) !important;
+    box-shadow:none !important;
+  }
+
+  .appQuickNav#doganaMobileNav .appNavDropdown:not(.open) .appNavDropdownMenu{
+    display:none !important;
+  }
+
+  .appQuickNav#doganaMobileNav .appNavDropdown.open .appNavDropdownMenu{
+    display:flex !important;
+    flex-direction:column !important;
+    gap:4px !important;
+  }
+
+  .appQuickNav#doganaMobileNav .appNavDropdownMenu a{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:44px !important;
+    align-items:center !important;
+    padding:10px 12px !important;
+    border-radius:9px !important;
+    white-space:normal !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavBackdrop{
+    position:fixed !important;
+    z-index:1500 !important;
+    inset:0 !important;
+    display:block !important;
+    width:100vw !important;
+    height:100vh !important;
+    height:100dvh !important;
+    margin:0 !important;
+    padding:0 !important;
+    border:0 !important;
+    border-radius:0 !important;
+    background:rgba(8,17,31,.48) !important;
+    box-shadow:none !important;
+    cursor:pointer !important;
+    -webkit-tap-highlight-color:transparent !important;
+  }
+
+  /* Ricerca contenitori: ogni record diventa una scheda verticale. */
+  #extraPanel .miniWrap{
+    width:100% !important;
+    max-width:100% !important;
+    padding:0 !important;
+    overflow:visible !important;
+  }
+
+  #extraPanel #extraTable{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    table-layout:auto !important;
+    border-collapse:separate !important;
+  }
+
+  #extraPanel #extraThead{
+    display:none !important;
+  }
+
+  #extraPanel #extraTbody{
+    display:grid !important;
+    width:100% !important;
+    min-width:0 !important;
+    gap:12px !important;
+  }
+
+  #extraPanel #extraTbody > tr.extraMobileCardRow{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 44px !important;
+    width:100% !important;
+    min-width:0 !important;
+    gap:9px 10px !important;
+    padding:12px !important;
+    overflow:hidden !important;
+    border:1px solid var(--grid) !important;
+    border-radius:16px !important;
+    background:var(--surface) !important;
+    box-shadow:0 8px 22px rgba(15,23,42,.07) !important;
+  }
+
+  #extraPanel #extraTbody > tr.extraMobileCardRow > td{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    margin:0 !important;
+    border:0 !important;
+    background:transparent !important;
+  }
+
+  #extraPanel .extraMobileCardHeader{
+    grid-column:1 !important;
+    grid-row:1 !important;
+    align-self:center !important;
+    padding:2px 0 !important;
+    color:var(--heading) !important;
+    font-weight:900 !important;
+  }
+
+  #extraPanel .extraMobileCardHeader .extraRowIndexWrap{
+    justify-content:flex-start !important;
+    min-height:40px !important;
+  }
+
+  #extraPanel .extraMobileCardHeader::before{
+    content:"RIGA";
+    display:inline-block !important;
+    margin-right:8px !important;
+    color:var(--muted) !important;
+    font-size:10px !important;
+    font-weight:900 !important;
+    letter-spacing:.12em !important;
+  }
+
+  #extraPanel .extraMobileCardActions{
+    grid-column:2 !important;
+    grid-row:1 !important;
+    align-self:start !important;
+    padding:0 !important;
+  }
+
+  #extraPanel .extraMobileCardActions .rowBtn{
+    width:44px !important;
+    min-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    margin:0 !important;
+    border-radius:12px !important;
+  }
+
+  #extraPanel .extraMobileField{
+    grid-column:1 / -1 !important;
+    padding:10px 11px !important;
+    overflow:hidden !important;
+    border:1px solid var(--grid) !important;
+    border-radius:13px !important;
+    background:var(--surface-soft) !important;
+  }
+
+  #extraPanel .extraMobileField::before{
+    content:attr(data-extra-label);
+    display:block !important;
+    margin:0 0 5px !important;
+    color:var(--muted) !important;
+    font-size:10px !important;
+    line-height:1.2 !important;
+    font-weight:900 !important;
+    letter-spacing:.10em !important;
+    text-transform:uppercase !important;
+  }
+
+  #extraPanel .extraMobileField input{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:44px !important;
+    margin:0 !important;
+    padding:9px 10px !important;
+    border:1px solid var(--grid-soft) !important;
+    border-radius:10px !important;
+    background:var(--input-bg) !important;
+    font-size:16px !important;
+  }
+
+  #extraPanel .extraMobileStatus{
+    min-height:64px !important;
+    overflow-wrap:anywhere !important;
+  }
+
+  #extraPanel .extraMobileStatus > *{
+    max-width:100% !important;
+  }
+
+  #extraPanel #extraTbody > tr:not(.extraMobileCardRow),
+  #extraPanel #extraTbody > tr:not(.extraMobileCardRow) > td{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+  }
+
+  #extraPanel .extraEmptyCompact{
+    width:100% !important;
+    min-width:0 !important;
+  }
+}
+
+@media screen and (max-width:420px){
+  .appQuickNav#doganaMobileNav{
+    width:min(88vw, 310px) !important;
+  }
+
+  #extraPanel #extraTbody > tr.extraMobileCardRow{
+    padding:10px !important;
+  }
+}
+
+@media (prefers-reduced-motion:reduce){
+  .appQuickNav#doganaMobileNav,
+  .doganaMobileNavToggle span{
+    transition:none !important;
+  }
+}
+</style>
+
+<script id="doganatools-mobile-drawer-r39">
+(function initDoganaMobileDrawer(){
+  const nav = document.getElementById("doganaMobileNav");
+  const toggle = document.getElementById("doganaMobileNavToggle");
+  const backdrop = document.getElementById("doganaMobileNavBackdrop");
+  if (!nav || !toggle || !backdrop) return;
+
+  const mobileViewport = window.matchMedia("(max-width:768px)");
+
+  function isOpen(){
+    return nav.classList.contains("is-open");
+  }
+
+  function setOpen(open, options = {}){
+    const nextOpen = !!open && mobileViewport.matches;
+    nav.classList.toggle("is-open", nextOpen);
+    document.body.classList.toggle("mobileNavOpen", nextOpen);
+    toggle.setAttribute("aria-expanded", nextOpen ? "true" : "false");
+    toggle.setAttribute("aria-label", nextOpen ? "Chiudi menu" : "Apri menu");
+    backdrop.setAttribute("aria-hidden", nextOpen ? "false" : "true");
+
+    if (mobileViewport.matches) {
+      nav.setAttribute("aria-hidden", nextOpen ? "false" : "true");
+      nav.inert = !nextOpen;
+    } else {
+      nav.removeAttribute("aria-hidden");
+      nav.inert = false;
+    }
+
+    if (nextOpen && options.focusMenu !== false) {
+      window.setTimeout(() => nav.querySelector("a, button")?.focus(), 30);
+    } else if (!nextOpen && options.returnFocus) {
+      toggle.focus();
+    }
+  }
+
+  toggle.addEventListener("click", () => {
+    setOpen(!isOpen(), { focusMenu:true, returnFocus:true });
+  });
+
+  backdrop.addEventListener("click", () => {
+    setOpen(false, { returnFocus:true });
+  });
+
+  nav.addEventListener("click", event => {
+    if (!mobileViewport.matches) return;
+    if (event.target.closest("a[href^='#']")) {
+      setOpen(false);
+      return;
+    }
+    if (event.target.closest("#doganaMenuSettingsBtn, #doganaMenuSessionSync")) {
+      setOpen(false);
+    }
+  });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && isOpen()) {
+      setOpen(false, { returnFocus:true });
+    }
+  });
+
+  function syncViewport(){
+    setOpen(false);
+  }
+
+  if (typeof mobileViewport.addEventListener === "function") {
+    mobileViewport.addEventListener("change", syncViewport);
+  } else {
+    mobileViewport.addListener(syncViewport);
+  }
+
+  setOpen(false, { focusMenu:false });
+})();
+</script>
 
 </body>
 </html>
