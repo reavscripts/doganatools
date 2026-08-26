@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R40 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R41 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R40"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R41"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R40";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R41";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8232,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R40</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R41</strong></a>
   </div>
 </footer>
 </div>
@@ -21306,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R40.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R41.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -25517,6 +25517,473 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   #dogana-section,
   #extraPanel{
     scroll-margin-top:78px !important;
+  }
+}
+</style>
+
+
+<style id="doganatools-mobile-modules-r41">
+.doganaMobileNavToggle,
+.doganaMobileNavBackdrop{
+  display:none !important;
+}
+
+@media screen and (max-width:768px){
+  .doganaMobileNavToggle{
+    display:inline-flex !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavBackdrop{
+    display:block !important;
+  }
+
+  /* Drawer: Impostazioni usa la stessa riga completa delle altre voci. */
+  .appQuickNav#doganaMobileNav > #doganaMenuSettingsBtn.settingsIconOnly{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:none !important;
+    height:auto !important;
+    min-height:48px !important;
+    padding:11px 13px !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:10px !important;
+    border-radius:13px !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    font-weight:900 !important;
+    letter-spacing:.04em !important;
+    text-align:left !important;
+  }
+
+  .appQuickNav#doganaMobileNav > #doganaMenuSettingsBtn.settingsIconOnly > span{
+    display:inline-flex !important;
+    width:22px !important;
+    min-width:22px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    font-size:18px !important;
+    line-height:1 !important;
+  }
+
+  .appQuickNav#doganaMobileNav > #doganaMenuSettingsBtn.settingsIconOnly::after{
+    content:"IMPOSTAZIONI";
+    display:inline-block !important;
+    color:inherit !important;
+    font-size:12px !important;
+    line-height:1.2 !important;
+    font-weight:900 !important;
+    letter-spacing:.04em !important;
+  }
+
+  /* Intestazioni aperte: titolo in alto e toggle sempre nell'angolo destro. */
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableTopToolbar,
+  #extraPanel:not(.is-minimized):not(.minimized) > .extraHead,
+  #organizePanel:not(.is-minimized) > .organizeModuleHead,
+  #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead,
+  #notificationPanel:not(.is-minimized) > .notificationHead,
+  #postItPanel:not(.is-minimized) > .postItHead,
+  #shipPanel:not(.is-minimized) > .shipToolbar,
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) > .bookingModuleHead,
+  #serverConsolePanel:not(.is-minimized) > .serverConsoleHead{
+    position:relative !important;
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:12px !important;
+    overflow:visible !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableHeaderGroup,
+  #extraPanel:not(.is-minimized):not(.minimized) > .extraHead > :first-child,
+  #organizePanel:not(.is-minimized) > .organizeModuleHead > :first-child,
+  #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead > :first-child,
+  #notificationPanel:not(.is-minimized) > .notificationHead > :first-child,
+  #postItPanel:not(.is-minimized) > .postItHead > :first-child,
+  #shipPanel:not(.is-minimized) > .shipToolbar > .shipToolbarTitle,
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) .bookingModuleTitleWrap,
+  #serverConsolePanel:not(.is-minimized) > .serverConsoleHead > :first-child{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    padding-right:54px !important;
+  }
+
+  /* Le toolbar sfruttano tutta la riga: l'ultimo comando si allarga invece di lasciare buchi. */
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons,
+  #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar,
+  #organizePanel:not(.is-minimized) .organizeModuleActions,
+  #operativeChecklistPanel:not(.is-minimized) .operativeChecklistActions,
+  #notificationPanel:not(.is-minimized) .notificationActions,
+  #postItPanel:not(.is-minimized) .postItActions,
+  #shipPanel:not(.is-minimized) .shipToolbarActions,
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) .bookingModuleActions,
+  #serverConsolePanel:not(.is-minimized) .serverConsoleActions{
+    position:static !important;
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    height:auto !important;
+    flex-wrap:wrap !important;
+    align-items:stretch !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    margin:10px 0 0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    contain:none !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons > :not(.doganaModuleSvgToggleBtn),
+  #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar > :not(.doganaModuleSvgToggleBtn),
+  #organizePanel:not(.is-minimized) .organizeModuleActions > :not(.doganaModuleSvgToggleBtn),
+  #operativeChecklistPanel:not(.is-minimized) .operativeChecklistActions > :not(.doganaModuleSvgToggleBtn),
+  #notificationPanel:not(.is-minimized) .notificationActions > :not(.doganaModuleSvgToggleBtn),
+  #postItPanel:not(.is-minimized) .postItActions > :not(.doganaModuleSvgToggleBtn),
+  #shipPanel:not(.is-minimized) .shipToolbarActions > :not(.doganaModuleSvgToggleBtn),
+  #serverConsolePanel:not(.is-minimized) .serverConsoleActions > :not(.doganaModuleSvgToggleBtn){
+    width:auto !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:42px !important;
+    flex:1 1 132px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin:0 !important;
+    white-space:normal !important;
+  }
+
+  #shipPanel:not(.is-minimized) .shipToolbarActions > .shipSummary{
+    display:flex !important;
+    width:100% !important;
+    flex:1 1 100% !important;
+    flex-wrap:wrap !important;
+    justify-content:flex-start !important;
+    gap:6px !important;
+  }
+
+  #shipPanel:not(.is-minimized) .shipToolbarActions > .shipSummary > *{
+    flex:1 1 120px !important;
+    justify-content:center !important;
+  }
+
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) .bookingModuleActions{
+    height:0 !important;
+    min-height:0 !important;
+    margin:0 !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) #doganaMinimizeBtn,
+  #extraPanel:not(.is-minimized):not(.minimized) #minimizeExtraBtn,
+  #organizePanel:not(.is-minimized) #organizePanelToggleBtn,
+  #operativeChecklistPanel:not(.is-minimized) #operativeChecklistToggleBtn,
+  #notificationPanel:not(.is-minimized) #notificationToggleBtn,
+  #postItPanel:not(.is-minimized) #postItToggleBtn,
+  #shipPanel:not(.is-minimized) #minimizeShipsBtn,
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) #minimizeBookingLookupBtn,
+  #serverConsolePanel:not(.is-minimized) #serverConsoleToggle{
+    position:absolute !important;
+    z-index:5 !important;
+    top:10px !important;
+    right:10px !important;
+    bottom:auto !important;
+    left:auto !important;
+    order:0 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    flex:0 0 44px !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  /* Barre inferiori: distribuzione fluida, senza celle vuote nell'ultima riga. */
+  .doganaBottomToolbar,
+  .extraBottomToolbar{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    flex-wrap:wrap !important;
+    align-items:stretch !important;
+    gap:8px !important;
+    padding:10px !important;
+  }
+
+  .doganaBottomToolbar > *,
+  .extraBottomToolbar > *{
+    width:auto !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    flex:1 1 132px !important;
+    margin:0 !important;
+  }
+
+  .extraBottomToolbar > .extraAutoStatus{
+    width:100% !important;
+    flex:1 1 100% !important;
+  }
+
+  /* Form con coppie di comandi: due colonne utili, campi principali a larghezza piena. */
+  .notificationForm,
+  .bookingLookupForm,
+  .sctBookingForm,
+  .shipQuickSearch{
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:8px !important;
+  }
+
+  .notificationForm > .notificationTaskInput,
+  .notificationForm > #notificationAddBtn,
+  .bookingLookupForm > .sctBookingInput,
+  .bookingLookupForm > .sctBookingStatus,
+  .bookingLookupForm > .bookingLookupResult,
+  .shipQuickSearch > input{
+    grid-column:1 / -1 !important;
+    width:100% !important;
+  }
+
+  .notificationForm > .notificationDateField,
+  .bookingLookupForm > #bookingLookupSearchBtn,
+  .bookingLookupForm > #bookingLookupOpenBtn,
+  .shipQuickSearch > button{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  /* Organizza: contenuto realmente mobile e navigazione interna senza scorrimento. */
+  #organizePanel:not(.is-minimized) > .organizeModuleHead{
+    border-radius:16px 16px 0 0 !important;
+  }
+
+  #organizePanel .organizeModuleBody{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:10px !important;
+  }
+
+  #organizePanel .organizeModuleChips{
+    display:grid !important;
+    grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
+    width:100% !important;
+    min-width:0 !important;
+    gap:7px !important;
+    overflow:visible !important;
+    scroll-snap-type:none !important;
+  }
+
+  #organizePanel .organizeModuleChip{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:44px !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:8px 5px !important;
+    overflow:hidden !important;
+    font-size:11px !important;
+    text-align:center !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  #organizePanel .operativeChecklistPanel,
+  #organizePanel .notificationPanel,
+  #organizePanel .postItPanel{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    margin:0 !important;
+  }
+
+  /* I tre sottomoduli ridotti hanno identiche larghezza, altezza e spaziatura. */
+  #organizePanel .operativeChecklistPanel.is-minimized,
+  #organizePanel .notificationPanel.is-minimized,
+  #organizePanel .postItPanel.is-minimized{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:hidden !important;
+    border-radius:14px !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead,
+  #organizePanel .notificationPanel.is-minimized > .notificationHead,
+  #organizePanel .postItPanel.is-minimized > .postItHead{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 44px !important;
+    align-items:center !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:10px 12px !important;
+    overflow:visible !important;
+    border-bottom:0 !important;
+    border-radius:14px !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
+  #organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
+  #organizePanel .postItPanel.is-minimized > .postItHead > :first-child{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+  #organizePanel .notificationPanel.is-minimized .notificationTitle,
+  #organizePanel .postItPanel.is-minimized .postItTitle{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+    overflow:hidden !important;
+    color:var(--heading) !important;
+    font-size:13px !important;
+    line-height:1.2 !important;
+    font-weight:900 !important;
+    letter-spacing:.06em !important;
+    text-overflow:ellipsis !important;
+    text-transform:uppercase !important;
+    white-space:nowrap !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
+  #organizePanel .notificationPanel.is-minimized .notificationSubtitle,
+  #organizePanel .postItPanel.is-minimized .postItSubtitle,
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions > :not(#operativeChecklistToggleBtn),
+  #organizePanel .notificationPanel.is-minimized .notificationActions > :not(#notificationToggleBtn),
+  #organizePanel .postItPanel.is-minimized .postItActions > :not(#postItToggleBtn){
+    display:none !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions,
+  #organizePanel .notificationPanel.is-minimized .notificationActions,
+  #organizePanel .postItPanel.is-minimized .postItActions{
+    position:static !important;
+    display:flex !important;
+    grid-column:2 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-wrap:nowrap !important;
+    overflow:visible !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+  #organizePanel .notificationPanel.is-minimized #notificationToggleBtn,
+  #organizePanel .postItPanel.is-minimized #postItToggleBtn{
+    position:static !important;
+    order:0 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    flex:0 0 44px !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistBody,
+  #organizePanel .notificationPanel.is-minimized .notificationBody,
+  #organizePanel .postItPanel.is-minimized .postItBody{
+    display:none !important;
+  }
+
+  /* Anche Organizza e Booking ridotti mantengono la stessa geometria compatta. */
+  #organizePanel.is-minimized,
+  #bookingLookupPanel.is-minimized,
+  #bookingLookupPanel.minimized{
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    margin:12px 0 !important;
+    padding:0 !important;
+  }
+
+  #organizePanel.is-minimized > .organizeModuleHead,
+  #bookingLookupPanel.is-minimized > .bookingModuleHead,
+  #bookingLookupPanel.minimized > .bookingModuleHead{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 44px !important;
+    align-items:center !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:64px !important;
+    padding:10px 12px !important;
+  }
+
+  #organizePanel.is-minimized .organizeModuleActions,
+  #bookingLookupPanel.is-minimized .bookingModuleActions,
+  #bookingLookupPanel.minimized .bookingModuleActions{
+    position:static !important;
+    display:flex !important;
+    grid-column:2 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:visible !important;
+  }
+
+  #organizePanel.is-minimized #organizePanelToggleBtn,
+  #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn,
+  #bookingLookupPanel.minimized #minimizeBookingLookupBtn{
+    position:static !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    margin:0 !important;
+  }
+}
+
+@media screen and (max-width:420px){
+  .doganaBottomToolbar > *,
+  .extraBottomToolbar > *,
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons > :not(.doganaModuleSvgToggleBtn),
+  #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar > :not(.doganaModuleSvgToggleBtn),
+  #operativeChecklistPanel:not(.is-minimized) .operativeChecklistActions > :not(.doganaModuleSvgToggleBtn),
+  #notificationPanel:not(.is-minimized) .notificationActions > :not(.doganaModuleSvgToggleBtn),
+  #postItPanel:not(.is-minimized) .postItActions > :not(.doganaModuleSvgToggleBtn),
+  #serverConsolePanel:not(.is-minimized) .serverConsoleActions > :not(.doganaModuleSvgToggleBtn){
+    flex-basis:118px !important;
   }
 }
 </style>
