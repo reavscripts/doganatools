@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R42 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R43 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R42"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R43"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R42";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R43";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8232,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R42</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R43</strong></a>
   </div>
 </footer>
 </div>
@@ -21306,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R42.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R43.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -26140,6 +26140,404 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
     min-height:44px !important;
     max-height:44px !important;
     flex-basis:44px !important;
+  }
+}
+</style>
+
+
+<style id="doganatools-collapsed-uniform-r43">
+:root{
+  --dogana-collapsed-height:64px;
+  --dogana-collapsed-radius:16px;
+  --dogana-collapsed-toggle:38px;
+  --dogana-collapsed-gap:12px;
+  --dogana-collapsed-pad-y:12px;
+  --dogana-collapsed-pad-x:14px;
+}
+
+/* Il contenitore esterno della Tabella non aggiunge una seconda cornice quando è ridotta. */
+#dogana-section:has(.doganaTableModuleCard.is-minimized){
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+/* Tutti i moduli principali ridotti condividono la stessa scatola. */
+.doganaTableModuleCard.is-minimized,
+#extraPanel.is-minimized,
+#extraPanel.minimized,
+#organizePanel.is-minimized,
+#shipPanel.is-minimized,
+#bookingLookupPanel.is-minimized,
+#bookingLookupPanel.minimized,
+#serverConsolePanel.is-minimized{
+  box-sizing:border-box !important;
+  display:block !important;
+  width:calc(100% - 32px) !important;
+  min-width:0 !important;
+  max-width:calc(100% - 32px) !important;
+  height:var(--dogana-collapsed-height) !important;
+  min-height:var(--dogana-collapsed-height) !important;
+  max-height:var(--dogana-collapsed-height) !important;
+  margin:16px auto !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:var(--dogana-collapsed-radius) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+/* Anche i tre sottomoduli di Organizza usano la stessa scatola. */
+#organizePanel .operativeChecklistPanel.is-minimized,
+#organizePanel .notificationPanel.is-minimized,
+#organizePanel .postItPanel.is-minimized{
+  box-sizing:border-box !important;
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:var(--dogana-collapsed-height) !important;
+  min-height:var(--dogana-collapsed-height) !important;
+  max-height:var(--dogana-collapsed-height) !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:var(--dogana-collapsed-radius) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+/* In stato ridotto rimane una sola intestazione, senza contenuti residui. */
+.doganaTableModuleCard.is-minimized > :not(.doganaTableTopToolbar),
+#extraPanel.is-minimized > :not(.extraHead),
+#extraPanel.minimized > :not(.extraHead),
+#organizePanel.is-minimized > :not(.organizeModuleHead),
+#shipPanel.is-minimized > :not(.shipToolbar),
+#bookingLookupPanel.is-minimized > :not(.bookingModuleHead),
+#bookingLookupPanel.minimized > :not(.bookingModuleHead),
+#serverConsolePanel.is-minimized > :not(.serverConsoleHead),
+#organizePanel .operativeChecklistPanel.is-minimized > :not(.operativeChecklistHead),
+#organizePanel .notificationPanel.is-minimized > :not(.notificationHead),
+#organizePanel .postItPanel.is-minimized > :not(.postItHead){
+  display:none !important;
+}
+
+/* Geometria identica per tutte le intestazioni ridotte. */
+.doganaTableModuleCard.is-minimized > .doganaTableTopToolbar,
+#extraPanel.is-minimized > .extraHead,
+#extraPanel.minimized > .extraHead,
+#organizePanel.is-minimized > .organizeModuleHead,
+#shipPanel.is-minimized > .shipToolbar,
+#bookingLookupPanel.is-minimized > .bookingModuleHead,
+#bookingLookupPanel.minimized > .bookingModuleHead,
+#serverConsolePanel.is-minimized > .serverConsoleHead,
+#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead,
+#organizePanel .notificationPanel.is-minimized > .notificationHead,
+#organizePanel .postItPanel.is-minimized > .postItHead{
+  box-sizing:border-box !important;
+  position:relative !important;
+  display:grid !important;
+  grid-template-columns:minmax(0, 1fr) var(--dogana-collapsed-toggle) !important;
+  align-items:center !important;
+  justify-content:stretch !important;
+  gap:var(--dogana-collapsed-gap) !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:var(--dogana-collapsed-height) !important;
+  min-height:var(--dogana-collapsed-height) !important;
+  max-height:var(--dogana-collapsed-height) !important;
+  margin:0 !important;
+  padding:var(--dogana-collapsed-pad-y) var(--dogana-collapsed-pad-x) !important;
+  overflow:hidden !important;
+  border:0 !important;
+  border-radius:var(--dogana-collapsed-radius) !important;
+  background:transparent !important;
+  box-shadow:none !important;
+}
+
+/* Stessa posizione e spessore per la firma colorata superiore. */
+.doganaTableModuleCard.is-minimized > .doganaTableTopToolbar::before,
+#extraPanel.is-minimized > .extraHead::before,
+#extraPanel.minimized > .extraHead::before,
+#organizePanel.is-minimized > .organizeModuleHead::before,
+#shipPanel.is-minimized > .shipToolbar::before,
+#bookingLookupPanel.is-minimized > .bookingModuleHead::before,
+#bookingLookupPanel.minimized > .bookingModuleHead::before,
+#serverConsolePanel.is-minimized > .serverConsoleHead::before,
+#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead::before,
+#organizePanel .notificationPanel.is-minimized > .notificationHead::before,
+#organizePanel .postItPanel.is-minimized > .postItHead::before{
+  top:0 !important;
+  right:0 !important;
+  left:0 !important;
+  height:2px !important;
+  border-radius:var(--dogana-collapsed-radius) var(--dogana-collapsed-radius) 0 0 !important;
+}
+
+/* Colonna titolo sempre identica. */
+.doganaTableModuleCard.is-minimized .doganaTableHeaderGroup,
+#extraPanel.is-minimized > .extraHead > :first-child,
+#extraPanel.minimized > .extraHead > :first-child,
+#organizePanel.is-minimized > .organizeModuleHead > :first-child,
+#shipPanel.is-minimized > .shipToolbar > .shipToolbarTitle,
+#bookingLookupPanel.is-minimized .bookingModuleTitleWrap,
+#bookingLookupPanel.minimized .bookingModuleTitleWrap,
+#serverConsolePanel.is-minimized > .serverConsoleHead > :first-child,
+#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
+#organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
+#organizePanel .postItPanel.is-minimized > .postItHead > :first-child{
+  box-sizing:border-box !important;
+  display:block !important;
+  grid-column:1 !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+
+/* Tipografia unica delle barre ridotte. */
+.doganaTableModuleCard.is-minimized .doganaModuleTitle,
+.doganaTableModuleCard.is-minimized .miniTitle,
+#extraPanel.is-minimized .miniTitle,
+#extraPanel.minimized .miniTitle,
+#organizePanel.is-minimized .organizeModuleTitle,
+#shipPanel.is-minimized .shipToolbarTitle h2,
+#bookingLookupPanel.is-minimized .bookingModuleTitle,
+#bookingLookupPanel.minimized .bookingModuleTitle,
+#serverConsolePanel.is-minimized .serverConsoleTitle,
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+#organizePanel .notificationPanel.is-minimized .notificationTitle,
+#organizePanel .postItPanel.is-minimized .postItTitle{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  color:var(--heading) !important;
+  font-size:15px !important;
+  line-height:1.2 !important;
+  font-weight:900 !important;
+  letter-spacing:.07em !important;
+  text-align:left !important;
+  text-overflow:ellipsis !important;
+  text-transform:uppercase !important;
+  white-space:nowrap !important;
+}
+
+/* Descrizioni e comandi secondari non occupano spazio. */
+.doganaTableModuleCard.is-minimized .doganaTitleSeparator,
+.doganaTableModuleCard.is-minimized .doganaTopButtons > :not(#doganaMinimizeBtn),
+#extraPanel.is-minimized .extraSubtitle,
+#extraPanel.minimized .extraSubtitle,
+#extraPanel.is-minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+#extraPanel.minimized .extraTopToolbar > :not(#minimizeExtraBtn),
+#organizePanel.is-minimized .organizeModuleSubtitle,
+#organizePanel.is-minimized .organizeModuleActions > :not(#organizePanelToggleBtn),
+#shipPanel.is-minimized .shipTerminalTabsBlock,
+#shipPanel.is-minimized .shipToolbarActions > :not(#minimizeShipsBtn),
+#bookingLookupPanel.is-minimized .bookingModuleSubtitle,
+#bookingLookupPanel.minimized .bookingModuleSubtitle,
+#serverConsolePanel.is-minimized .serverConsoleSubtitle,
+#serverConsolePanel.is-minimized .serverConsoleActions > :not(#serverConsoleToggle),
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
+#organizePanel .notificationPanel.is-minimized .notificationSubtitle,
+#organizePanel .postItPanel.is-minimized .postItSubtitle,
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions > :not(#operativeChecklistToggleBtn),
+#organizePanel .notificationPanel.is-minimized .notificationActions > :not(#notificationToggleBtn),
+#organizePanel .postItPanel.is-minimized .postItActions > :not(#postItToggleBtn){
+  display:none !important;
+}
+
+/* La colonna azioni è sempre della misura esatta del toggle. */
+.doganaTableModuleCard.is-minimized .doganaTopButtons,
+#extraPanel.is-minimized .extraTopToolbar,
+#extraPanel.minimized .extraTopToolbar,
+#organizePanel.is-minimized .organizeModuleActions,
+#shipPanel.is-minimized .shipToolbarActions,
+#bookingLookupPanel.is-minimized .bookingModuleActions,
+#bookingLookupPanel.minimized .bookingModuleActions,
+#serverConsolePanel.is-minimized .serverConsoleActions,
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions,
+#organizePanel .notificationPanel.is-minimized .notificationActions,
+#organizePanel .postItPanel.is-minimized .postItActions{
+  box-sizing:border-box !important;
+  position:static !important;
+  display:flex !important;
+  grid-column:2 !important;
+  align-self:center !important;
+  justify-self:center !important;
+  width:var(--dogana-collapsed-toggle) !important;
+  min-width:var(--dogana-collapsed-toggle) !important;
+  max-width:var(--dogana-collapsed-toggle) !important;
+  height:var(--dogana-collapsed-toggle) !important;
+  min-height:var(--dogana-collapsed-toggle) !important;
+  max-height:var(--dogana-collapsed-toggle) !important;
+  flex:0 0 var(--dogana-collapsed-toggle) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:visible !important;
+  contain:none !important;
+}
+
+/* Un solo disegno condiviso per ogni pulsante mostra modulo. */
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn,
+#extraPanel.is-minimized #minimizeExtraBtn,
+#extraPanel.minimized #minimizeExtraBtn,
+#organizePanel.is-minimized #organizePanelToggleBtn,
+#shipPanel.is-minimized #minimizeShipsBtn,
+#bookingLookupPanel.is-minimized #minimizeBookingLookupBtn,
+#bookingLookupPanel.minimized #minimizeBookingLookupBtn,
+#serverConsolePanel.is-minimized #serverConsoleToggle,
+#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+#organizePanel .notificationPanel.is-minimized #notificationToggleBtn,
+#organizePanel .postItPanel.is-minimized #postItToggleBtn{
+  --dogana-btn-tone:var(--dogana-user-accent) !important;
+  box-sizing:border-box !important;
+  position:static !important;
+  display:inline-flex !important;
+  order:0 !important;
+  width:var(--dogana-collapsed-toggle) !important;
+  min-width:var(--dogana-collapsed-toggle) !important;
+  max-width:var(--dogana-collapsed-toggle) !important;
+  height:var(--dogana-collapsed-toggle) !important;
+  min-height:var(--dogana-collapsed-toggle) !important;
+  max-height:var(--dogana-collapsed-toggle) !important;
+  flex:0 0 var(--dogana-collapsed-toggle) !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  overflow:hidden !important;
+  border:1px solid color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
+  border-radius:13px !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 3%, var(--surface)) 100%) !important;
+  color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 4px 10px color-mix(in srgb, var(--dogana-user-accent) 14%, transparent) !important;
+  font-size:0 !important;
+  line-height:0 !important;
+  letter-spacing:0 !important;
+  transform:none !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn:hover,
+#extraPanel.is-minimized #minimizeExtraBtn:hover,
+#extraPanel.minimized #minimizeExtraBtn:hover,
+#organizePanel.is-minimized #organizePanelToggleBtn:hover,
+#shipPanel.is-minimized #minimizeShipsBtn:hover,
+#bookingLookupPanel.is-minimized #minimizeBookingLookupBtn:hover,
+#bookingLookupPanel.minimized #minimizeBookingLookupBtn:hover,
+#serverConsolePanel.is-minimized #serverConsoleToggle:hover,
+#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn:hover,
+#organizePanel .notificationPanel.is-minimized #notificationToggleBtn:hover,
+#organizePanel .postItPanel.is-minimized #postItToggleBtn:hover{
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 68%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 15%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 6%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.88),
+    0 5px 12px color-mix(in srgb, var(--dogana-user-accent) 18%, transparent) !important;
+  transform:translateY(-1px) !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn .doganaModuleToggleSvg,
+#extraPanel.is-minimized #minimizeExtraBtn .doganaModuleToggleSvg,
+#extraPanel.minimized #minimizeExtraBtn .doganaModuleToggleSvg,
+#organizePanel.is-minimized #organizePanelToggleBtn .doganaModuleToggleSvg,
+#shipPanel.is-minimized #minimizeShipsBtn .doganaModuleToggleSvg,
+#bookingLookupPanel.is-minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
+#bookingLookupPanel.minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
+#serverConsolePanel.is-minimized #serverConsoleToggle .doganaModuleToggleSvg,
+#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg,
+#organizePanel .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg,
+#organizePanel .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg{
+  display:block !important;
+  width:19px !important;
+  min-width:19px !important;
+  max-width:19px !important;
+  height:19px !important;
+  min-height:19px !important;
+  max-height:19px !important;
+  margin:0 !important;
+  padding:0 !important;
+  flex:0 0 19px !important;
+}
+
+.doganaTableModuleCard.is-minimized #doganaMinimizeBtn .doganaModuleToggleSvg path,
+#extraPanel.is-minimized #minimizeExtraBtn .doganaModuleToggleSvg path,
+#extraPanel.minimized #minimizeExtraBtn .doganaModuleToggleSvg path,
+#organizePanel.is-minimized #organizePanelToggleBtn .doganaModuleToggleSvg path,
+#shipPanel.is-minimized #minimizeShipsBtn .doganaModuleToggleSvg path,
+#bookingLookupPanel.is-minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg path,
+#bookingLookupPanel.minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg path,
+#serverConsolePanel.is-minimized #serverConsoleToggle .doganaModuleToggleSvg path,
+#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg path,
+#organizePanel .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg path,
+#organizePanel .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg path{
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2.15 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+@media screen and (max-width:768px){
+  :root{
+    --dogana-collapsed-toggle:44px;
+    --dogana-collapsed-gap:10px;
+    --dogana-collapsed-pad-y:10px;
+    --dogana-collapsed-pad-x:12px;
+  }
+
+  .doganaTableModuleCard.is-minimized,
+  #extraPanel.is-minimized,
+  #extraPanel.minimized,
+  #organizePanel.is-minimized,
+  #shipPanel.is-minimized,
+  #bookingLookupPanel.is-minimized,
+  #bookingLookupPanel.minimized,
+  #serverConsolePanel.is-minimized{
+    width:100% !important;
+    max-width:100% !important;
+    margin:12px 0 !important;
+  }
+
+  .doganaTableModuleCard.is-minimized .doganaModuleTitle,
+  .doganaTableModuleCard.is-minimized .miniTitle,
+  #extraPanel.is-minimized .miniTitle,
+  #extraPanel.minimized .miniTitle,
+  #organizePanel.is-minimized .organizeModuleTitle,
+  #shipPanel.is-minimized .shipToolbarTitle h2,
+  #bookingLookupPanel.is-minimized .bookingModuleTitle,
+  #bookingLookupPanel.minimized .bookingModuleTitle,
+  #serverConsolePanel.is-minimized .serverConsoleTitle,
+  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+  #organizePanel .notificationPanel.is-minimized .notificationTitle,
+  #organizePanel .postItPanel.is-minimized .postItTitle{
+    font-size:13px !important;
   }
 }
 </style>
