@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V21.08.26-PREVIEW1 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-ACCENT-R37 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V21.08.26-PREVIEW1"/>
+<meta name="doganatools-build" content="V26.08.26-ACCENT-R37"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V21.08.26-PREVIEW1";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-ACCENT-R37";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8226,7 +8226,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V21.08.26-PREVIEW1</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-ACCENT-R37</strong></a>
   </div>
 </footer>
 </div>
@@ -21294,7 +21294,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V21.08.26-PREVIEW1.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-ACCENT-R37.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24234,6 +24234,50 @@ body[data-theme="dark"] #extraPanel #extraAutoCheckSwitch.extraAutoCheckToggle{
 .extraPanel.is-minimized #extraAutoCheckSwitch,
 .extraPanel.minimized #extraAutoCheckSwitch{
   display:none !important;
+}
+</style>
+
+
+<style id="dogana-extra-toggle-accent-r37">
+/* =========================================================
+   R37 — RICERCA CONTENITORI: TOGGLE ACCENT ANCHE DA APERTO
+   La toolbar del modulo ha selettori piu specifici del sistema
+   generale: questo override riallinea base, hover e dark mode.
+   ========================================================= */
+body #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaModuleSvgToggleBtn{
+  --extra-btn-tone:var(--dogana-user-accent) !important;
+  --dogana-btn-tone:var(--dogana-user-accent) !important;
+  color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 10%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 3%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.82),
+    0 3px 9px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent) !important;
+}
+
+body #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
+  color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 16%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 6%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.90),
+    0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 10%, transparent),
+    0 6px 14px color-mix(in srgb, var(--dogana-user-accent) 16%, transparent) !important;
+}
+
+body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaModuleSvgToggleBtn{
+  color:color-mix(in srgb, var(--dogana-user-accent) 56%, #f8fafc) !important;
+  border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
+  background:linear-gradient(180deg,
+    color-mix(in srgb, var(--dogana-user-accent) 14%, var(--surface)) 0%,
+    color-mix(in srgb, var(--dogana-user-accent) 5%, var(--surface)) 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.05),
+    0 4px 10px rgba(0,0,0,.16) !important;
 }
 </style>
 
