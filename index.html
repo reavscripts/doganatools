@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-ACCENT-R37 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R38 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-ACCENT-R37"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R38"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-ACCENT-R37";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R38";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8226,7 +8226,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-ACCENT-R37</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R38</strong></a>
   </div>
 </footer>
 </div>
@@ -21294,7 +21294,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-ACCENT-R37.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R38.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24278,6 +24278,564 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,.05),
     0 4px 10px rgba(0,0,0,.16) !important;
+}
+</style>
+
+
+<style id="doganatools-mobile-final-r38">
+/* =========================================================
+   R38 — OTTIMIZZAZIONE MOBILE FINALE
+   Ogni dichiarazione e limitata al viewport mobile.
+   La versione desktop resta invariata.
+   ========================================================= */
+@media screen and (max-width:768px){
+  html{
+    scroll-padding-top:124px !important;
+    -webkit-text-size-adjust:100% !important;
+  }
+
+  body{
+    width:100% !important;
+    min-width:0 !important;
+    padding:
+      max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left)) !important;
+    overflow-x:hidden !important;
+  }
+
+  .wrap{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin:0 !important;
+  }
+
+  /* Topbar compatta e navigazione touch a scorrimento orizzontale. */
+  .appTopBar{
+    top:max(6px, env(safe-area-inset-top)) !important;
+    width:100% !important;
+    max-width:100% !important;
+    gap:8px !important;
+    padding:9px !important;
+    border-radius:15px !important;
+  }
+
+  .appBrand{
+    width:100% !important;
+    min-width:0 !important;
+    gap:8px !important;
+  }
+
+  .appBrandLogo{
+    width:32px !important;
+    height:32px !important;
+    flex:0 0 32px !important;
+  }
+
+  .appBrandText{
+    min-width:0 !important;
+  }
+
+  .appBrandText strong{
+    display:block !important;
+    overflow:hidden !important;
+    color:var(--heading) !important;
+    font-size:14px !important;
+    line-height:1.2 !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .appBrandText span{
+    display:none !important;
+  }
+
+  .appQuickNav{
+    width:100% !important;
+    max-width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    justify-content:flex-start !important;
+    gap:7px !important;
+    padding:1px 1px 5px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-x:contain !important;
+    scroll-padding-inline:1px !important;
+    scroll-snap-type:x proximity !important;
+  }
+
+  .appQuickNav > a,
+  .appQuickNav > button,
+  .appQuickNav > .appNavDropdown > .appNavDropdownToggle,
+  .appQuickNav .appSessionSync{
+    flex:0 0 auto !important;
+    width:auto !important;
+    min-width:112px !important;
+    max-width:154px !important;
+    height:44px !important;
+    min-height:44px !important;
+    padding:0 12px !important;
+    scroll-snap-align:start !important;
+    touch-action:manipulation !important;
+  }
+
+  .appQuickNav #doganaMenuSettingsBtn.settingsIconOnly{
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    padding:0 !important;
+  }
+
+  /* Moduli sempre contenuti nel viewport. */
+  #customs-ai-section,
+  #dogana-section,
+  #extraPanel,
+  #organizePanel,
+  #shipPanel,
+  #bookingLookupPanel,
+  #serverConsolePanel,
+  .operativeChecklistPanel,
+  .notificationPanel,
+  .postItPanel{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+    border-radius:16px !important;
+  }
+
+  #customs-ai-section,
+  #dogana-section,
+  #extraPanel,
+  #organizePanel,
+  #shipPanel,
+  #bookingLookupPanel,
+  #serverConsolePanel{
+    margin-top:12px !important;
+    margin-bottom:12px !important;
+  }
+
+  /* Header aperti: titolo sopra, azioni sotto e scorribili. */
+  #extraPanel:not(.is-minimized):not(.minimized) > .extraHead,
+  #organizePanel:not(.is-minimized) > .organizeModuleHead,
+  #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead,
+  #notificationPanel:not(.is-minimized) > .notificationHead,
+  #postItPanel:not(.is-minimized) > .postItHead,
+  #shipPanel:not(.is-minimized) > .shipToolbar,
+  #bookingLookupPanel:not(.is-minimized):not(.minimized) > .bookingModuleHead,
+  #serverConsolePanel:not(.is-minimized) > .serverConsoleHead{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    align-items:start !important;
+    gap:10px !important;
+    padding:12px !important;
+  }
+
+  .extraTopToolbar,
+  .organizeModuleActions,
+  .operativeChecklistActions,
+  .notificationActions,
+  .postItActions,
+  .shipToolbarActions,
+  .bookingModuleActions,
+  .serverConsoleActions{
+    width:100% !important;
+    max-width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    justify-content:flex-start !important;
+    align-items:center !important;
+    gap:8px !important;
+    padding-bottom:4px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-x:contain !important;
+  }
+
+  .extraTopToolbar > *,
+  .organizeModuleActions > *,
+  .operativeChecklistActions > *,
+  .notificationActions > *,
+  .postItActions > *,
+  .shipToolbarActions > *,
+  .bookingModuleActions > *,
+  .serverConsoleActions > *{
+    flex:0 0 auto !important;
+  }
+
+  /* Il comando riduci resta sempre tra i primi controlli visibili. */
+  #minimizeExtraBtn,
+  #organizePanelToggleBtn,
+  #operativeChecklistToggleBtn,
+  #notificationToggleBtn,
+  #postItToggleBtn,
+  #minimizeShipsBtn,
+  #minimizeBookingLookupBtn,
+  #serverConsoleToggle{
+    order:-100 !important;
+  }
+
+  /* Area touch uniforme: 44px solo su mobile. */
+  #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
+  #minimizeExtraBtn.doganaModuleSvgToggleBtn,
+  #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+  #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
+  #notificationToggleBtn.doganaModuleSvgToggleBtn,
+  #postItToggleBtn.doganaModuleSvgToggleBtn,
+  #minimizeShipsBtn.doganaModuleSvgToggleBtn,
+  #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
+  #serverConsoleToggle.doganaModuleSvgToggleBtn{
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    flex:0 0 44px !important;
+    border-radius:13px !important;
+    touch-action:manipulation !important;
+  }
+
+  button,
+  [role="button"],
+  .organizeModuleChip,
+  .operativeChecklistFileBtn{
+    touch-action:manipulation !important;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]),
+  select,
+  textarea{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    min-height:44px !important;
+    font-size:16px !important;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"]{
+    min-height:0 !important;
+  }
+
+  /* DOGANA AI: ricerca leggibile, risultati e misure su una colonna. */
+  .customsAiBody{
+    padding:10px !important;
+  }
+
+  .customsAiSearchShell{
+    width:100% !important;
+    grid-template-columns:minmax(0, 1fr) 48px !important;
+    gap:8px !important;
+    padding:9px !important;
+  }
+
+  .customsAiSearchBrand{
+    grid-column:1 / -1 !important;
+    min-width:0 !important;
+    margin:0 !important;
+    padding:0 2px !important;
+  }
+
+  .customsAiInput{
+    min-width:0 !important;
+    font-size:16px !important;
+  }
+
+  .customsAiSubmit{
+    width:48px !important;
+    min-width:48px !important;
+    height:48px !important;
+    min-height:48px !important;
+    padding:0 !important;
+  }
+
+  .customsAiAnswer,
+  .customsAiClarification{
+    padding:12px !important;
+  }
+
+  .customsAiAnswerTop,
+  .customsAiCodeRow,
+  .customsAiMeasuresSummary{
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    gap:8px !important;
+  }
+
+  .customsAiAnswerConfidence{
+    justify-self:start !important;
+  }
+
+  .customsAiCode{
+    overflow-wrap:anywhere !important;
+  }
+
+  .customsAiCopy{
+    width:100% !important;
+    min-height:44px !important;
+  }
+
+  .customsAiMeasuresForm{
+    grid-template-columns:minmax(0, 1fr) !important;
+  }
+
+  .customsAiMeasuresSubmit{
+    grid-column:auto !important;
+    width:100% !important;
+    min-height:44px !important;
+  }
+
+  /* Form operativi: una colonna, nessun campo compresso. */
+  .operativeChecklistForm,
+  .notificationForm,
+  .postItForm,
+  .bookingLookupForm,
+  .sctBookingForm,
+  .shipQuickSearch{
+    width:100% !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    gap:9px !important;
+    padding:10px !important;
+  }
+
+  .operativeChecklistAttachmentBox{
+    width:100% !important;
+    min-width:0 !important;
+    min-height:44px !important;
+  }
+
+  .notificationDateField,
+  .notificationDateField input,
+  #operativeChecklistAddBtn,
+  #notificationAddBtn,
+  #postItAddBtn,
+  #bookingLookupSearchBtn,
+  #bookingLookupOpenBtn,
+  .shipQuickSearch button{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .postItBoard,
+  .bookingLookupCards,
+  .shipGrid{
+    grid-template-columns:minmax(0, 1fr) !important;
+  }
+
+  .organizeModuleBody,
+  .operativeChecklistBody,
+  .notificationBody,
+  .postItBody,
+  .shipGrid,
+  .serverConsoleBody{
+    padding:11px !important;
+  }
+
+  .organizeModuleChips,
+  .extraTabs,
+  .shipTabs{
+    width:100% !important;
+    display:flex !important;
+    flex-wrap:nowrap !important;
+    gap:8px !important;
+    overflow-x:auto !important;
+    overflow-y:hidden !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-x:contain !important;
+    scroll-snap-type:x proximity !important;
+  }
+
+  .organizeModuleChip,
+  .extraTab,
+  .shipTab{
+    flex:0 0 auto !important;
+    min-height:44px !important;
+    scroll-snap-align:start !important;
+  }
+
+  .extraTab,
+  .shipTab{
+    min-width:112px !important;
+  }
+
+  /* Barre inferiori più compatte senza sacrificare l'area touch. */
+  .doganaBottomToolbar,
+  .extraBottomToolbar{
+    width:100% !important;
+    display:grid !important;
+    grid-template-columns:repeat(2, minmax(0, 1fr)) !important;
+    gap:8px !important;
+    padding:10px !important;
+  }
+
+  .doganaBottomToolbar > *,
+  .extraBottomToolbar > *{
+    min-width:0 !important;
+  }
+
+  .extraBottomToolbar .extraAutoStatus{
+    grid-column:1 / -1 !important;
+  }
+
+  .doganaBottomToolbar button,
+  .extraBottomToolbar button{
+    width:100% !important;
+    min-height:44px !important;
+    padding-inline:8px !important;
+    white-space:normal !important;
+  }
+
+  /* Tabelle integre, con scorrimento naturale e contenuto non tagliato. */
+  .gridWrap,
+  .miniWrap,
+  .shipTableWrap,
+  .bookingLookupTableWrap{
+    width:100% !important;
+    max-width:100% !important;
+    min-width:0 !important;
+    overflow-x:auto !important;
+    overflow-y:visible !important;
+    -webkit-overflow-scrolling:touch !important;
+    overscroll-behavior-x:contain !important;
+    touch-action:pan-x pan-y !important;
+  }
+
+  .gridWrap table,
+  .miniWrap table,
+  .shipTableWrap table,
+  .bookingLookupTableWrap table{
+    max-width:none !important;
+  }
+
+  /* Impostazioni e login sempre dentro il viewport utile. */
+  #doganaSettingsPanel.doganaSettingsPanel{
+    inset:
+      max(8px, env(safe-area-inset-top))
+      max(8px, env(safe-area-inset-right))
+      max(8px, env(safe-area-inset-bottom))
+      max(8px, env(safe-area-inset-left)) !important;
+    width:auto !important;
+    max-width:none !important;
+    max-height:none !important;
+    border-radius:16px !important;
+  }
+
+  #doganaSettingsPanel .doganaSettingsBody{
+    max-height:calc(100dvh - 94px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    padding:10px !important;
+  }
+
+  #doganaSettingsPanel .doganaSettingCard,
+  #doganaSettingsPanel .doganaSettingRow{
+    width:100% !important;
+    min-width:0 !important;
+    align-items:flex-start !important;
+    flex-direction:column !important;
+  }
+
+  #doganaAuthOverlay{
+    padding:
+      max(12px, env(safe-area-inset-top))
+      max(12px, env(safe-area-inset-right))
+      max(12px, env(safe-area-inset-bottom))
+      max(12px, env(safe-area-inset-left)) !important;
+    overflow:auto !important;
+  }
+
+  .doganaAuthCard{
+    width:100% !important;
+    max-width:440px !important;
+    padding:20px !important;
+    border-radius:18px !important;
+  }
+
+  #doganaAuthPasswordToggle{
+    width:40px !important;
+    min-width:40px !important;
+    max-width:40px !important;
+    height:40px !important;
+    min-height:40px !important;
+    max-height:40px !important;
+  }
+
+  .serverConsoleOutput{
+    width:100% !important;
+    height:min(42dvh, 300px) !important;
+    min-height:210px !important;
+    overflow:auto !important;
+  }
+
+  .appFooter{
+    width:100% !important;
+    margin:12px 0 0 !important;
+    padding:12px !important;
+    align-items:flex-start !important;
+  }
+
+  .appFooterBrand,
+  .appFooterMeta,
+  .appFooterCopyright,
+  .appFooterVersion{
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  .appFooterMeta{
+    justify-content:center !important;
+  }
+
+  .appFooterCopyright,
+  .appFooterVersion{
+    justify-content:center !important;
+    margin-left:0 !important;
+    text-align:center !important;
+  }
+
+  .floatingBackTop{
+    right:max(10px, env(safe-area-inset-right)) !important;
+    bottom:max(10px, env(safe-area-inset-bottom)) !important;
+    width:46px !important;
+    height:46px !important;
+  }
+
+  .extraToastStack,
+  .appSaveIndicator,
+  .extraLockHint{
+    right:max(8px, env(safe-area-inset-right)) !important;
+    left:max(8px, env(safe-area-inset-left)) !important;
+    max-width:none !important;
+  }
+}
+
+@media screen and (max-width:420px){
+  .appQuickNav > a,
+  .appQuickNav > button,
+  .appQuickNav > .appNavDropdown > .appNavDropdownToggle,
+  .appQuickNav .appSessionSync{
+    min-width:104px !important;
+    max-width:138px !important;
+    padding-inline:10px !important;
+  }
+
+  .doganaBottomToolbar,
+  .extraBottomToolbar{
+    grid-template-columns:minmax(0, 1fr) !important;
+  }
+
+  .extraBottomToolbar .extraAutoStatus{
+    grid-column:auto !important;
+  }
+
+  .doganaAuthCard{
+    padding:17px !important;
+  }
 }
 </style>
 
