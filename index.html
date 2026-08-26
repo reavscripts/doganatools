@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R45 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R46 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R45"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R46"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R45";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R46";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8232,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R45</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R46</strong></a>
   </div>
 </footer>
 </div>
@@ -21306,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R45.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R46.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -26543,7 +26543,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 </style>
 
 
-<style id="doganatools-collapsed-title-vertical-r45">
+<style id="doganatools-collapsed-title-vertical-r46">
 /* Titoli a sinistra, centrati esclusivamente sull'asse verticale. */
 .doganaTableModuleCard.is-minimized .doganaTableHeaderGroup,
 #extraPanel.is-minimized > .extraHead > :first-child,
@@ -26557,13 +26557,19 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
 #organizePanel .postItPanel.is-minimized > .postItHead > :first-child{
   box-sizing:border-box !important;
+  position:absolute !important;
+  z-index:1 !important;
+  top:50% !important;
+  right:calc(var(--dogana-collapsed-pad-x) + var(--dogana-collapsed-toggle) + var(--dogana-collapsed-gap)) !important;
+  bottom:auto !important;
+  left:var(--dogana-collapsed-pad-x) !important;
   display:flex !important;
   grid-column:1 !important;
   grid-row:1 !important;
-  width:100% !important;
+  width:auto !important;
   min-width:0 !important;
-  max-width:100% !important;
-  height:100% !important;
+  max-width:none !important;
+  height:auto !important;
   min-height:0 !important;
   align-items:center !important;
   justify-content:flex-start !important;
@@ -26571,6 +26577,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   padding:0 !important;
   overflow:hidden !important;
   text-align:left !important;
+  transform:translateY(-50%) !important;
 }
 
 .doganaTableModuleCard.is-minimized .doganaModuleTitle,
@@ -26586,13 +26593,16 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #organizePanel .notificationPanel.is-minimized .notificationTitle,
 #organizePanel .postItPanel.is-minimized .postItTitle{
   display:block !important;
+  position:static !important;
   width:100% !important;
   min-width:0 !important;
   max-width:100% !important;
+  height:auto !important;
   margin:0 !important;
   padding:0 !important;
-  line-height:1.2 !important;
+  line-height:1 !important;
   text-align:left !important;
+  transform:translateY(1px) !important;
 }
 
 .doganaTableModuleCard.is-minimized .doganaTopButtons,
