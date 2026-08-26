@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R39 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R40 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R39"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R40"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R39";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R40";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8232,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R39</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R40</strong></a>
   </div>
 </footer>
 </div>
@@ -21306,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R39.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R40.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -25310,6 +25310,216 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   setOpen(false, { focusMenu:false });
 })();
 </script>
+
+
+<style id="doganatools-mobile-layout-fix-r40">
+/* I controlli del drawer devono restare assenti dal layout desktop
+   e il fondale deve essere assente anche su mobile quando il menu è chiuso. */
+.doganaMobileNavToggle,
+.doganaMobileNavBackdrop{
+  display:none !important;
+}
+
+@media screen and (max-width:768px){
+  .doganaMobileNavToggle{
+    display:inline-flex !important;
+  }
+
+  body.mobileNavOpen .doganaMobileNavBackdrop{
+    display:block !important;
+  }
+
+  /* Moduli ridotti: titolo sempre leggibile a sinistra e comando a destra. */
+  #organizePanel.is-minimized{
+    width:100% !important;
+    padding:0 !important;
+    overflow:hidden !important;
+  }
+
+  #organizePanel.is-minimized > .organizeModuleHead,
+  #bookingLookupPanel.is-minimized > .bookingModuleHead,
+  #bookingLookupPanel.minimized > .bookingModuleHead{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) 44px !important;
+    align-items:center !important;
+    justify-content:stretch !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:64px !important;
+    margin:0 !important;
+    padding:10px 12px !important;
+    overflow:visible !important;
+    border-bottom:0 !important;
+    border-radius:16px !important;
+  }
+
+  #organizePanel.is-minimized > .organizeModuleHead > :first-child,
+  #bookingLookupPanel.is-minimized .bookingModuleTitleWrap,
+  #bookingLookupPanel.minimized .bookingModuleTitleWrap{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    overflow:hidden !important;
+  }
+
+  #organizePanel.is-minimized .organizeModuleTitle,
+  #bookingLookupPanel.is-minimized .bookingModuleTitle,
+  #bookingLookupPanel.minimized .bookingModuleTitle{
+    display:block !important;
+    width:100% !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+    color:var(--heading) !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  #organizePanel.is-minimized .organizeModuleSubtitle,
+  #organizePanel.is-minimized .organizeModuleStats,
+  #bookingLookupPanel.is-minimized .bookingModuleSubtitle,
+  #bookingLookupPanel.minimized .bookingModuleSubtitle{
+    display:none !important;
+  }
+
+  #organizePanel.is-minimized .organizeModuleActions,
+  #bookingLookupPanel.is-minimized .bookingModuleActions,
+  #bookingLookupPanel.minimized .bookingModuleActions{
+    display:flex !important;
+    grid-column:2 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    margin:0 !important;
+    padding:0 !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-wrap:nowrap !important;
+    overflow:visible !important;
+  }
+
+  #organizePanel.is-minimized #organizePanelToggleBtn,
+  #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn,
+  #bookingLookupPanel.minimized #minimizeBookingLookupBtn{
+    position:static !important;
+    order:0 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    flex:0 0 44px !important;
+    margin:0 !important;
+    padding:0 !important;
+  }
+
+  /* Contenitori aperti: intestazione, controlli e toggle interamente visibili. */
+  #extraPanel:not(.is-minimized):not(.minimized) > .extraHead{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    align-items:start !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:12px !important;
+    overflow:visible !important;
+  }
+
+  #extraPanel:not(.is-minimized):not(.minimized) > .extraHead > :first-child{
+    width:100% !important;
+    min-width:0 !important;
+    padding-right:54px !important;
+  }
+
+  #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    flex-wrap:wrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    contain:none !important;
+  }
+
+  #extraPanel:not(.is-minimized):not(.minimized) #minimizeExtraBtn{
+    position:absolute !important;
+    z-index:4 !important;
+    top:10px !important;
+    right:10px !important;
+    order:0 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    margin:0 !important;
+  }
+
+  /* Tabella aperta: il toggle resta fissato nell'angolo e gli altri comandi vanno a capo. */
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableTopToolbar{
+    position:relative !important;
+    display:grid !important;
+    grid-template-columns:minmax(0, 1fr) !important;
+    align-items:start !important;
+    gap:10px !important;
+    width:100% !important;
+    min-width:0 !important;
+    padding:12px !important;
+    overflow:visible !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableHeaderGroup{
+    width:100% !important;
+    min-width:0 !important;
+    padding-right:54px !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons{
+    display:flex !important;
+    width:100% !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    flex-wrap:wrap !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:8px !important;
+    margin:0 !important;
+    padding:0 !important;
+    overflow:visible !important;
+    contain:none !important;
+  }
+
+  #dogana-section .doganaTableModuleCard:not(.is-minimized) #doganaMinimizeBtn{
+    position:absolute !important;
+    z-index:4 !important;
+    top:10px !important;
+    right:10px !important;
+    order:0 !important;
+    width:44px !important;
+    min-width:44px !important;
+    max-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    max-height:44px !important;
+    margin:0 !important;
+  }
+
+  #dogana-section,
+  #extraPanel{
+    scroll-margin-top:78px !important;
+  }
+}
+</style>
 
 </body>
 </html>
