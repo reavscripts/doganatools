@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R43 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R44 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R43"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R44"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R43";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R44";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8232,7 +8232,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R43</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R44</strong></a>
   </div>
 </footer>
 </div>
@@ -21306,7 +21306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R43.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R44.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -26539,6 +26539,81 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   #organizePanel .postItPanel.is-minimized .postItTitle{
     font-size:13px !important;
   }
+}
+</style>
+
+
+<style id="doganatools-collapsed-title-center-r44">
+/* Il titolo occupa l'intera barra con spazio simmetrico per il toggle:
+   resta quindi centrato realmente, in orizzontale e in verticale. */
+.doganaTableModuleCard.is-minimized .doganaTableHeaderGroup,
+#extraPanel.is-minimized > .extraHead > :first-child,
+#extraPanel.minimized > .extraHead > :first-child,
+#organizePanel.is-minimized > .organizeModuleHead > :first-child,
+#shipPanel.is-minimized > .shipToolbar > .shipToolbarTitle,
+#bookingLookupPanel.is-minimized .bookingModuleTitleWrap,
+#bookingLookupPanel.minimized .bookingModuleTitleWrap,
+#serverConsolePanel.is-minimized > .serverConsoleHead > :first-child,
+#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
+#organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
+#organizePanel .postItPanel.is-minimized > .postItHead > :first-child{
+  box-sizing:border-box !important;
+  display:flex !important;
+  grid-column:1 / -1 !important;
+  grid-row:1 !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  align-items:center !important;
+  justify-content:center !important;
+  margin:0 !important;
+  padding:
+    0
+    calc(var(--dogana-collapsed-toggle) + var(--dogana-collapsed-gap))
+    0
+    calc(var(--dogana-collapsed-toggle) + var(--dogana-collapsed-gap)) !important;
+  overflow:hidden !important;
+  text-align:center !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaModuleTitle,
+.doganaTableModuleCard.is-minimized .miniTitle,
+#extraPanel.is-minimized .miniTitle,
+#extraPanel.minimized .miniTitle,
+#organizePanel.is-minimized .organizeModuleTitle,
+#shipPanel.is-minimized .shipToolbarTitle h2,
+#bookingLookupPanel.is-minimized .bookingModuleTitle,
+#bookingLookupPanel.minimized .bookingModuleTitle,
+#serverConsolePanel.is-minimized .serverConsoleTitle,
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+#organizePanel .notificationPanel.is-minimized .notificationTitle,
+#organizePanel .postItPanel.is-minimized .postItTitle{
+  display:block !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1.2 !important;
+  text-align:center !important;
+}
+
+.doganaTableModuleCard.is-minimized .doganaTopButtons,
+#extraPanel.is-minimized .extraTopToolbar,
+#extraPanel.minimized .extraTopToolbar,
+#organizePanel.is-minimized .organizeModuleActions,
+#shipPanel.is-minimized .shipToolbarActions,
+#bookingLookupPanel.is-minimized .bookingModuleActions,
+#bookingLookupPanel.minimized .bookingModuleActions,
+#serverConsolePanel.is-minimized .serverConsoleActions,
+#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions,
+#organizePanel .notificationPanel.is-minimized .notificationActions,
+#organizePanel .postItPanel.is-minimized .postItActions{
+  grid-column:2 !important;
+  grid-row:1 !important;
+  z-index:2 !important;
 }
 </style>
 
