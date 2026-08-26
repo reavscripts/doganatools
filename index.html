@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R50 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R51 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R50"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R51"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R50";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R51";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7886,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R50</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R51</strong></a>
   </div>
 </footer>
 </div>
@@ -19848,7 +19848,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R50.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R51.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24393,7 +24393,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 </style>
 
 
-<style id="doganatools-module-toplines-r50">
+<style id="doganatools-module-toplines-r51">
 /* R50 — una sola linea multicolore sfumata, identica a Dogana AI, sopra ogni modulo. */
 #customs-ai-section.customsAiPanel,
 #dogana-section,
@@ -24404,7 +24404,8 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 #postItPanel,
 #shipPanel,
 #bookingLookupPanel,
-#serverConsolePanel{
+#serverConsolePanel,
+.appFooter{
   position:relative !important;
   border-top-color:transparent !important;
   border-image:none !important;
@@ -24419,7 +24420,8 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 #postItPanel::before,
 #shipPanel::before,
 #bookingLookupPanel::before,
-#serverConsolePanel::before{
+#serverConsolePanel::before,
+.appFooter::before{
   content:"" !important;
   display:block !important;
   position:absolute !important;
@@ -24478,7 +24480,8 @@ body[data-theme="dark"] #notificationPanel::before,
 body[data-theme="dark"] #postItPanel::before,
 body[data-theme="dark"] #shipPanel::before,
 body[data-theme="dark"] #bookingLookupPanel::before,
-body[data-theme="dark"] #serverConsolePanel::before{
+body[data-theme="dark"] #serverConsolePanel::before,
+body[data-theme="dark"] .appFooter::before{
   opacity:.66 !important;
   filter:saturate(.82) !important;
 }
@@ -24493,10 +24496,245 @@ body[data-theme="dark"] #serverConsolePanel::before{
   #postItPanel::before,
   #shipPanel::before,
   #bookingLookupPanel::before,
-  #serverConsolePanel::before{
+  #serverConsolePanel::before,
+  .appFooter::before{
     left:16px !important;
     right:16px !important;
     opacity:.68 !important;
+  }
+}
+</style>
+
+
+<style id="doganatools-module-geometry-r51">
+:root{
+  --dogana-module-width:calc(100% - 32px);
+  --dogana-module-margin-y:18px;
+}
+
+/* Tutti i moduli principali condividono esattamente la stessa larghezza esterna. */
+#customs-ai-section.customsAiPanel,
+#extraPanel,
+#organizePanel,
+#shipPanel,
+#bookingLookupPanel,
+#serverConsolePanel,
+#dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)),
+.wrap > .appFooter{
+  box-sizing:border-box !important;
+  width:var(--dogana-module-width) !important;
+  min-width:0 !important;
+  max-width:var(--dogana-module-width) !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+}
+
+/* Tabella aperta: un solo livello visivo, senza pannello esterno più largo. */
+#dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)){
+  margin-top:var(--dogana-module-margin-y) !important;
+  margin-bottom:var(--dogana-module-margin-y) !important;
+  padding:0 !important;
+  overflow:visible !important;
+  border:0 !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  backdrop-filter:none !important;
+}
+
+#dogana-section > .doganaTableModuleCard:not(.is-minimized){
+  box-sizing:border-box !important;
+  width:100% !important;
+  min-width:0 !important;
+  max-width:100% !important;
+  margin:0 !important;
+}
+
+/* DOGANA AI usa gli stessi margini dei pannelli operativi. */
+#customs-ai-section.customsAiPanel{
+  margin-top:var(--dogana-module-margin-y) !important;
+  margin-bottom:var(--dogana-module-margin-y) !important;
+}
+
+/* Footer con la stessa scatola e la stessa altezza delle barre ridotte. */
+.wrap > .appFooter{
+  position:relative !important;
+  display:flex !important;
+  flex-direction:row !important;
+  flex-wrap:nowrap !important;
+  align-items:center !important;
+  justify-content:space-between !important;
+  gap:12px !important;
+  height:var(--dogana-collapsed-height) !important;
+  min-height:var(--dogana-collapsed-height) !important;
+  max-height:var(--dogana-collapsed-height) !important;
+  margin-top:var(--dogana-module-margin-y) !important;
+  margin-bottom:0 !important;
+  padding:0 var(--dogana-collapsed-pad-x) !important;
+  overflow:hidden !important;
+  border:1px solid var(--grid-soft) !important;
+  border-radius:var(--dogana-collapsed-radius) !important;
+  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
+  box-shadow:var(--shadow-soft) !important;
+}
+
+.wrap > .appFooter > .appFooterBrand{
+  display:flex !important;
+  flex:0 1 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:42% !important;
+  align-items:center !important;
+  align-self:stretch !important;
+  margin:0 !important;
+}
+
+.wrap > .appFooter > .appFooterMeta{
+  position:static !important;
+  display:flex !important;
+  flex:1 1 auto !important;
+  width:auto !important;
+  min-width:0 !important;
+  max-width:none !important;
+  height:100% !important;
+  align-items:center !important;
+  align-self:stretch !important;
+  justify-content:flex-end !important;
+  margin:0 0 0 auto !important;
+  padding:0 !important;
+}
+
+.wrap > .appFooter .appFooterCopyright{
+  position:absolute !important;
+  top:50% !important;
+  left:50% !important;
+  width:auto !important;
+  margin:0 !important;
+  transform:translate(-50%, -50%) !important;
+}
+
+.wrap > .appFooter .appFooterVersion{
+  width:auto !important;
+  margin:0 0 0 auto !important;
+}
+
+@media screen and (max-width:768px){
+  :root{
+    --dogana-module-width:100%;
+    --dogana-module-margin-y:12px;
+  }
+
+  #customs-ai-section.customsAiPanel,
+  #extraPanel,
+  #organizePanel,
+  #shipPanel,
+  #bookingLookupPanel,
+  #serverConsolePanel,
+  #dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)),
+  .wrap > .appFooter{
+    width:100% !important;
+    max-width:100% !important;
+    margin-left:0 !important;
+    margin-right:0 !important;
+  }
+
+  #dogana-section > .doganaTableModuleCard:not(.is-minimized){
+    width:100% !important;
+    max-width:100% !important;
+  }
+
+  /* La dicitura resta visibile anche nella testata mobile. */
+  .appTopBar .appBrandText span{
+    display:block !important;
+    max-width:100% !important;
+    margin-top:2px !important;
+    overflow:hidden !important;
+    color:var(--muted) !important;
+    font-size:9px !important;
+    font-weight:800 !important;
+    line-height:1.1 !important;
+    letter-spacing:.045em !important;
+    text-overflow:ellipsis !important;
+    text-transform:uppercase !important;
+    white-space:nowrap !important;
+  }
+
+  /* Footer compatto: marchio a sinistra, metadati sovrapposti verticalmente a destra. */
+  .wrap > .appFooter{
+    gap:8px !important;
+    height:var(--dogana-collapsed-height) !important;
+    min-height:var(--dogana-collapsed-height) !important;
+    max-height:var(--dogana-collapsed-height) !important;
+    margin-top:12px !important;
+    padding:0 10px !important;
+    align-items:center !important;
+  }
+
+  .wrap > .appFooter > .appFooterBrand{
+    flex:1 1 auto !important;
+    width:auto !important;
+    max-width:48% !important;
+    align-items:center !important;
+  }
+
+  .wrap > .appFooter .appFooterLogo{
+    width:26px !important;
+    min-width:26px !important;
+    height:26px !important;
+    min-height:26px !important;
+    flex:0 0 26px !important;
+  }
+
+  .wrap > .appFooter .appFooterTitle{
+    overflow:hidden !important;
+    font-size:10px !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .wrap > .appFooter .appFooterSub{
+    overflow:hidden !important;
+    font-size:7.5px !important;
+    letter-spacing:.045em !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+  }
+
+  .wrap > .appFooter > .appFooterMeta{
+    display:flex !important;
+    flex:0 1 52% !important;
+    flex-direction:column !important;
+    width:auto !important;
+    min-width:0 !important;
+    max-width:52% !important;
+    height:auto !important;
+    align-self:center !important;
+    align-items:flex-end !important;
+    justify-content:center !important;
+    gap:3px !important;
+    margin:0 !important;
+  }
+
+  .wrap > .appFooter .appFooterCopyright,
+  .wrap > .appFooter .appFooterVersion{
+    position:static !important;
+    top:auto !important;
+    left:auto !important;
+    display:flex !important;
+    width:auto !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    min-height:19px !important;
+    height:19px !important;
+    justify-content:center !important;
+    margin:0 !important;
+    padding:2px 6px !important;
+    overflow:hidden !important;
+    font-size:8px !important;
+    line-height:1 !important;
+    text-overflow:ellipsis !important;
+    white-space:nowrap !important;
+    transform:none !important;
   }
 }
 </style>
