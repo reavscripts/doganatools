@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R49 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R50 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R49"/>
+<meta name="doganatools-build" content="V26.08.26-MOBILE-R50"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R49";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R50";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7886,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R49</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R50</strong></a>
   </div>
 </footer>
 </div>
@@ -19848,7 +19848,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R49.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R50.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23937,7 +23937,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
 
 
-<style id="doganatools-collapsed-only-r49">
+<style id="doganatools-collapsed-only-r50">
 :root{
   --dogana-collapsed-height:64px;
   --dogana-collapsed-radius:16px;
@@ -24059,6 +24059,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   transform:none !important;
 }
 
+/* Le linee decorative appartengono al pannello, non all'header: evita doppioni e segmenti. */
 .doganaTableModuleCard.is-minimized > .doganaTableTopToolbar::before,
 #extraPanel.is-minimized > .extraHead::before,
 #extraPanel.minimized > .extraHead::before,
@@ -24070,40 +24071,6 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead::before,
 #organizePanel .notificationPanel.is-minimized > .notificationHead::before,
 #organizePanel .postItPanel.is-minimized > .postItHead::before{
-  top:0 !important;
-  right:0 !important;
-  left:0 !important;
-  height:2px !important;
-  border-radius:var(--dogana-collapsed-radius) var(--dogana-collapsed-radius) 0 0 !important;
-  content:"" !important;
-  position:absolute !important;
-  z-index:7 !important;
-  width:auto !important;
-  min-width:0 !important;
-  max-width:none !important;
-  margin:0 !important;
-  padding:0 !important;
-  border:0 !important;
-  opacity:1 !important;
-  filter:none !important;
-  pointer-events:none !important;
-  background:linear-gradient(90deg,
-    #2563eb 0%,
-    #06b6d4 20%,
-    #22c55e 40%,
-    #f59e0b 60%,
-    #ec4899 80%,
-    #8b5cf6 100%) !important;
-  box-shadow:none !important;
-}
-
-/* Nei moduli ridotti la linea vive soltanto sull'intestazione: disattiva i vecchi duplicati sul pannello. */
-#dogana-section:has(.doganaTableModuleCard.is-minimized)::before,
-#organizePanel.is-minimized::before,
-#shipPanel.is-minimized::before,
-#bookingLookupPanel.is-minimized::before,
-#bookingLookupPanel.minimized::before,
-#serverConsolePanel.is-minimized::before{
   content:none !important;
   display:none !important;
   background:none !important;
@@ -24313,6 +24280,38 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   flex:0 0 19px !important;
 }
 
+/* Previsione Navi ridotta: titolo centrato realmente sui 64 px della barra. */
+body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolbarTitle{
+  box-sizing:border-box !important;
+  position:static !important;
+  display:flex !important;
+  align-self:stretch !important;
+  align-items:center !important;
+  justify-content:flex-start !important;
+  width:auto !important;
+  min-width:0 !important;
+  height:var(--dogana-collapsed-height) !important;
+  min-height:var(--dogana-collapsed-height) !important;
+  margin:0 !important;
+  padding:0 !important;
+  transform:none !important;
+}
+
+body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolbarTitle > h2{
+  box-sizing:border-box !important;
+  position:static !important;
+  display:flex !important;
+  align-items:center !important;
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  line-height:1.2 !important;
+  text-align:left !important;
+  transform:none !important;
+}
+
 @media screen and (max-width:768px){
   :root{
     --dogana-collapsed-toggle:44px;
@@ -24389,6 +24388,115 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
     margin:0 !important;
     padding:0 !important;
     flex:0 0 19px !important;
+  }
+}
+</style>
+
+
+<style id="doganatools-module-toplines-r50">
+/* R50 — una sola linea multicolore sfumata, identica a Dogana AI, sopra ogni modulo. */
+#customs-ai-section.customsAiPanel,
+#dogana-section,
+#extraPanel,
+#organizePanel,
+#operativeChecklistPanel,
+#notificationPanel,
+#postItPanel,
+#shipPanel,
+#bookingLookupPanel,
+#serverConsolePanel{
+  position:relative !important;
+  border-top-color:transparent !important;
+  border-image:none !important;
+}
+
+#customs-ai-section.customsAiPanel::before,
+#dogana-section::before,
+#extraPanel::before,
+#organizePanel::before,
+#operativeChecklistPanel::before,
+#notificationPanel::before,
+#postItPanel::before,
+#shipPanel::before,
+#bookingLookupPanel::before,
+#serverConsolePanel::before{
+  content:"" !important;
+  display:block !important;
+  position:absolute !important;
+  z-index:40 !important;
+  top:0 !important;
+  left:24px !important;
+  right:24px !important;
+  width:auto !important;
+  height:2px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  border-radius:999px !important;
+  pointer-events:none !important;
+  opacity:.74 !important;
+  filter:saturate(.88) !important;
+  transform:none !important;
+  background:linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.10) 4%,
+    #2563eb 14%,
+    #06b6d4 29%,
+    #22c55e 43%,
+    #f59e0b 57%,
+    #ec4899 71%,
+    #8b5cf6 86%,
+    rgba(37,99,235,.10) 96%,
+    transparent 100%) !important;
+  background-size:100% 100% !important;
+  box-shadow:0 1px 5px rgba(56,189,248,.14), 0 0 10px rgba(139,92,246,.08) !important;
+}
+
+/* Spegne le vecchie linee sugli header: resta visibile soltanto quella del pannello. */
+body .doganaTableModuleCard .doganaTableTopToolbar::before,
+body #extraPanel .miniHead::before,
+body #extraPanel .extraHead::before,
+body .organizeModulePanel .organizeModuleHead::before,
+body .operativeChecklistPanel .operativeChecklistHead::before,
+body .notificationPanel .notificationHead::before,
+body .postItPanel .postItHead::before,
+body #shipPanel .shipToolbar::before,
+body .bookingStandalonePanel .bookingModuleHead::before,
+body .serverConsolePanel .serverConsoleHead::before{
+  content:none !important;
+  display:none !important;
+  background:none !important;
+  box-shadow:none !important;
+}
+
+body[data-theme="dark"] #customs-ai-section.customsAiPanel::before,
+body[data-theme="dark"] #dogana-section::before,
+body[data-theme="dark"] #extraPanel::before,
+body[data-theme="dark"] #organizePanel::before,
+body[data-theme="dark"] #operativeChecklistPanel::before,
+body[data-theme="dark"] #notificationPanel::before,
+body[data-theme="dark"] #postItPanel::before,
+body[data-theme="dark"] #shipPanel::before,
+body[data-theme="dark"] #bookingLookupPanel::before,
+body[data-theme="dark"] #serverConsolePanel::before{
+  opacity:.66 !important;
+  filter:saturate(.82) !important;
+}
+
+@media screen and (max-width:768px){
+  #customs-ai-section.customsAiPanel::before,
+  #dogana-section::before,
+  #extraPanel::before,
+  #organizePanel::before,
+  #operativeChecklistPanel::before,
+  #notificationPanel::before,
+  #postItPanel::before,
+  #shipPanel::before,
+  #bookingLookupPanel::before,
+  #serverConsolePanel::before{
+    left:16px !important;
+    right:16px !important;
+    opacity:.68 !important;
   }
 }
 </style>
