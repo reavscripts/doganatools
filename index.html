@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.27-GEOMETRIA-R52 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.27-ALLINEAMENTO-R53 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.27-GEOMETRIA-R52"/>
+<meta name="doganatools-build" content="V26.08.27-ALLINEAMENTO-R53"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.27-GEOMETRIA-R52";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.27-ALLINEAMENTO-R53";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7886,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.27-GEOMETRIA-R52</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.27-ALLINEAMENTO-R53</strong></a>
   </div>
 </footer>
 </div>
@@ -19848,7 +19848,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.27-GEOMETRIA-R52.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.27-ALLINEAMENTO-R53.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -23937,7 +23937,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
 
 
-<style id="doganatools-collapsed-only-r50">
+<style id="doganatools-collapsed-only-r53">
 :root{
   --dogana-collapsed-height:64px;
   --dogana-collapsed-radius:16px;
@@ -23961,7 +23961,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   box-shadow:none !important;
 }
 
-/* Unica scatola ammessa per i moduli principali ridotti. */
+/* Unica scatola per i moduli principali ridotti: stessa larghezza della Tabella. */
 .doganaTableModuleCard.is-minimized,
 #extraPanel.is-minimized,
 #extraPanel.minimized,
@@ -23972,13 +23972,13 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #serverConsolePanel.is-minimized{
   box-sizing:border-box !important;
   display:block !important;
-  width:calc(100% - 32px) !important;
+  width:100% !important;
   min-width:0 !important;
-  max-width:calc(100% - 32px) !important;
+  max-width:100% !important;
   height:var(--dogana-collapsed-height) !important;
   min-height:var(--dogana-collapsed-height) !important;
   max-height:var(--dogana-collapsed-height) !important;
-  margin:16px auto !important;
+  margin:16px 0 !important;
   padding:0 !important;
   overflow:hidden !important;
   border:1px solid var(--grid-soft) !important;
@@ -24506,7 +24506,7 @@ body[data-theme="dark"] .appFooter::before{
 </style>
 
 
-<style id="doganatools-module-geometry-r52">
+<style id="doganatools-module-geometry-r53">
 :root{
   --dogana-module-width:100%;
   --dogana-module-margin-y:18px;
