@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.26-MOBILE-R51 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.08.27-GEOMETRIA-R52 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.26-MOBILE-R51"/>
+<meta name="doganatools-build" content="V26.08.27-GEOMETRIA-R52"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.26-MOBILE-R51";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.27-GEOMETRIA-R52";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7886,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.26-MOBILE-R51</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.27-GEOMETRIA-R52</strong></a>
   </div>
 </footer>
 </div>
@@ -19848,7 +19848,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.26-MOBILE-R51.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.27-GEOMETRIA-R52.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
@@ -24506,20 +24506,20 @@ body[data-theme="dark"] .appFooter::before{
 </style>
 
 
-<style id="doganatools-module-geometry-r51">
+<style id="doganatools-module-geometry-r52">
 :root{
-  --dogana-module-width:calc(100% - 32px);
+  --dogana-module-width:100%;
   --dogana-module-margin-y:18px;
 }
 
-/* Tutti i moduli principali condividono esattamente la stessa larghezza esterna. */
+/* Tutti i moduli principali condividono la larghezza della Tabella, aperti o ridotti. */
 #customs-ai-section.customsAiPanel,
 #extraPanel,
 #organizePanel,
 #shipPanel,
 #bookingLookupPanel,
 #serverConsolePanel,
-#dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)),
+#dogana-section,
 .wrap > .appFooter{
   box-sizing:border-box !important;
   width:var(--dogana-module-width) !important;
@@ -24529,8 +24529,8 @@ body[data-theme="dark"] .appFooter::before{
   margin-right:auto !important;
 }
 
-/* Tabella aperta: un solo livello visivo, senza pannello esterno più largo. */
-#dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)){
+/* Tabella aperta o ridotta: un solo livello visivo e la stessa geometria degli altri moduli. */
+#dogana-section{
   margin-top:var(--dogana-module-margin-y) !important;
   margin-bottom:var(--dogana-module-margin-y) !important;
   padding:0 !important;
@@ -24542,7 +24542,7 @@ body[data-theme="dark"] .appFooter::before{
   backdrop-filter:none !important;
 }
 
-#dogana-section > .doganaTableModuleCard:not(.is-minimized){
+#dogana-section > .doganaTableModuleCard{
   box-sizing:border-box !important;
   width:100% !important;
   min-width:0 !important;
@@ -24630,7 +24630,7 @@ body[data-theme="dark"] .appFooter::before{
   #shipPanel,
   #bookingLookupPanel,
   #serverConsolePanel,
-  #dogana-section:has(> .doganaTableModuleCard:not(.is-minimized)),
+  #dogana-section,
   .wrap > .appFooter{
     width:100% !important;
     max-width:100% !important;
@@ -24638,7 +24638,7 @@ body[data-theme="dark"] .appFooter::before{
     margin-right:0 !important;
   }
 
-  #dogana-section > .doganaTableModuleCard:not(.is-minimized){
+  #dogana-section > .doganaTableModuleCard{
     width:100% !important;
     max-width:100% !important;
   }
