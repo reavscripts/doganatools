@@ -7886,7 +7886,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.27-ALLINEAMENTO-R53</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.28-CONTROLLO-RIGA-R54</strong></a>
   </div>
 </footer>
 </div>
@@ -9438,6 +9438,11 @@ button.doganaModuleSvgToggleBtn:active,
     let extraCountdownTimer = null;
     let extraLastCheckAtByTerminal = { sct: null, conateco: null, flavio: null };
     const extraCheckingRowIds = new Set();
+    // Le richieste lanciate dai pulsanti di riga entrano nella stessa coda del
+    // controllo ordinario. In questo modo SCT resta rigorosamente sequenziale
+    // e, terminata la riga prioritaria, il ciclo riprende dal punto raggiunto.
+    const extraQueuedRowCheckKeys = new Set();
+    const extraPriorityRowQueues = new Map();
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
@@ -9748,6 +9753,11 @@ button.doganaModuleSvgToggleBtn:active,
     function isExtraRowChecking(rowId, termKey){
       const key = getExtraCheckingKey(rowId, termKey);
       return !!key && extraCheckingRowIds.has(key);
+    }
+
+    function isExtraRowQueuedForCheck(rowId, termKey){
+      const key = getExtraCheckingKey(rowId, termKey);
+      return !!key && extraQueuedRowCheckKeys.has(key);
     }
 
     function loadLocalActiveExtraTerminal(){
@@ -10957,7 +10967,7 @@ button.doganaModuleSvgToggleBtn:active,
           <th>Cliente</th>
           <th>${cfg.title}</th>
           <th>Stato</th>
-          <th class="actions">✕</th>
+          <th class="actions">Azioni</th>
         </tr>`;
       extraTbody.innerHTML = "";
 
@@ -11189,12 +11199,49 @@ button.doganaModuleSvgToggleBtn:active,
         const tdActions = document.createElement("td");
         tdActions.className = "actions extraMobileCardActions";
         tdActions.dataset.extraLabel = "Azioni";
-        const btn = document.createElement("button");
-        btn.className = "rowBtn";
-        btn.title = "Elimina riga";
-        btn.textContent = "✕";
-        btn.addEventListener("click", () => deleteExtraRow(row.__id));
-        tdActions.appendChild(btn);
+
+        const actionsWrap = document.createElement("div");
+        actionsWrap.className = "extraRowActionsWrap";
+
+        const rowTerminal = activeExtraTerminal;
+        const containerValue = String(row[cfg.containerField] || "").trim();
+        const rowIsChecking = isExtraRowChecking(row.__id, rowTerminal);
+        const rowIsQueued = isExtraRowQueuedForCheck(row.__id, rowTerminal);
+        const rowCanBeChecked = !!containerValue && isValidExtraContainerCode(containerValue);
+
+        const checkBtn = document.createElement("button");
+        checkBtn.type = "button";
+        checkBtn.className = "rowBtn rowCheckBtn";
+        if (rowIsChecking || rowIsQueued) checkBtn.classList.add("is-checking");
+        checkBtn.disabled = !rowCanBeChecked || rowIsChecking || rowIsQueued;
+        checkBtn.title = rowIsChecking
+          ? "Controllo del container in corso"
+          : (rowIsQueued
+            ? "Container inserito come prossimo controllo"
+            : (rowCanBeChecked
+              ? `Controlla ora questo container su ${cfg.label}`
+              : "Inserisci un numero container valido"));
+        checkBtn.setAttribute("aria-label", checkBtn.title);
+        checkBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M20 11a8 8 0 1 0-2.34 5.66"/>
+            <path d="M20 4v7h-7"/>
+          </svg>`;
+        checkBtn.addEventListener("click", () => {
+          requestExtraPriorityRowCheck(row.__id, rowTerminal);
+        });
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "rowBtn rowDeleteBtn";
+        deleteBtn.title = "Elimina riga";
+        deleteBtn.setAttribute("aria-label", "Elimina riga");
+        deleteBtn.textContent = "✕";
+        deleteBtn.addEventListener("click", () => deleteExtraRow(row.__id));
+
+        actionsWrap.appendChild(checkBtn);
+        actionsWrap.appendChild(deleteBtn);
+        tdActions.appendChild(actionsWrap);
         tr.appendChild(tdActions);
 
         extraTbody.appendChild(tr);
@@ -12766,8 +12813,9 @@ function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, 
   return true;
 }
 
-async function checkExtraRowByTerminal(rowData, terminalKey) {
+async function checkExtraRowByTerminal(rowData, terminalKey, options = {}) {
   const term = String(terminalKey || activeExtraTerminal || "sct").toLowerCase();
+  const forceCheck = options?.force === true;
 
   const cfgForValidation = EXTRA_TERMINALS?.[term] || null;
   const rawContainerForValidation = cfgForValidation
@@ -12840,7 +12888,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       String(liveRow.conatecoPdfUrl || "").trim();
 
     // Le righe con Nota vanno sempre ricontrollate: quando la Nota sparisce devono diventare ENTRATO + DOWNLOAD.
-    if (alreadyChecked && !currentConatecoHasNota) return;
+    if (alreadyChecked && !currentConatecoHasNota && !forceCheck) return;
 
     beginChecking();
     liveRow.conateco = conatecoValue;
@@ -12897,7 +12945,7 @@ async function checkExtraRowByTerminal(rowData, terminalKey) {
       liveRow.sctStatus === "PDF PRONTO" &&
       String(liveRow.sctPdfUrl || "").trim();
 
-    if (alreadyHasPdf) return;
+    if (alreadyHasPdf && !forceCheck) return;
 
     beginChecking();
     liveRow.sctStatus = "Controllo...";
@@ -13034,6 +13082,107 @@ const EXTRA_TERMINAL_WORKERS = Object.freeze({
 
 const extraTerminalCheckPromises = new Map();
 
+function getExtraPriorityRowQueue(terminalKey){
+  const term = EXTRA_TERMINALS?.[terminalKey] ? terminalKey : "sct";
+  if (!extraPriorityRowQueues.has(term)) extraPriorityRowQueues.set(term, []);
+  return extraPriorityRowQueues.get(term);
+}
+
+function dequeueExtraPriorityRowCheck(terminalKey){
+  const term = EXTRA_TERMINALS?.[terminalKey] ? terminalKey : "sct";
+  const queue = getExtraPriorityRowQueue(term);
+
+  while (queue.length) {
+    const rowId = String(queue.shift() || "").trim();
+    extraQueuedRowCheckKeys.delete(getExtraCheckingKey(rowId, term));
+    if (!rowId || isExtraRowPendingDelete(rowId)) continue;
+    return rowId;
+  }
+
+  return "";
+}
+
+function clearExtraPriorityRowChecks(terminalKey){
+  const term = EXTRA_TERMINALS?.[terminalKey] ? terminalKey : "sct";
+  const queue = getExtraPriorityRowQueue(term);
+  queue.splice(0).forEach(rowId => {
+    extraQueuedRowCheckKeys.delete(getExtraCheckingKey(rowId, term));
+  });
+}
+
+async function runExtraPriorityOnlyTerminal(terminalToCheck){
+  while (true) {
+    const rowId = dequeueExtraPriorityRowCheck(terminalToCheck);
+    if (!rowId) break;
+
+    const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === rowId);
+    if (liveIndex < 0) continue;
+
+    const rowData = extraRows[liveIndex];
+    if (!rowData || !rowBelongsToTerminal(rowData, terminalToCheck)) continue;
+
+    try {
+      await checkExtraRowByTerminal(rowData, terminalToCheck, { force: true });
+    } catch (err) {
+      console.error("Errore controllo prioritario riga", terminalToCheck, rowId, err);
+    }
+  }
+
+  setExtraLastCheckAt(terminalToCheck, Date.now(), { skipSave: true, skipUi: true });
+  if (typeof saveExtra === "function") saveExtra();
+  if (typeof renderExtra === "function") renderExtra();
+  if (typeof updateExtraCheckInfo === "function") updateExtraCheckInfo();
+}
+
+async function requestExtraPriorityRowCheck(rowId, terminalKey = activeExtraTerminal){
+  const term = EXTRA_TERMINALS?.[terminalKey] ? terminalKey : "sct";
+  const cleanRowId = String(rowId || "").trim();
+  if (!cleanRowId || isExtraRowPendingDelete(cleanRowId)) return;
+
+  const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === cleanRowId);
+  const liveRow = liveIndex >= 0 ? normalizeExtraRow(extraRows[liveIndex]) : null;
+  const cfg = EXTRA_TERMINALS?.[term];
+  const containerValue = cfg ? String(liveRow?.[cfg.containerField] || "").trim() : "";
+
+  if (!liveRow || !rowBelongsToTerminal(liveRow, term)) return;
+  if (!containerValue || !isValidExtraContainerCode(containerValue)) {
+    showExtraToast("Inserisci un numero container valido prima del controllo.");
+    return;
+  }
+
+  if (isExtraRowChecking(cleanRowId, term)) {
+    showExtraToast(`${containerValue.toUpperCase()} è già in controllo.`);
+    return;
+  }
+
+  const checkingKey = getExtraCheckingKey(cleanRowId, term);
+  if (extraQueuedRowCheckKeys.has(checkingKey)) {
+    showExtraToast(`${containerValue.toUpperCase()} è già il prossimo controllo.`);
+    return;
+  }
+
+  getExtraPriorityRowQueue(term).push(cleanRowId);
+  extraQueuedRowCheckKeys.add(checkingKey);
+  if (activeExtraTerminal === term && typeof renderExtra === "function") renderExtra();
+  showExtraToast(`${containerValue.toUpperCase()} inserito come prossimo controllo ${cfg.label}.`);
+
+  // Se il controllo classico è già in corso, i suoi worker prelevano prima
+  // questa riga e poi proseguono dalla posizione corrente. In assenza di un
+  // ciclo attivo viene eseguita soltanto la riga richiesta.
+  const existing = extraTerminalCheckPromises.get(term);
+  if (existing) return existing;
+
+  const task = runExtraPriorityOnlyTerminal(term)
+    .finally(() => {
+      if (extraTerminalCheckPromises.get(term) === task) {
+        extraTerminalCheckPromises.delete(term);
+      }
+    });
+
+  extraTerminalCheckPromises.set(term, task);
+  return task;
+}
+
 async function runExtraTerminalWorkers(rowIds, terminalToCheck) {
   const limit = Math.max(
     1,
@@ -13045,15 +13194,31 @@ async function runExtraTerminalWorkers(rowIds, terminalToCheck) {
 
   let cursor = 0;
   let terminalAborted = false;
+  const processedRowIds = new Set();
 
   const workers = Array.from({ length: limit }, async () => {
     while (true) {
       if (terminalAborted) return;
 
-      const current = cursor++;
-      if (current >= rowIds.length) return;
+      // La richiesta esplicita dell'utente ha precedenza. Se la riga faceva
+      // anche parte del ciclo ordinario viene marcata come elaborata, così non
+      // sarà controllata due volte quando il cursore la raggiungerà.
+      let rowId = dequeueExtraPriorityRowCheck(terminalToCheck);
+      let forceCheck = !!rowId;
 
-      const rowId = rowIds[current];
+      if (rowId) {
+        processedRowIds.add(rowId);
+      } else {
+        while (cursor < rowIds.length && !rowId) {
+          const candidate = String(rowIds[cursor++] || "").trim();
+          if (!candidate || processedRowIds.has(candidate)) continue;
+          processedRowIds.add(candidate);
+          rowId = candidate;
+        }
+        forceCheck = false;
+      }
+
+      if (!rowId) return;
       if (isExtraRowPendingDelete(rowId)) continue;
 
       const liveIndex = extraRows.findIndex(row => String(row?.__id || "") === rowId);
@@ -13063,7 +13228,7 @@ async function runExtraTerminalWorkers(rowIds, terminalToCheck) {
       if (!rowData || !rowBelongsToTerminal(rowData, terminalToCheck)) continue;
 
       try {
-        const result = await checkExtraRowByTerminal(rowData, terminalToCheck);
+        const result = await checkExtraRowByTerminal(rowData, terminalToCheck, { force: forceCheck });
 
         // Una sessione JMT scaduta è un errore di terminal, non del singolo
         // container: interrompe la coda SCT e impedisce decine di alert uguali.
@@ -13088,6 +13253,11 @@ async function runExtraTerminalWorkers(rowIds, terminalToCheck) {
   });
 
   await Promise.allSettled(workers);
+
+  if (terminalAborted) {
+    clearExtraPriorityRowChecks(terminalToCheck);
+    if (activeExtraTerminal === terminalToCheck && typeof renderExtra === "function") renderExtra();
+  }
 }
 
 async function runAutoCheckTerminal(terminalToCheck) {
@@ -24735,6 +24905,85 @@ body[data-theme="dark"] .appFooter::before{
     text-overflow:ellipsis !important;
     white-space:nowrap !important;
     transform:none !important;
+  }
+}
+</style>
+
+<style id="dogana-extra-row-check-r54">
+/* R54 — Controllo prioritario del singolo container. */
+#extraPanel #extraTable th.actions,
+#extraPanel #extraTable td.actions{
+  width:96px !important;
+  min-width:96px !important;
+}
+
+#extraPanel #extraTbody .extraRowActionsWrap{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  gap:7px !important;
+  width:100% !important;
+  min-width:0 !important;
+  padding:4px !important;
+}
+
+#extraPanel #extraTbody button.rowBtn.rowCheckBtn{
+  --extra-btn-tone:var(--extra-btn-blue) !important;
+}
+
+#extraPanel #extraTbody button.rowBtn.rowDeleteBtn{
+  --extra-btn-tone:var(--extra-btn-red) !important;
+}
+
+#extraPanel #extraTbody button.rowCheckBtn svg{
+  width:17px !important;
+  height:17px !important;
+  fill:none !important;
+  stroke:currentColor !important;
+  stroke-width:2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+  pointer-events:none !important;
+}
+
+#extraPanel #extraTbody button.rowCheckBtn.is-checking svg{
+  animation:doganaExtraRowCheckSpin .85s linear infinite !important;
+}
+
+#extraPanel #extraTbody button.rowCheckBtn:disabled{
+  cursor:not-allowed !important;
+  opacity:.52 !important;
+  transform:none !important;
+  box-shadow:none !important;
+}
+
+@keyframes doganaExtraRowCheckSpin{
+  to{ transform:rotate(360deg); }
+}
+
+@media screen and (max-width:768px){
+  #extraPanel #extraTbody > tr.extraMobileCardRow{
+    grid-template-columns:minmax(0, 1fr) 98px !important;
+  }
+
+  #extraPanel .extraMobileCardActions{
+    width:98px !important;
+    min-width:98px !important;
+  }
+
+  #extraPanel .extraMobileCardActions .extraRowActionsWrap{
+    justify-content:flex-end !important;
+    gap:8px !important;
+    padding:0 !important;
+  }
+
+  #extraPanel .extraMobileCardActions .rowBtn{
+    width:44px !important;
+    min-width:44px !important;
+    height:44px !important;
+    min-height:44px !important;
+    margin:0 !important;
+    border-radius:12px !important;
   }
 }
 </style>
