@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.08.28-TABELLA-SFONDO-R55 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.09.02-CONATECO-10G-R56 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.08.28-TABELLA-SFONDO-R55"/>
+<meta name="doganatools-build" content="V26.09.02-CONATECO-10G-R56"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.08.28-TABELLA-SFONDO-R55";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.02-CONATECO-10G-R56";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7885,7 +7885,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.08.28-TABELLA-SFONDO-R55</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.02-CONATECO-10G-R56</strong></a>
   </div>
 </footer>
 </div>
@@ -12410,7 +12410,7 @@ function getConatecoTrackingReferenceDate(tracking) {
   return null;
 }
 
-const CONATECO_RETROPORTO_RECENT_DAYS = 7;
+const CONATECO_RECENT_ENTRY_DAYS = 10;
 
 function getConatecoTrackingCurrentMonthCheck(tracking) {
   const parsed = getConatecoTrackingReferenceDate(tracking);
@@ -12428,9 +12428,9 @@ function getConatecoTrackingCurrentMonthCheck(tracking) {
     parsed.date.getFullYear() === now.getFullYear() &&
     parsed.date.getMonth() === now.getMonth();
 
-  // Eccezione al cambio mese: un container ancora segnalato da CONATECO come
-  // RETROPORTO/LUOGO APPROVATO resta operativo se l'ingresso risale al massimo
-  // a 7 giorni fa. Esempio: 31/07 controllato il 03/08 = ENTRATO (RETROPORTO).
+  // Eccezione al cambio mese: qualsiasi ingresso CONATECO resta operativo se
+  // risale al massimo a 10 giorni fa. Esempio: 31/08 controllato il 02/09 =
+  // ENTRATO e, in assenza di note, il relativo PDF resta scaricabile.
   const todayUtc = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
   const trackingDateUtc = Date.UTC(
     parsed.date.getFullYear(),
@@ -12438,19 +12438,15 @@ function getConatecoTrackingCurrentMonthCheck(tracking) {
     parsed.date.getDate()
   );
   const ageDays = Math.floor((todayUtc - trackingDateUtc) / 86400000);
-  const notaTipo = getConatecoNotaTipo(tracking);
-  const recentRetroporto =
-    !!notaTipo &&
-    ageDays >= 0 &&
-    ageDays <= CONATECO_RETROPORTO_RECENT_DAYS;
+  const recentEntry = ageDays >= 0 && ageDays <= CONATECO_RECENT_ENTRY_DAYS;
 
-  const ok = sameCurrentMonth || recentRetroporto;
+  const ok = sameCurrentMonth || recentEntry;
 
   return {
     ok,
     dateText: parsed.raw,
     reason: ok ? "" : "DATA FUORI MESE CORRENTE",
-    acceptedByRecentRetroporto: !sameCurrentMonth && recentRetroporto,
+    acceptedByRecentEntry: !sameCurrentMonth && recentEntry,
     ageDays
   };
 }
@@ -20017,7 +20013,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   function applyVersion(date){
     // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.08.28-TABELLA-SFONDO-R55.
+    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.09.02-CONATECO-10G-R56.
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
     link.title = makeTitle(date);
     link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
