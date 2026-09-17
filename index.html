@@ -12572,8 +12572,12 @@ function getTfgResultText(status, tracking) {
 }
 
 function isTfgFoundResult(status, tracking, data = null) {
-  if (data?.found === true || tracking?.found === true) return true;
-  if (Array.isArray(tracking?.history) && tracking.history.length > 0) return true;
+  // Il backend conosce la differenza tra una vecchia storia TFG e l'ingresso
+  // operativo corrente. Quando invia un esito esplicito non va sovrascritto
+  // dalla sola presenza di righe storiche nel portale.
+  if (typeof data?.found === "boolean") return data.found;
+  if (data?.reentryWithoutNewHistory === true || tracking?.reentryWithoutNewHistory === true) return true;
+  if (tracking?.found === true && tracking?.pdfAvailable !== false) return true;
 
   const text = getTfgResultText(status, tracking);
   if (!text) return false;
@@ -12587,10 +12591,12 @@ function isTfgFoundResult(status, tracking, data = null) {
 }
 
 function isTfgNoDownloadResult(status, tracking, data = null) {
-  // TFG non ha eccezioni come CONATECO: se il portale restituisce una riga
-  // o uno stato utile del container, non va declassato a NON ENTRATO.
+  // Un rientro TFG è positivo solo se il backend ha verificato una riga
+  // ARRIVATO PIENO con data attuale. Un esito negativo esplicito prevale su
+  // qualunque vecchio flag o riga rimasta nello storico.
+  if (data?.found === false || data?.pdfAvailable === false) return true;
+  if (data?.reentryWithoutNewHistory === true || tracking?.reentryWithoutNewHistory === true) return false;
   if (isTfgFoundResult(status, tracking, data)) return false;
-  if (data?.pdfAvailable === false) return true;
 
   const text = getTfgResultText(status, tracking);
   if (!text) return false;
@@ -12639,9 +12645,12 @@ async function checkContainerTfg(container) {
     return {
       success: !!data.success,
       found: foundResult && !noDownload,
-      status: noDownload ? "NON ENTRATO" : status,
+      status: noDownload && !String(status || "").toUpperCase().startsWith("NON ENTRATO")
+        ? "NON ENTRATO"
+        : status,
       pdfUrl,
       tracking,
+      reentryWithoutNewHistory: data.reentryWithoutNewHistory === true || tracking?.reentryWithoutNewHistory === true,
       error: data.error || data.noPdfReason || ""
     };
 
@@ -13034,8 +13043,8 @@ async function checkExtraRowByTerminal(rowData, terminalKey, options = {}) {
         // La notifica viene gestita sotto sulla vera transizione di stato.
         console.log("PDF TFG PRONTO:", flavioValue, result.pdfUrl);
       } else {
-        // TFG non ha eccezioni come CONATECO: se il portale restituisce la riga,
-        // il container deve risultare entrato anche senza PDF generato.
+        // Mantiene visibile anche lo stato speciale del rientro TFG senza nuova
+        // storia, qualora il PDF non sia ancora pronto.
         liveRow.flavioStatus = result.status || result.tracking?.status || "TROVATO";
         liveRow.flavioPdfUrl = "";
         console.log("TFG trovato senza PDF:", flavioValue, liveRow.flavioStatus);
