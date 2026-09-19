@@ -7,7 +7,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.19-INVOICE-CLASSIFIER-R62";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.19-INVOICE-TABLE-R63";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7385,6 +7385,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <button type="button" id="invoiceClassifierAnalyze" class="primary">Analizza documenti</button>
         <button type="button" id="invoiceClassifierClassify" class="success">Classifica tutto</button>
         <button type="button" id="invoiceClassifierAdd">+ Riga</button>
+        <button type="button" id="invoiceClassifierToTable">Esporta nella Tabella</button>
         <button type="button" id="invoiceClassifierExcel">Esporta Excel</button>
         <button type="button" id="invoiceClassifierPdf">Esporta PDF</button>
         <button type="button" id="invoiceClassifierClear" class="danger">Svuota</button>
@@ -7950,7 +7951,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.19-INVOICE-CLASSIFIER-R62</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.19-INVOICE-TABLE-R63</strong></a>
   </div>
 </footer>
 </div>
@@ -14462,6 +14463,45 @@ function exportExcel(){
 
   link.click();
 }
+
+// Interfaccia pubblica per i moduli che devono trasferire righe nella Tabella.
+// Le righe già compilate vengono conservate; eventuali righe iniziali vuote
+// vengono invece sostituite dal primo trasferimento.
+window.DoganaMainTable = {
+  importRows(sourceRows, options = {}){
+    const incoming = (Array.isArray(sourceRows) ? sourceRows : [])
+      .map(item => ({
+        desc: String(item?.desc || "").trim(),
+        colli: String(item?.colli || "").trim(),
+        pezzi: String(item?.pezzi || "").trim(),
+        gross: String(item?.gross || "").trim(),
+        net: String(item?.net || "").trim(),
+        mq: String(item?.mq || "").trim(),
+        value: String(item?.value || "").trim()
+      }))
+      .filter(item => Object.values(item).some(value => value !== ""));
+
+    if (!incoming.length) return { added: 0, total: rows.length };
+
+    pushTableUndoState();
+    resetMergeState();
+
+    const hasExistingData = rows.some(item => [item.desc, item.colli, item.pezzi, item.gross, item.net, item.mq, item.value]
+      .some(value => String(value || "").trim() !== ""));
+    if (!hasExistingData) rows = [];
+
+    rows.push(...incoming);
+
+    const requestedTitle = String(options.title || "").trim();
+    const titleInput = document.getElementById("pdfTitleInput");
+    if (requestedTitle && titleInput && !titleInput.value.trim()) titleInput.value = requestedTitle;
+
+    render();
+    save();
+    return { added: incoming.length, total: rows.length };
+  },
+  getRows(){ return cloneTableRows(rows); }
+};
 
 
 /* === FIX DEFINITIVO PULSANTI CONTAINER: COPIA CONTAINER + PDF LISTA === */
@@ -25082,11 +25122,15 @@ body[data-theme="dark"] .appFooter::before{
 .invoiceClassifierSummary>span strong{color:var(--text,#0f172a)}
 .invoiceClassifierSummary label{display:inline-flex;align-items:center;gap:7px;padding:5px 8px 5px 10px;border:1px solid var(--line,#e2e8f0);border-radius:10px;color:var(--muted,#64748b);font-size:11px}
 .invoiceClassifierSummary input{width:82px;padding:5px 7px;border:1px solid var(--line,#cbd5e1);border-radius:7px;background:var(--surface,#fff);color:var(--text,#0f172a)}
-.invoiceClassifierGridWrap{position:relative;overflow:auto;border:1px solid var(--line,#e2e8f0);border-radius:14px;background:var(--surface,#fff)}
+.invoiceClassifierGridWrap{position:relative;max-width:100%;box-sizing:border-box;overflow:auto;scrollbar-gutter:stable;border:1px solid var(--line,#e2e8f0);border-radius:14px;background:var(--surface,#fff)}
 .invoiceClassifierTable{width:100%;min-width:1250px;border-collapse:separate;border-spacing:0;font-size:12px}
 .invoiceClassifierTable th{position:sticky;top:0;z-index:2;padding:10px 8px;background:#1e3a5f;color:#fff;text-align:center;font-size:10px;letter-spacing:.035em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.18)}
 .invoiceClassifierTable td{padding:6px;border-top:1px solid var(--line,#e2e8f0);vertical-align:middle;background:var(--surface,#fff)}
 .invoiceClassifierTable tbody tr:hover td{background:color-mix(in srgb,#2563eb 4%,var(--surface,#fff))}
+.invoiceClassifierTable th:last-child,.invoiceClassifierTable td:last-child{position:sticky;right:0;width:46px;min-width:46px;max-width:46px;box-sizing:border-box;padding:4px;text-align:center;box-shadow:-5px 0 9px rgba(15,23,42,.08)}
+.invoiceClassifierTable th:last-child{z-index:5;background:#1e3a5f}
+.invoiceClassifierTable td:last-child{z-index:1;background:var(--surface,#fff)}
+.invoiceClassifierTable tbody tr:hover td:last-child{background:color-mix(in srgb,#2563eb 4%,var(--surface,#fff))}
 .invoiceClassifierTable input{width:100%;min-width:0;padding:7px 8px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text,#0f172a);font:inherit}
 .invoiceClassifierTable input:hover,.invoiceClassifierTable input:focus{outline:none;border-color:#93c5fd;background:var(--surface,#fff);box-shadow:0 0 0 2px rgba(37,99,235,.09)}
 .invoiceClassifierTable td:nth-child(2){min-width:330px}.invoiceClassifierTable td:nth-child(3){min-width:145px}.invoiceClassifierTable td:nth-child(4){min-width:135px}.invoiceClassifierTable td:nth-child(n+5):nth-child(-n+8){min-width:88px}
@@ -25096,7 +25140,7 @@ body[data-theme="dark"] .appFooter::before{
 .invoiceClassifierStatusPill.confirmed,.invoiceClassifierStatusPill.classified{background:#dcfce7;color:#166534}
 .invoiceClassifierStatusPill.catalog,.invoiceClassifierStatusPill.needs_review{background:#fef3c7;color:#92400e}
 .invoiceClassifierStatusPill.error,.invoiceClassifierStatusPill.unclassified{background:#fee2e2;color:#991b1b}
-.invoiceClassifierDelete{width:32px;height:32px;padding:0!important;border-radius:9px!important;color:#b91c1c!important}
+.invoiceClassifierDelete{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;min-height:32px!important;padding:0!important;margin:0!important;border-radius:9px!important;color:#b91c1c!important;line-height:1!important}
 .invoiceClassifierEmpty{padding:28px;text-align:center;color:var(--muted,#64748b);font-size:13px}.invoiceClassifierEmpty[hidden]{display:none}
 .invoiceClassifierNote{margin:11px 2px 0;color:var(--muted,#64748b);font-size:11px;line-height:1.45}
 body[data-theme="dark"] .invoiceClassifierTable th{background:#172a46}
@@ -25115,7 +25159,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
   const elements = {
     panel: $("invoice-classifier-section"), body: document.querySelector("#invoice-classifier-section .invoiceClassifierBody"),
     input: $("invoiceClassifierFiles"), drop: $("invoiceClassifierDrop"), analyze: $("invoiceClassifierAnalyze"), classify: $("invoiceClassifierClassify"),
-    add: $("invoiceClassifierAdd"), excel: $("invoiceClassifierExcel"), pdf: $("invoiceClassifierPdf"), clear: $("invoiceClassifierClear"),
+    add: $("invoiceClassifierAdd"), toTable: $("invoiceClassifierToTable"), excel: $("invoiceClassifierExcel"), pdf: $("invoiceClassifierPdf"), clear: $("invoiceClassifierClear"),
     toggle: $("invoiceClassifierToggle"), status: $("invoiceClassifierStatus"), tbody: $("invoiceClassifierTbody"), empty: $("invoiceClassifierEmpty"),
     fileCount: $("invoiceClassifierFileCount"), rowCount: $("invoiceClassifierRowCount"), doneCount: $("invoiceClassifierDoneCount"), reviewCount: $("invoiceClassifierReviewCount"),
     docGross: $("invoiceClassifierDocGross"), docNet: $("invoiceClassifierDocNet")
@@ -25286,6 +25330,36 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     if(!/^\d{8}$/.test(row.cn8)||(!row.ean&&!row.description))return;
     try{await fetch(typeof apiUrl==="function"?apiUrl("/api/invoice-classifier/remember"):"/api/invoice-classifier/remember",{method:"POST",headers:{"Content-Type":"application/json"},credentials:"include",body:JSON.stringify({item:{ean:row.ean,description:row.description,cn8:row.cn8,verified:true}})});}catch(error){console.warn("Memoria classificatore non aggiornata",error);}
   }
+  function exportToMainTable(){
+    const api=globalThis.DoganaMainTable;
+    if(!api||typeof api.importRows!=="function"){setStatus("Il modulo Tabella non è disponibile.","error");return;}
+
+    const sourceRows=state.rows
+      .filter(row=>row.description||row.ean||row.cn8||row.packages||row.quantity||row.gross||row.net)
+      .map(row=>({
+        desc:[row.description,row.cn8?`NC ${row.cn8}`:""].filter(Boolean).join(" — "),
+        colli:row.packages,
+        pezzi:row.quantity,
+        gross:row.gross,
+        net:row.net,
+        mq:"",
+        value:""
+      }));
+
+    if(!sourceRows.length){setStatus("Nessuna riga da trasferire nella Tabella.","error");return;}
+
+    const hasRowWeights=sourceRows.some(row=>String(row.gross||"").trim()||String(row.net||"").trim());
+    if(!hasRowWeights&&(String(state.docGross||"").trim()||String(state.docNet||"").trim())){
+      sourceRows.push({desc:"TOTALI PESO DOCUMENTO",colli:"",pezzi:"",gross:state.docGross,net:state.docNet,mq:"",value:""});
+    }
+
+    const firstSource=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"Fattura / packing list";
+    const result=api.importRows(sourceRows,{title:`Classificazione ${firstSource}`});
+    if(!result?.added){setStatus("Nessuna riga trasferita nella Tabella.","error");return;}
+
+    setStatus(`${result.added} righe esportate nella Tabella DoganaTools. Totale righe in tabella: ${result.total}.`,"ok");
+    document.getElementById("dogana-section")?.scrollIntoView({behavior:"smooth",block:"start"});
+  }
   function exportRows(){return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,"EAN / CODICE":row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PEZZI":asCell(row.quantity),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"ESITO":statusLabel(row),"FILE SORGENTE":row.source}));}
   function fileBase(){const first=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"classificazione_fatture";return first.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,70)||"classificazione_fatture";}
   function exportExcel(){
@@ -25305,7 +25379,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
   for(const eventName of ["dragenter","dragover"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.add("is-dragging");});}
   for(const eventName of ["dragleave","drop"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.remove("is-dragging");});}
   elements.drop.addEventListener("drop",event=>{selectedFiles=Array.from(event.dataTransfer?.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file pronti per l'analisi.`:"Nessun file riconosciuto.");});
-  elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
+  elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
   elements.add.addEventListener("click",()=>{state.rows.push(makeRow());render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
   elements.clear.addEventListener("click",()=>{if(state.rows.length&&!confirm("Svuotare tutti i dati del classificatore fatture?"))return;state={rows:[],sourceNames:[],docGross:"",docNet:""};selectedFiles=[];elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});
