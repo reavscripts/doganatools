@@ -3,11 +3,11 @@
 <head>
 <!-- DOGANATOOLS FRONTEND BUILD: V26.09.03-TFG-LIVE-R57 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.09.19-CUSTOMS-RECOGNITION-R64"/>
+<meta name="doganatools-build" content="V26.09.19-UNIFIED-TABLES-R65"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.19-CUSTOMS-RECOGNITION-R64";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.19-UNIFIED-TABLES-R65";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7413,6 +7413,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 
     <div class="invoiceClassifierGridWrap">
       <table class="invoiceClassifierTable" id="invoiceClassifierTable">
+        <colgroup>
+          <col class="invoiceColNr" />
+          <col class="invoiceColProduct" />
+          <col class="invoiceColEan" />
+          <col class="invoiceColCn" />
+          <col class="invoiceColPackages" />
+          <col class="invoiceColQuantity" />
+          <col class="invoiceColGross" />
+          <col class="invoiceColNet" />
+          <col class="invoiceColValue" />
+          <col class="invoiceColActions" />
+        </colgroup>
         <thead>
           <tr>
             <th class="invoiceClassifierNr">NR.</th>
@@ -7424,7 +7436,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
             <th>LORDO KG</th>
             <th>NETTO KG</th>
             <th>VALORE</th>
-            <th>ESITO</th>
             <th aria-label="Azioni"></th>
           </tr>
         </thead>
@@ -7960,7 +7971,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.19-CUSTOMS-RECOGNITION-R64</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.19-UNIFIED-TABLES-R65</strong></a>
   </div>
 </footer>
 </div>
@@ -8763,7 +8774,7 @@ button.doganaModuleSvgToggleBtn:active,
         const tdActions = document.createElement("td");
         tdActions.className = "actions";
         const btn = document.createElement("button");
-        btn.className = "rowBtn";
+        btn.className = "rowBtn rowDeleteBtn";
         btn.title = "Elimina riga";
         btn.textContent = "✕";
         btn.addEventListener("click", () => deleteRow(idx));
@@ -25158,34 +25169,39 @@ body[data-theme="dark"] .appFooter::before{
 .invoiceClassifierSummary>span strong{color:var(--text,#0f172a)}
 .invoiceClassifierSummary label{display:inline-flex;align-items:center;gap:7px;padding:5px 8px 5px 10px;border:1px solid var(--line,#e2e8f0);border-radius:10px;color:var(--muted,#64748b);font-size:11px}
 .invoiceClassifierSummary input{width:82px;padding:5px 7px;border:1px solid var(--line,#cbd5e1);border-radius:7px;background:var(--surface,#fff);color:var(--text,#0f172a)}
-.invoiceClassifierGridWrap{position:relative;max-width:100%;box-sizing:border-box;overflow:auto;scrollbar-gutter:stable;border:1px solid var(--line,#e2e8f0);border-radius:14px;background:var(--surface,#fff)}
-.invoiceClassifierTable{width:100%;min-width:1360px;border-collapse:separate;border-spacing:0;font-size:12px}
-.invoiceClassifierTable th{position:sticky;top:0;z-index:2;padding:10px 8px;background:#1e3a5f;color:#fff;text-align:center;font-size:10px;letter-spacing:.035em;white-space:nowrap;border-right:1px solid rgba(255,255,255,.18)}
-.invoiceClassifierTable td{padding:6px;border-top:1px solid var(--line,#e2e8f0);vertical-align:middle;background:var(--surface,#fff)}
-.invoiceClassifierTable tbody tr:hover td{background:color-mix(in srgb,#2563eb 4%,var(--surface,#fff))}
-.invoiceClassifierTable th:last-child,.invoiceClassifierTable td:last-child{position:sticky;right:0;width:46px;min-width:46px;max-width:46px;box-sizing:border-box;padding:4px;text-align:center;box-shadow:-5px 0 9px rgba(15,23,42,.08)}
-.invoiceClassifierTable th:last-child{z-index:5;background:#1e3a5f}
-.invoiceClassifierTable td:last-child{z-index:1;background:var(--surface,#fff)}
-.invoiceClassifierTable tbody tr:hover td:last-child{background:color-mix(in srgb,#2563eb 4%,var(--surface,#fff))}
-.invoiceClassifierTable input{width:100%;min-width:0;padding:7px 8px;border:1px solid transparent;border-radius:7px;background:transparent;color:var(--text,#0f172a);font:inherit}
-.invoiceClassifierTable input:hover,.invoiceClassifierTable input:focus{outline:none;border-color:#93c5fd;background:var(--surface,#fff);box-shadow:0 0 0 2px rgba(37,99,235,.09)}
-.invoiceClassifierTable td:nth-child(2){min-width:330px}.invoiceClassifierTable td:nth-child(3){min-width:145px}.invoiceClassifierTable td:nth-child(4){min-width:135px}.invoiceClassifierTable td:nth-child(n+5):nth-child(-n+9){min-width:88px}
-.invoiceClassifierNr{text-align:center;width:48px}.invoiceClassifierRowNr{text-align:center;color:var(--muted,#64748b);font-weight:700}
+/* Stile condiviso per tutte le righe modificabili delle tabelle operative. */
+:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input{width:100%;min-width:0;padding:13px 10px;border:0;border-radius:0;outline:0;background:var(--input-bg);color:var(--text);font-family:var(--font);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input:hover{background:var(--input-bg)}
+:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input:focus{background:var(--hint-bg);box-shadow:inset 0 0 0 1px rgba(37,99,235,.18)}
+:is(#sheet,#extraTable,#invoiceClassifierTable) .rowDeleteBtn{width:38px;height:34px;min-width:38px;min-height:34px;padding:0;border-radius:10px}
+.invoiceClassifierGridWrap{position:relative;max-width:100%;box-sizing:border-box;overflow-x:hidden;overflow-y:auto;border:1px solid var(--grid-soft);border-radius:14px;background:var(--surface)}
+.invoiceClassifierTable{width:100%;min-width:0!important;table-layout:fixed;border-collapse:separate;border-spacing:0;font-size:13px}
+.invoiceClassifierTable col.invoiceColNr{width:4%}.invoiceClassifierTable col.invoiceColProduct{width:31%}.invoiceClassifierTable col.invoiceColEan{width:13%}.invoiceClassifierTable col.invoiceColCn{width:11%}.invoiceClassifierTable col.invoiceColPackages,.invoiceClassifierTable col.invoiceColQuantity{width:7%}.invoiceClassifierTable col.invoiceColGross,.invoiceClassifierTable col.invoiceColNet,.invoiceClassifierTable col.invoiceColValue{width:8%}.invoiceClassifierTable col.invoiceColActions{width:44px}
+.invoiceClassifierTable th{position:sticky;top:0;z-index:2;padding:13px 8px;background:var(--thead-bg);color:var(--muted);text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;white-space:normal;border-bottom:1px solid var(--grid);overflow:hidden}
+.invoiceClassifierTable th:first-child,.invoiceClassifierTable th:nth-child(3),.invoiceClassifierTable th:nth-child(4),.invoiceClassifierTable th:last-child{text-align:center}
+.invoiceClassifierTable th:nth-child(n+5):nth-child(-n+9){text-align:right}
+.invoiceClassifierTable td{padding:0;border-bottom:1px solid var(--grid-soft);vertical-align:middle;background:var(--pill-bg);overflow:hidden}
+.invoiceClassifierTable tbody tr:hover td{background:var(--tbody-hover)}
+.invoiceClassifierTable th:last-child,.invoiceClassifierTable td:last-child{position:static;box-sizing:border-box;padding:0;text-align:center;box-shadow:none}
+.invoiceClassifierTable input{width:100%;min-width:0;padding:13px 9px;border:0;border-radius:0;background:var(--input-bg);color:var(--text);font-family:var(--font);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.invoiceClassifierTable input:hover{background:var(--input-bg)}
+.invoiceClassifierTable input:focus{outline:0;background:var(--hint-bg);box-shadow:inset 0 0 0 1px rgba(37,99,235,.18)}
+.invoiceClassifierTable td:nth-child(n+5):nth-child(-n+9) input{text-align:right}
+.invoiceClassifierNr{text-align:center}.invoiceClassifierRowNr{text-align:center;color:var(--muted);font-weight:700;padding:13px 4px!important}
 .invoiceClassifierCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:800;letter-spacing:.07em;text-align:center}
 .invoiceClassifierStatusPill{display:inline-flex;align-items:center;justify-content:center;min-width:96px;padding:5px 7px;border-radius:999px;font-size:10px;font-weight:800;text-align:center;background:#f1f5f9;color:#475569}
 .invoiceClassifierStatusPill.confirmed,.invoiceClassifierStatusPill.classified{background:#dcfce7;color:#166534}
 .invoiceClassifierStatusPill.catalog,.invoiceClassifierStatusPill.needs_review{background:#fef3c7;color:#92400e}
 .invoiceClassifierStatusPill.error,.invoiceClassifierStatusPill.unclassified{background:#fee2e2;color:#991b1b}
-.invoiceClassifierDelete{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:32px!important;min-width:32px!important;max-width:32px!important;height:32px!important;min-height:32px!important;padding:0!important;margin:0!important;border-radius:9px!important;color:#b91c1c!important;line-height:1!important}
+.invoiceClassifierDelete{margin:0 auto!important}
 .invoiceClassifierEmpty{padding:28px;text-align:center;color:var(--muted,#64748b);font-size:13px}.invoiceClassifierEmpty[hidden]{display:none}
 .invoiceClassifierNote{margin:11px 2px 0;color:var(--muted,#64748b);font-size:11px;line-height:1.45}
-body[data-theme="dark"] .invoiceClassifierTable th{background:#172a46}
 body[data-theme="dark"] .invoiceClassifierStatus.is-busy{background:rgba(30,64,175,.22);border-color:#1d4ed8;color:#bfdbfe}
 body[data-theme="dark"] .invoiceClassifierStatus.is-error{background:rgba(127,29,29,.25);border-color:#991b1b;color:#fecaca}
 body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,.25);border-color:#166534;color:#bbf7d0}
 #doganaAiNavToggle{--nav-tone:#4f46e5}
 #doganaAiNavMenu{min-width:290px}
-@media(max-width:900px){.invoiceClassifierUploadRow{grid-template-columns:1fr}.invoiceClassifierActions{justify-content:flex-start}.invoiceClassifierSummary label{flex:1 1 210px}.invoiceClassifierHead{padding:15px}.invoiceClassifierBody{padding:13px}}
+@media(max-width:900px){.invoiceClassifierUploadRow{grid-template-columns:1fr}.invoiceClassifierActions{justify-content:flex-start}.invoiceClassifierSummary label{flex:1 1 210px}.invoiceClassifierHead{padding:15px}.invoiceClassifierBody{padding:13px}.invoiceClassifierTable{font-size:11px}.invoiceClassifierTable th{padding:10px 4px;font-size:9px;letter-spacing:.035em}:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input{padding:11px 4px;font-size:11px}.invoiceClassifierTable col.invoiceColProduct{width:28%}.invoiceClassifierTable col.invoiceColEan{width:14%}.invoiceClassifierTable col.invoiceColCn{width:12%}.invoiceClassifierTable col.invoiceColActions{width:40px}.invoiceClassifierDelete{width:34px!important;min-width:34px!important;height:32px!important;min-height:32px!important}}
 </style>
 
 <script id="invoice-classifier-script">
@@ -25245,8 +25261,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
       <td><input data-field="gross" value="${escapeHtml(row.gross)}" inputmode="decimal" aria-label="Peso lordo riga ${index+1}"></td>
       <td><input data-field="net" value="${escapeHtml(row.net)}" inputmode="decimal" aria-label="Peso netto riga ${index+1}"></td>
       <td><input data-field="value" value="${escapeHtml(row.value)}" inputmode="decimal" aria-label="Valore riga ${index+1}"></td>
-      <td><span class="invoiceClassifierStatusPill ${escapeHtml(row.status)}">${escapeHtml(statusLabel(row))}</span></td>
-      <td><button type="button" class="invoiceClassifierDelete" data-delete="1" aria-label="Elimina riga ${index+1}" title="Elimina riga">×</button></td></tr>`).join("");
+      <td><button type="button" class="rowBtn rowDeleteBtn invoiceClassifierDelete" data-delete="1" aria-label="Elimina riga ${index+1}" title="Elimina riga">✕</button></td></tr>`).join("");
     elements.empty.hidden=state.rows.length>0;
     elements.fileCount.textContent=String(state.sourceNames.length);
     elements.rowCount.textContent=String(state.rows.length);
@@ -25412,19 +25427,19 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     setStatus(`${result.added} righe esportate nella Tabella DoganaTools. Totale righe in tabella: ${result.total}.`,"ok");
     document.getElementById("dogana-section")?.scrollIntoView({behavior:"smooth",block:"start"});
   }
-  function exportRows(){return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,"EAN / CODICE":row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PEZZI":asCell(row.quantity),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"ESITO":statusLabel(row),"FILE SORGENTE":row.source}));}
+  function exportRows(){return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,"EAN / CODICE":row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PEZZI":asCell(row.quantity),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));}
   function fileBase(){const first=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"riconoscimento_voce_doganale";return first.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,70)||"riconoscimento_voce_doganale";}
   function exportExcel(){
     const data=exportRows();if(!data.length){setStatus("Nessuna riga da esportare.","error");return;}
-    if(globalThis.XLSX){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=[{wch:6},{wch:48},{wch:18},{wch:19},{wch:11},{wch:11},{wch:17},{wch:17},{wch:16},{wch:20},{wch:28}];const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,sheet,"Riconoscimento");XLSX.writeFile(book,`${fileBase()}_voci_doganali.xlsx`,{compression:true});setStatus("File Excel creato.","ok");return;}
+    if(globalThis.XLSX){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=[{wch:6},{wch:48},{wch:18},{wch:19},{wch:11},{wch:11},{wch:17},{wch:17},{wch:16},{wch:28}];const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,sheet,"Riconoscimento");XLSX.writeFile(book,`${fileBase()}_voci_doganali.xlsx`,{compression:true});setStatus("File Excel creato.","ok");return;}
     const headers=Object.keys(data[0]);const csv=[headers.join(";"),...data.map(row=>headers.map(key=>`"${String(row[key]??"").replace(/"/g,'""')}"`).join(";"))].join("\n");const link=document.createElement("a");link.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));link.download=`${fileBase()}_voci_doganali.csv`;link.click();URL.revokeObjectURL(link.href);
   }
   function exportPdf(){
     const data=exportRows(),Pdf=globalThis.jspdf?.jsPDF;if(!data.length){setStatus("Nessuna riga da esportare.","error");return;}if(!Pdf){setStatus("Libreria PDF non disponibile.","error");return;}
-    const doc=new Pdf({orientation:"landscape",unit:"mm",format:"a4",compress:true}),margin=9,pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),cols=[8,64,30,23,15,15,20,20,20,34],headers=["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","PEZZI","LORDO KG","NETTO KG","VALORE","ESITO"];let y=12,page=1;
+    const doc=new Pdf({orientation:"landscape",unit:"mm",format:"a4",compress:true}),margin=9,pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),cols=[8,90,32,25,17,17,24,24,24],headers=["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","PEZZI","LORDO KG","NETTO KG","VALORE"];let y=12,page=1;
     const footer=()=>{doc.setFontSize(7);doc.setTextColor(100);doc.text(`DoganaTools · pagina ${page}`,pageWidth-margin,pageHeight-4,{align:"right"});};
     const header=()=>{doc.setTextColor(15,23,42);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Riconoscimento voce doganale",margin,y);y+=6;doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(71,85,105);doc.text(`File: ${state.sourceNames.join(", ")||"—"}   Lordo: ${state.docGross||"—"} kg   Netto: ${state.docNet||"—"} kg   Valore: ${state.docValue||"—"}`,margin,y);y+=5;let x=margin;doc.setFillColor(30,58,95);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),7,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(7);headers.forEach((label,i)=>{doc.text(label,x+1.2,y+4.5,{maxWidth:cols[i]-2.4});x+=cols[i];});y+=7;};
-    header();for(const row of data){const values=[row.NR,row.PRODOTTO,row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row.PEZZI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE,row.ESITO];const lines=values.map((value,i)=>doc.splitTextToSize(String(value??""),cols[i]-2.4));const height=Math.max(7,...lines.map(value=>value.length*3.25+2.4));if(y+height>pageHeight-10){footer();doc.addPage();page++;y=12;header();}let x=margin;doc.setDrawColor(226,232,240);doc.setFillColor((row.NR%2)?250:255,251,252);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),height,"FD");doc.setTextColor(30,41,59);doc.setFont("helvetica","normal");doc.setFontSize(7);lines.forEach((value,i)=>{doc.text(value,x+1.2,y+3.8,{baseline:"top",maxWidth:cols[i]-2.4});x+=cols[i];});y+=height;}footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus("File PDF creato.","ok");
+    header();for(const row of data){const values=[row.NR,row.PRODOTTO,row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row.PEZZI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE];const lines=values.map((value,i)=>doc.splitTextToSize(String(value??""),cols[i]-2.4));const height=Math.max(7,...lines.map(value=>value.length*3.25+2.4));if(y+height>pageHeight-10){footer();doc.addPage();page++;y=12;header();}let x=margin;doc.setDrawColor(226,232,240);doc.setFillColor((row.NR%2)?250:255,251,252);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),height,"FD");doc.setTextColor(30,41,59);doc.setFont("helvetica","normal");doc.setFontSize(7);lines.forEach((value,i)=>{doc.text(value,x+1.2,y+3.8,{baseline:"top",maxWidth:cols[i]-2.4});x+=cols[i];});y+=height;}footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus("File PDF creato.","ok");
   }
 
   elements.input.addEventListener("change",()=>{selectedFiles=Array.from(elements.input.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file selezionati: ${selectedFiles.map(file=>file.name).join(", ")}`:"Seleziona uno o più documenti.");});
