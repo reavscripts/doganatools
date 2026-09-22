@@ -7376,7 +7376,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   <div class="invoiceClassifierHead">
     <div>
       <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
-      <p class="invoiceClassifierSubtitle">Estrae gli articoli, propone la voce NC a 8 cifre e riporta colli, quantità, pesi e valore quando presenti nel documento.</p>
+      <p class="invoiceClassifierSubtitle">Estrae gli articoli, propone la voce NC a 8 cifre e riporta colli, pesi e valore quando presenti nel documento.</p>
     </div>
     <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
   </div>
@@ -7392,6 +7392,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <button type="button" id="invoiceClassifierAnalyze" class="primary">Analizza documenti</button>
         <button type="button" id="invoiceClassifierClassify" class="success">Classifica tutto</button>
         <button type="button" id="invoiceClassifierAdd">+ Riga</button>
+        <button type="button" id="invoiceClassifierCopyColumn">Copia colonna</button>
         <button type="button" id="invoiceClassifierToTable">Esporta nella Tabella</button>
         <button type="button" id="invoiceClassifierExcel">Esporta Excel</button>
         <button type="button" id="invoiceClassifierPdf">Esporta PDF</button>
@@ -7419,7 +7420,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
           <col class="invoiceColEan" />
           <col class="invoiceColCn" />
           <col class="invoiceColPackages" />
-          <col class="invoiceColQuantity" />
           <col class="invoiceColGross" />
           <col class="invoiceColNet" />
           <col class="invoiceColValue" />
@@ -7432,7 +7432,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
             <th>EAN / CODICE</th>
             <th>VOCE NC (8 CIFRE)</th>
             <th>COLLI</th>
-            <th>PEZZI</th>
             <th>LORDO KG</th>
             <th>NETTO KG</th>
             <th>VALORE</th>
@@ -25176,17 +25175,17 @@ body[data-theme="dark"] .appFooter::before{
 :is(#sheet,#extraTable,#invoiceClassifierTable) .rowDeleteBtn{width:38px;height:34px;min-width:38px;min-height:34px;padding:0;border-radius:10px}
 .invoiceClassifierGridWrap{position:relative;max-width:100%;box-sizing:border-box;overflow-x:hidden;overflow-y:auto;border:1px solid var(--grid-soft);border-radius:14px;background:var(--surface)}
 .invoiceClassifierTable{width:100%;min-width:0!important;table-layout:fixed;border-collapse:separate;border-spacing:0;font-size:13px}
-.invoiceClassifierTable col.invoiceColNr{width:4%}.invoiceClassifierTable col.invoiceColProduct{width:31%}.invoiceClassifierTable col.invoiceColEan{width:13%}.invoiceClassifierTable col.invoiceColCn{width:11%}.invoiceClassifierTable col.invoiceColPackages,.invoiceClassifierTable col.invoiceColQuantity{width:7%}.invoiceClassifierTable col.invoiceColGross,.invoiceClassifierTable col.invoiceColNet,.invoiceClassifierTable col.invoiceColValue{width:8%}.invoiceClassifierTable col.invoiceColActions{width:44px}
+.invoiceClassifierTable col.invoiceColNr{width:4%}.invoiceClassifierTable col.invoiceColProduct{width:34%}.invoiceClassifierTable col.invoiceColEan{width:14%}.invoiceClassifierTable col.invoiceColCn{width:12%}.invoiceClassifierTable col.invoiceColPackages{width:7%}.invoiceClassifierTable col.invoiceColGross,.invoiceClassifierTable col.invoiceColNet,.invoiceClassifierTable col.invoiceColValue{width:9%}.invoiceClassifierTable col.invoiceColActions{width:44px}
 .invoiceClassifierTable th{position:sticky;top:0;z-index:2;padding:13px 8px;background:var(--thead-bg);color:var(--muted);text-align:left;font-size:11px;font-weight:800;letter-spacing:.08em;white-space:normal;border-bottom:1px solid var(--grid);overflow:hidden}
 .invoiceClassifierTable th:first-child,.invoiceClassifierTable th:nth-child(3),.invoiceClassifierTable th:nth-child(4),.invoiceClassifierTable th:last-child{text-align:center}
-.invoiceClassifierTable th:nth-child(n+5):nth-child(-n+9){text-align:right}
+.invoiceClassifierTable th:nth-child(n+5):nth-child(-n+8){text-align:right}
 .invoiceClassifierTable td{padding:0;border-bottom:1px solid var(--grid-soft);vertical-align:middle;background:var(--pill-bg);overflow:hidden}
 .invoiceClassifierTable tbody tr:hover td{background:var(--tbody-hover)}
 .invoiceClassifierTable th:last-child,.invoiceClassifierTable td:last-child{position:static;box-sizing:border-box;padding:0;text-align:center;box-shadow:none}
 .invoiceClassifierTable input{width:100%;min-width:0;padding:13px 9px;border:0;border-radius:0;background:var(--input-bg);color:var(--text);font-family:var(--font);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .invoiceClassifierTable input:hover{background:var(--input-bg)}
 .invoiceClassifierTable input:focus{outline:0;background:var(--hint-bg);box-shadow:inset 0 0 0 1px rgba(37,99,235,.18)}
-.invoiceClassifierTable td:nth-child(n+5):nth-child(-n+9) input{text-align:right}
+.invoiceClassifierTable td:nth-child(n+5):nth-child(-n+8) input{text-align:right}
 .invoiceClassifierNr{text-align:center}.invoiceClassifierRowNr{text-align:center;color:var(--muted);font-weight:700;padding:13px 4px!important}
 .invoiceClassifierCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:800;letter-spacing:.07em;text-align:center}
 .invoiceClassifierStatusPill{display:inline-flex;align-items:center;justify-content:center;min-width:96px;padding:5px 7px;border-radius:999px;font-size:10px;font-weight:800;text-align:center;background:#f1f5f9;color:#475569}
@@ -25212,7 +25211,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
   const elements = {
     panel: $("invoice-classifier-section"), body: document.querySelector("#invoice-classifier-section .invoiceClassifierBody"),
     input: $("invoiceClassifierFiles"), drop: $("invoiceClassifierDrop"), analyze: $("invoiceClassifierAnalyze"), classify: $("invoiceClassifierClassify"),
-    add: $("invoiceClassifierAdd"), toTable: $("invoiceClassifierToTable"), excel: $("invoiceClassifierExcel"), pdf: $("invoiceClassifierPdf"), clear: $("invoiceClassifierClear"),
+    add: $("invoiceClassifierAdd"), copy: $("invoiceClassifierCopyColumn"), toTable: $("invoiceClassifierToTable"), excel: $("invoiceClassifierExcel"), pdf: $("invoiceClassifierPdf"), clear: $("invoiceClassifierClear"),
     toggle: $("invoiceClassifierToggle"), status: $("invoiceClassifierStatus"), tbody: $("invoiceClassifierTbody"), empty: $("invoiceClassifierEmpty"),
     fileCount: $("invoiceClassifierFileCount"), rowCount: $("invoiceClassifierRowCount"), doneCount: $("invoiceClassifierDoneCount"), reviewCount: $("invoiceClassifierReviewCount"),
     docGross: $("invoiceClassifierDocGross"), docNet: $("invoiceClassifierDocNet"), docValue: $("invoiceClassifierDocValue")
@@ -25265,7 +25264,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     const cn8=cleanCn8(raw.cn8 || raw.taric || raw.hsCode || "");
     const ean=directItemCode(raw.ean||raw.sku||raw.code||"");
     return { id:raw.id||newId(), source:cleanText(raw.source||"",160), description:cleanText(raw.description||raw.product||"",500), ean, cn8,
-      packages:repairPackagesCell(raw.packages||raw.colli||"",ean), quantity:singleNumericCell(raw.quantity||raw.pezzi||raw.qta||""), gross:singleNumericCell(raw.gross||raw.lordo||""), net:singleNumericCell(raw.net||raw.netto||""), value:singleNumericCell(raw.value||raw.valore||raw.amount||""),
+      packages:repairPackagesCell(raw.packages||raw.colli||"",ean), gross:singleNumericCell(raw.gross||raw.lordo||""), net:singleNumericCell(raw.net||raw.netto||""), value:singleNumericCell(raw.value||raw.valore||raw.amount||""),
       status:raw.status||(cn8?"confirmed":"pending"), needsReview:raw.needsReview===true, officialDescription:cleanText(raw.officialDescription||"",700), message:cleanText(raw.message||"",500) };
   }
   function loadState(){
@@ -25285,7 +25284,6 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
       <td><input data-field="ean" value="${escapeHtml(row.ean)}" inputmode="numeric" aria-label="EAN riga ${index+1}"></td>
       <td><input class="invoiceClassifierCode" data-field="cn8" value="${escapeHtml(row.cn8)}" inputmode="numeric" maxlength="8" aria-label="Voce NC riga ${index+1}"></td>
       <td><input data-field="packages" value="${escapeHtml(row.packages)}" inputmode="decimal" aria-label="Colli riga ${index+1}"></td>
-      <td><input data-field="quantity" value="${escapeHtml(row.quantity)}" inputmode="decimal" aria-label="Pezzi riga ${index+1}"></td>
       <td><input data-field="gross" value="${escapeHtml(row.gross)}" inputmode="decimal" aria-label="Peso lordo riga ${index+1}"></td>
       <td><input data-field="net" value="${escapeHtml(row.net)}" inputmode="decimal" aria-label="Peso netto riga ${index+1}"></td>
       <td><input data-field="value" value="${escapeHtml(row.value)}" inputmode="decimal" aria-label="Valore riga ${index+1}"></td>
@@ -25299,18 +25297,46 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     saveState();
   }
 
+  async function writeClipboardText(text){
+    if(navigator.clipboard&&globalThis.isSecureContext){await navigator.clipboard.writeText(text);return;}
+    const area=document.createElement("textarea");area.value=text;area.setAttribute("readonly","");area.style.position="fixed";area.style.opacity="0";document.body.appendChild(area);area.select();const copied=document.execCommand("copy");area.remove();if(!copied)throw new Error("Copia non disponibile");
+  }
+  async function copyColumn(){
+    const columns=[
+      {key:"description",label:"Prodotto"},{key:"ean",label:"EAN / Codice"},{key:"cn8",label:"Voce NC (8 cifre)"},
+      {key:"packages",label:"Colli"},{key:"gross",label:"Peso lordo"},{key:"net",label:"Peso netto"},{key:"value",label:"Valore"}
+    ];
+    if(!state.rows.length){setStatus("Non ci sono righe da copiare.","error");return;}
+    const answer=prompt("Quale colonna copiare?\n\n"+columns.map((column,index)=>`${index+1} = ${column.label}`).join("\n"),"1");
+    if(answer===null)return;
+    const choice=cleanText(answer,80).toLowerCase();
+    const column=columns[Number(choice)-1]||columns.find(item=>item.key===choice||normalizeHeader(item.label)===normalizeHeader(choice));
+    if(!column){setStatus("Colonna non riconosciuta. Scegli un numero da 1 a 7.","error");return;}
+    const values=state.rows.map(row=>cleanText(row[column.key]||"",700));
+    if(!values.some(Boolean)){setStatus(`La colonna “${column.label}” è vuota.`,"error");return;}
+    try{await writeClipboardText(values.join("\n"));const original=elements.copy.textContent;elements.copy.textContent="Copiata";setTimeout(()=>{elements.copy.textContent=original;},1200);setStatus(`Colonna “${column.label}” copiata: ${values.length} righe.`,"ok");}
+    catch(error){setStatus(`Copia non riuscita: ${error.message||error}`,"error");}
+  }
+
   function normalizeHeader(value){ return cleanText(value,120).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
   const HEADER_ALIASES={
     description:["descrizione","descrizione articolo","articolo","prodotto","product","goods","merce","designation"],
-    ean:["ean","ean 13","barcode","gtin","codice articolo","codice prodotto","sku","item code"], cn8:["voce doganale","codice nc","nc 8","cn code","hs code","taric"],
-    packages:["colli","packages","cartons","ctns","boxes"], quantity:["pezzi","q ta","qta","quantita","quantity","units","pcs"],
+    ean:["ean","ean 13","ean cod doganale","ean codice doganale","barcode","gtin","codice articolo","codice prodotto","sku","item code"], cn8:["voce doganale","codice doganale","cod doganale","codice nc","nc 8","cn code","hs code","taric"],
+    packages:["colli","packages","cartons","ctns","boxes"],
     gross:["peso lordo","lordo kg","gross weight","gross kg","gross","lordo"], net:["peso netto","netto kg","net weight","net kg","net","netto"],
-    value:["valore","valore totale","importo","importo totale","prezzo totale","p zo totale","line total","total amount","amount"]
+    value:["imponibile","valore","valore totale","importo","importo totale","prezzo totale","p zo totale","line total","total amount","amount"]
   };
   function headerField(value){ const key=normalizeHeader(value); for(const [field,aliases] of Object.entries(HEADER_ALIASES)){ if(aliases.some(alias=>key===alias||(alias.length>=4&&key.includes(alias)))) return field; } return ""; }
 
   function parseProductLine(line,source,options={}){
     const text=String(line||"").replace(/\s+/g," ").trim(); if(!text) return null;
+    const crystalPacking=text.match(/^\d{1,3}(?:\.\d{1,3}){2}\s+\S+\s+(\d{8,14})\s+([-+]?\d[\d.,]*)\s+(.+?)\s+([-+]?\d[\d.,]*)\s+([-+]?\d[\d.,]*)\s+([-+]?\d[\d.,]*)$/);
+    if(crystalPacking){
+      const description=cleanText(crystalPacking[3],500);
+      if(description.length>=3&&!isNonProductDescription(description)){
+        return makeRow({source,ean:crystalPacking[1],packages:crystalPacking[2],description,gross:crystalPacking[4],net:crystalPacking[5],value:crystalPacking[6]});
+      }
+    }
     let match=text.match(/^(\d{8,14})\s+(.+?)\s+(CT|PZ|PCE|PCS|CF|CS|BX|NR|PAL|COLL[IO])\s+([\d.,-]+)(?:\s+([\d.,-]+))?\b/i);
     if(!match) match=text.match(/^(\d{8,14})\s+(.+?)\s+(KG|LT)\s+([\d.,-]+)(?:\s+([\d.,-]+))?\b/i);
     if(!match) match=text.match(/^(\d{8,14})\s+(.{4,}?)(?:\s{2,}|\t)(?=\S)/);
@@ -25321,21 +25347,27 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     const explicitValue=text.match(/(?:valore|importo|prezzo\s+totale|line\s+total|total\s+amount|amount)\s*[:=]?\s*([\d.,]+)/i);
     const tailNumbers=(text.slice(match[0].length).match(/[-+]?\d[\d.,]*/g)||[]);
     const inferredValue=options.hasValueColumn&&tailNumbers.length>=2?tailNumbers[1]:"";
-    return makeRow({source,ean:match[1],description,packages:match[4]||"",quantity:match[5]||"",gross:explicitGross?.[1]||"",net:explicitNet?.[1]||"",value:explicitValue?.[1]||inferredValue});
+    return makeRow({source,ean:match[1],description,packages:match[4]||"",gross:explicitGross?.[1]||"",net:explicitNet?.[1]||"",value:explicitValue?.[1]||inferredValue});
+  }
+  function crystalPackingTotals(text){
+    const match=String(text||"").match(/TOTALE\s+PEDANE\s*:?\s*\d+\s+([\d.]+,\d{2})\s+([\d.]+,\d{2})\s+([\d.]+,\d{2})/i);
+    return match?{gross:match[1],net:match[2],value:match[3]}:null;
   }
   function documentWeights(text){
     const value=String(text||"");
+    const packingTotals=crystalPackingTotals(value);if(packingTotals)return {gross:packingTotals.gross,net:packingTotals.net};
     const gross=value.match(/(?:peso\s*)lordo(?:\s*(?:totale|kg))?\s*[:=]?\s*([\d.,]+)/i) || value.match(/gross\s*weight\s*[:=]?\s*([\d.,]+)/i);
     const net=value.match(/(?:peso\s*)netto(?:\s*(?:totale|kg))?\s*[:=]?\s*([\d.,]+)/i) || value.match(/net\s*weight\s*[:=]?\s*([\d.,]+)/i);
     return {gross:gross?.[1]||"",net:net?.[1]||""};
   }
   function documentValue(text){
     const content=String(text||"");
+    const packingTotals=crystalPackingTotals(content);if(packingTotals)return packingTotals.value;
     const total=content.match(/(?:totale\s+(?:documento|fattura)|importo\s+totale|grand\s+total|invoice\s+total)[ \t]*(?:€|eur)?[ \t]*[:=]?[ \t]*([\d.,]+)/i);
     return total?.[1]||"";
   }
   function sumRows(rows,field){let total=0,found=false;for(const row of rows){const value=numericValue(row?.[field]);if(value!==null){total+=value;found=true;}}return found?String(Math.round(total*100)/100).replace(".",","):"";}
-  function parseDocumentText(text,source){ const content=String(text||""),hasValueColumn=/(?:p\.?\s*zo|prezzo)\s+totale|valore(?:\s+totale)?|importo(?:\s+totale)?|line\s+total|total\s+amount/i.test(content);const rows=content.split(/\r?\n/).map(line=>parseProductLine(line,source,{hasValueColumn})).filter(isRecognizedProductRow); return {rows,weights:documentWeights(text),value:sumRows(rows,"value")||documentValue(text)}; }
+  function parseDocumentText(text,source){ const content=String(text||""),hasValueColumn=/(?:p\.?\s*zo|prezzo)\s+totale|valore(?:\s+totale)?|imponibile|importo(?:\s+totale)?|line\s+total|total\s+amount/i.test(content);const rows=content.split(/\r?\n/).map(line=>parseProductLine(line,source,{hasValueColumn})).filter(isRecognizedProductRow),weights=documentWeights(text),packingTotals=crystalPackingTotals(content); return {rows,weights:{gross:packingTotals?.gross||sumRows(rows,"gross")||weights.gross,net:packingTotals?.net||sumRows(rows,"net")||weights.net},value:packingTotals?.value||sumRows(rows,"value")||documentValue(text)}; }
 
   function pdfLines(items){
     const groups=[];
@@ -25353,12 +25385,12 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
       if(columns.gross===undefined&&columns.net===undefined&&columns.value===undefined)continue;
       const line=group.items.sort((a,b)=>a.x-b.x).map(item=>item.text).join(" ");let row=parseProductLine(line,source,{hasValueColumn:columns.value!==undefined});
       if(!row){const codeCell=cellFor(group,"ean"),ean=directItemCode(codeCell)||directItemCode(line.match(/\b\d{8,14}\b/)?.[0]||""),description=cellFor(group,"description");if(ean&&description&&!isNonProductDescription(description))row=makeRow({source,ean,description});}
-      if(!row||!isRecognizedProductRow(row))continue;const gross=singleNumericCell(cellFor(group,"gross")),net=singleNumericCell(cellFor(group,"net")),packages=singleNumericCell(cellFor(group,"packages")),quantity=singleNumericCell(cellFor(group,"quantity")),value=singleNumericCell(cellFor(group,"value"));if(gross)row.gross=gross;if(net)row.net=net;if(packages)row.packages=packages;if(quantity)row.quantity=quantity;if(value)row.value=value;rows.push(row);
+      if(!row||!isRecognizedProductRow(row))continue;const gross=singleNumericCell(cellFor(group,"gross")),net=singleNumericCell(cellFor(group,"net")),packages=singleNumericCell(cellFor(group,"packages")),value=singleNumericCell(cellFor(group,"value"));if(gross)row.gross=gross;if(net)row.net=net;if(packages)row.packages=packages;if(value)row.value=value;rows.push(row);
     }
     return rows;
   }
   function mergePdfStructuredRows(plainRows,structuredRows){
-    if(!structuredRows.length)return plainRows;const queues=new Map();for(const row of structuredRows){const key=row.ean||normalizeHeader(row.description);if(!queues.has(key))queues.set(key,[]);queues.get(key).push(row);}const merged=plainRows.map(row=>{const key=row.ean||normalizeHeader(row.description),extra=queues.get(key)?.shift();if(!extra)return row;return {...row,description:row.description||extra.description,packages:extra.packages||row.packages,quantity:extra.quantity||row.quantity,gross:extra.gross||row.gross,net:extra.net||row.net,value:extra.value||row.value};});for(const queue of queues.values())merged.push(...queue);return merged;
+    if(!structuredRows.length)return plainRows;const queues=new Map();for(const row of structuredRows){const key=row.ean||normalizeHeader(row.description);if(!queues.has(key))queues.set(key,[]);queues.get(key).push(row);}const merged=plainRows.map(row=>{const key=row.ean||normalizeHeader(row.description),extra=queues.get(key)?.shift();if(!extra)return row;return {...row,description:row.description||extra.description,packages:extra.packages||row.packages,gross:extra.gross||row.gross,net:extra.net||row.net,value:extra.value||row.value};});for(const queue of queues.values())merged.push(...queue);return merged;
   }
   async function readPdf(file){
     if(!globalThis.pdfjsLib) throw new Error("Libreria PDF non disponibile");
@@ -25366,7 +25398,8 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){ setStatus(`Lettura ${file.name}: pagina ${pageNumber} di ${pdf.numPages}…`,"busy"); const page=await pdf.getPage(pageNumber),items=(await page.getTextContent()).items; lines.push(...pdfLines(items));structured.push(...pdfStructuredPage(items,file.name)); }
     let parsed=parseDocumentText(lines.join("\n"),file.name);
     parsed.rows=mergePdfStructuredRows(parsed.rows,structured).filter(isRecognizedProductRow);
-    parsed.value=sumRows(parsed.rows,"value")||parsed.value;
+    parsed.weights={gross:parsed.weights?.gross||sumRows(parsed.rows,"gross")||"",net:parsed.weights?.net||sumRows(parsed.rows,"net")||""};
+    parsed.value=parsed.value||sumRows(parsed.rows,"value");
     if(!parsed.rows.length && globalThis.Tesseract){
       const ocr=[];
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){ setStatus(`OCR ${file.name}: pagina ${pageNumber} di ${pdf.numPages}…`,"busy"); const page=await pdf.getPage(pageNumber),viewport=page.getViewport({scale:1.8}); const canvas=document.createElement("canvas"); canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise; const result=await Tesseract.recognize(canvas,"ita+eng");ocr.push(result?.data?.text||""); }
@@ -25380,7 +25413,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     for(let index=0;index<Math.min(rows.length,40);index++){ const current={}; (rows[index]||[]).forEach((cell,col)=>{const field=headerField(cell);if(field&&!Object.prototype.hasOwnProperty.call(current,field))current[field]=col;}); if(current.description!==undefined && Object.keys(current).length>=2){headerIndex=index;mapping=current;break;} }
     if(headerIndex<0) return parseDocumentText(rows.map(row=>(row||[]).join(" ")).join("\n"),source);
     const output=[];
-    for(let index=headerIndex+1;index<rows.length;index++){ const row=rows[index]||[]; const raw={source}; for(const [field,col] of Object.entries(mapping)) raw[field]=row[col]??""; raw.ean=directItemCode(raw.ean);for(const field of ["packages","quantity","gross","net","value"]){if(raw[field]!==undefined)raw[field]=singleNumericCell(raw[field]);}const product=makeRow(raw);if(isRecognizedProductRow(product))output.push(product); }
+    for(let index=headerIndex+1;index<rows.length;index++){ const row=rows[index]||[]; const raw={source}; for(const [field,col] of Object.entries(mapping)) raw[field]=row[col]??""; raw.ean=directItemCode(raw.ean);for(const field of ["packages","gross","net","value"]){if(raw[field]!==undefined)raw[field]=singleNumericCell(raw[field]);}const product=makeRow(raw);if(isRecognizedProductRow(product))output.push(product); }
     return {rows:output,weights:{gross:sumRows(output,"gross"),net:sumRows(output,"net")},value:sumRows(output,"value")};
   }
   function parseCsv(text){
@@ -25427,11 +25460,11 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     if(!api||typeof api.importRows!=="function"){setStatus("Il modulo Tabella non è disponibile.","error");return;}
 
     const sourceRows=state.rows
-      .filter(row=>row.description||row.ean||row.cn8||row.packages||row.quantity||row.gross||row.net||row.value)
+      .filter(row=>row.description||row.ean||row.cn8||row.packages||row.gross||row.net||row.value)
       .map(row=>({
         desc:[row.description,row.cn8?`NC ${row.cn8}`:""].filter(Boolean).join(" — "),
         colli:row.packages,
-        pezzi:row.quantity,
+        pezzi:"",
         gross:row.gross,
         net:row.net,
         mq:"",
@@ -25455,26 +25488,26 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,
     setStatus(`${result.added} righe esportate nella Tabella DoganaTools. Totale righe in tabella: ${result.total}.`,"ok");
     document.getElementById("dogana-section")?.scrollIntoView({behavior:"smooth",block:"start"});
   }
-  function exportRows(){return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,"EAN / CODICE":row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PEZZI":asCell(row.quantity),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));}
+  function exportRows(){return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,"EAN / CODICE":row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));}
   function fileBase(){const first=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"riconoscimento_voce_doganale";return first.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,70)||"riconoscimento_voce_doganale";}
   function exportExcel(){
     const data=exportRows();if(!data.length){setStatus("Nessuna riga da esportare.","error");return;}
-    if(globalThis.XLSX){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=[{wch:6},{wch:48},{wch:18},{wch:19},{wch:11},{wch:11},{wch:17},{wch:17},{wch:16},{wch:28}];const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,sheet,"Riconoscimento");XLSX.writeFile(book,`${fileBase()}_voci_doganali.xlsx`,{compression:true});setStatus("File Excel creato.","ok");return;}
+    if(globalThis.XLSX){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=[{wch:6},{wch:48},{wch:18},{wch:19},{wch:11},{wch:17},{wch:17},{wch:16},{wch:28}];const book=XLSX.utils.book_new();XLSX.utils.book_append_sheet(book,sheet,"Riconoscimento");XLSX.writeFile(book,`${fileBase()}_voci_doganali.xlsx`,{compression:true});setStatus("File Excel creato.","ok");return;}
     const headers=Object.keys(data[0]);const csv=[headers.join(";"),...data.map(row=>headers.map(key=>`"${String(row[key]??"").replace(/"/g,'""')}"`).join(";"))].join("\n");const link=document.createElement("a");link.href=URL.createObjectURL(new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}));link.download=`${fileBase()}_voci_doganali.csv`;link.click();URL.revokeObjectURL(link.href);
   }
   function exportPdf(){
     const data=exportRows(),Pdf=globalThis.jspdf?.jsPDF;if(!data.length){setStatus("Nessuna riga da esportare.","error");return;}if(!Pdf){setStatus("Libreria PDF non disponibile.","error");return;}
-    const doc=new Pdf({orientation:"landscape",unit:"mm",format:"a4",compress:true}),margin=9,pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),cols=[8,90,32,25,17,17,24,24,24],headers=["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","PEZZI","LORDO KG","NETTO KG","VALORE"];let y=12,page=1;
+    const doc=new Pdf({orientation:"landscape",unit:"mm",format:"a4",compress:true}),margin=9,pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight(),cols=[8,102,34,27,19,26,26,26],headers=["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","LORDO KG","NETTO KG","VALORE"];let y=12,page=1;
     const footer=()=>{doc.setFontSize(7);doc.setTextColor(100);doc.text(`DoganaTools · pagina ${page}`,pageWidth-margin,pageHeight-4,{align:"right"});};
     const header=()=>{doc.setTextColor(15,23,42);doc.setFont("helvetica","bold");doc.setFontSize(14);doc.text("Riconoscimento voce doganale",margin,y);y+=6;doc.setFont("helvetica","normal");doc.setFontSize(8);doc.setTextColor(71,85,105);doc.text(`File: ${state.sourceNames.join(", ")||"—"}   Lordo: ${state.docGross||"—"} kg   Netto: ${state.docNet||"—"} kg   Valore: ${state.docValue||"—"}`,margin,y);y+=5;let x=margin;doc.setFillColor(30,58,95);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),7,"F");doc.setTextColor(255);doc.setFont("helvetica","bold");doc.setFontSize(7);headers.forEach((label,i)=>{doc.text(label,x+1.2,y+4.5,{maxWidth:cols[i]-2.4});x+=cols[i];});y+=7;};
-    header();for(const row of data){const values=[row.NR,row.PRODOTTO,row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row.PEZZI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE];const lines=values.map((value,i)=>doc.splitTextToSize(String(value??""),cols[i]-2.4));const height=Math.max(7,...lines.map(value=>value.length*3.25+2.4));if(y+height>pageHeight-10){footer();doc.addPage();page++;y=12;header();}let x=margin;doc.setDrawColor(226,232,240);doc.setFillColor((row.NR%2)?250:255,251,252);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),height,"FD");doc.setTextColor(30,41,59);doc.setFont("helvetica","normal");doc.setFontSize(7);lines.forEach((value,i)=>{doc.text(value,x+1.2,y+3.8,{baseline:"top",maxWidth:cols[i]-2.4});x+=cols[i];});y+=height;}footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus("File PDF creato.","ok");
+    header();for(const row of data){const values=[row.NR,row.PRODOTTO,row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE];const lines=values.map((value,i)=>doc.splitTextToSize(String(value??""),cols[i]-2.4));const height=Math.max(7,...lines.map(value=>value.length*3.25+2.4));if(y+height>pageHeight-10){footer();doc.addPage();page++;y=12;header();}let x=margin;doc.setDrawColor(226,232,240);doc.setFillColor((row.NR%2)?250:255,251,252);doc.rect(margin,y,cols.reduce((a,b)=>a+b,0),height,"FD");doc.setTextColor(30,41,59);doc.setFont("helvetica","normal");doc.setFontSize(7);lines.forEach((value,i)=>{doc.text(value,x+1.2,y+3.8,{baseline:"top",maxWidth:cols[i]-2.4});x+=cols[i];});y+=height;}footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus("File PDF creato.","ok");
   }
 
   elements.input.addEventListener("change",()=>{selectedFiles=Array.from(elements.input.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file selezionati: ${selectedFiles.map(file=>file.name).join(", ")}`:"Seleziona uno o più documenti.");});
   for(const eventName of ["dragenter","dragover"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.add("is-dragging");});}
   for(const eventName of ["dragleave","drop"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.remove("is-dragging");});}
   elements.drop.addEventListener("drop",event=>{selectedFiles=Array.from(event.dataTransfer?.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file pronti per l'analisi.`:"Nessun file riconosciuto.");});
-  elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
+  elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.copy.addEventListener("click",copyColumn);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
   elements.add.addEventListener("click",()=>{state.rows.push(makeRow());render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
   elements.clear.addEventListener("click",()=>{if(state.rows.length&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});elements.docValue.addEventListener("input",()=>{state.docValue=cleanText(elements.docValue.value,50);saveState();});
