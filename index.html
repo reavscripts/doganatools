@@ -7,7 +7,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.21-INVOICE-CELLS-R68";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.24-TOOLS-R69";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7341,6 +7341,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput" role="menuitem">CHECKLIST</a>
         <a href="#notificationPanel" data-jump-focus="#notificationTaskInput" role="menuitem">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
         <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
+        <a href="#usefulToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">TOOL UTILI</a>
       </div>
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
@@ -7676,14 +7677,14 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
 </div>
 
-<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: checklist, notifiche e post-it">
+<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: checklist, notifiche, post-it e tool utili">
   <div class="organizeModuleHead">
     <div>
       <div class="organizeModuleTitle">Organizza</div>
-      <div class="organizeModuleSubtitle">Raccoglie i tre sottomoduli operativi per promemoria e note rapide: Checklist, Notifiche e Post-it.</div>
+      <div class="organizeModuleSubtitle">Checklist, Notifiche, Post-it e Tool utili per PDF, documenti e immagini.</div>
     </div>
     <div class="organizeModuleActions">
-      <span class="organizeModuleStats" id="organizePanelStats">3 sottomoduli</span>
+      <span class="organizeModuleStats" id="organizePanelStats">4 sottomoduli</span>
       <button type="button" id="organizePanelToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Organizza" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
@@ -7692,6 +7693,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <a class="organizeModuleChip" href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
       <a class="organizeModuleChip" href="#notificationPanel" data-jump-focus="#notificationTaskInput">Notifiche <span class="organizeModuleChipCount" id="organizeModuleReminderCount" hidden>0</span></a>
       <a class="organizeModuleChip" href="#postItPanel" data-jump-focus="#postItInput">Post-it</a>
+      <a class="organizeModuleChip" href="#usefulToolsPanel" data-jump-focus="#pdfCompressFile">Tool utili</a>
     </div>
 
     <section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
@@ -7770,6 +7772,49 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <div class="postItHint">Le note sono condivise e salvate sul server. Modificale direttamente oppure usa ↗ Desktop per staccare un Post-it in una finestra flottante sempre in primo piano.</div>
         <div class="postItBoard" id="postItBoard">
           <div class="postItEmpty">Nessun post-it in bacheca.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili per PDF e documenti">
+      <div class="usefulToolsHead">
+        <div>
+          <div class="usefulToolsTitle">Tool utili</div>
+          <div class="usefulToolsSubtitle">Prepara i file per la pratica: comprimi PDF o converti documenti e immagini in PDF.</div>
+        </div>
+        <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+      </div>
+      <div class="usefulToolsBody">
+        <div class="usefulToolsGrid">
+          <form id="pdfCompressForm" class="usefulToolCard">
+            <h3>Comprimi PDF</h3>
+            <p>Riduci il peso di un PDF fino a 20 MB. Se il risultato è più grande, conserva l'originale.</p>
+            <label for="pdfCompressFile">PDF da comprimere</label>
+            <input id="pdfCompressFile" type="file" accept=".pdf,application/pdf" required />
+            <label for="pdfCompressQuality">Compressione</label>
+            <select id="pdfCompressQuality">
+              <option value="light">Leggera · qualità alta</option>
+              <option value="standard" selected>Bilanciata</option>
+              <option value="strong">Forte · file più piccolo</option>
+            </select>
+            <label for="pdfCompressMode">Metodo</label>
+            <select id="pdfCompressMode">
+              <option value="server" selected>Conserva il testo (Ghostscript)</option>
+              <option value="browser">Pagine come immagini (browser)</option>
+            </select>
+            <p class="usefulToolHint" id="pdfCompressHint">La compressione sul server mantiene il testo selezionabile, ma richiede Ghostscript. I PDF firmati digitalmente devono essere conservati nella versione originale.</p>
+            <button type="submit" id="pdfCompressBtn" class="primary">Comprimi e scarica</button>
+            <div id="pdfCompressStatus" class="usefulToolStatus" role="status" aria-live="polite"></div>
+          </form>
+          <form id="pdfConvertForm" class="usefulToolCard">
+            <h3>Converti in PDF</h3>
+            <p>Un documento per volta oppure più immagini insieme, in ordine di selezione.</p>
+            <label for="pdfConvertFiles">Documenti o immagini</label>
+            <input id="pdfConvertFiles" type="file" multiple accept=".png,.jpg,.jpeg,.webp,.gif,.bmp,.doc,.docx,.odt,.rtf,.txt,.csv,.xls,.xlsx,.ods,.ppt,.pptx,.odp,image/png,image/jpeg,image/webp" required />
+            <p class="usefulToolHint">Immagini: PNG, JPG, WEBP, GIF e BMP (prima immagine se animate), elaborate nel browser. Documenti: Word, Excel, PowerPoint, OpenDocument, TXT e CSV; per questi serve LibreOffice sul backend. Fino a 20 MB per file.</p>
+            <button type="submit" id="pdfConvertBtn" class="primary">Converti e scarica PDF</button>
+            <div id="pdfConvertStatus" class="usefulToolStatus" role="status" aria-live="polite"></div>
+          </form>
         </div>
       </div>
     </section>
@@ -17877,7 +17922,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
 
     const updateStats = function(){
       const dueCount = Number(document.getElementById("organizeNavCount")?.textContent || 0) || 0;
-      if (stats) stats.textContent = dueCount > 0 ? `3 sottomoduli · ${dueCount} promemoria` : "3 sottomoduli";
+      if (stats) stats.textContent = dueCount > 0 ? `4 sottomoduli · ${dueCount} promemoria` : "4 sottomoduli";
       if (chipCount) {
         chipCount.textContent = String(dueCount);
         chipCount.hidden = dueCount <= 0;
@@ -17896,7 +17941,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     };
 
     function ensureExpandedForTarget(targetId){
-      if (!["organizePanel","operativeChecklistPanel","notificationPanel","postItPanel"].includes(String(targetId || "").replace(/^#/,""))) return;
+      if (!["organizePanel","operativeChecklistPanel","notificationPanel","postItPanel","usefulToolsPanel"].includes(String(targetId || "").replace(/^#/,""))) return;
       if (panel.classList.contains("is-minimized")) applyState(false);
       const target = document.getElementById(String(targetId || "").replace(/^#/,""));
       if (target) setTimeout(() => target.scrollIntoView({ behavior:"smooth", block:"start" }), 60);
@@ -17907,7 +17952,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     applyState(saved === "1");
     btn.addEventListener("click", function(){ applyState(!panel.classList.contains("is-minimized")); });
     document.addEventListener("click", function(event){
-      const trigger = event.target.closest?.('a[href="#organizePanel"],a[href="#operativeChecklistPanel"],a[href="#notificationPanel"],a[href="#postItPanel"]');
+      const trigger = event.target.closest?.('a[href="#organizePanel"],a[href="#operativeChecklistPanel"],a[href="#notificationPanel"],a[href="#postItPanel"],a[href="#usefulToolsPanel"]');
       if (!trigger) return;
       ensureExpandedForTarget(trigger.getAttribute("href") || "");
     }, true);
@@ -25570,5 +25615,331 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   globalThis.DoganaInvoiceClassifier={getRows:()=>state.rows.map(row=>({...row})),parseDocumentText};
 })();
 </script>
+<style id="dogana-useful-tools-style">
+#organizePanel .usefulToolsPanel{
+  width:100%; min-width:0; margin:0; overflow:hidden; border:1px solid var(--grid-soft);
+  border-radius:20px; background:linear-gradient(180deg,var(--surface),var(--surface-soft));
+  box-shadow:var(--shadow-soft);
+}
+#organizePanel .usefulToolsHead{
+  position:relative; display:flex; justify-content:space-between; align-items:start;
+  gap:12px; padding:16px; border-bottom:1px solid var(--grid-soft);
+}
+#organizePanel .usefulToolsHead::before{
+  content:""; position:absolute; top:0; left:16px; right:16px; height:2px;
+  background:linear-gradient(90deg,transparent,rgba(59,130,246,.84),transparent);
+}
+#organizePanel .usefulToolsTitle{
+  color:var(--heading); font-family:var(--font); font-size:13px; font-weight:800;
+  line-height:1.15; letter-spacing:.07em; text-transform:uppercase;
+}
+#organizePanel .usefulToolsSubtitle{
+  margin-top:5px; color:var(--muted); font-size:11px; font-weight:700; line-height:1.4;
+}
+#organizePanel #usefulToolsToggleBtn{
+  flex:none; --dogana-btn-tone:var(--dogana-user-accent,var(--accent));
+  border-color:color-mix(in srgb,var(--dogana-btn-tone) 48%,var(--btn-border));
+  color:var(--heading); background:var(--surface);
+}
+#organizePanel .usefulToolsBody{ padding:16px; }
+#organizePanel .usefulToolsGrid{
+  display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px;
+}
+#organizePanel .usefulToolCard{
+  display:flex; flex-direction:column; align-items:stretch; min-width:0; gap:9px;
+  margin:0; padding:16px; border:1px solid var(--grid-soft); border-radius:16px;
+  background:var(--surface);
+}
+#organizePanel .usefulToolCard h3{ margin:0; color:var(--heading); font-size:15px; }
+#organizePanel .usefulToolCard p{
+  margin:0; color:var(--muted); font-size:12px; line-height:1.5;
+}
+#organizePanel .usefulToolCard label{
+  margin-top:5px; color:var(--heading); font-size:12px; font-weight:800;
+}
+#organizePanel .usefulToolCard input[type=file],
+#organizePanel .usefulToolCard select{
+  width:100%; min-width:0; min-height:42px; padding:9px 11px;
+  border:1px solid var(--grid-soft); border-radius:11px;
+  background:var(--surface); color:var(--text); font:inherit;
+}
+#organizePanel .usefulToolCard input[type=file]::file-selector-button{
+  margin-right:10px; padding:7px 10px; border:1px solid var(--grid-soft);
+  border-radius:8px; background:var(--surface-soft); color:var(--heading); font-weight:800;
+  cursor:pointer;
+}
+#organizePanel .usefulToolCard .usefulToolHint{ margin:4px 0; font-size:11px; }
+#organizePanel .usefulToolCard > button{ align-self:flex-start; min-height:42px; }
+#organizePanel .usefulToolCard > button:disabled{ opacity:.6; cursor:wait; }
+#organizePanel .usefulToolStatus{ min-height:18px; color:var(--muted); font-size:12px; line-height:1.4; }
+#organizePanel .usefulToolStatus[data-state="ok"]{ color:var(--success,#15803d); }
+#organizePanel .usefulToolStatus[data-state="error"]{ color:var(--danger,#b91c1c); }
+#organizePanel .usefulToolsPanel.is-minimized > .usefulToolsBody{ display:none; }
+#organizePanel .usefulToolsPanel.is-minimized{
+  height:var(--dogana-collapsed-height,66px); min-height:var(--dogana-collapsed-height,66px);
+}
+#organizePanel .usefulToolsPanel.is-minimized > .usefulToolsHead{
+  align-items:center; height:100%; border-bottom:0;
+}
+#organizePanel .usefulToolsPanel.is-minimized .usefulToolsSubtitle{ display:none; }
+@media (max-width:800px){
+  #organizePanel .usefulToolsGrid{ grid-template-columns:minmax(0,1fr); }
+}
+@media (max-width:700px){
+  #organizePanel .organizeModuleChips{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  #organizePanel .usefulToolsBody{ padding:10px; }
+  #organizePanel .usefulToolCard{ padding:12px; }
+  #organizePanel .usefulToolCard > button{ width:100%; min-height:44px; }
+  #organizePanel .usefulToolsHead{ padding:12px; }
+}
+</style>
+
+<script id="dogana-useful-tools-script">
+(function initUsefulTools(){
+  const panel = document.getElementById("usefulToolsPanel");
+  if (!panel) return;
+  const toggle = document.getElementById("usefulToolsToggleBtn");
+  const compressForm = document.getElementById("pdfCompressForm");
+  const convertForm = document.getElementById("pdfConvertForm");
+  const compressFile = document.getElementById("pdfCompressFile");
+  const convertFiles = document.getElementById("pdfConvertFiles");
+  const quality = document.getElementById("pdfCompressQuality");
+  const mode = document.getElementById("pdfCompressMode");
+  const hint = document.getElementById("pdfCompressHint");
+  const MAX_FILE = 20 * 1024 * 1024;
+  const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "webp", "gif", "bmp"]);
+  const DOCUMENT_EXT = new Set(["doc", "docx", "odt", "rtf", "txt", "csv", "xls", "xlsx", "ods", "ppt", "pptx", "odp"]);
+  const storageKey = "doganatools_useful_tools_minimized_v1";
+
+  function setMinimized(minimized){
+    panel.classList.toggle("is-minimized", minimized);
+    toggle.setAttribute("aria-expanded", String(!minimized));
+    toggle.setAttribute("aria-label", minimized ? "Mostra Tool utili" : "Riduci a icona Tool utili");
+    toggle.title = minimized ? "Mostra modulo" : "Riduci a icona";
+    window.setDoganaModuleToggleIcon?.(toggle, minimized);
+    try { localStorage.setItem(storageKey, minimized ? "1" : "0"); } catch {}
+  }
+  try { setMinimized(localStorage.getItem(storageKey) === "1"); }
+  catch { setMinimized(false); }
+  toggle.addEventListener("click", () => setMinimized(!panel.classList.contains("is-minimized")));
+  function revealTools(){ if (panel.classList.contains("is-minimized")) setMinimized(false); }
+  document.querySelectorAll('a[href="#usefulToolsPanel"]').forEach(link => link.addEventListener("click", revealTools, true));
+  window.addEventListener("hashchange", () => { if (location.hash === "#usefulToolsPanel") revealTools(); });
+
+  function setStatus(type, message, state){
+    const el = document.getElementById(type === "compress" ? "pdfCompressStatus" : "pdfConvertStatus");
+    el.textContent = message;
+    el.dataset.state = state || "";
+  }
+  function prettySize(size){
+    return size < 1024 * 1024 ? `${Math.round(size / 1024)} KB` : `${(size / 1024 / 1024).toFixed(2)} MB`;
+  }
+  function outputName(name, suffix){
+    const base = String(name || "documento").replace(/\.[^.]+$/, "")
+      .replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").slice(0, 90) || "documento";
+    return `${base}${suffix}.pdf`;
+  }
+  function extension(file){ return String(file.name || "").split(".").pop().toLowerCase(); }
+  function checkFile(file){
+    if (!file || !file.size) throw new Error("Seleziona un file non vuoto.");
+    if (file.size > MAX_FILE) throw new Error(`${file.name}: massimo 20 MB per file.`);
+  }
+  function download(blob, name){
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = name;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+  function asBase64(file){
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result || "").split(",")[1] || "");
+      reader.onerror = () => reject(new Error("Impossibile leggere il file selezionato."));
+      reader.readAsDataURL(file);
+    });
+  }
+  async function serverPdf(endpoint, file, options){
+    const response = await fetch(apiUrl(endpoint), {
+      method: "POST", credentials: "include", cache: "no-store",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: file.name, base64: await asBase64(file), ...options })
+    });
+    if (!response.ok) {
+      const payload = await response.json().catch(() => ({}));
+      throw new Error(payload.error || `Elaborazione non riuscita (HTTP ${response.status}).`);
+    }
+    if (!String(response.headers.get("content-type") || "").includes("application/pdf")) {
+      throw new Error("Il backend non ha restituito un PDF.");
+    }
+    return { blob: await response.blob(), compressed: response.headers.get("X-Pdf-Compressed") };
+  }
+  function updateHint(){
+    hint.textContent = mode.value === "browser"
+      ? "Il browser trasforma ogni pagina in un'immagine: il testo non sarà più selezionabile e le firme digitali non resteranno valide. Massimo 60 pagine."
+      : "La compressione sul server mantiene il testo selezionabile, ma richiede Ghostscript. I PDF firmati digitalmente devono essere conservati nella versione originale.";
+  }
+  mode.addEventListener("change", updateHint);
+
+  async function compressInBrowser(file, level){
+    if (!window.pdfjsLib || !window.jspdf?.jsPDF) {
+      throw new Error("PDF.js o jsPDF non disponibile. Controlla la connessione e ricarica la pagina.");
+    }
+    const settings = {
+      light: { pixels: 2200, scale: 2, quality: .86 },
+      standard: { pixels: 1750, scale: 1.7, quality: .72 },
+      strong: { pixels: 1350, scale: 1.4, quality: .56 }
+    }[level];
+    const task = pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) });
+    try {
+      const source = await task.promise;
+      if (source.numPages > 60) throw new Error("Per la compressione nel browser il limite è di 60 pagine.");
+      let result;
+      for (let i = 1; i <= source.numPages; i++) {
+        setStatus("compress", `Elaboro pagina ${i} di ${source.numPages}…`, "busy");
+        const page = await source.getPage(i);
+        const original = page.getViewport({ scale: 1 });
+        if (original.width > 14400 || original.height > 14400) throw new Error("Una pagina supera il limite di dimensione del PDF.");
+        const scale = Math.min(settings.scale, settings.pixels / Math.max(original.width, original.height));
+        const viewport = page.getViewport({ scale });
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.ceil(viewport.width));
+        canvas.height = Math.max(1, Math.ceil(viewport.height));
+        const ctx = canvas.getContext("2d", { alpha: false });
+        if (!ctx) throw new Error("Impossibile elaborare le pagine PDF in questo browser.");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        try {
+          await page.render({ canvasContext: ctx, viewport, background: "white" }).promise;
+          const orientation = original.width > original.height ? "landscape" : "portrait";
+          if (!result) result = new window.jspdf.jsPDF({ orientation, unit: "pt", format: [original.width, original.height], compress: true });
+          else result.addPage([original.width, original.height], orientation);
+          result.addImage(canvas.toDataURL("image/jpeg", settings.quality), "JPEG", 0, 0, original.width, original.height, undefined, "FAST");
+        } finally {
+          canvas.width = canvas.height = 0;
+          page.cleanup();
+        }
+      }
+      return result.output("blob");
+    } finally {
+      await task.destroy();
+    }
+  }
+
+  compressForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    const btn = document.getElementById("pdfCompressBtn");
+    const file = compressFile.files?.[0];
+    try {
+      checkFile(file);
+      if (extension(file) !== "pdf") throw new Error("Seleziona un file PDF.");
+      btn.disabled = true;
+      setStatus("compress", "Compressione in corso…", "busy");
+      let blob;
+      if (mode.value === "server") {
+        const result = await serverPdf("/api/tools/pdf/compress", file, { quality: quality.value });
+        if (result.compressed === "false") {
+          setStatus("compress", "Nessuna riduzione: il PDF originale è già più piccolo del risultato. Prova un livello diverso.", "error");
+          return;
+        }
+        blob = result.blob;
+      } else {
+        blob = await compressInBrowser(file, quality.value);
+        if (blob.size >= file.size) {
+          setStatus("compress", "Nessuna riduzione: il PDF originale è già più piccolo del risultato. Prova la compressione forte.", "error");
+          return;
+        }
+      }
+      download(blob, outputName(file.name, "_compresso"));
+      const saved = Math.round((1 - blob.size / file.size) * 100);
+      setStatus("compress", `PDF scaricato: ${prettySize(file.size)} → ${prettySize(blob.size)} (${saved}% in meno).`, "ok");
+    } catch (err) {
+      setStatus("compress", err.message || "Compressione non riuscita.", "error");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  async function imageAsBitmap(file){
+    try { return await createImageBitmap(file); }
+    catch {
+      const url = URL.createObjectURL(file);
+      try {
+        const img = new Image();
+        img.src = url;
+        await img.decode();
+        return img;
+      } finally { URL.revokeObjectURL(url); }
+    }
+  }
+  async function imagesToPdf(files){
+    if (!window.jspdf?.jsPDF) throw new Error("jsPDF non disponibile. Controlla la connessione e ricarica la pagina.");
+    let doc;
+    for (let i = 0; i < files.length; i++) {
+      setStatus("convert", `Converto immagine ${i + 1} di ${files.length}…`, "busy");
+      const image = await imageAsBitmap(files[i]);
+      try {
+        const width = image.width || image.naturalWidth;
+        const height = image.height || image.naturalHeight;
+        if (!width || !height) throw new Error(`${files[i].name}: immagine non valida.`);
+        const factor = Math.min(1, 2400 / Math.max(width, height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(width * factor));
+        canvas.height = Math.max(1, Math.round(height * factor));
+        const ctx = canvas.getContext("2d", { alpha: false });
+        if (!ctx) throw new Error("Impossibile elaborare le immagini in questo browser.");
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+        const orientation = width > height ? "landscape" : "portrait";
+        if (!doc) doc = new window.jspdf.jsPDF({ orientation, unit: "pt", format: "a4", compress: true });
+        else doc.addPage("a4", orientation);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const ratio = Math.min((pageWidth - 36) / width, (pageHeight - 36) / height);
+        const fittedWidth = width * ratio;
+        const fittedHeight = height * ratio;
+        doc.addImage(canvas.toDataURL("image/jpeg", .9), "JPEG",
+          (pageWidth - fittedWidth) / 2, (pageHeight - fittedHeight) / 2,
+          fittedWidth, fittedHeight, undefined, "FAST");
+        canvas.width = canvas.height = 0;
+      } finally { image.close?.(); }
+    }
+    return doc.output("blob");
+  }
+
+  convertForm.addEventListener("submit", async event => {
+    event.preventDefault();
+    const btn = document.getElementById("pdfConvertBtn");
+    const files = Array.from(convertFiles.files || []);
+    try {
+      if (!files.length) throw new Error("Seleziona almeno un file.");
+      files.forEach(checkFile);
+      const imageFiles = files.every(file => IMAGE_EXT.has(extension(file)));
+      if (!imageFiles && (files.length !== 1 || !DOCUMENT_EXT.has(extension(files[0])))) {
+        throw new Error("Seleziona più immagini oppure un solo documento supportato.");
+      }
+      if (imageFiles && (files.length > 30 || files.reduce((total, file) => total + file.size, 0) > 60 * 1024 * 1024)) {
+        throw new Error("Per le immagini: massimo 30 file e 60 MB complessivi.");
+      }
+      btn.disabled = true;
+      setStatus("convert", "Conversione in corso…", "busy");
+      const blob = imageFiles ? await imagesToPdf(files)
+        : (await serverPdf("/api/tools/pdf/convert", files[0])).blob;
+      if (!blob.size || blob.size > 40 * 1024 * 1024) throw new Error("Il PDF risultante supera 40 MB.");
+      download(blob, outputName(files[0].name, files.length > 1 ? `_immagini_${files.length}` : ""));
+      setStatus("convert", `PDF scaricato: ${files.length} ${files.length === 1 ? "file" : "immagini"}, ${prettySize(blob.size)}.`, "ok");
+    } catch (err) {
+      setStatus("convert", err.message || "Conversione non riuscita.", "error");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+})();
+</script>
+
 </body>
 </html>
