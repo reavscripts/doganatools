@@ -7374,11 +7374,20 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 
 <section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
   <div class="invoiceClassifierHead">
+<<<<<<< HEAD
+    <div class="invoiceClassifierTitleWrap">
+      <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
+    </div>
+    <div class="invoiceClassifierHeadActions">
+      <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+=======
     <div>
       <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
       <p class="invoiceClassifierSubtitle">Estrae gli articoli, propone la voce NC a 8 cifre e riporta colli, pesi e valore quando presenti nel documento.</p>
     </div>
     <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+>>>>>>> 2e69708da73ede3bc1a53ab9504dcd1c0d55b733
   </div>
 
   <div class="invoiceClassifierBody">
@@ -22479,7 +22488,8 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 #postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-#serverConsoleToggle.doganaModuleSvgToggleBtn{
+#serverConsoleToggle.doganaModuleSvgToggleBtn,
+#invoiceClassifierToggle.doganaModuleSvgToggleBtn{
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
@@ -22499,7 +22509,8 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 #postItToggleBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
-#serverConsoleToggle.doganaModuleSvgToggleBtn:hover{
+#serverConsoleToggle.doganaModuleSvgToggleBtn:hover,
+#invoiceClassifierToggle.doganaModuleSvgToggleBtn:hover{
   color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -22519,7 +22530,8 @@ body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
+body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #invoiceClassifierToggle.doganaModuleSvgToggleBtn{
   color:color-mix(in srgb, var(--dogana-user-accent) 56%, #f8fafc) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -24294,6 +24306,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized,
 #bookingLookupPanel.is-minimized,
 #bookingLookupPanel.minimized,
+#invoice-classifier-section.is-minimized,
 #serverConsolePanel.is-minimized{
   box-sizing:border-box !important;
   display:block !important;
@@ -24341,6 +24354,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized > :not(.shipToolbar),
 #bookingLookupPanel.is-minimized > :not(.bookingModuleHead),
 #bookingLookupPanel.minimized > :not(.bookingModuleHead),
+#invoice-classifier-section.is-minimized > :not(.invoiceClassifierHead),
 #serverConsolePanel.is-minimized > :not(.serverConsoleHead),
 #organizePanel .operativeChecklistPanel.is-minimized > :not(.operativeChecklistHead),
 #organizePanel .notificationPanel.is-minimized > :not(.notificationHead),
@@ -24356,6 +24370,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized > .shipToolbar,
 #bookingLookupPanel.is-minimized > .bookingModuleHead,
 #bookingLookupPanel.minimized > .bookingModuleHead,
+#invoice-classifier-section.is-minimized > .invoiceClassifierHead,
 #serverConsolePanel.is-minimized > .serverConsoleHead,
 #organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead,
 #organizePanel .notificationPanel.is-minimized > .notificationHead,
@@ -24410,6 +24425,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized > .shipToolbar > .shipToolbarTitle,
 #bookingLookupPanel.is-minimized .bookingModuleTitleWrap,
 #bookingLookupPanel.minimized .bookingModuleTitleWrap,
+#invoice-classifier-section.is-minimized .invoiceClassifierTitleWrap,
 #serverConsolePanel.is-minimized > .serverConsoleHead > :first-child,
 #organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
 #organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
@@ -24442,6 +24458,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized .shipToolbarTitle h2,
 #bookingLookupPanel.is-minimized .bookingModuleTitle,
 #bookingLookupPanel.minimized .bookingModuleTitle,
+#invoice-classifier-section.is-minimized .invoiceClassifierTitle,
 #serverConsolePanel.is-minimized .serverConsoleTitle,
 #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
 #organizePanel .notificationPanel.is-minimized .notificationTitle,
@@ -24507,6 +24524,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized .shipToolbarActions,
 #bookingLookupPanel.is-minimized .bookingModuleActions,
 #bookingLookupPanel.minimized .bookingModuleActions,
+#invoice-classifier-section.is-minimized .invoiceClassifierHeadActions,
 #serverConsolePanel.is-minimized .serverConsoleActions,
 #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions,
 #organizePanel .notificationPanel.is-minimized .notificationActions,
@@ -24540,6 +24558,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized #minimizeShipsBtn,
 #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn,
 #bookingLookupPanel.minimized #minimizeBookingLookupBtn,
+#invoice-classifier-section.is-minimized #invoiceClassifierToggle,
 #serverConsolePanel.is-minimized #serverConsoleToggle,
 #organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
 #organizePanel .notificationPanel.is-minimized #notificationToggleBtn,
@@ -24589,6 +24608,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #shipPanel.is-minimized #minimizeShipsBtn .doganaModuleToggleSvg,
 #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
 #bookingLookupPanel.minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
+#invoice-classifier-section.is-minimized #invoiceClassifierToggle .doganaModuleToggleSvg,
 #serverConsolePanel.is-minimized #serverConsoleToggle .doganaModuleToggleSvg,
 #organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg,
 #organizePanel .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg,
@@ -24651,7 +24671,8 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
   #shipPanel.is-minimized,
   #bookingLookupPanel.is-minimized,
   #bookingLookupPanel.minimized,
-  #serverConsolePanel.is-minimized{
+  #invoice-classifier-section.is-minimized,
+#serverConsolePanel.is-minimized{
     width:100% !important;
     max-width:100% !important;
     margin:12px 0 !important;
@@ -24665,7 +24686,8 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
   #shipPanel.is-minimized .shipToolbarTitle h2,
   #bookingLookupPanel.is-minimized .bookingModuleTitle,
   #bookingLookupPanel.minimized .bookingModuleTitle,
-  #serverConsolePanel.is-minimized .serverConsoleTitle,
+  #invoice-classifier-section.is-minimized .invoiceClassifierTitle,
+#serverConsolePanel.is-minimized .serverConsoleTitle,
   #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
   #organizePanel .notificationPanel.is-minimized .notificationTitle,
   #organizePanel .postItPanel.is-minimized .postItTitle{
@@ -24721,6 +24743,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 <style id="doganatools-module-toplines-r51">
 /* R50 — una sola linea multicolore sfumata, identica a Dogana AI, sopra ogni modulo. */
 #customs-ai-section.customsAiPanel,
+#invoice-classifier-section.invoiceClassifierPanel,
 #dogana-section,
 #extraPanel,
 #organizePanel,
@@ -24737,6 +24760,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 }
 
 #customs-ai-section.customsAiPanel::before,
+#invoice-classifier-section::before,
 #dogana-section::before,
 #extraPanel::before,
 #organizePanel::before,
@@ -24797,6 +24821,7 @@ body .serverConsolePanel .serverConsoleHead::before{
 }
 
 body[data-theme="dark"] #customs-ai-section.customsAiPanel::before,
+body[data-theme="dark"] #invoice-classifier-section::before,
 body[data-theme="dark"] #dogana-section::before,
 body[data-theme="dark"] #extraPanel::before,
 body[data-theme="dark"] #organizePanel::before,
@@ -24813,6 +24838,7 @@ body[data-theme="dark"] .appFooter::before{
 
 @media screen and (max-width:768px){
   #customs-ai-section.customsAiPanel::before,
+  #invoice-classifier-section::before,
   #dogana-section::before,
   #extraPanel::before,
   #organizePanel::before,
@@ -24839,6 +24865,7 @@ body[data-theme="dark"] .appFooter::before{
 
 /* Tutti i moduli principali condividono la larghezza della Tabella, aperti o ridotti. */
 #customs-ai-section.customsAiPanel,
+#invoice-classifier-section.invoiceClassifierPanel,
 #extraPanel,
 #organizePanel,
 #shipPanel,
@@ -24876,7 +24903,8 @@ body[data-theme="dark"] .appFooter::before{
 }
 
 /* DOGANA AI usa gli stessi margini dei pannelli operativi. */
-#customs-ai-section.customsAiPanel{
+#customs-ai-section.customsAiPanel,
+#invoice-classifier-section.invoiceClassifierPanel{
   margin-top:var(--dogana-module-margin-y) !important;
   margin-bottom:var(--dogana-module-margin-y) !important;
 }
@@ -24950,6 +24978,7 @@ body[data-theme="dark"] .appFooter::before{
   }
 
   #customs-ai-section.customsAiPanel,
+  #invoice-classifier-section.invoiceClassifierPanel,
   #extraPanel,
   #organizePanel,
   #shipPanel,
@@ -25144,11 +25173,19 @@ body[data-theme="dark"] .appFooter::before{
 </style>
 
 <style id="invoice-classifier-style">
+<<<<<<< HEAD
+#invoice-classifier-section{position:relative;overflow:hidden;padding:0}
+.invoiceClassifierHead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--grid-soft);background:linear-gradient(180deg,var(--surface) 0%,var(--surface-soft) 100%)}
+.invoiceClassifierTitleWrap{min-width:0}
+.invoiceClassifierHeadActions{display:flex;align-items:center;justify-content:flex-end;flex:0 0 auto}
+#invoice-classifier-section .invoiceClassifierTitle{margin:0;color:var(--heading);font-family:var(--font);font-size:15px;font-weight:800;line-height:1.2;letter-spacing:.08em;text-transform:uppercase}
+=======
 #invoice-classifier-section{position:relative;overflow:hidden;padding:0;margin-top:18px}
 #invoice-classifier-section::before{content:"";position:absolute;z-index:3;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#0ea5e9,#2563eb 45%,#7c3aed)}
 .invoiceClassifierHead{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:18px 20px 13px;border-bottom:1px solid var(--line,#e2e8f0)}
 .invoiceClassifierTitle{font-size:18px;font-weight:800;color:var(--text,#0f172a)}
 .invoiceClassifierSubtitle{margin:5px 0 0;max-width:820px;color:var(--muted,#64748b);font-size:13px;line-height:1.45}
+>>>>>>> 2e69708da73ede3bc1a53ab9504dcd1c0d55b733
 .invoiceClassifierBody{padding:16px 18px 18px}
 .invoiceClassifierPanel.is-minimized .invoiceClassifierBody{display:none}
 .invoiceClassifierUploadRow{display:grid;grid-template-columns:minmax(280px,1fr) minmax(320px,1.35fr);gap:14px;align-items:stretch}
@@ -25200,6 +25237,10 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-error{background:rgba(127,29
 body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,.25);border-color:#166534;color:#bbf7d0}
 #doganaAiNavToggle{--nav-tone:#4f46e5}
 #doganaAiNavMenu{min-width:290px}
+<<<<<<< HEAD
+@media(max-width:768px){#invoice-classifier-section.is-minimized #invoiceClassifierToggle{width:var(--dogana-collapsed-toggle)!important;min-width:var(--dogana-collapsed-toggle)!important;max-width:var(--dogana-collapsed-toggle)!important;height:var(--dogana-collapsed-toggle)!important;min-height:var(--dogana-collapsed-toggle)!important;max-height:var(--dogana-collapsed-toggle)!important;flex:0 0 var(--dogana-collapsed-toggle)!important}}
+=======
+>>>>>>> 2e69708da73ede3bc1a53ab9504dcd1c0d55b733
 @media(max-width:900px){.invoiceClassifierUploadRow{grid-template-columns:1fr}.invoiceClassifierActions{justify-content:flex-start}.invoiceClassifierSummary label{flex:1 1 210px}.invoiceClassifierHead{padding:15px}.invoiceClassifierBody{padding:13px}.invoiceClassifierTable{font-size:11px}.invoiceClassifierTable th{padding:10px 4px;font-size:9px;letter-spacing:.035em}:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input{padding:11px 4px;font-size:11px}.invoiceClassifierTable col.invoiceColProduct{width:28%}.invoiceClassifierTable col.invoiceColEan{width:14%}.invoiceClassifierTable col.invoiceColCn{width:12%}.invoiceClassifierTable col.invoiceColActions{width:40px}.invoiceClassifierDelete{width:34px!important;min-width:34px!important;height:32px!important;min-height:32px!important}}
 </style>
 
