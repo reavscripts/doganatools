@@ -25219,7 +25219,36 @@ body[data-theme="dark"] .appFooter::before{
 body[data-theme="dark"] .invoiceClassifierStatus.is-busy{background:rgba(30,64,175,.22);border-color:#1d4ed8;color:#bfdbfe}
 body[data-theme="dark"] .invoiceClassifierStatus.is-error{background:rgba(127,29,29,.25);border-color:#991b1b;color:#fecaca}
 body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,.25);border-color:#166534;color:#bbf7d0}
+/* Colori e finitura del pulsante Cerca codice TARIC (customs-ai.css).
+   Restano le dimensioni del menu e il toggle del sottomenu. */
 #doganaAiNavToggle{--nav-tone:#4f46e5}
+body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:linear-gradient(135deg,#2563eb,#6d4aff 58%,#168a55) !important;
+  text-shadow:none !important;
+  box-shadow:0 6px 16px rgba(37,99,235,.18) !important;
+  transition:transform .15s ease,filter .15s ease,opacity .15s ease !important;
+}
+body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:hover,
+body .appQuickNav #doganaAiNavDropdown.open #doganaAiNavToggle.appNavDropdownToggle{
+  color:#fff !important;
+  -webkit-text-fill-color:#fff !important;
+  border:0 !important;
+  background:linear-gradient(135deg,#2563eb,#6d4aff 58%,#168a55) !important;
+  filter:brightness(1.06) !important;
+  box-shadow:0 6px 16px rgba(37,99,235,.18) !important;
+  transform:translateY(-1px) !important;
+}
+body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:active{
+  filter:none !important;
+  transform:translateY(0) !important;
+}
+body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
+  box-shadow:0 0 0 3px rgba(37,99,235,.26), 0 6px 16px rgba(37,99,235,.18) !important;
+}
 #doganaAiNavMenu{min-width:290px}
 @media(max-width:768px){#invoice-classifier-section.is-minimized #invoiceClassifierToggle{width:var(--dogana-collapsed-toggle)!important;min-width:var(--dogana-collapsed-toggle)!important;max-width:var(--dogana-collapsed-toggle)!important;height:var(--dogana-collapsed-toggle)!important;min-height:var(--dogana-collapsed-toggle)!important;max-height:var(--dogana-collapsed-toggle)!important;flex:0 0 var(--dogana-collapsed-toggle)!important}}
 @media(max-width:900px){.invoiceClassifierUploadRow{grid-template-columns:1fr}.invoiceClassifierActions{justify-content:flex-start}.invoiceClassifierSummary label{flex:1 1 210px}.invoiceClassifierHead{padding:15px}.invoiceClassifierBody{padding:13px}.invoiceClassifierTable{font-size:11px}.invoiceClassifierTable th{padding:10px 4px;font-size:9px;letter-spacing:.035em}:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input{padding:11px 4px;font-size:11px}.invoiceClassifierTable col.invoiceColProduct{width:28%}.invoiceClassifierTable col.invoiceColEan{width:14%}.invoiceClassifierTable col.invoiceColCn{width:12%}.invoiceClassifierTable col.invoiceColActions{width:40px}.invoiceClassifierDelete{width:34px!important;min-width:34px!important;height:32px!important;min-height:32px!important}}
