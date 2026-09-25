@@ -7346,6 +7346,9 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
     <a id="doganaNavBookingBtn" href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
+    <button id="doganaCalcDockToggle" type="button" aria-controls="doganaCalcDock" aria-expanded="false" aria-label="Apri calcolatrice" title="Apri calcolatrice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6h8v3H8zM8 13h1m3 0h1m3 0h.01M8 17h1m3 0h1m3 0h.01"/></svg>
+    </button>
     <button id="doganaMenuSettingsBtn" type="button" class="appMenuSettingsBtn settingsIconOnly" aria-label="Impostazioni" title="Impostazioni"><span aria-hidden="true">⚙</span></button>
     <button id="doganaMenuSessionSync" type="button" class="appSessionSync" title="Sincronizza stato condiviso e lock celle">
       <span class="appSessionDot"></span>
@@ -7354,6 +7357,23 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </nav>
 </div>
 <button type="button" id="doganaMobileNavBackdrop" class="doganaMobileNavBackdrop" aria-label="Chiudi menu" aria-hidden="true" tabindex="-1"></button>
+
+<aside id="doganaCalcDock" aria-label="Calcolatrice rapida" hidden>
+  <div class="calcDockHeader"><strong>Calcolatrice</strong><button id="calcDockClose" type="button" aria-label="Chiudi calcolatrice" title="Chiudi calcolatrice">×</button></div>
+  <label class="calcDockLabel" for="calcDockExpr">Espressione</label>
+  <textarea id="calcDockExpr" autocomplete="off" inputmode="decimal" placeholder="es. (1200 + 350,50) / 3" spellcheck="false"></textarea>
+  <div class="calcResultCard main calcDockResultCard"><span class="calcLabel">Risultato</span><div id="calcDockResult" class="calcResult big" aria-live="polite">0,00</div></div>
+  <div class="calcKeypad calcDockKeypad">
+    <button class="calcKey" data-insert="7" type="button">7</button><button class="calcKey" data-insert="8" type="button">8</button><button class="calcKey" data-insert="9" type="button">9</button><button class="calcKey op" data-insert="/" type="button">÷</button>
+    <button class="calcKey" data-insert="4" type="button">4</button><button class="calcKey" data-insert="5" type="button">5</button><button class="calcKey" data-insert="6" type="button">6</button><button class="calcKey op" data-insert="*" type="button">×</button>
+    <button class="calcKey" data-insert="1" type="button">1</button><button class="calcKey" data-insert="2" type="button">2</button><button class="calcKey" data-insert="3" type="button">3</button><button class="calcKey op" data-insert="-" type="button">−</button>
+    <button class="calcKey" data-insert="(" type="button">(</button><button class="calcKey" data-insert=")" type="button">)</button><button class="calcKey quick" data-action="percent" type="button">%</button><button class="calcKey" data-action="backspace" type="button">⌫</button>
+    <button class="calcKey zero" data-insert="0" type="button">0</button><button class="calcKey" data-insert="," type="button">,</button><button class="calcKey op" data-insert="+" type="button">+</button>
+    <button class="calcKey equal" id="calcDockBtn" type="button">=</button>
+  </div>
+  <div class="calcDockActions"><button id="calcDockClearBtn" type="button">Pulisci</button><button id="calcDockCopyBtn" type="button">Copia risultato</button></div>
+  <div class="calcHistoryWrap calcDockHistoryWrap"><div class="calcMiniTitle">Storico</div><div class="calcHistoryEmpty" id="calcDockHistory">Nessun calcolo ancora</div></div>
+</aside>
 
 <section class="panel sectionJumpTarget customsAiPanel" id="customs-ai-section" aria-label="DOGANA AI classificatore TARIC">
   <div class="customsAiBody">
@@ -9442,26 +9462,37 @@ button.doganaModuleSvgToggleBtn:active,
       } catch {}
     }
 
+    const calcDockExpr = document.getElementById("calcDockExpr");
+    const calcDockResult = document.getElementById("calcDockResult");
+    const calcDockHistoryEl = document.getElementById("calcDockHistory");
+
     function renderCalcHistory(){
-      if (!calcHistoryEl) return;
-      if (!calcHistory.length) {
-        calcHistoryEl.className = "calcHistoryEmpty";
-        calcHistoryEl.textContent = "Nessun calcolo ancora";
-        return;
-      }
-      calcHistoryEl.className = "calcHistoryList";
-      calcHistoryEl.innerHTML = calcHistory.map(item => `
-        <div class="calcHistoryItem" title="${String(item.expr || '').replace(/"/g, '&quot;')}">
-          <span class="calcHistoryExpr">${item.expr}</span>
-          <span class="calcHistoryVal">${item.result}</span>
-        </div>
-      `).join("");
+      [calcHistoryEl, calcDockHistoryEl].filter(Boolean).forEach(historyEl => {
+        if (!calcHistory.length) {
+          historyEl.className = "calcHistoryEmpty";
+          historyEl.textContent = "Nessun calcolo ancora";
+          return;
+        }
+        historyEl.className = "calcHistoryList";
+        historyEl.replaceChildren(...calcHistory.map(item => {
+          const row = document.createElement("div");
+          row.className = "calcHistoryItem";
+          row.title = String(item.expr || "");
+          const expression = document.createElement("span");
+          expression.className = "calcHistoryExpr";
+          expression.textContent = String(item.expr || "");
+          const result = document.createElement("span");
+          result.className = "calcHistoryVal";
+          result.textContent = String(item.result || "");
+          row.append(expression, result);
+          return row;
+        }));
+      });
     }
 
     function updateCalcDerived(value){
       return Number(value) || 0;
     }
-
 
     function pushCalcHistory(expr, value){
       const cleanExpr = String(expr || "").trim();
@@ -9472,27 +9503,41 @@ button.doganaModuleSvgToggleBtn:active,
       renderCalcHistory();
     }
 
-    function runCalculator(){
-      try{
-        const value = safeEvalExpression(calcExpr.value);
-        calcResult.textContent = formatIT(value);
+    function syncCalcExpression(source){
+      [calcExpr, calcDockExpr].forEach(input => {
+        if (input && input !== source) input.value = source.value;
+      });
+    }
+
+    function setCalcResult(text){
+      if (calcResult) calcResult.textContent = text;
+      if (calcDockResult) calcDockResult.textContent = text;
+    }
+
+    function runCalculator(source = calcExpr){
+      if (!source) return;
+      syncCalcExpression(source);
+      try {
+        const value = safeEvalExpression(source.value);
+        setCalcResult(formatIT(value));
         updateCalcDerived(value);
-        pushCalcHistory(calcExpr.value, value);
-      }catch{
-        calcResult.textContent = "Errore";
+        pushCalcHistory(source.value, value);
+      } catch {
+        setCalcResult("Errore");
         updateCalcDerived(0);
       }
     }
 
-    function insertCalcText(text){
-      if (!calcExpr) return;
-      const start = calcExpr.selectionStart ?? calcExpr.value.length;
-      const end = calcExpr.selectionEnd ?? calcExpr.value.length;
-      const current = calcExpr.value;
-      calcExpr.value = current.slice(0, start) + text + current.slice(end);
+    function insertCalcText(text, input){
+      if (!input) return;
+      const start = input.selectionStart ?? input.value.length;
+      const end = input.selectionEnd ?? input.value.length;
+      const current = input.value;
+      input.value = current.slice(0, start) + text + current.slice(end);
       const nextPos = start + text.length;
-      calcExpr.focus();
-      calcExpr.setSelectionRange(nextPos, nextPos);
+      input.focus();
+      input.setSelectionRange(nextPos, nextPos);
+      syncCalcExpression(input);
     }
 
     function getCurrentCalcValue(){
@@ -9500,57 +9545,57 @@ button.doganaModuleSvgToggleBtn:active,
       return parseNumberIT(raw);
     }
 
-    document.querySelectorAll(".calcKey").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const insert = btn.dataset.insert;
-        const action = btn.dataset.action;
-        if (insert != null) {
-          insertCalcText(insert);
-          return;
-        }
-        if (action === "backspace") {
-          const current = calcExpr.value || "";
-          const start = calcExpr.selectionStart ?? current.length;
-          const end = calcExpr.selectionEnd ?? current.length;
-          if (start !== end) {
-            calcExpr.value = current.slice(0, start) + current.slice(end);
-            calcExpr.setSelectionRange(start, start);
-          } else if (start > 0) {
-            calcExpr.value = current.slice(0, start - 1) + current.slice(end);
-            calcExpr.setSelectionRange(start - 1, start - 1);
+    function bindCalculator(root, input, equals, copy, clear){
+      if (!root || !input) return;
+      root.querySelectorAll(".calcKey:not(.equal)").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const insert = btn.dataset.insert;
+          const action = btn.dataset.action;
+          if (insert != null) return insertCalcText(insert, input);
+          if (action === "backspace") {
+            const current = input.value || "";
+            const start = input.selectionStart ?? current.length;
+            const end = input.selectionEnd ?? current.length;
+            if (start !== end) {
+              input.value = current.slice(0, start) + current.slice(end);
+              input.setSelectionRange(start, start);
+            } else if (start > 0) {
+              input.value = current.slice(0, start - 1) + current.slice(end);
+              input.setSelectionRange(start - 1, start - 1);
+            }
+            input.focus();
+            syncCalcExpression(input);
           }
-          calcExpr.focus();
-          return;
-        }
-        if (action === "percent") insertCalcText("/100");
-        if (action === "plusVat") insertCalcText("*1.22");
-        if (action === "minusVat") insertCalcText("/1.22");
-        if (action === "percentOf") insertCalcText("*100/");
+          if (action === "percent") insertCalcText("/100", input);
+          if (action === "plusVat") insertCalcText("*1.22", input);
+          if (action === "minusVat") insertCalcText("/1.22", input);
+          if (action === "percentOf") insertCalcText("*100/", input);
+        });
       });
-    });
+      equals?.addEventListener("click", () => runCalculator(input));
+      input.addEventListener("input", () => syncCalcExpression(input));
+      input.addEventListener("keydown", event => {
+        if (event.key === "Enter") { event.preventDefault(); runCalculator(input); }
+      });
+      copy?.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(calcResult?.textContent || "0,00");
+          copy.textContent = "Copiato";
+          setTimeout(() => copy.textContent = "Copia risultato", 1200);
+        } catch {}
+      });
+      clear?.addEventListener("click", () => {
+        if (calcExpr) calcExpr.value = "";
+        if (calcDockExpr) calcDockExpr.value = "";
+        setCalcResult("0,00");
+        updateCalcDerived(0);
+        input.focus();
+      });
+    }
 
-    calcBtn?.addEventListener("click", runCalculator);
-    calcExpr?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        runCalculator();
-      }
-    });
-
-    calcCopyBtn?.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(calcResult?.textContent || "0,00");
-        calcCopyBtn.textContent = "Copiato";
-        setTimeout(() => calcCopyBtn.textContent = "Copia risultato", 1200);
-      } catch {}
-    });
-
-    calcClearBtn?.addEventListener("click", () => {
-      if (calcExpr) calcExpr.value = "";
-      if (calcResult) calcResult.textContent = "0,00";
-      updateCalcDerived(0);
-      calcExpr?.focus();
-    });
+    bindCalculator(document.querySelector(".calcMainPanel"), calcExpr, calcBtn, calcCopyBtn, calcClearBtn);
+    bindCalculator(document.getElementById("doganaCalcDock"), calcDockExpr,
+      document.getElementById("calcDockBtn"), document.getElementById("calcDockCopyBtn"), document.getElementById("calcDockClearBtn"));
 
     loadCalcHistory();
     renderCalcHistory();
@@ -12110,6 +12155,8 @@ document.getElementById("rollFillFromCalc")?.addEventListener("click", () => {
     calcExpr.setSelectionRange(calcExpr.value.length, calcExpr.value.length);
   }
   if(calcResult) calcResult.textContent = formatIT(totalMq);
+  if(calcDockExpr) calcDockExpr.value = formatIT(totalMq);
+  if(calcDockResult) calcDockResult.textContent = formatIT(totalMq);
 });
 
 loadRollConverter();
@@ -15147,10 +15194,13 @@ function installExtraTabClearOnClick(){
     const extraGap = window.matchMedia("(max-width:800px)").matches ? 18 : 14;
     const targetTop = target.getBoundingClientRect().top + window.pageYOffset - topBarHeight - extraGap;
 
-    window.scrollTo({
-      top: Math.max(0, targetTop),
-      behavior: "smooth"
-    });
+    const compactCalc = document.body.classList.contains("doganaCalcDockOpen") && window.matchMedia("(max-width:1100px)").matches;
+    const scrollArea = compactCalc ? document.querySelector(".wrap") : window;
+    const nextTop = compactCalc
+      ? target.getBoundingClientRect().top - scrollArea.getBoundingClientRect().top
+        + scrollArea.scrollTop - topBarHeight - extraGap
+      : targetTop;
+    scrollArea.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
 
     if (focusSelector) {
       const focusEl = target.querySelector(focusSelector) || document.querySelector(focusSelector);
@@ -25941,5 +25991,153 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 })();
 </script>
 
+<style id="doganatools-calculator-dock">
+/* A desktop column is reserved for the calculator while the document scrolls normally. */
+body .appQuickNav > #doganaCalcDockToggle{
+  --nav-tone:#2563eb;
+  width:42px !important; min-width:42px !important; max-width:42px !important;
+  height:38px !important; min-height:38px !important;
+  flex:0 0 42px !important; padding:0 !important;
+}
+body .appQuickNav > #doganaCalcDockToggle svg{
+  display:block; width:20px; height:20px; flex:0 0 20px;
+}
+body .appQuickNav > #doganaCalcDockToggle[aria-expanded="true"]{
+  border-color:var(--accent) !important;
+  box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 17%, transparent) !important;
+}
+body.doganaCalcDockOpen{
+  padding-right:calc(30px + 330px + 16px) !important;
+}
+#doganaCalcDock[hidden]{ display:none !important; }
+body #doganaCalcDock{
+  position:fixed; z-index:1300; top:16px; right:18px;
+  display:flex; flex-direction:column; gap:10px;
+  width:330px; max-width:calc(100vw - 36px);
+  max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
+  overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain;
+  padding:14px; border:1px solid var(--grid-soft); border-radius:18px;
+  background:var(--panel); color:var(--text);
+  box-shadow:0 18px 42px rgba(15,23,42,.18);
+}
+#doganaCalcDock .calcDockHeader{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+#doganaCalcDock .calcDockHeader strong{ color:var(--heading); font-size:15px; text-transform:uppercase; letter-spacing:.06em; }
+#doganaCalcDock #calcDockClose{
+  width:34px; height:34px; min-width:34px; min-height:34px; padding:0 !important;
+  font-size:23px; line-height:1; display:inline-flex; align-items:center; justify-content:center;
+}
+#doganaCalcDock .calcDockLabel{ color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
+#doganaCalcDock #calcDockExpr{
+  width:100%; min-height:60px; height:70px; max-height:130px; resize:vertical;
+  padding:12px; border:1px solid var(--btn-border); border-radius:12px;
+  background:var(--surface); color:var(--heading); font:700 19px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  overflow-x:hidden; overflow-y:auto; overflow-wrap:anywhere;
+}
+#doganaCalcDock .calcDockResultCard{ padding:9px 12px; }
+#doganaCalcDock .calcDockResultCard .calcResult.big{ min-height:30px; font-size:23px; overflow-wrap:anywhere; }
+#doganaCalcDock .calcDockKeypad{ grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:6px; }
+#doganaCalcDock .calcKey{ min-height:40px; padding:5px; }
+#doganaCalcDock #calcDockBtn{ grid-column:span 4; }
+#doganaCalcDock .calcDockActions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+#doganaCalcDock .calcDockActions button{ min-width:0; padding:8px 5px; font-size:12px; }
+#doganaCalcDock .calcDockHistoryWrap{ min-height:84px; padding:10px; }
+#doganaCalcDock #calcDockHistory.calcHistoryList{ max-height:130px; overflow-y:auto; }
+#doganaCalcDock #calcDockHistory.calcHistoryEmpty{ min-height:30px; }
+@media (max-width:1100px){
+  body.doganaCalcDockOpen{
+    padding-top:12px !important; padding-bottom:12px !important;
+    padding-right:12px !important; overflow:hidden !important;
+    --calc-dock-height:min(46dvh, 380px);
+  }
+  body.doganaCalcDockOpen > .wrap{
+    height:calc(100vh - var(--calc-dock-height) - 28px) !important;
+    height:calc(100dvh - var(--calc-dock-height) - 28px) !important;
+    overflow-x:hidden !important; overflow-y:auto !important;
+    overscroll-behavior:contain;
+  }
+  body.doganaCalcDockOpen #doganaCalcDock{
+    top:auto; right:12px; bottom:8px; left:12px;
+    width:auto; max-width:none;
+    height:var(--calc-dock-height); max-height:var(--calc-dock-height);
+  }
+}
+@media (max-width:768px){
+  body .appQuickNav#doganaMobileNav > #doganaCalcDockToggle{
+    width:100% !important; min-width:0 !important; max-width:none !important;
+    height:48px !important; min-height:48px !important;
+    justify-content:center !important;
+  }
+  body.doganaCalcDockOpen{
+    --calc-dock-top-pad:max(8px,env(safe-area-inset-top));
+    padding-top:var(--calc-dock-top-pad) !important;
+    padding-right:max(8px,env(safe-area-inset-right)) !important;
+    padding-bottom:max(8px,env(safe-area-inset-bottom)) !important;
+  }
+  body.doganaCalcDockOpen #doganaCalcDock{
+    right:8px; left:8px; bottom:max(8px,env(safe-area-inset-bottom));
+    padding:10px;
+  }
+  body.doganaCalcDockOpen > .wrap{
+    height:calc(100dvh - var(--calc-dock-height) - var(--calc-dock-top-pad) - max(8px,env(safe-area-inset-bottom)) - 8px) !important;
+  }
+  #doganaCalcDock .calcKey{ min-height:42px; }
+}
+</style>
+
+<script id="doganatools-calculator-dock-script">
+(function initCalculatorDock(){
+  const dock = document.getElementById("doganaCalcDock");
+  const toggle = document.getElementById("doganaCalcDockToggle");
+  const close = document.getElementById("calcDockClose");
+  const wrap = document.querySelector(".wrap");
+  const compact = window.matchMedia("(max-width:1100px)");
+  if (!dock || !toggle || !close || !wrap) return;
+  document.body.appendChild(dock);
+
+  function setOpen(open){
+    const wasCompact = compact.matches;
+    const scrollPosition = wasCompact && document.body.classList.contains("doganaCalcDockOpen")
+      ? wrap.scrollTop : window.scrollY;
+    dock.hidden = !open;
+    document.body.classList.toggle("doganaCalcDockOpen", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Chiudi calcolatrice" : "Apri calcolatrice");
+    toggle.title = open ? "Chiudi calcolatrice" : "Apri calcolatrice";
+    if (wasCompact) {
+      if (open) { window.scrollTo(0, 0); wrap.scrollTop = scrollPosition; }
+      else window.scrollTo(0, scrollPosition);
+    }
+    if (open) document.getElementById("calcDockExpr")?.focus({ preventScroll:true });
+  }
+
+  toggle.addEventListener("click", () => {
+    if (document.body.classList.contains("mobileNavOpen")) {
+      document.getElementById("doganaMobileNavToggle")?.click();
+    }
+    setOpen(dock.hidden);
+  });
+  close.addEventListener("click", () => {
+    setOpen(false);
+    (window.matchMedia("(max-width:768px)").matches
+      ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus();
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !dock.hidden) {
+      setOpen(false);
+      (window.matchMedia("(max-width:768px)").matches
+        ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus();
+    }
+  });
+  function onViewportChange(){
+    if (dock.hidden) return;
+    // Leave the scroll position in the document when switching back to the side column.
+    const current = wrap.scrollTop;
+    if (!compact.matches && current) { wrap.scrollTop = 0; window.scrollTo(0, current); }
+    else if (compact.matches) { const pageY = window.scrollY; window.scrollTo(0, 0); wrap.scrollTop = pageY; }
+  }
+  if (compact.addEventListener) compact.addEventListener("change", onViewportChange);
+  else compact.addListener(onViewportChange);
+})();
+</script>
 </body>
 </html>
