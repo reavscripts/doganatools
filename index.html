@@ -7359,7 +7359,13 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 <button type="button" id="doganaMobileNavBackdrop" class="doganaMobileNavBackdrop" aria-label="Chiudi menu" aria-hidden="true" tabindex="-1"></button>
 
 <aside id="doganaCalcDock" aria-label="Calcolatrice rapida" hidden>
-  <div class="calcDockHeader"><strong>Calcolatrice</strong><button id="calcDockClose" type="button" aria-label="Chiudi calcolatrice" title="Chiudi calcolatrice">×</button></div>
+  <div class="calcDockHeader">
+    <strong>Calcolatrice</strong>
+    <div class="calcDockHeaderActions">
+      <button id="calcDockSwitchSide" type="button" aria-label="Sposta calcolatrice a sinistra" title="Sposta calcolatrice a sinistra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 7H3l3-3M3 7h13a4 4 0 0 1 4 4M16 17h5l-3 3m3-3H8a4 4 0 0 1-4-4"/></svg></button>
+      <button id="calcDockClose" type="button" aria-label="Chiudi calcolatrice" title="Chiudi calcolatrice">×</button>
+    </div>
+  </div>
   <label class="calcDockLabel" for="calcDockExpr">Espressione</label>
   <textarea id="calcDockExpr" autocomplete="off" inputmode="decimal" placeholder="es. (1200 + 350,50) / 3" spellcheck="false"></textarea>
   <div class="calcResultCard main calcDockResultCard"><span class="calcLabel">Risultato</span><div id="calcDockResult" class="calcResult big" aria-live="polite">0,00</div></div>
@@ -25927,48 +25933,62 @@ body .appQuickNav > #doganaCalcDockToggle[aria-expanded="true"]{
   box-shadow:0 0 0 2px color-mix(in srgb, var(--accent) 17%, transparent) !important;
 }
 body.doganaCalcDockOpen{
-  padding-right:calc(30px + 330px + 16px) !important;
+  --dogana-calc-dock-width:clamp(340px, 30vw, 620px);
+  padding-right:calc(30px + var(--dogana-calc-dock-width) + 16px) !important;
+}
+body.doganaCalcDockOpen.doganaCalcDockLeft{
+  padding-right:30px !important;
+  padding-left:calc(30px + var(--dogana-calc-dock-width) + 16px) !important;
 }
 #doganaCalcDock[hidden]{ display:none !important; }
 body #doganaCalcDock{
-  position:fixed; z-index:1300; top:16px; right:18px;
+  position:fixed; z-index:1300; top:12px; right:18px; bottom:12px;
   display:flex; flex-direction:column; gap:10px;
-  width:330px; max-width:calc(100vw - 36px);
-  max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px);
+  width:var(--dogana-calc-dock-width, 340px); max-width:calc(100vw - 36px);
+  height:auto; max-height:none;
   overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain;
   padding:14px; border:1px solid var(--grid-soft); border-radius:18px;
   background:var(--panel); color:var(--text);
   box-shadow:0 18px 42px rgba(15,23,42,.18);
 }
+body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
 #doganaCalcDock .calcDockHeader{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
 #doganaCalcDock .calcDockHeader strong{ color:var(--heading); font-size:15px; text-transform:uppercase; letter-spacing:.06em; }
+#doganaCalcDock .calcDockHeaderActions{ display:flex; align-items:center; gap:7px; }
+#doganaCalcDock #calcDockClose,
+#doganaCalcDock #calcDockSwitchSide{
+  width:38px; height:38px; min-width:38px; min-height:38px; padding:0 !important;
+  display:inline-flex; align-items:center; justify-content:center;
+}
 #doganaCalcDock #calcDockClose{
-  width:34px; height:34px; min-width:34px; min-height:34px; padding:0 !important;
   font-size:23px; line-height:1; display:inline-flex; align-items:center; justify-content:center;
 }
+#doganaCalcDock #calcDockSwitchSide svg{ width:19px; height:19px; }
 #doganaCalcDock .calcDockLabel{ color:var(--muted); font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; }
 #doganaCalcDock #calcDockExpr{
-  width:100%; min-height:60px; height:70px; max-height:130px; resize:vertical;
+  width:100%; min-height:70px; height:88px; max-height:170px; flex:0 0 auto; resize:vertical;
   padding:12px; border:1px solid var(--btn-border); border-radius:12px;
-  background:var(--surface); color:var(--heading); font:700 19px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  background:var(--surface); color:var(--heading); font:700 21px/1.35 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   overflow-x:hidden; overflow-y:auto; overflow-wrap:anywhere;
 }
-#doganaCalcDock .calcDockResultCard{ padding:9px 12px; }
-#doganaCalcDock .calcDockResultCard .calcResult.big{ min-height:30px; font-size:23px; overflow-wrap:anywhere; }
+#doganaCalcDock .calcDockResultCard{ padding:12px 14px; flex:0 0 auto; }
+#doganaCalcDock .calcDockResultCard .calcResult.big{ min-height:42px; font-size:27px; overflow-wrap:anywhere; }
 #doganaCalcDock .calcDockKeypad{ grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:6px; }
-#doganaCalcDock .calcKey{ min-height:40px; padding:5px; }
+#doganaCalcDock .calcKey{ min-height:48px; padding:7px; font-size:15px; }
 #doganaCalcDock #calcDockBtn{ grid-column:span 4; }
 #doganaCalcDock .calcDockActions{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
 #doganaCalcDock .calcDockActions button{ min-width:0; padding:8px 5px; font-size:12px; }
-#doganaCalcDock .calcDockHistoryWrap{ min-height:84px; padding:10px; }
-#doganaCalcDock #calcDockHistory.calcHistoryList{ max-height:130px; overflow-y:auto; }
+#doganaCalcDock .calcDockHistoryWrap{ flex:1 1 auto; min-height:100px; padding:10px; overflow:hidden; }
+#doganaCalcDock #calcDockHistory.calcHistoryList{ flex:1 1 auto; max-height:none; overflow-y:auto; }
 #doganaCalcDock #calcDockHistory.calcHistoryEmpty{ min-height:30px; }
 @media (max-width:1100px){
-  body.doganaCalcDockOpen{
+  body.doganaCalcDockOpen,
+  body.doganaCalcDockOpen.doganaCalcDockLeft{
     padding-top:12px !important; padding-bottom:12px !important;
-    padding-right:12px !important; overflow:hidden !important;
+    padding-left:12px !important; padding-right:12px !important; overflow:hidden !important;
     --calc-dock-height:min(46dvh, 380px);
   }
+  #doganaCalcDock #calcDockSwitchSide{ display:none !important; }
   body.doganaCalcDockOpen > .wrap{
     height:calc(100vh - var(--calc-dock-height) - 28px) !important;
     height:calc(100dvh - var(--calc-dock-height) - 28px) !important;
@@ -25987,9 +26007,11 @@ body #doganaCalcDock{
     height:48px !important; min-height:48px !important;
     justify-content:center !important;
   }
-  body.doganaCalcDockOpen{
+  body.doganaCalcDockOpen,
+  body.doganaCalcDockOpen.doganaCalcDockLeft{
     --calc-dock-top-pad:max(8px,env(safe-area-inset-top));
     padding-top:var(--calc-dock-top-pad) !important;
+    padding-left:max(8px,env(safe-area-inset-left)) !important;
     padding-right:max(8px,env(safe-area-inset-right)) !important;
     padding-bottom:max(8px,env(safe-area-inset-bottom)) !important;
   }
@@ -26009,10 +26031,27 @@ body #doganaCalcDock{
   const dock = document.getElementById("doganaCalcDock");
   const toggle = document.getElementById("doganaCalcDockToggle");
   const close = document.getElementById("calcDockClose");
+  const switchSide = document.getElementById("calcDockSwitchSide");
   const wrap = document.querySelector(".wrap");
   const compact = window.matchMedia("(max-width:1100px)");
-  if (!dock || !toggle || !close || !wrap) return;
+  if (!dock || !toggle || !close || !switchSide || !wrap) return;
   document.body.appendChild(dock);
+
+  const sideKey = "doganatools_calc_dock_side_v1";
+  function setSide(side, save = true){
+    const left = side === "left";
+    document.body.classList.toggle("doganaCalcDockLeft", left);
+    const label = left ? "Sposta calcolatrice a destra" : "Sposta calcolatrice a sinistra";
+    switchSide.setAttribute("aria-label", label);
+    switchSide.title = label;
+    if (save) { try { localStorage.setItem(sideKey, left ? "left" : "right"); } catch {} }
+  }
+  let savedSide = "right";
+  try { savedSide = localStorage.getItem(sideKey) || "right"; } catch {}
+  setSide(savedSide, false);
+  switchSide.addEventListener("click", () => {
+    setSide(document.body.classList.contains("doganaCalcDockLeft") ? "right" : "left");
+  });
 
   function setOpen(open){
     const wasCompact = compact.matches;
