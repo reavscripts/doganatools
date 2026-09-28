@@ -4541,7 +4541,7 @@ background:var(--surface);
 
 
 
-/* === MODULO TABELLA + CALCOLATRICE UNIFICATI E MINIMIZZABILI === */
+/* === MODULO TABELLA MINIMIZZABILE === */
 .doganaTableModuleCard .calcMainPanel{
   width:calc(100% - 32px) !important;
   margin:0 auto 16px !important;
@@ -7534,57 +7534,10 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <button class="danger" id="clearBtn">Svuota tutto</button>
   </div>
 
-<div class="calcPanel calcPanelEnhanced calcMainPanel" style="width:calc(100% - 32px); max-width:none; margin:16px auto; display:block;">
-<div class="calcHeader">
-<div>
-<div class="calcTitle">Calcolatrice rapida avanzata</div>
-</div>
-<div class="calcHeaderActions">
-<button id="calcClearBtn" type="button">Pulisci</button>
-<button id="calcCopyBtn" type="button">Copia risultato</button>
-</div>
-</div>
-<div class="calcMainGrid">
-<div class="calcLeft">
-<textarea autocomplete="off" id="calcExpr" inputmode="decimal" placeholder="es. (1200 + 350,50) / 3" spellcheck="false"></textarea>
-<div class="calcKeypad">
-<button class="calcKey" data-insert="7" type="button">7</button>
-<button class="calcKey" data-insert="8" type="button">8</button>
-<button class="calcKey" data-insert="9" type="button">9</button>
-<button class="calcKey op" data-insert="/" type="button">÷</button>
-<button class="calcKey" data-insert="(" type="button">(</button>
-<button class="calcKey" data-insert=")" type="button">)</button>
-<button class="calcKey" data-insert="4" type="button">4</button>
-<button class="calcKey" data-insert="5" type="button">5</button>
-<button class="calcKey" data-insert="6" type="button">6</button>
-<button class="calcKey op" data-insert="*" type="button">×</button>
-<button class="calcKey" data-insert="," type="button">,</button>
-<button class="calcKey" data-action="backspace" type="button">⌫</button>
-<button class="calcKey" data-insert="1" type="button">1</button>
-<button class="calcKey" data-insert="2" type="button">2</button>
-<button class="calcKey" data-insert="3" type="button">3</button>
-<button class="calcKey op" data-insert="-" type="button">−</button>
-<button class="calcKey quick" data-action="percent" type="button">%</button>
-<button class="calcKey equal" id="calcBtn" type="button">=</button>
-<button class="calcKey zero" data-insert="0" type="button">0</button>
-<button class="calcKey op" data-insert="+" type="button">+</button>
-</div>
-</div>
-<div class="calcRight">
-<div class="calcResultCard main">
-<span class="calcLabel">Risultato</span>
-<div class="calcResult big" id="calcResult">0,00</div>
-</div>
-<div class="calcHistoryWrap calcHistorySide">
-<div class="calcMiniTitle">Storico</div>
-<div class="calcHistoryEmpty" id="calcHistory">Nessun calcolo ancora</div>
-</div>
-</div>
-</div>
 <div id="tools-section" class="sectionJumpTarget"></div>
 <details class="calcExtraTools">
   <summary>
-    <span class="calcExtraToolsTitle">Strumenti aggiuntivi</span>
+    <span class="calcExtraToolsTitle">Conversioni</span>
     <span class="calcExtraToolsHint">Conversioni unità e rotoli → m²</span>
   </summary>
   <div class="utilityGrid calcExtraToolsGrid">
@@ -7627,7 +7580,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </div>
   </div>
 </details>
-</div>
 </div>
 </section>
 
@@ -9430,12 +9382,6 @@ button.doganaModuleSvgToggleBtn:active,
     });
 
     const CALC_HISTORY_KEY = "peso_sheet_calc_history_v1";
-    const calcExpr = document.getElementById("calcExpr");
-    const calcBtn = document.getElementById("calcBtn");
-    const calcResult = document.getElementById("calcResult");
-    const calcHistoryEl = document.getElementById("calcHistory");
-    const calcCopyBtn = document.getElementById("calcCopyBtn");
-    const calcClearBtn = document.getElementById("calcClearBtn");
     let calcHistory = [];
 
     function safeEvalExpression(expr){
@@ -9467,7 +9413,7 @@ button.doganaModuleSvgToggleBtn:active,
     const calcDockHistoryEl = document.getElementById("calcDockHistory");
 
     function renderCalcHistory(){
-      [calcHistoryEl, calcDockHistoryEl].filter(Boolean).forEach(historyEl => {
+      [calcDockHistoryEl].filter(Boolean).forEach(historyEl => {
         if (!calcHistory.length) {
           historyEl.className = "calcHistoryEmpty";
           historyEl.textContent = "Nessun calcolo ancora";
@@ -9490,10 +9436,6 @@ button.doganaModuleSvgToggleBtn:active,
       });
     }
 
-    function updateCalcDerived(value){
-      return Number(value) || 0;
-    }
-
     function pushCalcHistory(expr, value){
       const cleanExpr = String(expr || "").trim();
       if (!cleanExpr) return;
@@ -9503,28 +9445,18 @@ button.doganaModuleSvgToggleBtn:active,
       renderCalcHistory();
     }
 
-    function syncCalcExpression(source){
-      [calcExpr, calcDockExpr].forEach(input => {
-        if (input && input !== source) input.value = source.value;
-      });
-    }
-
     function setCalcResult(text){
-      if (calcResult) calcResult.textContent = text;
       if (calcDockResult) calcDockResult.textContent = text;
     }
 
-    function runCalculator(source = calcExpr){
+    function runCalculator(source = calcDockExpr){
       if (!source) return;
-      syncCalcExpression(source);
       try {
         const value = safeEvalExpression(source.value);
         setCalcResult(formatIT(value));
-        updateCalcDerived(value);
         pushCalcHistory(source.value, value);
       } catch {
         setCalcResult("Errore");
-        updateCalcDerived(0);
       }
     }
 
@@ -9537,12 +9469,6 @@ button.doganaModuleSvgToggleBtn:active,
       const nextPos = start + text.length;
       input.focus();
       input.setSelectionRange(nextPos, nextPos);
-      syncCalcExpression(input);
-    }
-
-    function getCurrentCalcValue(){
-      const raw = calcResult?.textContent || "0";
-      return parseNumberIT(raw);
     }
 
     function bindCalculator(root, input, equals, copy, clear){
@@ -9564,7 +9490,6 @@ button.doganaModuleSvgToggleBtn:active,
               input.setSelectionRange(start - 1, start - 1);
             }
             input.focus();
-            syncCalcExpression(input);
           }
           if (action === "percent") insertCalcText("/100", input);
           if (action === "plusVat") insertCalcText("*1.22", input);
@@ -9573,33 +9498,28 @@ button.doganaModuleSvgToggleBtn:active,
         });
       });
       equals?.addEventListener("click", () => runCalculator(input));
-      input.addEventListener("input", () => syncCalcExpression(input));
       input.addEventListener("keydown", event => {
         if (event.key === "Enter") { event.preventDefault(); runCalculator(input); }
       });
       copy?.addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(calcResult?.textContent || "0,00");
+          await navigator.clipboard.writeText(calcDockResult?.textContent || "0,00");
           copy.textContent = "Copiato";
           setTimeout(() => copy.textContent = "Copia risultato", 1200);
         } catch {}
       });
       clear?.addEventListener("click", () => {
-        if (calcExpr) calcExpr.value = "";
         if (calcDockExpr) calcDockExpr.value = "";
         setCalcResult("0,00");
-        updateCalcDerived(0);
         input.focus();
       });
     }
 
-    bindCalculator(document.querySelector(".calcMainPanel"), calcExpr, calcBtn, calcCopyBtn, calcClearBtn);
     bindCalculator(document.getElementById("doganaCalcDock"), calcDockExpr,
       document.getElementById("calcDockBtn"), document.getElementById("calcDockCopyBtn"), document.getElementById("calcDockClearBtn"));
 
     loadCalcHistory();
     renderCalcHistory();
-    updateCalcDerived(getCurrentCalcValue());
 
 
     const EXTRA_LS_KEY = "peso_sheet_extra_v1";
@@ -12149,14 +12069,12 @@ document.getElementById("rollFillFromCalc")?.addEventListener("click", () => {
   const totalMqText = document.getElementById("rollTotalMq")?.textContent || "0";
   const cleanText = totalMqText.replace(/[^\d,.-]/g, "");
   const totalMq = parseNumberIT(cleanText);
-  if(calcExpr){
-    calcExpr.value = formatIT(totalMq);
-    calcExpr.focus();
-    calcExpr.setSelectionRange(calcExpr.value.length, calcExpr.value.length);
-  }
-  if(calcResult) calcResult.textContent = formatIT(totalMq);
-  if(calcDockExpr) calcDockExpr.value = formatIT(totalMq);
-  if(calcDockResult) calcDockResult.textContent = formatIT(totalMq);
+  if (calcDockExpr) calcDockExpr.value = formatIT(totalMq);
+  if (calcDockResult) calcDockResult.textContent = formatIT(totalMq);
+  const dock = document.getElementById("doganaCalcDock");
+  if (dock?.hidden) document.getElementById("doganaCalcDockToggle")?.click();
+  calcDockExpr?.focus({ preventScroll:true });
+  calcDockExpr?.setSelectionRange(calcDockExpr.value.length, calcDockExpr.value.length);
 });
 
 loadRollConverter();
@@ -15285,7 +15203,6 @@ function installExtraTabClearOnClick(){
 
     if (key === "escape") {
       document.getElementById("shipSearchInput")?.blur();
-      document.getElementById("calcExpr")?.blur();
     }
   });
 
@@ -25992,6 +25909,9 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 </script>
 
 <style id="doganatools-calculator-dock">
+/* Conversion tools remain in the table without the old embedded calculator. */
+.doganaTableModuleCard > .calcExtraTools{ margin:0 16px 16px; }
+@media (max-width:700px){ .doganaTableModuleCard > .calcExtraTools{ margin:0 12px 12px; } }
 /* A desktop column is reserved for the calculator while the document scrolls normally. */
 body .appQuickNav > #doganaCalcDockToggle{
   --nav-tone:#2563eb;
