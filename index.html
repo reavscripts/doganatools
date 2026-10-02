@@ -7328,7 +7328,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       </button>
       <div class="appNavDropdownMenu" id="doganaAiNavMenu" role="menu" aria-label="Dogana AI">
         <a href="#customs-ai-section" data-jump-focus="#customsAiInput" role="menuitem">CLASSIFICATORE DOGANA AI</a>
-        <a href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierFiles" role="menuitem">RICONOSCIMENTO VOCE DOGANALE</a>
       </div>
     </div>
     <a id="doganaNavTableBtn" href="#dogana-section">TABELLA</a>
@@ -7399,81 +7398,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 
 
 
-<section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
-  <div class="invoiceClassifierHead">
-    <div class="invoiceClassifierTitleWrap">
-      <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
-    </div>
-    <div class="invoiceClassifierHeadActions">
-      <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
-    </div>
-  </div>
 
-  <div class="invoiceClassifierBody">
-    <div class="invoiceClassifierUploadRow">
-      <label class="invoiceClassifierDrop" for="invoiceClassifierFiles" id="invoiceClassifierDrop">
-        <span class="invoiceClassifierDropTitle">Carica fattura o packing list</span>
-        <span class="invoiceClassifierDropMeta">PDF, immagine, Excel o CSV. Puoi selezionare più file.</span>
-        <input id="invoiceClassifierFiles" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.xlsx,.xls,.csv,text/csv,application/pdf,image/*" multiple />
-      </label>
-      <div class="invoiceClassifierActions">
-        <button type="button" id="invoiceClassifierAnalyze" class="primary">Analizza documenti</button>
-        <button type="button" id="invoiceClassifierClassify" class="success">Classifica tutto</button>
-        <button type="button" id="invoiceClassifierAdd">+ Riga</button>
-        <button type="button" id="invoiceClassifierCopyColumn">Copia colonna</button>
-        <button type="button" id="invoiceClassifierToTable">Esporta nella Tabella</button>
-        <button type="button" id="invoiceClassifierExcel">Esporta Excel</button>
-        <button type="button" id="invoiceClassifierPdf">Esporta PDF</button>
-        <button type="button" id="invoiceClassifierClear" class="danger">Svuota</button>
-      </div>
-    </div>
-
-    <div class="invoiceClassifierStatus" id="invoiceClassifierStatus" role="status" aria-live="polite">Seleziona uno o più documenti.</div>
-
-    <div class="invoiceClassifierSummary" aria-label="Riepilogo classificazione">
-      <span><strong id="invoiceClassifierFileCount">0</strong> file</span>
-      <span><strong id="invoiceClassifierRowCount">0</strong> prodotti</span>
-      <span><strong id="invoiceClassifierDoneCount">0</strong> classificati</span>
-      <span><strong id="invoiceClassifierReviewCount">0</strong> da verificare</span>
-      <label>Lordo documento (kg)<input id="invoiceClassifierDocGross" inputmode="decimal" placeholder="—" /></label>
-      <label>Netto documento (kg)<input id="invoiceClassifierDocNet" inputmode="decimal" placeholder="—" /></label>
-      <label>Valore documento (€)<input id="invoiceClassifierDocValue" inputmode="decimal" placeholder="—" /></label>
-    </div>
-
-    <div class="invoiceClassifierGridWrap">
-      <table class="invoiceClassifierTable" id="invoiceClassifierTable">
-        <colgroup>
-          <col class="invoiceColNr" />
-          <col class="invoiceColProduct" />
-          <col class="invoiceColEan" />
-          <col class="invoiceColCn" />
-          <col class="invoiceColPackages" />
-          <col class="invoiceColGross" />
-          <col class="invoiceColNet" />
-          <col class="invoiceColValue" />
-          <col class="invoiceColActions" />
-        </colgroup>
-        <thead>
-          <tr>
-            <th class="invoiceClassifierNr">NR.</th>
-            <th>PRODOTTO</th>
-            <th>EAN / CODICE</th>
-            <th>VOCE NC (8 CIFRE)</th>
-            <th>COLLI</th>
-            <th>LORDO KG</th>
-            <th>NETTO KG</th>
-            <th>VALORE</th>
-            <th aria-label="Azioni"></th>
-          </tr>
-        </thead>
-        <tbody id="invoiceClassifierTbody"></tbody>
-      </table>
-      <div class="invoiceClassifierEmpty" id="invoiceClassifierEmpty">Nessun prodotto estratto.</div>
-    </div>
-
-    <p class="invoiceClassifierNote">Le voci sono proposte operative. Le righe “da verificare” richiedono controllo della composizione, presentazione del prodotto e note della nomenclatura prima della dichiarazione.</p>
-  </div>
-</section>
 
 
 <section class="panel sectionJumpTarget" id="dogana-section">
@@ -7758,11 +7683,86 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <div class="usefulToolsHead">
         <div>
           <div class="usefulToolsTitle">Tool utili</div>
-          <div class="usefulToolsSubtitle">Prepara i file per la pratica: comprimi PDF o converti documenti e immagini in PDF.</div>
+          <div class="usefulToolsSubtitle">Riconosci le voci doganali, comprimi PDF o converti documenti e immagini in PDF.</div>
         </div>
         <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
       </div>
       <div class="usefulToolsBody">
+<section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
+  <div class="invoiceClassifierHead">
+    <div class="invoiceClassifierTitleWrap">
+      <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
+    </div>
+    <div class="invoiceClassifierHeadActions">
+      <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+  </div>
+
+  <div class="invoiceClassifierBody">
+    <div class="invoiceClassifierUploadRow">
+      <label class="invoiceClassifierDrop" for="invoiceClassifierFiles" id="invoiceClassifierDrop">
+        <span class="invoiceClassifierDropTitle">Carica fattura o packing list</span>
+        <span class="invoiceClassifierDropMeta">PDF, immagine, Excel o CSV. Puoi selezionare più file.</span>
+        <input id="invoiceClassifierFiles" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.xlsx,.xls,.csv,text/csv,application/pdf,image/*" multiple />
+      </label>
+      <div class="invoiceClassifierActions">
+        <button type="button" id="invoiceClassifierAnalyze" class="primary">Analizza documenti</button>
+        <button type="button" id="invoiceClassifierClassify" class="success">Classifica tutto</button>
+        <button type="button" id="invoiceClassifierAdd">+ Riga</button>
+        <button type="button" id="invoiceClassifierCopyColumn">Copia colonna</button>
+        <button type="button" id="invoiceClassifierToTable">Esporta nella Tabella</button>
+        <button type="button" id="invoiceClassifierExcel">Esporta Excel</button>
+        <button type="button" id="invoiceClassifierPdf">Esporta PDF</button>
+        <button type="button" id="invoiceClassifierClear" class="danger">Svuota</button>
+      </div>
+    </div>
+
+    <div class="invoiceClassifierStatus" id="invoiceClassifierStatus" role="status" aria-live="polite">Seleziona uno o più documenti.</div>
+
+    <div class="invoiceClassifierSummary" aria-label="Riepilogo classificazione">
+      <span><strong id="invoiceClassifierFileCount">0</strong> file</span>
+      <span><strong id="invoiceClassifierRowCount">0</strong> prodotti</span>
+      <span><strong id="invoiceClassifierDoneCount">0</strong> classificati</span>
+      <span><strong id="invoiceClassifierReviewCount">0</strong> da verificare</span>
+      <label>Lordo documento (kg)<input id="invoiceClassifierDocGross" inputmode="decimal" placeholder="—" /></label>
+      <label>Netto documento (kg)<input id="invoiceClassifierDocNet" inputmode="decimal" placeholder="—" /></label>
+      <label>Valore documento (€)<input id="invoiceClassifierDocValue" inputmode="decimal" placeholder="—" /></label>
+    </div>
+
+    <div class="invoiceClassifierGridWrap">
+      <table class="invoiceClassifierTable" id="invoiceClassifierTable">
+        <colgroup>
+          <col class="invoiceColNr" />
+          <col class="invoiceColProduct" />
+          <col class="invoiceColEan" />
+          <col class="invoiceColCn" />
+          <col class="invoiceColPackages" />
+          <col class="invoiceColGross" />
+          <col class="invoiceColNet" />
+          <col class="invoiceColValue" />
+          <col class="invoiceColActions" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="invoiceClassifierNr">NR.</th>
+            <th>PRODOTTO</th>
+            <th>EAN / CODICE</th>
+            <th>VOCE NC (8 CIFRE)</th>
+            <th>COLLI</th>
+            <th>LORDO KG</th>
+            <th>NETTO KG</th>
+            <th>VALORE</th>
+            <th aria-label="Azioni"></th>
+          </tr>
+        </thead>
+        <tbody id="invoiceClassifierTbody"></tbody>
+      </table>
+      <div class="invoiceClassifierEmpty" id="invoiceClassifierEmpty">Nessun prodotto estratto.</div>
+    </div>
+
+    <p class="invoiceClassifierNote">Le voci sono proposte operative. Le righe “da verificare” richiedono controllo della composizione, presentazione del prodotto e note della nomenclatura prima della dichiarazione.</p>
+  </div>
+</section>
         <div class="usefulToolsGrid">
           <form id="pdfCompressForm" class="usefulToolCard">
             <h3>Comprimi PDF</h3>
@@ -25395,13 +25395,19 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 
   function normalizeHeader(value){ return cleanText(value,120).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim(); }
   const HEADER_ALIASES={
-    description:["descrizione","descrizione articolo","articolo","prodotto","product","goods","merce","designation"],
+    description:["descrizione","descrizione articolo","articolo","prodotto","product","goods","merce","designation","description","item description"],
     ean:["ean","ean 13","ean cod doganale","ean codice doganale","barcode","gtin","codice articolo","codice prodotto","sku","item code"], cn8:["voce doganale","codice doganale","cod doganale","codice nc","nc 8","cn code","hs code","taric"],
     packages:["colli","packages","cartons","ctns","boxes"],
     gross:["peso lordo","lordo kg","gross weight","gross kg","gross","lordo"], net:["peso netto","netto kg","net weight","net kg","net","netto"],
-    value:["imponibile","valore","valore totale","importo","importo totale","prezzo totale","p zo totale","line total","total amount","amount"]
+    value:["total","totale","net amount","extended price","total price","line amount","line value","total value","imponibile","valore","valore totale","importo","importo totale","prezzo totale","p zo totale","line total","total amount","amount"]
   };
-  function headerField(value){ const key=normalizeHeader(value); for(const [field,aliases] of Object.entries(HEADER_ALIASES)){ if(aliases.some(alias=>key===alias||(alias.length>=4&&key.includes(alias)))) return field; } return ""; }
+  function headerField(value){
+    const key=normalizeHeader(value);
+    if(/\b(?:unit|unitario|unitaria|sconto|discount|vat|iva)\b/.test(key))return "ignored";
+    for(const [field,aliases] of Object.entries(HEADER_ALIASES))if(aliases.includes(key))return field;
+    for(const [field,aliases] of Object.entries(HEADER_ALIASES))if(aliases.some(alias=>alias.length>=4&&new RegExp("(?:^| )"+alias+"(?: |$)").test(key)))return field;
+    return "";
+  }
 
   function parseProductLine(line,source,options={}){
     const text=String(line||"").replace(/\s+/g," ").trim(); if(!text) return null;
@@ -25421,7 +25427,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const explicitGross=text.match(/(?:peso\s*)?lordo\s*[:=]?\s*([\d.,]+)/i); const explicitNet=text.match(/(?:peso\s*)?netto\s*[:=]?\s*([\d.,]+)/i);
     const explicitValue=text.match(/(?:valore|importo|prezzo\s+totale|line\s+total|total\s+amount|amount)\s*[:=]?\s*([\d.,]+)/i);
     const tailNumbers=(text.slice(match[0].length).match(/[-+]?\d[\d.,]*/g)||[]);
-    const inferredValue=options.hasValueColumn&&tailNumbers.length>=2?tailNumbers[1]:"";
+    const inferredValue=""; // Senza coordinate non distinguere prezzo unitario, sconto e importo.
     return makeRow({source,documentKind:options.documentKind||"",ean:match[1],description,packages:match[4]||"",gross:explicitGross?.[1]||"",net:explicitNet?.[1]||"",value:explicitValue?.[1]||inferredValue});
   }
   function crystalPackingTotals(text){
@@ -25494,16 +25500,17 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     groups.sort((a,b)=>b.y-a.y);let columns={};const rows=[];
     const cellFor=(group,field)=>{const entries=Object.entries(columns).sort((a,b)=>a[1]-b[1]);const index=entries.findIndex(([name])=>name===field);if(index<0)return"";const left=index===0?-Infinity:(entries[index-1][1]+entries[index][1])/2;const right=index===entries.length-1?Infinity:(entries[index][1]+entries[index+1][1])/2;return cleanText(group.items.filter(item=>item.x>=left&&item.x<right).sort((a,b)=>a.x-b.x).map(item=>item.text).join(" "),180);};
     for(const group of groups){
-      const detected={};for(const item of group.items){const field=headerField(item.text);if(field&&detected[field]===undefined)detected[field]=item.x;}
-      if(Object.keys(detected).length>=2&&(detected.description!==undefined||detected.gross!==undefined||detected.net!==undefined||detected.value!==undefined)){columns={...columns,...detected};continue;}
+      const detected={};for(const item of group.items){const field=headerField(item.text);if(field){const name=field==="ignored"?`ignored:${item.x}`:field;if(detected[name]===undefined)detected[name]=item.x;}}
+      if(Object.keys(detected).length>=2&&(detected.description!==undefined||detected.gross!==undefined||detected.net!==undefined||detected.value!==undefined)){columns={...detected};continue;}
       if(columns.gross===undefined&&columns.net===undefined&&columns.value===undefined&&columns.cn8===undefined)continue;
       const line=group.items.sort((a,b)=>a.x-b.x).map(item=>item.text).join(" ");let row=parseProductLine(line,source,{hasValueColumn:columns.value!==undefined});
-      if(!row){const codeCell=cellFor(group,"ean"),ean=directItemCode(codeCell)||directItemCode(line.match(/\b\d{8,14}\b/)?.[0]||""),description=cellFor(group,"description");if(ean&&description&&!isNonProductDescription(description))row=makeRow({source,ean,description});}
+      if(!row){const codeCell=cellFor(group,"ean"),ean=directItemCode(codeCell)||directItemCode(line.match(/\b\d{8,14}\b/)?.[0]||""),description=cellFor(group,"description");if(description&&!isNonProductDescription(description))row=makeRow({source,ean,description});}
       if(!row||!isRecognizedProductRow(row))continue;
-      for(const field of ["gross","net","packages","value"]){const value=singleNumericCell(cellFor(group,field));if(value&&numericValue(row[field])===null)row[field]=value;}
+      for(const field of ["gross","net","packages","value"]){const value=singleNumericCell(cellFor(group,field));if(value)row[field]=value;}
       const code=cellFor(group,"cn8").replace(/[\s.]/g,"");if(/^(?:\d{8}|\d{10})$/.test(code)){row.cn8=code.slice(0,8);row.status="needs_review";row.needsReview=true;}
       if(!row.documentKind&&columns.gross!==undefined&&columns.net!==undefined)row.documentKind="packing";
-      rows.push(makeRow(row));
+      row.structuredFields=["gross","net","packages","value"].filter(field=>singleNumericCell(cellFor(group,field)));
+      rows.push({...makeRow(row),structuredFields:row.structuredFields});
     }
     return rows;
   }
@@ -25513,7 +25520,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const merged=plainRows.map(row=>{
       const key=row.ean||normalizeHeader(row.description),extra=queues.get(key)?.shift();if(!extra)return row;
       const result={...row,description:row.description||extra.description,documentKind:row.documentKind||extra.documentKind,cn8:row.cn8||extra.cn8};
-      for(const field of ["packages","gross","net","value"]){if(numericValue(result[field])===null)result[field]=extra[field];}
+      for(const field of ["packages","gross","net","value"]){if(extra.structuredFields?.includes(field)||numericValue(result[field])===null)result[field]=extra[field];}
       return makeRow(result);
     });
     for(const queue of queues.values())merged.push(...queue);return merged;
@@ -25545,7 +25552,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   async function readImage(file){ if(!globalThis.Tesseract) throw new Error("OCR non disponibile"); setStatus(`OCR immagine ${file.name}…`,"busy"); const result=await Tesseract.recognize(file,"ita+eng"); return parseDocumentText(result?.data?.text||"",file.name); }
   function rowsFromMatrix(matrix,source){
     const rows=Array.isArray(matrix)?matrix:[]; let headerIndex=-1,mapping={};
-    for(let index=0;index<Math.min(rows.length,40);index++){ const current={}; (rows[index]||[]).forEach((cell,col)=>{const field=headerField(cell);if(field&&!Object.prototype.hasOwnProperty.call(current,field))current[field]=col;}); if(current.description!==undefined && Object.keys(current).length>=2){headerIndex=index;mapping=current;break;} }
+    for(let index=0;index<Math.min(rows.length,40);index++){ const current={}; (rows[index]||[]).forEach((cell,col)=>{const field=headerField(cell);if(field&&field!=="ignored"&&!Object.prototype.hasOwnProperty.call(current,field))current[field]=col;}); if(current.description!==undefined && Object.keys(current).length>=2){headerIndex=index;mapping=current;break;} }
     if(headerIndex<0) return parseDocumentText(rows.map(row=>(row||[]).join(" ")).join("\n"),source);
     const output=[];
     for(let index=headerIndex+1;index<rows.length;index++){ const row=rows[index]||[]; const raw={source}; for(const [field,col] of Object.entries(mapping)) raw[field]=row[col]??""; raw.ean=directItemCode(raw.ean);for(const field of ["packages","gross","net","value"]){if(raw[field]!==undefined)raw[field]=singleNumericCell(raw[field]);}const product=makeRow(raw);if(isRecognizedProductRow(product))output.push(product); }
@@ -25577,7 +25584,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     state.rows=state.rows.filter(isRecognizedProductRow);
     if(!state.rows.length){render();setStatus("Non ci sono prodotti da classificare.","error");return;}
     // Una proposta già ricevuta non diventa confermata al secondo clic.
-    const candidates=state.rows.filter(row=>(cleanText(row.description)||row.ean)&&!/^\d{8}$/.test(row.cn8));
+    const candidates=state.rows.filter(row=>(cleanText(row.description)||row.ean)&&(!/^\d{8}$/.test(row.cn8)||row.needsReview||row.status!=="confirmed"));
     const groups=new Map(); for(const row of candidates){const key=row.ean?`ean:${row.ean}`:`desc:${normalizeHeader(row.description)}`;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
     const batches=Array.from(groups.values()),batchSize=4;
     const controls=[elements.analyze,elements.classify,elements.add,elements.clear,elements.input],disabledBefore=controls.map(control=>control.disabled);

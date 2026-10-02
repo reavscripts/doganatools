@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-09-29T12:13:44.872Z",
+  "updatedAt": "2026-09-29T13:51:21.441Z",
   "products": {
     "10863290": {
       "ean": "10863290",
@@ -2409,6 +2409,215 @@
       "source": "dogana-ai",
       "verified": false,
       "updatedAt": "2026-09-29T12:13:44.870Z",
+      "updatedBy": "admin"
+    },
+    "8004030070004": {
+      "ean": "8004030070004",
+      "description": "RIO MARE PATE GR 100 SALMONE ROSA",
+      "cn8": "03069100",
+      "taric10": "0306910000",
+      "officialDescription": "PESCI E CROSTACEI, MOLLUSCHI E ALTRI INVERTEBRATI ACQUATICI › Crostacei, anche sgusciati, vivi, freschi, refrigerati, congelati, secchi, salati o in salamoia; crostacei affumicati, anche sgusciati, anche cotti prima o durante l'affumicatura; crostacei non sgusciati, cotti in acqua o al vapore, anche refrigerati, congelati, secchi, salati o in salamoia › altri › Aragoste e altri gamberi di mare (Palinurus spp., Panulirus spp., Jasus spp.)",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:30:47.894Z",
+      "updatedBy": "admin"
+    },
+    "8004030560048": {
+      "ean": "8004030560048",
+      "description": "RIO MARE PATE GR 100 TONNO E MAIONESE",
+      "cn8": "03069100",
+      "taric10": "0306910000",
+      "officialDescription": "PESCI E CROSTACEI, MOLLUSCHI E ALTRI INVERTEBRATI ACQUATICI › Crostacei, anche sgusciati, vivi, freschi, refrigerati, congelati, secchi, salati o in salamoia; crostacei affumicati, anche sgusciati, anche cotti prima o durante l'affumicatura; crostacei non sgusciati, cotti in acqua o al vapore, anche refrigerati, congelati, secchi, salati o in salamoia › altri › Aragoste e altri gamberi di mare (Palinurus spp., Panulirus spp., Jasus spp.)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:30:47.900Z",
+      "updatedBy": "admin"
+    },
+    "8003889024329": {
+      "ean": "8003889024329",
+      "description": "LA CASARECCIA PASSATA GR 680 BASILICO",
+      "cn8": "12119086",
+      "taric10": "1211908620",
+      "officialDescription": "SEMI E FRUTTI OLEOSI; SEMI, SEMENTI E FRUTTI DIVERSI; PIANTE INDUSTRIALI O MEDICINALI; PAGLIE E FORAGGI › Piante, parti di piante, semi e frutti, delle specie utilizzate principalmente in profumeria, in medicina o nella preparazione di insetticidi, antiparassitari o simili, freschi, refrigerati, congelati o secchi, anche tagliati, frantumati o polverizzati › altri › Basilico (sacro, comune) (fresche o refrigerate)",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:30:53.003Z",
+      "updatedBy": "admin"
+    },
+    "8004690950043": {
+      "ean": "8004690950043",
+      "description": "MOLISANA PASSATA CLASSICA GR 690",
+      "cn8": "48099000",
+      "taric10": "4809900020",
+      "officialDescription": "CARTA E CARTONE; LAVORI DI PASTA DI CELLULOSA, DI CARTA O DI CARTONE › Carta carbone, carta detta \"autocopiante\" e altra carta per riproduzione di copie (compresa la carta patinata, spalmata o impregnata per matrici di duplicatori o per lastre offset), anche stampata, in rotoli o in fogli › altra › Carta termica pesante dal peso superiore a 65 gr/m²; in rotoli di larghezza superiore o uguale a 20 cm, con peso del rotolo (compresa la carta) superiore o uguale a 50 kg e diametro del rotolo (compresa la carta) superiore o uguale a 40 cm (\"rotoli di grandi dimensioni\"); con o senza rivestimento di fondo su uno o entrambi i lati; rivestiti di una sostanza termosensibile su uno o entrambi i lati,",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:31:01.704Z",
+      "updatedBy": "admin"
+    },
+    "8000050029220": {
+      "ean": "8000050029220",
+      "description": "STAR PESTO TIGULLIO GR 185 ZAFFERANO",
+      "cn8": "84145925",
+      "taric10": "8414592550",
+      "officialDescription": "REATTORI NUCLEARI, CALDAIE, MACCHINE, APPARECCHI E CONGEGNI MECCANICI; PARTI DI QUESTE MACCHINE O APPARECCHI › Pompe per aria o per vuoto, compressori di aria o di altri gas e ventilatori; cappe aspiranti ad estrazione o a riciclaggio, con ventilatore incorporato, anche filtranti; cabine di sicurezza biologica a tenuta stagna, anche filtranti › Ventilatori › altri › assiali › Ventilatori assiali con motore integrato, destinati alla generazione di un flusso d'aria per il raffreddamento di compressori e la distribuzione di aria, con -una tensione di esercizio in corrente continua superiore a 10 V ma non superiore a 14 V, o -una tensione di esercizio in corrente alternata superiore a 185 V ma n",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:06.930Z",
+      "updatedBy": "admin"
+    },
+    "8021851100666": {
+      "ean": "8021851100666",
+      "description": "APULIA TARALLINI GR 250 SEMI FINOCCHI",
+      "cn8": "07099950",
+      "taric10": "0709995000",
+      "officialDescription": "ORTAGGI O LEGUMI, PIANTE, RADICI E TUBERI MANGERECCI › Altri ortaggi, freschi o refrigerati › altri › Finocchi",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:06.953Z",
+      "updatedBy": "admin"
+    },
+    "8000050028315": {
+      "ean": "8000050028315",
+      "description": "STAR PESTO TIGULLIO GR 185 CACIO E PEPE",
+      "cn8": "09041100",
+      "taric10": "0904110010",
+      "officialDescription": "CAFFÈ, TÈ, MATE E SPEZIE › Pepe (del genere Piper); pimenti del genere Capsicum o del genere Pimenta, essiccati, tritati o polverizzati › Pepe › non tritato né polverizzato › Pepe nero (Piper)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:09.870Z",
+      "updatedBy": "admin"
+    },
+    "8004030760103": {
+      "ean": "8004030760103",
+      "description": "RIO MARE INSALATISSIME GR 160 FAGIOLI",
+      "cn8": "07082000",
+      "taric10": "0708200010",
+      "officialDescription": "ORTAGGI O LEGUMI, PIANTE, RADICI E TUBERI MANGERECCI › Legumi da granella, anche sgranati, freschi o refrigerati › Fagioli (Vigna spp., Phaseolus spp.) › Fagiolo asparago (Vigna unguiculata spp. sesquipedalis, vigna unguiculata spp. unguiculata)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:23.485Z",
+      "updatedBy": "admin"
+    },
+    "8001620001493": {
+      "ean": "8001620001493",
+      "description": "SAN BENEDETTO THE ML 500 PESCA",
+      "cn8": "03072210",
+      "taric10": "0307221000",
+      "officialDescription": "PESCI E CROSTACEI, MOLLUSCHI E ALTRI INVERTEBRATI ACQUATICI › Molluschi, anche sgusciati, vivi, freschi, refrigerati, congelati, secchi, salati o in salamoia; molluschi affumicati, anche sgusciati, anche cotti prima o durante l'affumicatura › Capesante (conchiglie di San Giacomo) e altri molluschi della famiglia Pectinidae › congelati › Capesante (conchiglie di San Giacomo), compresi i canestrelli, dei generi Pecten, Chlamys o Placopecten › Conchiglie di San Giacomo (Pecten maximus)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:26.021Z",
+      "updatedBy": "admin"
+    },
+    "3083680016544": {
+      "ean": "3083680016544",
+      "description": "BONDUELLE LEGUMI VETRO GR 330 CECI",
+      "cn8": "70099100",
+      "taric10": "7009910020",
+      "officialDescription": "VETRO E LAVORI DI VETRO › Specchi di vetro, anche incorniciati, compresi gli specchi retrovisivi › altri › non incorniciati › Vetro cromato asferico, convesso o piatto, pronto per essere incorniciato: -con una lunghezza pari o superiore a 140 mm, ma non superiore a 215 mm, -con un'altezza pari o superiore a 104 mm, ma non superiore a 138 mm, -con un raggio di curvatura pari o superiore a 0 mm ma non superiore a 1 330 mm, -con una riflettanza superiore al 40 %, destinato alla fabbricazione di specchi automobilistici",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:30.925Z",
+      "updatedBy": "admin"
+    },
+    "8021851100642": {
+      "ean": "8021851100642",
+      "description": "APULIA TARALLINI GR 250 PEPERONCINO",
+      "cn8": "16041600",
+      "taric10": "1604160010",
+      "officialDescription": "PREPARAZIONI DI CARNE, DI PESCI O DI CROSTACEI, DI MOLLUSCHI O DI ALTRI INVERTEBRATI ACQUATICI, O DI INSETTI › Preparazioni o conserve di pesci; caviale e suoi succedanei preparati con uova di pesce › Pesci interi o in pezzi, ma non tritati › Acciughe › Acciughe piccanti fritte (sambal ikan bilis) preparate con acciughe, cipolla, salsa di peperoncino piccante, tamarindo, belachan, zucchero bruno e sale",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T12:31:34.047Z",
+      "updatedBy": "admin"
+    },
+    "8002580026908": {
+      "ean": "8002580026908",
+      "description": "SANTAL SUCCO BRICK LT1 MELA 100",
+      "cn8": "20099031",
+      "taric10": "2009903100",
+      "officialDescription": "PREPARAZIONI DI ORTAGGI O DI LEGUMI, DI FRUTTA O DI ALTRE PARTI DI PIANTE › Succhi di frutta o di frutta a guscio (compresi il mosto di uva e l'acqua di cocco) e di ortaggi e legumi, non fermentati, senza aggiunta di alcole, anche addizionati di zuccheri o di altri dolcificanti › Miscugli di succhi › di un valore Brix inferiore o uguale a 67 › Miscugli di succo di mela e di succo di pera › di valore inferiore o uguale a 18 € per 100 kg di peso netto ed aventi tenore, in peso, di zuccheri addizionati superiore a 30 %",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:31:39.149Z",
+      "updatedBy": "admin"
+    },
+    "8002580026267": {
+      "ean": "8002580026267",
+      "description": "SANTAL SUCCO BRICK LT1 ACE",
+      "cn8": "20098979",
+      "taric10": "2009897930",
+      "officialDescription": "PREPARAZIONI DI ORTAGGI O DI LEGUMI, DI FRUTTA O DI ALTRE PARTI DI PIANTE › Succhi di frutta o di frutta a guscio (compresi il mosto di uva e l'acqua di cocco) e di ortaggi e legumi, non fermentati, senza aggiunta di alcole, anche addizionati di zuccheri o di altri dolcificanti › Succo di altra singola frutta, frutta a guscio o di altri singoli ortaggi e legumi › altri › di un valore Brix inferiore o uguale a 67 › di valore superiore a 30 € per 100 kg di peso netto, con zuccheri addizionati › Concentrato congelato di succo di acerola: - con un valore Brix compreso tra 48 e 67, - in imballaggi immediati aventi un contenuto netto di almeno 50 litri",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:31:45.536Z",
+      "updatedBy": "admin"
+    },
+    "8002190006758": {
+      "ean": "8002190006758",
+      "description": "TRE MARIE FROLLINI GR315 CARAMELLO C/GOC",
+      "cn8": "17049055",
+      "taric10": "1704905500",
+      "officialDescription": "ZUCCHERI E PRODOTTI A BASE DI ZUCCHERI › Prodotti a base di zuccheri non contenenti cacao (compreso il cioccolato bianco) › altri › Pastiglie per la gola e caramelle contro la tosse",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T12:31:45.554Z",
+      "updatedBy": "admin"
+    },
+    "0000080945352": {
+      "ean": "0000080945352",
+      "description": "FERRERO ESTATHE ML 400 LIMONE BOTT.",
+      "cn8": "38021000",
+      "taric10": "3802100040",
+      "officialDescription": "PRODOTTI VARI DELLE INDUSTRIE CHIMICHE › Carboni attivati; sostanze minerali naturali attivate; neri di origine animale, compreso il nero animale esaurito › Carboni attivati › Carboni attivati chimicamente per l'assorbimento e il desorbimento di vapori, di forma definita o irregolare, con capacità effettiva di butano uguale o superiore a 5 g butano/100 ml (secondo il metodo ASTM D 5228)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T13:50:46.741Z",
+      "updatedBy": "admin"
+    },
+    "8008343200660": {
+      "ean": "8008343200660",
+      "description": "RUMMO PASTA GR 500 PENNE RIGATE N 66",
+      "cn8": "48099000",
+      "taric10": "4809900020",
+      "officialDescription": "CARTA E CARTONE; LAVORI DI PASTA DI CELLULOSA, DI CARTA O DI CARTONE › Carta carbone, carta detta \"autocopiante\" e altra carta per riproduzione di copie (compresa la carta patinata, spalmata o impregnata per matrici di duplicatori o per lastre offset), anche stampata, in rotoli o in fogli › altra › Carta termica pesante dal peso superiore a 65 gr/m²; in rotoli di larghezza superiore o uguale a 20 cm, con peso del rotolo (compresa la carta) superiore o uguale a 50 kg e diametro del rotolo (compresa la carta) superiore o uguale a 40 cm (\"rotoli di grandi dimensioni\"); con o senza rivestimento di fondo su uno o entrambi i lati; rivestiti di una sostanza termosensibile su uno o entrambi i lati,",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T13:51:21.398Z",
+      "updatedBy": "admin"
+    },
+    "8008343200851": {
+      "ean": "8008343200851",
+      "description": "RUMMO PASTA GR 500 FARFALLE N 85",
+      "cn8": "85011099",
+      "taric10": "8501109964",
+      "officialDescription": "MACCHINE, APPARECCHI E MATERIALE ELETTRICO E LORO PARTI; APPARECCHI PER LA REGISTRAZIONE O LA RIPRODUZIONE DEL SUONO, APPARECCHI PER LA REGISTRAZIONE O LA RIPRODUZIONE DELLE IMMAGINI E DEL SUONO PER LA TELEVISIONE, E PARTI ED ACCESSORI DI QUESTI APPARECCHI › Motori e generatori elettrici, esclusi i gruppi elettrogeni › Motori di potenza inferiore o uguale a 37,5 W › altri › Motori a corrente continua › Motore a corrente continua per controllare la posizione angolare della linguetta per regolare il flusso di gas nella valvola a farfalla per l'aria e nella valvola EGR: -con standard di protezione d'ingresso di IP69, -con velocità del rotore non superiore a 6 500 rpm a vuoto, -con tensione nomi",
+      "source": "dogana-ai",
+      "verified": false,
+      "updatedAt": "2026-09-29T13:51:21.401Z",
+      "updatedBy": "admin"
+    },
+    "0000080948971": {
+      "ean": "0000080948971",
+      "description": "FERRERO ESTATHE ML 400 PESCA BOTT.",
+      "cn8": "38021000",
+      "taric10": "3802100040",
+      "officialDescription": "PRODOTTI VARI DELLE INDUSTRIE CHIMICHE › Carboni attivati; sostanze minerali naturali attivate; neri di origine animale, compreso il nero animale esaurito › Carboni attivati › Carboni attivati chimicamente per l'assorbimento e il desorbimento di vapori, di forma definita o irregolare, con capacità effettiva di butano uguale o superiore a 5 g butano/100 ml (secondo il metodo ASTM D 5228)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T13:51:21.436Z",
+      "updatedBy": "admin"
+    },
+    "8800834305432": {
+      "ean": "8800834305432",
+      "description": "RUMMO GNOCCHI DI PATATE GR500 N117",
+      "cn8": "11081300",
+      "taric10": "1108130000",
+      "officialDescription": "PRODOTTI DELLA MACINAZIONE; MALTO; AMIDI E FECOLE; INULINA; GLUTINE DI FRUMENTO › Amidi e fecole; inulina › Amidi e fecole › Fecola di patate",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-09-29T13:51:21.437Z",
       "updatedBy": "admin"
     }
   }
