@@ -7765,6 +7765,16 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
           </tr>
         </thead>
         <tbody id="invoiceClassifierTbody"></tbody>
+        <tfoot id="invoiceClassifierTotals" hidden>
+          <tr>
+            <th colspan="4" scope="row" title="Somma delle righe presenti nella tabella">TOTALI</th>
+            <td id="invoiceClassifierTotalPackages" aria-label="Totale colli">—</td>
+            <td id="invoiceClassifierTotalGross" aria-label="Totale peso lordo in kg">—</td>
+            <td id="invoiceClassifierTotalNet" aria-label="Totale peso netto in kg">—</td>
+            <td id="invoiceClassifierTotalValue" aria-label="Totale valore">—</td>
+            <td aria-hidden="true"></td>
+          </tr>
+        </tfoot>
       </table>
       <div class="invoiceClassifierEmpty" id="invoiceClassifierEmpty">Nessun prodotto estratto.</div>
     </div>
@@ -25250,6 +25260,12 @@ body[data-theme="dark"] .invoiceClassifierDataNotice{border-color:#a16207;backgr
 .invoiceClassifierTable input:hover{background:var(--input-bg)}
 .invoiceClassifierTable input:focus{outline:0;background:var(--hint-bg);box-shadow:inset 0 0 0 1px rgba(37,99,235,.18)}
 .invoiceClassifierTable td:nth-child(n+5):nth-child(-n+8) input{text-align:right}
+#invoiceClassifierTable tfoot[hidden]{display:none}
+#invoiceClassifierTable tfoot th,#invoiceClassifierTable tfoot td{position:static;top:auto;z-index:auto;padding:13px 9px;border-top:2px solid var(--accent,#2563eb);border-bottom:0;background:var(--thead-bg,var(--surface-soft));color:var(--heading,var(--text));font-size:12px;font-weight:800;letter-spacing:0;line-height:1.4}
+#invoiceClassifierTable tfoot th{text-align:left}
+#invoiceClassifierTable tfoot td{text-align:right;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#invoiceClassifierTable tfoot td:last-child{padding:0}
+@media(max-width:900px){#invoiceClassifierTable tfoot th,#invoiceClassifierTable tfoot td{padding:10px 4px;font-size:11px}}
 .invoiceClassifierNr{text-align:center}.invoiceClassifierRowNr{text-align:center;color:var(--muted);font-weight:700;padding:13px 4px!important}
 .invoiceClassifierCode{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:800;letter-spacing:.07em;text-align:center}
 .invoiceClassifierStatusPill{display:inline-flex;align-items:center;justify-content:center;min-width:96px;padding:5px 7px;border-radius:999px;font-size:10px;font-weight:800;text-align:center;background:#f1f5f9;color:#475569}
@@ -25333,7 +25349,9 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     toggle: $("invoiceClassifierToggle"), status: $("invoiceClassifierStatus"), tbody: $("invoiceClassifierTbody"), empty: $("invoiceClassifierEmpty"),
     fileCount: $("invoiceClassifierFileCount"), rowCount: $("invoiceClassifierRowCount"), doneCount: $("invoiceClassifierDoneCount"), reviewCount: $("invoiceClassifierReviewCount"),
     docGross: $("invoiceClassifierDocGross"), docNet: $("invoiceClassifierDocNet"), docValue: $("invoiceClassifierDocValue"),
-    client: $("invoiceClassifierClient"), clientHint: $("invoiceClassifierClientHint"), dataNotice: $("invoiceClassifierDataNotice")
+    client: $("invoiceClassifierClient"), clientHint: $("invoiceClassifierClientHint"), dataNotice: $("invoiceClassifierDataNotice"),
+    totals: $("invoiceClassifierTotals"), totalPackages: $("invoiceClassifierTotalPackages"), totalGross: $("invoiceClassifierTotalGross"),
+    totalNet: $("invoiceClassifierTotalNet"), totalValue: $("invoiceClassifierTotalValue")
   };
   if (!elements.panel || !elements.tbody) return;
 
@@ -25405,6 +25423,14 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     if(row.status==="confirmed") return "Confermata"; if(row.status==="classified") return "Classificata"; if(row.status==="catalog") return "Memoria: verifica";
     if(row.status==="needs_review") return "Da verificare"; if(row.status==="error") return "Errore"; if(row.status==="unclassified") return "Non classificata"; return row.cn8?"Inserita":"In attesa";
   }
+  function renderTotals(){
+    elements.totals.hidden=!state.rows.length;
+    for(const [field,cell,minimum,maximum] of [["packages",elements.totalPackages,0,3],["gross",elements.totalGross,2,3],["net",elements.totalNet,2,3],["value",elements.totalValue,2,2]]){
+      let total=0,found=false;
+      for(const row of state.rows){const value=numericValue(row[field]);if(value!==null){total+=value;found=true;}}
+      cell.textContent=found?total.toLocaleString("it-IT",{minimumFractionDigits:minimum,maximumFractionDigits:maximum}):"—";
+    }
+  }
   function render(){
     elements.tbody.innerHTML=state.rows.map((row,index)=>`<tr data-row-id="${escapeHtml(row.id)}" title="${escapeHtml([row.dataIssue,row.message||row.officialDescription].filter(Boolean).join(" · "))}">
       <td class="invoiceClassifierRowNr">${index+1}</td>
@@ -25423,6 +25449,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     elements.reviewCount.textContent=String(state.rows.filter(row=>row.needsReview||["catalog","needs_review","error","unclassified"].includes(row.status)).length);
     elements.docGross.value=state.docGross||""; elements.docNet.value=state.docNet||""; elements.docValue.value=state.docValue||"";
     elements.dataNotice.textContent=state.dataNotices.join("\n");elements.dataNotice.hidden=!state.dataNotices.length;
+    renderTotals();
     saveState();
   }
 
@@ -25836,7 +25863,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   elements.add.addEventListener("click",()=>{state.rows.push(makeRow());render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
   elements.clear.addEventListener("click",()=>{if(state.rows.length&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});elements.docValue.addEventListener("input",()=>{state.docValue=cleanText(elements.docValue.value,50);saveState();});
-  elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"";row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}saveState();});
+  elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"";row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}if(["packages","gross","net","value"].includes(input.dataset.field))renderTotals();saveState();});
   elements.tbody.addEventListener("change",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;if(input.dataset.field==="cn8"&&/^\d{8}$/.test(row.cn8)){row.status="confirmed";row.needsReview=!!row.dataIssue;rememberRow(row);}render();});
   elements.tbody.addEventListener("click",event=>{const button=event.target.closest("button[data-delete]");if(!button)return;const id=button.closest("tr")?.dataset.rowId;state.rows=state.rows.filter(row=>row.id!==id);render();});
   elements.toggle.addEventListener("click",()=>{const minimized=!elements.panel.classList.contains("is-minimized");elements.panel.classList.toggle("is-minimized",minimized);elements.toggle.setAttribute("aria-expanded",String(!minimized));elements.toggle.setAttribute("aria-label",minimized?"Mostra Riconoscimento voce doganale":"Riduci a icona Riconoscimento voce doganale");globalThis.setDoganaModuleToggleIcon?.(elements.toggle,minimized);});
