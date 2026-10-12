@@ -7,7 +7,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-TABELLA-PAGINE-R70";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-FOOTER-GITHUB-R71";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -8097,7 +8097,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.09.29-INVOICE-MATCH-R69</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.10.12-FOOTER-GITHUB-R71</strong></a>
   </div>
 </footer>
 </div>
@@ -20452,6 +20452,13 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
 
   const GITHUB_LATEST_COMMIT_API = "https://api.github.com/repos/reavscripts/doganatools/commits?per_page=1";
   const TIME_ZONE = "Europe/Rome";
+  const REFRESH_INTERVAL_MS = 10 * 60 * 1000;
+  const MIN_REFRESH_INTERVAL_MS = 60 * 1000;
+  let requestInProgress = false;
+  let lastCheckAt = null;
+
+  // Prima della risposta GitHub, mostra la build del frontend aperto.
+  if (window.DOGANATOOLS_FRONTEND_BUILD) textEl.textContent = window.DOGANATOOLS_FRONTEND_BUILD;
 
   function makeTitle(date){
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "Apri gli ultimi commit su GitHub";
@@ -20466,21 +20473,38 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     return `Ultimo aggiornamento GitHub: ${formatted}`;
   }
 
-  function applyVersion(date){
-    // La versione visibile identifica la build reale del file.
-    // GitHub aggiorna soltanto tooltip/data commit e non sovrascrive V26.09.02-CONATECO-10G-R56.
+  function applyVersion(date, sha){
     if (!(date instanceof Date) || Number.isNaN(date.getTime())) return false;
-    link.title = makeTitle(date);
-    link.setAttribute("aria-label", `${textEl.textContent} - ultimo aggiornamento GitHub`);
+    if (!/^[a-f0-9]{40}$/i.test(sha)) return false;
+    const parts = new Intl.DateTimeFormat("it-IT", {
+      timeZone: TIME_ZONE,
+      year: "2-digit",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(date);
+    const values = Object.fromEntries(parts.map(part => [part.type, part.value]));
+    const version = `V${values.year}.${values.month}.${values.day}-${sha.slice(0, 7)}`;
+    textEl.textContent = version;
+    link.href = `https://github.com/reavscripts/doganatools/commit/${sha}`;
+    link.title = `${makeTitle(date)} · Commit ${sha.slice(0, 7)}`;
+    link.setAttribute("aria-label", `Versione ${version} - ${makeTitle(date)}`);
     return true;
   }
 
   async function updateFooterVersionFromGithub(){
+    if (requestInProgress || document.visibilityState === "hidden") return;
+    const now = Date.now();
+    if (lastCheckAt !== null && now - lastCheckAt < MIN_REFRESH_INTERVAL_MS) return;
+    lastCheckAt = now;
+    requestInProgress = true;
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
     try {
       const res = await fetch(GITHUB_LATEST_COMMIT_API, {
         method: "GET",
         cache: "no-store",
-        headers: { "Accept": "application/vnd.github+json" }
+        headers: { "Accept": "application/vnd.github+json" },
+        signal: controller.signal
       });
       if (!res.ok) throw new Error(`GitHub ${res.status}`);
 
@@ -20488,11 +20512,14 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
       const latest = Array.isArray(commits) ? commits[0] : null;
       const isoDate = latest?.commit?.committer?.date || latest?.commit?.author?.date || "";
       const date = new Date(isoDate);
-      if (!applyVersion(date)) throw new Error("Data commit non valida");
+      const sha = String(latest?.sha || "").toLowerCase();
+      if (!applyVersion(date, sha)) throw new Error("Dati commit non validi");
     } catch (err) {
-      // Fallback intenzionale: mantiene visibile la versione scritta nel file
-      // se GitHub non è raggiungibile o se il limite API è momentaneamente esaurito.
+      // In caso di errore conserva l'ultimo commit letto o la build locale.
       console.warn("Versione footer non aggiornata da GitHub:", err?.message || err);
+    } finally {
+      clearTimeout(timeout);
+      requestInProgress = false;
     }
   }
 
@@ -20501,6 +20528,12 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   } else {
     updateFooterVersionFromGithub();
   }
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") updateFooterVersionFromGithub();
+  });
+  window.addEventListener("focus", updateFooterVersionFromGithub);
+  window.addEventListener("online", updateFooterVersionFromGithub);
+  setInterval(updateFooterVersionFromGithub, REFRESH_INTERVAL_MS);
 })();
 </script>
 
