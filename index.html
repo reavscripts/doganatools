@@ -7770,6 +7770,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <option value="le-delizie-del-sud">Le Delizie del Sud</option>
         <option value="gfi-group">GFI GROUP</option>
         <option value="zeus">ZEUS</option>
+        <option value="o-sole-e-napule">O SOLE E NAPULE</option>
       </select>
     </label>
     <div class="invoiceClassifierHeadActions">
@@ -25684,6 +25685,8 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   };
   if (!elements.panel || !elements.tbody) return;
 
+  elements.client.innerHTML=Object.values(CLIENT_PROFILES).map(profile=>`<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.label)}</option>`).join("");
+
   let selectedFiles = [];
   let selectedFilesAnalyzed = false;
   const selectedFileCopies = new WeakMap();
@@ -26831,7 +26834,6 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus(packing.length?"File PDF creato: dettaglio fattura e confronto packing list.":"File PDF creato.","ok");
   }
 
-  elements.client.innerHTML=Object.values(CLIENT_PROFILES).map(profile=>`<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.label)}</option>`).join("");
   renderClientProfile();
   elements.client.addEventListener("change",()=>{state.clientId=clientProfile(elements.client.value).id;renderClientProfile();saveState();setStatus(`Cliente selezionato: ${clientProfile(state.clientId).label}. Le nuove analisi useranno questo modello.`);});
   function captureSelectedFile(file){
