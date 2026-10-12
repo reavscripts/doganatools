@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T11:22:15.218Z",
+  "updatedAt": "2026-10-12T11:43:43.146Z",
   "products": {
     "10863290": {
       "ean": "10863290",
@@ -3872,6 +3872,17 @@
       "source": "dogana-ai",
       "verified": true,
       "updatedAt": "2026-10-12T11:21:36.145Z",
+      "updatedBy": "admin"
+    },
+    "desc:a55eb3cd3a0b1798114d3ed4": {
+      "ean": "",
+      "description": "SCONTO INCONDIZIONATO",
+      "cn8": "07108095",
+      "taric10": "0710809550",
+      "officialDescription": "ORTAGGI O LEGUMI, PIANTE, RADICI E TUBERI MANGERECCI › Ortaggi o legumi (crudi o cotti a vapore o bolliti in acqua), congelati › altri ortaggi o legumi › altri › Germogli di bambù, congelati, non condizionati per la vendita al minuto",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:43:43.146Z",
       "updatedBy": "admin"
     }
   }

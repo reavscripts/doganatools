@@ -7,7 +7,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-ZEUS-R72";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-QUANTITA-COLLI-R74";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7782,7 +7782,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <div class="invoiceClassifierUploadRow">
       <label class="invoiceClassifierDrop" for="invoiceClassifierFiles" id="invoiceClassifierDrop">
         <span class="invoiceClassifierDropTitle">Carica fattura o packing list</span>
-        <span class="invoiceClassifierDropMeta">PDF, immagine, Excel o CSV. Puoi selezionare più file.</span>
+        <span class="invoiceClassifierDropMeta">PDF, immagine, Excel o CSV. Puoi aggiungere più file, anche con più trascinamenti prima dell’analisi.</span>
         <input id="invoiceClassifierFiles" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.xlsx,.xls,.csv,text/csv,application/pdf,image/*" multiple />
       </label>
       <div class="invoiceClassifierActions">
@@ -8099,7 +8099,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
   <div class="appFooterMeta">
     <span class="appFooterPill appFooterCopyright">© reav 2026 · made with <span class="appFooterHeart">❤</span></span>
-    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.10.12-ZEUS-R72</strong></a>
+    <a class="appFooterPill appFooterVersion" id="appFooterVersionLink" href="https://github.com/reavscripts/doganatools/commits" target="_blank" rel="noopener noreferrer" title="Ultimo aggiornamento GitHub"><span class="appFooterDot"></span> Versione <strong id="appFooterVersionText">V26.10.12-QUANTITA-COLLI-R74</strong></a>
   </div>
 </footer>
 </div>
@@ -25657,7 +25657,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     },
     zeus: {
       id: "zeus", label: "ZEUS",
-      hint: "Carica fattura PDF e packing list Excel. Codici HS e pesi totali vengono dalla packing list, valori e colli complessivi dalla fattura. I pezzi rimangono distinti dai colli. Gli sconti complessivi vengono ripartiti proporzionalmente.",
+      hint: "Carica fattura PDF e packing list Excel. Codici HS e pesi totali vengono dalla packing list, valori dalla fattura. Quando mancano i colli per articolo, la colonna Colli usa la quantità in pezzi. Gli sconti complessivi vengono ripartiti proporzionalmente.",
       parseText: parseZeusDocumentText, parseMatrix: parseZeusMatrix, fullDocumentParse: true
     }
   });
@@ -25680,6 +25680,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   if (!elements.panel || !elements.tbody) return;
 
   let selectedFiles = [];
+  let selectedFilesAnalyzed = false;
   let state = loadState();
   let classificationRunning = false;
 
@@ -25733,7 +25734,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const row={ id:raw.id||newId(), source:cleanText(raw.source||"",160), documentKind:raw.documentKind||"", description:cleanText(raw.description||raw.product||"",500), ean, cn8,
       packages:repairPackagesCell(raw.packages??raw.colli??"",ean), gross:singleNumericCell(raw.gross??raw.lordo??""), net:singleNumericCell(raw.net??raw.netto??""), value:singleNumericCell(raw.value??raw.valore??raw.amount??""),
       status:raw.status||(cn8?"confirmed":"pending"), needsReview:raw.needsReview===true, officialDescription:cleanText(raw.officialDescription||"",700), message:cleanText(raw.message||"",500),
-      clientId:cleanText(raw.clientId||"",80), quantity:singleNumericCell(raw.quantity||""), unit:cleanText(raw.unit||"",20),
+      clientId:cleanText(raw.clientId||"",80), quantity:singleNumericCell(raw.quantity??""), unit:cleanText(raw.unit||"",20),
       invoiceNumber:cleanText(raw.invoiceNumber||"",30), invoiceDate:cleanText(raw.invoiceDate||"",30), packingGroup:cleanText(raw.packingGroup||"",160),
       sku:cleanText(raw.sku||"",120), origin:cleanText(raw.origin||"",100), packingSource:cleanText(raw.packingSource||"",160),
       documentCn8:cleanCn8(raw.documentCn8||""), invoiceValue:singleNumericCell(raw.invoiceValue||""), discountValue:singleNumericCell(raw.discountValue||"") };
@@ -25746,6 +25747,14 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     catch{return {clientId:DEFAULT_CLIENT_ID,zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};}
   }
   function saveState(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch{} }
+  function rowPackages(row){
+    if(numericValue(row.packages)!==null)return row.packages;
+    const unit=cleanText(row.unit||"",20).toUpperCase().replace(/[^A-Z0-9]/g,"");
+    const isCount=!unit||["PZ","NR","N","PCS","PCE","PC","PEZZI","PIECE","PIECES","UNIT","UNITS","UN","EA","CF","CT","CTN","CTNS","CS","SC","CR","BOX","BOXES","BX"].includes(unit);
+    const quantity=row.clientId==="gfi-group"?gfiCell(row.quantity):row.quantity;
+    return isCount&&numericValue(quantity)!==null?quantity:"";
+  }
+  function packagesUseQuantity(row){return numericValue(row.packages)===null&&rowPackages(row)!=="";}
   function setStatus(message,type=""){ elements.status.textContent=message; elements.status.className="invoiceClassifierStatus"+(type?` is-${type}`:""); }
   function statusLabel(row){
     if(row.status==="confirmed") return "Confermata"; if(row.status==="classified") return "Classificata"; if(row.status==="catalog") return "Memoria: verifica";
@@ -25814,7 +25823,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     for(const [field,cell] of [["packages",elements.packingPackages],["gross",elements.packingGross],["net",elements.packingNet],["value",elements.packingValue]])cell.textContent=formatComparisonNumber(sumRows(comparison.rows,field),field);
   }
   function renderComparisonNotices(comparison){
-    const notices=[...new Set([...state.dataNotices,...(state.zeusNotices||[]),...comparison.notices])];
+    const notices=[...new Set([...state.dataNotices,...(state.zeusNotices||[]),...comparison.notices])].map(notice=>notice.replace("La packing list riporta i pezzi, senza colli per articolo: il totale colli è conservato separatamente.","In assenza dei colli per articolo, la colonna Colli usa i pezzi. I colli complessivi della fattura sono indicati separatamente."));
     elements.dataNotice.textContent=notices.join("\n");elements.dataNotice.hidden=!notices.length;
   }
   function updateGfiDocumentTotals(){
@@ -25829,13 +25838,13 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     elements.totals.hidden=!state.rows.length;
     for(const [field,cell,minimum,maximum] of [["packages",elements.totalPackages,0,3],["gross",elements.totalGross,2,3],["net",elements.totalNet,2,3],["value",elements.totalValue,2,2]]){
       let total=0,found=false;
-      for(const row of state.rows){const value=numericValue(row[field]);if(value!==null){total+=value;found=true;}}
+      for(const row of state.rows){const value=numericValue(field==="packages"?rowPackages(row):row[field]);if(value!==null){total+=value;found=true;}}
       if(field==="packages"){
         const zeusRows=state.rows.filter(row=>row.clientId==="zeus");
         const declared=numericValue(state.docPackages);
-        const extra=zeusRows.length&&!zeusRows.some(row=>numericValue(row.packages)!==null)&&declared!==null;
+        const extra=zeusRows.length&&!zeusRows.some(row=>numericValue(rowPackages(row))!==null)&&declared!==null;
         if(extra){total+=declared;found=true;}
-        cell.title=extra?"Comprende i colli complessivi ZEUS, non ripartiti per articolo.":"Somma dei colli delle righe.";
+        cell.title=extra?"Comprende i colli complessivi ZEUS, non ripartiti per articolo.":"Somma dei colli delle righe; dove mancano, viene usata la quantità in pezzi.";
       }
       cell.textContent=found?total.toLocaleString("it-IT",{minimumFractionDigits:minimum,maximumFractionDigits:maximum}):"—";
     }
@@ -25850,7 +25859,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       <td><input data-field="description" value="${escapeHtml(row.description)}" aria-label="Prodotto riga ${index+1}">${gfiPackingControl(row)}${row.clientId==="zeus"?`<div class="invoiceClassifierPackingMeta">Quantità: ${escapeHtml(row.quantity||"—")} pezzi${row.origin?` · Origine: ${escapeHtml(row.origin)}`:""}${row.packingSource?" · Packing list abbinata":""}</div>`:""}</td>
       <td><input data-field="${row.clientId==="zeus"?"sku":"ean"}" value="${escapeHtml(row.clientId==="zeus"?row.sku:row.ean)}" inputmode="${row.clientId==="zeus"?"text":"numeric"}" aria-label="Codice articolo riga ${index+1}"></td>
       <td><input class="invoiceClassifierCode" data-field="cn8" value="${escapeHtml(row.cn8)}" inputmode="numeric" maxlength="8" aria-label="Voce NC riga ${index+1}"><small class="invoiceClassifierRowStatus" title="${escapeHtml(row.message||row.officialDescription||"")}">${escapeHtml(statusLabel(row))}</small></td>
-      <td><input data-field="packages" value="${escapeHtml(row.packages)}" inputmode="decimal" aria-label="Colli riga ${index+1}"></td>
+      <td><input data-field="packages" value="${escapeHtml(rowPackages(row))}" inputmode="decimal" aria-label="Colli riga ${index+1}" title="${packagesUseQuantity(row)?"Quantità in pezzi usata perché i colli non sono indicati per articolo.":"Colli indicati per articolo."}"></td>
       <td><input data-field="gross" value="${escapeHtml(row.gross)}" inputmode="decimal" aria-label="Peso lordo riga ${index+1}"></td>
       <td><input data-field="net" value="${escapeHtml(row.net)}" inputmode="decimal" aria-label="Peso netto riga ${index+1}" title="${escapeHtml(row.dataIssue||"")}"${row.dataIssue?' class="invoiceClassifierWeightReview"':''}></td>
       <td><input data-field="value" value="${escapeHtml(row.value)}" inputmode="decimal" aria-label="Valore riga ${index+1}"></td>
@@ -25882,7 +25891,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const choice=cleanText(answer,80).toLowerCase();
     const column=columns[Number(choice)-1]||columns.find(item=>item.key===choice||normalizeHeader(item.label)===normalizeHeader(choice));
     if(!column){setStatus("Colonna non riconosciuta. Scegli un numero da 1 a 7.","error");return;}
-    const values=state.rows.map(row=>cleanText(row[column.key]||"",700));
+    const values=state.rows.map(row=>cleanText((column.key==="packages"?rowPackages(row):row[column.key])||"",700));
     if(!values.some(Boolean)){setStatus(`La colonna “${column.label}” è vuota.`,"error");return;}
     try{await writeClipboardText(values.join("\n"));const original=elements.copy.textContent;elements.copy.textContent="Copiata";setTimeout(()=>{elements.copy.textContent=original;},1200);setStatus(`Colonna “${column.label}” copiata: ${values.length} righe.`,"ok");}
     catch(error){setStatus(`Copia non riuscita: ${error.message||error}`,"error");}
@@ -26222,7 +26231,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       const rowsValue=numericValue(zeusSum(invoiceRows,"value",2)),declaredValue=numericValue(invoice.value);
       if(rowsValue!==null&&declaredValue!==null&&Math.abs(rowsValue-declaredValue)>0.005)notices.push(`${invoice.source}: somma valori ${formatComparisonNumber(rowsValue)} €; totale fattura ${formatComparisonNumber(declaredValue)} €. Verificare sconti e importi.`);
       output.push(...invoiceRows);
-      if(invoice.packages&&!invoiceRows.some(row=>numericValue(row.packages)!==null))notices.push(`${invoice.source}: ${formatComparisonNumber(invoice.packages,"packages")} colli complessivi. La packing list riporta i pezzi, senza colli per articolo: il totale colli è conservato separatamente.`);
+      if(invoice.packages&&!invoiceRows.some(row=>numericValue(row.packages)!==null))notices.push(`${invoice.source}: ${formatComparisonNumber(invoice.packages,"packages")} colli complessivi. In assenza dei colli per articolo, la colonna Colli usa i pezzi. I colli complessivi della fattura sono indicati separatamente.`);
     }
     for(const packing of packings.filter(doc=>!usedPackings.has(doc))){
       const rows=packing.rows.map(row=>makeRow({...row}));zeusApplyDiscount(rows,packing,notices);
@@ -26442,7 +26451,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       setStatus(`${importSummary} Calcolo delle voci NC a 8 cifre…`,"busy");await classifyAll();
       const type=elements.status.classList.contains("is-error")?"error":elements.status.classList.contains("is-ok")?"ok":"";
       setStatus(`${importSummary} ${elements.status.textContent}`,type);
-    }finally{controls.forEach((control,index)=>{control.disabled=disabledBefore[index];});}
+    }finally{selectedFilesAnalyzed=true;controls.forEach((control,index)=>{control.disabled=disabledBefore[index];});}
   }
 
   async function classifyAll(){
@@ -26502,7 +26511,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       .filter(row=>row.description||row.ean||row.cn8||row.packages||row.gross||row.net||row.value)
       .map(row=>({
         desc:[row.description,row.clientId==="gfi-group"&&row.quantity?`Quantità fattura ${row.quantity} ${row.unit}`:"",row.cn8?`NC ${row.cn8}`:""].filter(Boolean).join(" — "),
-        colli:row.packages,
+        colli:rowPackages(row),
         pezzi:row.clientId==="zeus"?row.quantity:"",
         gross:row.gross,
         net:row.net,
@@ -26513,15 +26522,15 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     if(!sourceRows.length){setStatus("Nessuna riga da trasferire nella Tabella.","error");return;}
 
     const packingRows=gfiComparison().rows.filter(row=>!row.unmatched);
-    for(const row of packingRows)sourceRows.push({desc:`PACKING LIST${row.invoiceNumber?` FT ${row.invoiceNumber}`:""} · ${row.description}`,colli:row.packages,pezzi:"",gross:row.gross,net:row.net,mq:"",value:""});
+    for(const row of packingRows)sourceRows.push({desc:`PACKING LIST${row.invoiceNumber?` FT ${row.invoiceNumber}`:""} · ${row.description}`,colli:row.items.some(item=>numericValue(rowPackages(item))!==null)?"":row.packages,pezzi:"",gross:row.gross,net:row.net,mq:"",value:""});
     const hasRowWeights=sourceRows.some(row=>String(row.gross||"").trim()||String(row.net||"").trim());
     const hasRowValues=sourceRows.some(row=>String(row.value||"").trim());
     const needsWeightSummary=!hasRowWeights&&(String(state.docGross||"").trim()||String(state.docNet||"").trim());
     const needsValueSummary=!hasRowValues&&String(state.docValue||"").trim();
     const zeusRows=state.rows.filter(row=>row.clientId==="zeus");
-    const needsPackageSummary=zeusRows.length&&!zeusRows.some(row=>numericValue(row.packages)!==null)&&numericValue(state.docPackages)!==null;
+    const needsPackageSummary=zeusRows.length&&!zeusRows.some(row=>numericValue(rowPackages(row))!==null)&&numericValue(state.docPackages)!==null;
     if(needsWeightSummary||needsValueSummary||needsPackageSummary){
-      sourceRows.push({desc:"TOTALI DOCUMENTO",colli:needsPackageSummary?state.docPackages:(needsWeightSummary&&state.rows.some(row=>row.clientId==="gfi-group")?sumRows(state.gfiDocuments.filter(document=>document.kind==="invoice"),"packages"):""),pezzi:"",gross:needsWeightSummary?state.docGross:"",net:needsWeightSummary?state.docNet:"",mq:"",value:needsValueSummary?state.docValue:""});
+      sourceRows.push({desc:"TOTALI DOCUMENTO",colli:needsPackageSummary?state.docPackages:(needsWeightSummary&&state.rows.some(row=>row.clientId==="gfi-group")&&!state.rows.some(row=>row.clientId==="gfi-group"&&numericValue(rowPackages(row))!==null)?sumRows(state.gfiDocuments.filter(document=>document.kind==="invoice"),"packages"):""),pezzi:"",gross:needsWeightSummary?state.docGross:"",net:needsWeightSummary?state.docNet:"",mq:"",value:needsValueSummary?state.docValue:""});
     }
 
     const firstSource=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"documento";
@@ -26537,7 +26546,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       ...((gfi||zeus)?{"QUANTITÀ FATTURA":asCell(row.quantity),"UM":row.unit}:{}),
       ...(zeus?{"ORIGINE":row.origin,"VALORE PRIMA DELLO SCONTO":asCell(row.invoiceValue||row.value),"SCONTO RIPARTITO":asCell(row.discountValue),"FILE PACKING":row.packingSource}:{}),
       ...(gfi?{"GRUPPO PACKING":row.clientId==="gfi-group"?(gfiPackingForRow(row)?.groups.find(group=>group.key===row.packingGroup)?.description||"DA ABBINARE"):""}:{}),
-      "EAN / CODICE":row.clientId==="zeus"?row.sku:row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(row.packages),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));
+      "EAN / CODICE":row.clientId==="zeus"?row.sku:row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(rowPackages(row)),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));
   }
   function exportPackingRows(comparison=gfiComparison()){
     if(!comparison.rows.length)return [];
@@ -26598,13 +26607,57 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   elements.client.innerHTML=Object.values(CLIENT_PROFILES).map(profile=>`<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.label)}</option>`).join("");
   renderClientProfile();
   elements.client.addEventListener("change",()=>{state.clientId=clientProfile(elements.client.value).id;renderClientProfile();saveState();setStatus(`Cliente selezionato: ${clientProfile(state.clientId).label}. Le nuove analisi useranno questo modello.`);});
-  elements.input.addEventListener("change",()=>{selectedFiles=Array.from(elements.input.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file selezionati: ${selectedFiles.map(file=>file.name).join(", ")}`:"Seleziona uno o più documenti.");});
-  for(const eventName of ["dragenter","dragover"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.add("is-dragging");});}
-  for(const eventName of ["dragleave","drop"]){elements.drop.addEventListener(eventName,event=>{event.preventDefault();elements.drop.classList.remove("is-dragging");});}
-  elements.drop.addEventListener("drop",event=>{selectedFiles=Array.from(event.dataTransfer?.files||[]);setStatus(selectedFiles.length?`${selectedFiles.length} file pronti per l'analisi.`:"Nessun file riconosciuto.");});
+  function uniqueSelectedFiles(files){
+    const seen=new Set();
+    return Array.from(files||[]).filter(file=>{
+      if(!file||typeof file.name!=="string")return false;
+      const key=JSON.stringify([file.name,file.size??null,file.lastModified??null,file.type||"",file.webkitRelativePath||""]);
+      if(seen.has(key))return false;
+      seen.add(key);return true;
+    });
+  }
+  function syncSelectedFileInput(){
+    try{
+      const transfer=new DataTransfer();
+      selectedFiles.forEach(file=>transfer.items.add(file));
+      elements.input.files=transfer.files;
+    }catch{}
+  }
+  function addSelectedFiles(files){
+    const incoming=uniqueSelectedFiles(files);
+    if(elements.input.disabled)return;
+    if(!incoming.length){setStatus("Nessun file riconosciuto. Trascina PDF, immagini, Excel o CSV.","error");return;}
+    selectedFiles=uniqueSelectedFiles([...(selectedFilesAnalyzed?[]:selectedFiles),...incoming]);
+    selectedFilesAnalyzed=false;
+    syncSelectedFileInput();
+    setStatus(`${selectedFiles.length} file pronti per l'analisi: ${selectedFiles.map(file=>file.name).join(", ")}`);
+  }
+  function filesFromDrop(transfer){
+    const files=[];
+    for(const item of Array.from(transfer?.items||[])){
+      if(item.kind!=="file")continue;
+      try{const file=item.getAsFile();if(file)files.push(file);}catch{}
+    }
+    files.push(...Array.from(transfer?.files||[]));
+    return uniqueSelectedFiles(files);
+  }
+  elements.input.addEventListener("change",()=>addSelectedFiles(elements.input.files));
+  for(const eventName of ["dragenter","dragover"]){elements.drop.addEventListener(eventName,event=>{
+    event.preventDefault();event.stopPropagation();
+    if(event.dataTransfer)event.dataTransfer.dropEffect=elements.input.disabled?"none":"copy";
+    if(!elements.input.disabled)elements.drop.classList.add("is-dragging");
+  },true);}
+  elements.drop.addEventListener("dragleave",event=>{event.preventDefault();elements.drop.classList.remove("is-dragging");});
+  elements.drop.addEventListener("drop",event=>{
+    // Intercetta anche il drop sull'input prima della gestione nativa del browser.
+    event.preventDefault();event.stopPropagation();
+    elements.drop.classList.remove("is-dragging");
+    if(elements.input.disabled)return;
+    addSelectedFiles(filesFromDrop(event.dataTransfer));
+  },true);
   elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.copy.addEventListener("click",copyColumn);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
   elements.add.addEventListener("click",()=>{const invoices=state.gfiDocuments.filter(document=>document.kind==="invoice"),invoice=state.clientId==="gfi-group"&&invoices.length===1?invoices[0]:null;state.rows.push(makeRow(invoice?{clientId:"gfi-group",source:invoice.source,invoiceNumber:invoice.invoiceNumber,invoiceDate:invoice.invoiceDate,documentKind:"invoice"}:{}));render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
-  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];elements.input.value="";render();setStatus("Dati rimossi.");});
+  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];selectedFilesAnalyzed=false;elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docPackages.addEventListener("input",()=>{state.docPackages=elements.docPackages.value;renderTotals();saveState();});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});elements.docValue.addEventListener("input",()=>{state.docValue=cleanText(elements.docValue.value,50);saveState();});
   elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}if(["packages","gross","net","value"].includes(input.dataset.field))renderTotals();if(row.clientId==="gfi-group"){const comparison=gfiComparison();renderGfiComparison(comparison);renderComparisonNotices(comparison);}saveState();});
@@ -26612,7 +26665,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   elements.tbody.addEventListener("click",event=>{const button=event.target.closest("button[data-delete]");if(!button)return;const id=button.closest("tr")?.dataset.rowId;state.rows=state.rows.filter(row=>row.id!==id);render();});
   elements.toggle.addEventListener("click",()=>{const minimized=!elements.panel.classList.contains("is-minimized");elements.panel.classList.toggle("is-minimized",minimized);elements.toggle.setAttribute("aria-expanded",String(!minimized));elements.toggle.setAttribute("aria-label",minimized?"Mostra Riconoscimento voce doganale":"Riduci a icona Riconoscimento voce doganale");globalThis.setDoganaModuleToggleIcon?.(elements.toggle,minimized);});
   render();
-  globalThis.DoganaInvoiceClassifier={getRows:()=>state.rows.map(row=>({...row})),getClientProfiles:()=>Object.values(CLIENT_PROFILES).map(({id,label})=>({id,label})),parseDocumentText};
+  globalThis.DoganaInvoiceClassifier={getRows:()=>state.rows.map(row=>({...row,packages:rowPackages(row),packagesFromQuantity:packagesUseQuantity(row)})),getClientProfiles:()=>Object.values(CLIENT_PROFILES).map(({id,label})=>({id,label})),parseDocumentText};
 })();
 </script>
 <style id="dogana-useful-tools-style">
