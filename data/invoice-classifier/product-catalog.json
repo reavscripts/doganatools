@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T11:43:43.146Z",
+  "updatedAt": "2026-10-12T12:17:45.150Z",
   "products": {
     "10863290": {
       "ean": "10863290",
@@ -3883,6 +3883,61 @@
       "source": "dogana-ai",
       "verified": true,
       "updatedAt": "2026-10-12T11:43:43.146Z",
+      "updatedBy": "admin"
+    },
+    "desc:865fce08e532db37561f74b8": {
+      "ean": "",
+      "description": "Ns. banca:",
+      "cn8": "49070030",
+      "taric10": "4907003000",
+      "officialDescription": "PRODOTTI DELL'EDITORIA, DELLA STAMPA O DELLE ALTRE INDUSTRIE GRAFICHE; TESTI MANOSCRITTI O DATTILOSCRITTI E PIANI › Francobolli, marche da bollo e simili, non obliterati, aventi corso o destinati ad aver corso nel paese nel quale hanno o avranno un valore di affrancatura riconosciuto; carta bollata; biglietti di banca; assegni; titoli azionari od obbligazioni e titoli simili › Biglietti di banca",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T12:15:53.540Z",
+      "updatedBy": "admin"
+    },
+    "desc:b6727f99bb6bca68a2fb8f42": {
+      "ean": "",
+      "description": "Vs. banca:",
+      "cn8": "49070030",
+      "taric10": "4907003000",
+      "officialDescription": "PRODOTTI DELL'EDITORIA, DELLA STAMPA O DELLE ALTRE INDUSTRIE GRAFICHE; TESTI MANOSCRITTI O DATTILOSCRITTI E PIANI › Francobolli, marche da bollo e simili, non obliterati, aventi corso o destinati ad aver corso nel paese nel quale hanno o avranno un valore di affrancatura riconosciuto; carta bollata; biglietti di banca; assegni; titoli azionari od obbligazioni e titoli simili › Biglietti di banca",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T12:15:53.555Z",
+      "updatedBy": "admin"
+    },
+    "desc:e2750ea454a0d74c48ac8e38": {
+      "ean": "",
+      "description": "Note libere",
+      "cn8": "38243000",
+      "taric10": "3824300020",
+      "officialDescription": "PRODOTTI VARI DELLE INDUSTRIE CHIMICHE › Leganti preparati per forme o per anime da fonderia; prodotti chimici e preparazioni delle industrie chimiche o delle industrie connesse (comprese quelle costituite da miscele di prodotti naturali), non nominati né compresi altrove › Carburi metallici non agglomerati, miscelati tra loro o con leganti metallici › Carburo di tungsteno › polvere pronta per la pressatura, sotto forma di particelle di forma sferica o granulare, omogenee e in libero scorrimento, semplicemente miscelata a polvere e/o ad altri carburi, e con un legante organico",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T12:15:58.587Z",
+      "updatedBy": "admin"
+    },
+    "desc:9e11b6452e128048b5290cea": {
+      "ean": "",
+      "description": "Creato da:LONGOBARDI Operatore LONGOBARDI",
+      "cn8": "94021000",
+      "taric10": "9402100000",
+      "officialDescription": "MOBILI; OGGETTI LETTERECCI, MATERASSI, SUPPORTI PER MATERASSI, CUSCINI E OGGETTI DI ARREDAMENTO SIMILI, IMBOTTITI; APPARECCHI PER L'ILLUMINAZIONE NON NOMINATI NÉ COMPRESI ALTROVE; INSEGNE LUMINOSE, TARGHETTE INDICATRICI LUMINOSE ED OGGETTI SIMILI; COSTRUZIONI PREFABBRICATE › Mobili per la medicina, la chirurgia, l'odontoiatria o la veterinaria (per esempio: tavoli operatori, tavoli per esami, letti con meccanismo per usi clinici, poltrone per dentisti); poltrone da parrucchiere e poltrone simili, con dispositivo di orientamento e di elevazione; parti di tali oggetti › Poltrone per dentisti, poltrone da parrucchiere e poltrone simili, e loro parti",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T12:16:08.514Z",
+      "updatedBy": "admin"
+    },
+    "desc:3078d19c82561428a92db021": {
+      "ean": "",
+      "description": "F/TECH SEN 407205 FELPA TECH SEN NERO 3XL",
+      "cn8": "58013100",
+      "taric10": "5801310000",
+      "officialDescription": "TESSUTI SPECIALI; SUPERFICI TESSILI \"TUFTED\"; PIZZI; ARAZZI; PASSAMANERIA; RICAMI › Velluti e felpe tessuti e tessuti di ciniglia, diversi dai manufatti delle voci 5802 o 5806 › di fibre sintetiche o artificiali › Velluti e felpe a trama, non tagliati",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T12:16:08.518Z",
       "updatedBy": "admin"
     }
   }

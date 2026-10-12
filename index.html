@@ -7805,7 +7805,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <span><strong id="invoiceClassifierRowCount">0</strong> prodotti</span>
       <span><strong id="invoiceClassifierDoneCount">0</strong> classificati</span>
       <span><strong id="invoiceClassifierReviewCount">0</strong> da verificare</span>
-      <label id="invoiceClassifierDocPackagesField" hidden>Colli documenti ZEUS<input id="invoiceClassifierDocPackages" inputmode="decimal" placeholder="—" /></label>
+      <label id="invoiceClassifierDocPackagesField" hidden>Colli dichiarati documenti<input id="invoiceClassifierDocPackages" inputmode="decimal" placeholder="—" /></label>
       <label>Lordo documento (kg)<input id="invoiceClassifierDocGross" inputmode="decimal" placeholder="—" /></label>
       <label>Netto documento (kg)<input id="invoiceClassifierDocNet" inputmode="decimal" placeholder="—" /></label>
       <label>Valore documento (€)<input id="invoiceClassifierDocValue" inputmode="decimal" placeholder="—" /></label>
@@ -25659,6 +25659,11 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       id: "zeus", label: "ZEUS",
       hint: "Carica fattura PDF e packing list Excel. Codici HS e pesi totali vengono dalla packing list, valori dalla fattura. Quando mancano i colli per articolo, la colonna Colli usa la quantità in pezzi. Gli sconti complessivi vengono ripartiti proporzionalmente.",
       parseText: parseZeusDocumentText, parseMatrix: parseZeusMatrix, fullDocumentParse: true
+    },
+    "o-sole-e-napule": {
+      id:"o-sole-e-napule", label:"O SOLE E NAPULE",
+      hint:"Carica fattura PDF e packing list Excel. Codici NCM, quantità e valori dalla fattura; colli e pesi totali dalla packing list. Le pedane restano nelle proprie righe; le differenze dei formati vengono segnalate.",
+      parseText:parseSoleDocumentText, parseMatrix:parseSoleMatrix, fullDocumentParse:true
     }
   });
   const $ = id => document.getElementById(id);
@@ -25681,6 +25686,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 
   let selectedFiles = [];
   let selectedFilesAnalyzed = false;
+  const selectedFileCopies = new WeakMap();
   let state = loadState();
   let classificationRunning = false;
 
@@ -25737,14 +25743,14 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       clientId:cleanText(raw.clientId||"",80), quantity:singleNumericCell(raw.quantity??""), unit:cleanText(raw.unit||"",20),
       invoiceNumber:cleanText(raw.invoiceNumber||"",30), invoiceDate:cleanText(raw.invoiceDate||"",30), packingGroup:cleanText(raw.packingGroup||"",160),
       sku:cleanText(raw.sku||"",120), origin:cleanText(raw.origin||"",100), packingSource:cleanText(raw.packingSource||"",160),
-      documentCn8:cleanCn8(raw.documentCn8||""), invoiceValue:singleNumericCell(raw.invoiceValue||""), discountValue:singleNumericCell(raw.discountValue||"") };
-    row.dataIssue=row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");
+      documentCn8:cleanCn8(raw.documentCn8||""), invoiceValue:singleNumericCell(raw.invoiceValue||""), discountValue:singleNumericCell(raw.discountValue||""), packingDescription:cleanText(raw.packingDescription||"",500) };
+    row.dataIssue=row.clientId==="o-sole-e-napule"?soleRowIssue(row):row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");
     row.needsReview=row.needsReview||!!row.dataIssue;
     return row;
   }
   function loadState(){
-    try{ const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}"); return { clientId:clientProfile(parsed.clientId).id, zeusDocuments:Array.isArray(parsed.zeusDocuments)?parsed.zeusDocuments.map(cleanZeusDocument).filter(Boolean):[], zeusNotices:Array.isArray(parsed.zeusNotices)?parsed.zeusNotices.map(value=>cleanText(value,1500)).filter(Boolean):[], docPackages:cleanText(parsed.docPackages||"",50), gfiDocuments:Array.isArray(parsed.gfiDocuments)?parsed.gfiDocuments.map(cleanGfiDocument).filter(Boolean):[], dataNotices:Array.isArray(parsed.dataNotices)?parsed.dataNotices.map(value=>cleanText(value,1000)).filter(Boolean):[], rows:Array.isArray(parsed.rows)?parsed.rows.map(makeRow).filter(isRecognizedProductRow):[], sourceNames:Array.isArray(parsed.sourceNames)?parsed.sourceNames:[], docGross:cleanText(parsed.docGross||"",50), docNet:cleanText(parsed.docNet||"",50), docValue:cleanText(parsed.docValue||"",50) }; }
-    catch{return {clientId:DEFAULT_CLIENT_ID,zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};}
+    try{ const parsed=JSON.parse(localStorage.getItem(STORAGE_KEY)||"{}"); return { clientId:clientProfile(parsed.clientId).id, soleDocuments:Array.isArray(parsed.soleDocuments)?parsed.soleDocuments.map(cleanSoleDocument).filter(Boolean):[], soleNotices:Array.isArray(parsed.soleNotices)?parsed.soleNotices.map(value=>cleanText(value,1500)).filter(Boolean):[], zeusDocuments:Array.isArray(parsed.zeusDocuments)?parsed.zeusDocuments.map(cleanZeusDocument).filter(Boolean):[], zeusNotices:Array.isArray(parsed.zeusNotices)?parsed.zeusNotices.map(value=>cleanText(value,1500)).filter(Boolean):[], docPackages:cleanText(parsed.docPackages||"",50), gfiDocuments:Array.isArray(parsed.gfiDocuments)?parsed.gfiDocuments.map(cleanGfiDocument).filter(Boolean):[], dataNotices:Array.isArray(parsed.dataNotices)?parsed.dataNotices.map(value=>cleanText(value,1000)).filter(Boolean):[], rows:Array.isArray(parsed.rows)?parsed.rows.map(makeRow).filter(isRecognizedProductRow):[], sourceNames:Array.isArray(parsed.sourceNames)?parsed.sourceNames:[], docGross:cleanText(parsed.docGross||"",50), docNet:cleanText(parsed.docNet||"",50), docValue:cleanText(parsed.docValue||"",50) }; }
+    catch{return {clientId:DEFAULT_CLIENT_ID,soleDocuments:[],soleNotices:[],zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};}
   }
   function saveState(){ try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(state)); }catch{} }
   function rowPackages(row){
@@ -25823,7 +25829,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     for(const [field,cell] of [["packages",elements.packingPackages],["gross",elements.packingGross],["net",elements.packingNet],["value",elements.packingValue]])cell.textContent=formatComparisonNumber(sumRows(comparison.rows,field),field);
   }
   function renderComparisonNotices(comparison){
-    const notices=[...new Set([...state.dataNotices,...(state.zeusNotices||[]),...comparison.notices])].map(notice=>notice.replace("La packing list riporta i pezzi, senza colli per articolo: il totale colli è conservato separatamente.","In assenza dei colli per articolo, la colonna Colli usa i pezzi. I colli complessivi della fattura sono indicati separatamente."));
+    const notices=[...new Set([...state.dataNotices,...(state.soleNotices||[]),...(state.zeusNotices||[]),...comparison.notices])].map(notice=>notice.replace("La packing list riporta i pezzi, senza colli per articolo: il totale colli è conservato separatamente.","In assenza dei colli per articolo, la colonna Colli usa i pezzi. I colli complessivi della fattura sono indicati separatamente."));
     elements.dataNotice.textContent=notices.join("\n");elements.dataNotice.hidden=!notices.length;
   }
   function updateGfiDocumentTotals(){
@@ -25850,14 +25856,15 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     }
   }
   function render(){
-    const hasZeus=state.clientId==="zeus"||state.rows.some(row=>row.clientId==="zeus");
+    renderClientProfile();
+    const hasZeus=["zeus","o-sole-e-napule"].includes(state.clientId)||state.rows.some(row=>["zeus","o-sole-e-napule"].includes(row.clientId));
     elements.docPackagesField.hidden=!hasZeus;
     elements.docPackages.value=state.docPackages||"";
     const comparison=gfiComparison();
     elements.tbody.innerHTML=state.rows.map((row,index)=>`<tr data-row-id="${escapeHtml(row.id)}" title="${escapeHtml([row.dataIssue,gfiRowIssue(row),row.message||row.officialDescription].filter(Boolean).join(" · "))}">
       <td class="invoiceClassifierRowNr">${index+1}</td>
-      <td><input data-field="description" value="${escapeHtml(row.description)}" aria-label="Prodotto riga ${index+1}">${gfiPackingControl(row)}${row.clientId==="zeus"?`<div class="invoiceClassifierPackingMeta">Quantità: ${escapeHtml(row.quantity||"—")} pezzi${row.origin?` · Origine: ${escapeHtml(row.origin)}`:""}${row.packingSource?" · Packing list abbinata":""}</div>`:""}</td>
-      <td><input data-field="${row.clientId==="zeus"?"sku":"ean"}" value="${escapeHtml(row.clientId==="zeus"?row.sku:row.ean)}" inputmode="${row.clientId==="zeus"?"text":"numeric"}" aria-label="Codice articolo riga ${index+1}"></td>
+      <td><input data-field="description" value="${escapeHtml(row.description)}" aria-label="Prodotto riga ${index+1}">${gfiPackingControl(row)}${row.clientId==="o-sole-e-napule"?`<div class="invoiceClassifierPackingMeta">Codice: ${escapeHtml(row.sku||"—")} · Quantità fattura: ${escapeHtml(row.quantity||"—")} ${escapeHtml(row.unit)}${row.packingSource?` · Packing list abbinata: ${escapeHtml(row.packingDescription)}`:""}</div>`:""}${row.clientId==="zeus"?`<div class="invoiceClassifierPackingMeta">Quantità: ${escapeHtml(row.quantity||"—")} pezzi${row.origin?` · Origine: ${escapeHtml(row.origin)}`:""}${row.packingSource?" · Packing list abbinata":""}</div>`:""}</td>
+      <td><input data-field="${["zeus","o-sole-e-napule"].includes(row.clientId)?"sku":"ean"}" value="${escapeHtml(["zeus","o-sole-e-napule"].includes(row.clientId)?row.sku:row.ean)}" inputmode="${["zeus","o-sole-e-napule"].includes(row.clientId)?"text":"numeric"}" aria-label="Codice articolo riga ${index+1}"></td>
       <td><input class="invoiceClassifierCode" data-field="cn8" value="${escapeHtml(row.cn8)}" inputmode="numeric" maxlength="8" aria-label="Voce NC riga ${index+1}"><small class="invoiceClassifierRowStatus" title="${escapeHtml(row.message||row.officialDescription||"")}">${escapeHtml(statusLabel(row))}</small></td>
       <td><input data-field="packages" value="${escapeHtml(rowPackages(row))}" inputmode="decimal" aria-label="Colli riga ${index+1}" title="${packagesUseQuantity(row)?"Quantità in pezzi usata perché i colli non sono indicati per articolo.":"Colli indicati per articolo."}"></td>
       <td><input data-field="gross" value="${escapeHtml(row.gross)}" inputmode="decimal" aria-label="Peso lordo riga ${index+1}"></td>
@@ -25891,7 +25898,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const choice=cleanText(answer,80).toLowerCase();
     const column=columns[Number(choice)-1]||columns.find(item=>item.key===choice||normalizeHeader(item.label)===normalizeHeader(choice));
     if(!column){setStatus("Colonna non riconosciuta. Scegli un numero da 1 a 7.","error");return;}
-    const values=state.rows.map(row=>cleanText((column.key==="packages"?rowPackages(row):row[column.key])||"",700));
+    const values=state.rows.map(row=>cleanText((column.key==="packages"?rowPackages(row):column.key==="ean"&&["zeus","o-sole-e-napule"].includes(row.clientId)?row.sku:row[column.key])||"",700));
     if(!values.some(Boolean)){setStatus(`La colonna “${column.label}” è vuota.`,"error");return;}
     try{await writeClipboardText(values.join("\n"));const original=elements.copy.textContent;elements.copy.textContent="Copiata";setTimeout(()=>{elements.copy.textContent=original;},1200);setStatus(`Colonna “${column.label}” copiata: ${values.length} righe.`,"ok");}
     catch(error){setStatus(`Copia non riuscita: ${error.message||error}`,"error");}
@@ -26256,6 +26263,191 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       "VALORE DOCUMENTO":asCell(doc.value),"SCONTO COMPLESSIVO":asCell(doc.discount),"FILE SORGENTE":doc.source}));
   }
 
+  function soleReference(text){
+    const match=String(text||"").match(/\b(?:FATTURA|INVOICE)\s*(?:N\s*[°º.]?\s*)?(\d+)\s*\/\s*(\d+)\s*(?:DEL\s*)?(\d{1,2}[/.\-]\d{1,2}[/.\-]\d{4})?/i);
+    return {invoiceNumber:match?`${match[1]}/${match[2]}`:"",invoiceDate:match?.[3]||""};
+  }
+  function soleIsPallet(row){return /\b(?:pedana|pallet|europallet)\b/i.test(row?.description||"");}
+  function soleRowIssue(row){
+    const gross=numericValue(row.gross),net=numericValue(row.net);
+    if(gross!==null&&net!==null&&net>gross+0.0005)return "Peso netto superiore al lordo: verificare la packing list.";
+    if(net===0&&gross>0&&!soleIsPallet(row))return "Peso netto pari a zero nel documento: verificare.";
+    return "";
+  }
+  function cleanSoleDocument(raw){
+    if(!raw||!["invoice","packing"].includes(raw.kind)||!cleanText(raw.source))return null;
+    const source=cleanText(raw.source,160);
+    return {kind:raw.kind,source,invoiceNumber:cleanText(raw.invoiceNumber,30),invoiceDate:cleanText(raw.invoiceDate,30),
+      packages:zeusCell(raw.packages),pallets:zeusCell(raw.pallets),weights:{gross:zeusCell(raw.weights?.gross),net:zeusCell(raw.weights?.net)},value:zeusMoney(raw.value),
+      rows:(Array.isArray(raw.rows)?raw.rows:[]).map(row=>makeRow({...row,source,clientId:"o-sole-e-napule",documentKind:raw.kind})).filter(isRecognizedProductRow)};
+  }
+  function soleParsedResult(document){return {rows:document.rows,profileMatched:true,soleDocument:document,weights:document.weights,value:document.value};}
+  function parseSoleDocumentText(text,source){
+    const content=String(text||"");
+    const normalized=content.slice(0,9000).toLowerCase().replace(/[^a-z0-9]+/g," ");
+    if(!/\b(?:o\s+sole\s+(?:e\s+)?napule|osoleenapule)\b/i.test(normalized)||!/\bFATTURA\b/i.test(content))return null;
+    const reference=soleReference(content),rows=[];let current=null,addDescription=false,packages="",value="";
+    const lines=content.split(/\r?\n/).map(line=>cleanText(line,2500));
+    for(let index=0;index<lines.length;index++){
+      const line=lines[index];
+      const match=line.match(/^(.+?)\s+(CF|NR|PZ|PCS|KG|LT)\s+([\d.,]+)\s+(?:€\s*)?(.+)$/i);
+      const amounts=match?.[4]?.match(/[-+]?\d[\d.]*,\d{2,4}/g)||[];
+      if(match&&amounts.length>=2){
+        const prior=lines[index-1]||"",inline=match[1].match(/^([A-Z0-9][A-Z0-9._/-]{0,40})\s+(.+)$/i);
+        const separateCode=/^[A-Z0-9][A-Z0-9._/-]{0,40}$/i.test(prior);
+        const sku=separateCode?prior:inline?.[1]||"",description=separateCode?match[1]:inline?.[2]||match[1];
+        current=makeRow({source,clientId:"o-sole-e-napule",documentKind:"invoice",sku,description,
+          quantity:zeusCell(match[3],3,true),unit:match[2].toUpperCase(),value:zeusMoney(amounts.at(-1),true),...reference});
+        rows.push(current);addDescription=true;continue;
+      }
+      if(current&&/^NCM\s*:/i.test(line)){
+        current.cn8=cleanCn8(line.match(/^NCM\s*:\s*(\d(?:[\d\s]*\d)?)/i)?.[1]||"");
+        current.documentCn8=current.cn8;current.status=current.cn8?"confirmed":"pending";current.needsReview=!current.cn8;
+        addDescription=false;continue;
+      }
+      if(/^(?:CONDIZIONI DI VENDITA|INTESTAZIONE FATTURA|NETTO MERCE|TIPO DOCUMENTO|COD\. ART\.)/i.test(line)){current=null;addDescription=false;}
+      if(/^(?:BOILED|COOKED|GREEN PEAS|CANNELLINI BEANS|ARTICHOKES|SLICED|PEPPERS WITH|PEACHES|OLIVES\b|BELLA DI CERIGNOLA OLIVES|CLASSIC|READY SAUCE|NEAPOLITAN|ROASTED|LEMON DRESSING|CANNED|EUROPALLET|PALLET\b)/i.test(line))addDescription=false;
+      if(current&&addDescription&&line&&!/^Lotto\b|^In riferimento\b/i.test(line))current.description=cleanText(`${current.description} ${line}`,500);
+      if(/\bNETTO MERCE\b/.test(line)&&/\bTOTALE FATTURA\b/.test(line)){
+        const next=lines.slice(index+1).find(item=>item);
+        const totals=next?.match(/\d[\d.]*,\d{2,4}/g)||[];
+        if(totals.length)value=zeusMoney(totals.at(-1),true);
+      }
+      if(/^VENDITA\b/i.test(line)){
+        const totals=line.match(/\d[\d.]*,\d+/g)||[];
+        if(totals.length>=2)packages=zeusCell(totals.at(-1),3,true);
+      }
+    }
+    if(!rows.length)return null;
+    const gross=content.match(/Total\s+Gross\s+Weight\s*:\s*(?:Kg\s*)?([\d.,]+)/i)?.[1],net=content.match(/Total\s+Net\s+Weight\s*:\s*(?:Kg\s*)?([\d.,]+)/i)?.[1];
+    const document=cleanSoleDocument({kind:"invoice",source,...reference,rows,packages,pallets:zeusSum(rows.filter(soleIsPallet),"quantity"),
+      weights:{gross:zeusCell(gross,3,true),net:zeusCell(net,3,true)},value:value||zeusSum(rows,"value",2)});
+    return soleParsedResult(document);
+  }
+  function soleHeaderField(value){
+    const key=normalizeHeader(value);
+    if(/^(?:total gross weight|peso lordo totale|lordo totale)/.test(key))return "gross";
+    if(/^(?:total net weight|peso netto totale|netto totale)/.test(key))return "net";
+    if(/^(?:gross weight for cartons|gross weight per carton|peso lordo per collo)/.test(key))return "unitGross";
+    if(/^(?:net weight for cartons|net weight per carton|peso netto per collo)/.test(key))return "unitNet";
+    const aliases={description:["products description","product description","descrizione prodotti","descrizione articolo","description"],
+      packages:["cartons","cartoni","colli","packages"],sku:["item code","codice articolo","cod art"],cn8:["ncm","nc","hs code","taric"],
+      value:["total value","importo","imponibile"],gross:["gross weight kg","peso lordo"],net:["net weight kg","peso netto"]};
+    return Object.entries(aliases).find(([,names])=>names.includes(key))?.[0]||"";
+  }
+  function parseSoleMatrix(matrix,source){
+    let header=-1,columns={};
+    for(let index=0;index<Math.min(matrix.length,80);index++){
+      const detected={};(matrix[index]||[]).forEach((value,col)=>{const field=soleHeaderField(value);if(field&&detected[field]===undefined)detected[field]=col;});
+      if(detected.description!==undefined&&detected.packages!==undefined&&(detected.gross!==undefined||detected.unitGross!==undefined)&&(detected.net!==undefined||detected.unitNet!==undefined)){
+        header=index;columns=detected;break;
+      }
+    }
+    if(header<0)return null;
+    const reference=soleReference(matrix.slice(0,header).map(row=>row.join(" ")).join("\n")),rows=[];let declared={};
+    for(const cells of matrix.slice(header+1)){
+      const raw={};for(const [field,col] of Object.entries(columns))raw[field]=cells?.[col]??"";
+      const description=cleanText(raw.description,500),quantity=zeusNumber(raw.packages,true);
+      if((!description||/^(?:TOTAL|TOTALI|TOTALE)\b/i.test(description))&&quantity!==null){
+        declared={packages:zeusCell(quantity),gross:zeusCell(raw.gross,3,true),net:zeusCell(raw.net,3,true)};continue;
+      }
+      if(!description||/^(?:TOTAL|TOTALI|TOTALE)\b/i.test(description)||isNonProductDescription(description)||quantity===null)continue;
+      const weight=field=>{
+        const total=zeusNumber(raw[field],true),unit=zeusNumber(raw[field==="gross"?"unitGross":"unitNet"],true);
+        return total!==null?zeusCell(total):unit!==null?zeusCell(unit*quantity):"";
+      };
+      rows.push(makeRow({source,clientId:"o-sole-e-napule",documentKind:"packing",description,sku:raw.sku,cn8:raw.cn8,
+        packages:zeusCell(quantity),quantity:zeusCell(quantity),unit:soleIsPallet({description})?"NR":"CF",gross:weight("gross"),net:weight("net"),value:zeusMoney(raw.value,true),...reference}));
+    }
+    if(!rows.length)return null;
+    return soleParsedResult(cleanSoleDocument({kind:"packing",source,...reference,rows,pallets:zeusSum(rows.filter(soleIsPallet),"quantity"),
+      packages:declared.packages||zeusSum(rows.filter(row=>!soleIsPallet(row)),"packages"),
+      weights:{gross:declared.gross||zeusSum(rows,"gross"),net:declared.net||zeusSum(rows,"net")},value:zeusSum(rows,"value",2)}));
+  }
+  function soleProductInfo(row){
+    let text=String(row.description||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    text=text.replace(/peper\./g,"peperoni ").replace(/al(l[ae])?(mandorle|pistacchio)/g," $2")
+      .replace(/(\d)\s+(\d+\s*[x×]\s*\d)/g,"$1$2").replace(/(\d+\s*[x×]\s*\d+)\s+(\d+)(?=\s*(?:kg|gr|g|ml)\b)/g,"$1$2");
+    const roots=["cannellin","lenticch","ceci","lupin","borlott","pisell","carciof","melanzan","peper","pesc","mandorl","pistacch","oliv","passat","genoves","amaren","cilieg","pomodor","ricott","acciugh","capper","tonn","limon","basil","pedan","pallet","europallet","gambo","filett","secch","arrostit","pelat"];
+    const tokens=new Set(roots.filter(root=>text.includes(root)).map(root=>["pallet","europallet"].includes(root)?"pedan":root));
+    let pack=text.match(/\b(\d+)\s*[x×]\s*((?:\d+\s*[x×]\s*)?\d+(?:[.,]\d+)?)\s*(kg|gr|g|ml|cl|cm)\b/i);
+    const format=pack?`${pack[1]}x${pack[2].replace(/\s/g,"").replace(/,/,".")}${pack[3].replace(/^gr$/,"g")}`:"";
+    return {tokens,format};
+  }
+  function soleMatchScore(left,right){
+    if(soleIsPallet(left)!==soleIsPallet(right))return -Infinity;
+    if(left.sku&&right.sku)return zeusProductKey(left)===zeusProductKey(right)?1000:-Infinity;
+    const a=soleProductInfo(left),b=soleProductInfo(right),ingredients=["ricott","acciugh","capper","tonn","mandorl","pistacch","basil","genoves"];
+    if(ingredients.some(token=>a.tokens.has(token)!==b.tokens.has(token)))return -Infinity;
+    const shared=[...a.tokens].filter(token=>b.tokens.has(token)),different=[...a.tokens,...b.tokens].filter(token=>!(a.tokens.has(token)&&b.tokens.has(token)));
+    if(!shared.length)return -Infinity;
+    return shared.length*10-different.length*3+(a.format&&a.format===b.format?20:0);
+  }
+  function reconcileSoleDocuments(documents,previousRows=[]){
+    const invoices=documents.filter(doc=>doc.kind==="invoice"),packings=documents.filter(doc=>doc.kind==="packing"),used=new Set(),rows=[],notices=[];let matched=0;
+    const compare=(actual,expected,label,source,precision=3)=>{
+      const a=numericValue(actual),b=numericValue(expected);
+      if(a!==null&&b!==null&&Math.abs(a-b)>0.5/10**precision)notices.push(`${source}: ${label} ${formatComparisonNumber(a)}; totale dichiarato ${formatComparisonNumber(b)}. Verificare.`);
+    };
+    for(const invoice of invoices){
+      const candidates=packings.filter(packing=>invoice.invoiceNumber&&packing.invoiceNumber?invoice.invoiceNumber===packing.invoiceNumber:invoices.length===1&&packings.length===1);
+      const packing=candidates.length===1&&!used.has(candidates[0])?candidates[0]:null;
+      if(packing)used.add(packing);else notices.push(`${invoice.source}: carica la packing list corrispondente per recuperare colli e pesi.`);
+      const consumed=new Set(),invoiceRows=[];
+      for(const original of invoice.rows){
+        const row=makeRow(original);
+        const choices=(packing?.rows||[]).map((item,index)=>({item,index,score:soleMatchScore(row,item)}))
+          .filter(choice=>!consumed.has(choice.index)&&numericValue(row.quantity)===numericValue(choice.item.quantity)&&choice.score>=10).sort((a,b)=>b.score-a.score);
+        const chosen=choices[0]&&(!choices[1]||choices[0].score-choices[1].score>=8)?choices[0]:null;
+        if(chosen){
+          consumed.add(chosen.index);matched++;
+          Object.assign(row,{packages:chosen.item.packages,gross:chosen.item.gross,net:chosen.item.net,packingSource:packing.source,packingDescription:chosen.item.description});
+          const a=soleProductInfo(row),b=soleProductInfo(chosen.item);
+          if(a.format&&b.format&&a.format!==b.format&&!soleIsPallet(row))notices.push(`${row.sku||row.description}: formato fattura ${a.format}; formato packing list ${b.format}. Abbinamento per prodotto e quantità: verificare il formato nei documenti.`);
+        }else if(packing){
+          row.message="Abbinamento packing non univoco o quantità diversa: verificare la descrizione e i colli.";
+          notices.push(`${invoice.source}: ${row.sku||row.description} non abbinato alla packing list. Pesi lasciati vuoti; la colonna Colli usa la quantità della fattura.`);
+        }
+        row.dataIssue=soleRowIssue(row);row.needsReview=!!row.dataIssue||!row.cn8||(!!packing&&!chosen);
+        if(!row.cn8)notices.push(`${invoice.source}: ${row.sku||row.description} senza NCM in fattura. Verificare o usare Classifica tutto.`);
+        invoiceRows.push(row);
+      }
+      if(packing){
+        if(consumed.size<packing.rows.length)notices.push(`${packing.source}: ${packing.rows.length-consumed.size} articoli della packing list senza abbinamento in fattura. Verificare.`);
+        compare(zeusSum(packing.rows,"gross"),packing.weights.gross,"somma lordo articoli PL",packing.source);
+        compare(zeusSum(packing.rows,"net"),packing.weights.net,"somma netto articoli PL",packing.source);
+        compare(zeusSum(packing.rows,"gross"),invoice.weights.gross,"lordo PL e fattura",invoice.source);
+        compare(zeusSum(packing.rows,"net"),invoice.weights.net,"netto PL e fattura",invoice.source);
+        compare(zeusSum(invoice.rows.filter(row=>!soleIsPallet(row)),"quantity"),packing.packages,"colli merce fattura e PL",invoice.source);
+      }
+      compare(zeusSum(invoiceRows,"value",2),invoice.value,"somma importi articoli",invoice.source,2);
+      const palletCount=zeusSum(invoiceRows.filter(soleIsPallet),"quantity");
+      if(numericValue(palletCount)>0)notices.push(`${invoice.source}: ${formatComparisonNumber(invoice.packages||packing?.packages,"packages")} cartoni merce e ${formatComparisonNumber(palletCount,"packages")} pedane. Il totale della colonna Colli comprende anche le pedane delle righe fattura; i loro pesi netti pari a zero sono mantenuti.`);
+      rows.push(...invoiceRows);
+    }
+    const standalone=packings.filter(doc=>!used.has(doc));
+    for(const packing of standalone){
+      rows.push(...packing.rows.map(row=>makeRow({...row,needsReview:!row.cn8})));
+      notices.push(`${packing.source}: colli e pesi letti dalla packing list. Carica la fattura per i codici NCM e gli importi.`);
+    }
+    const previous=new Map();
+    for(const row of previousRows.filter(row=>row.clientId==="o-sole-e-napule")){
+      const key=JSON.stringify([row.source,zeusProductKey(row),row.quantity]);if(!previous.has(key))previous.set(key,[]);previous.get(key).push(row);
+    }
+    for(const row of rows){
+      const old=previous.get(JSON.stringify([row.source,zeusProductKey(row),row.quantity]))?.shift();
+      if(old){row.id=old.id;if(old.cn8&&old.cn8!==old.documentCn8){row.cn8=old.cn8;row.status=old.status;}}
+    }
+    const controls=[...invoices,...standalone];
+    return {rows,matched,notices:[...new Set(notices)],docGross:zeusSum(controls.map(doc=>doc.weights),"gross"),docNet:zeusSum(controls.map(doc=>doc.weights),"net"),
+      docValue:zeusSum(controls,"value",2),docPackages:zeusSum(controls,"packages")};
+  }
+  function soleDocumentExportRows(){
+    return state.soleDocuments.map(doc=>({"TIPO DOCUMENTO":doc.kind==="invoice"?"FATTURA":"PACKING LIST","FATTURA":doc.invoiceNumber,"DATA":doc.invoiceDate,
+      "COLLI MERCE DICHIARATI":asCell(doc.packages),"PEDANE":asCell(doc.pallets),"LORDO DICHIARATO KG":asCell(doc.weights.gross),"NETTO DICHIARATO KG":asCell(doc.weights.net),
+      "VALORE DOCUMENTO":asCell(doc.value),"FILE SORGENTE":doc.source}));
+  }
+
   function withClientNotices(parsed,clientId,source){
     const profile=clientProfile(clientId);
     if(profile.id===DEFAULT_CLIENT_ID)return {...parsed,dataNotices:[]};
@@ -26368,6 +26560,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     parsed.weights={gross:totals?.gross||weights.gross||sumRows(parsed.rows,"gross"),net:totals?.net||weights.net||sumRows(parsed.rows,"net")};
     parsed.value=totals?.value||documentValue(content)||sumRows(parsed.rows,"value");
     if(profile.fullDocumentParse)parsed=profile.parseText(content,file.name)||parseStandardDocumentText(content,file.name);
+    if(clientId===DEFAULT_CLIENT_ID)parsed=parseZeusDocumentText(content,file.name)||parseSoleDocumentText(content,file.name)||parsed;
     if(!parsed.rows.length && !parsed.gfiDocument?.groups?.length && globalThis.Tesseract){
       const ocr=[];
       for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){ setStatus(`OCR ${file.name}: pagina ${pageNumber} di ${pdf.numPages}…`,"busy"); const page=await pdf.getPage(pageNumber),viewport=page.getViewport({scale:1.8}); const canvas=document.createElement("canvas"); canvas.width=Math.ceil(viewport.width);canvas.height=Math.ceil(viewport.height);await page.render({canvasContext:canvas.getContext("2d"),viewport}).promise; const result=await Tesseract.recognize(canvas,"ita+eng");ocr.push(result?.data?.text||""); }
@@ -26396,8 +26589,10 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   async function readSheet(file,clientId=state.clientId){
     if(globalThis.XLSX){
       const book=XLSX.read(await file.arrayBuffer(),{type:"array",cellDates:false});
-      if(clientId==="zeus"){
-        for(const name of book.SheetNames){const matrix=XLSX.utils.sheet_to_json(book.Sheets[name],{header:1,raw:true,defval:""}),parsed=parseZeusMatrix(matrix,file.name);if(parsed)return withClientNotices(parsed,clientId,file.name);}
+      const parsers=clientId===DEFAULT_CLIENT_ID?[parseZeusMatrix,parseSoleMatrix]:[clientProfile(clientId).parseMatrix].filter(Boolean);
+      for(const name of book.SheetNames){
+        const matrix=XLSX.utils.sheet_to_json(book.Sheets[name],{header:1,raw:true,defval:""});
+        for(const parse of parsers){const parsed=parse(matrix,file.name);if(parsed)return withClientNotices(parsed,clientId,file.name);}
       }
       const sheet=book.Sheets[book.SheetNames[0]];return rowsFromMatrix(XLSX.utils.sheet_to_json(sheet,{header:1,raw:false,defval:""}),file.name,clientId);
     }
@@ -26410,17 +26605,38 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     const files=selectedFiles.length?selectedFiles:Array.from(elements.input.files||[]); if(!files.length){setStatus("Seleziona almeno un documento.","error");return;}
     if(elements.analyze.disabled||classificationRunning)return;
     const clientId=state.clientId,profile=clientProfile(clientId),controls=[elements.analyze,elements.classify,elements.client,elements.clear,elements.input,elements.add],disabledBefore=controls.map(control=>control.disabled);
-    controls.forEach(control=>{control.disabled=true;});const extracted=[],names=[],notices=[],gfiDocuments=[],zeusDocuments=[];let grossTotal=0,netTotal=0,valueTotal=0,hasGross=false,hasNet=false,hasValue=false;
+    controls.forEach(control=>{control.disabled=true;});const extracted=[],names=[],notices=[],gfiDocuments=[],zeusDocuments=[],soleDocuments=[];let grossTotal=0,netTotal=0,valueTotal=0,hasGross=false,hasNet=false,hasValue=false;
     try{
-      for(let index=0;index<files.length;index++){const file=files[index];setStatus(`Analisi ${index+1} di ${files.length}: ${file.name}…`,"busy");try{const result=await readFile(file,clientId);extracted.push(...result.rows);names.push(file.name);notices.push(...(result.dataNotices||[]));if(result.gfiDocument)gfiDocuments.push(result.gfiDocument);if(result.zeusDocument)zeusDocuments.push(result.zeusDocument);const gross=numericValue(result.weights?.gross),net=numericValue(result.weights?.net),value=numericValue(result.value);if(gross!==null){grossTotal+=gross;hasGross=true;}if(net!==null){netTotal+=net;hasNet=true;}if(value!==null){valueTotal+=value;hasValue=true;}}catch(error){console.error("Import documento",file.name,error);notices.push(`${file.name}: lettura non riuscita (${cleanText(error.message||error,250)}).`);}}
+      for(let index=0;index<files.length;index++){const original=files[index];setStatus(`Analisi ${index+1} di ${files.length}: ${original.name}…`,"busy");try{const file=await copiedSelectedFile(original),result=await readFile(file,clientId);extracted.push(...result.rows);names.push(file.name);notices.push(...(result.dataNotices||[]));if(result.gfiDocument)gfiDocuments.push(result.gfiDocument);if(result.zeusDocument)zeusDocuments.push(result.zeusDocument);if(result.soleDocument)soleDocuments.push(result.soleDocument);const gross=numericValue(result.weights?.gross),net=numericValue(result.weights?.net),value=numericValue(result.value);if(gross!==null){grossTotal+=gross;hasGross=true;}if(net!==null){netTotal+=net;hasNet=true;}if(value!==null){valueTotal+=value;hasValue=true;}}catch(error){console.error("Import documento",original.name,error);notices.push(`${original.name}: lettura non riuscita (${cleanText(error.message||error,250)}).`);}}
       state.dataNotices=[...new Set([...state.dataNotices,...notices])];
+      if(soleDocuments.length&&zeusDocuments.length){render();setStatus("I file appartengono a clienti diversi: analizza separatamente i documenti di ciascun cliente.","error");return;}
+      if(soleDocuments.length){
+        if(clientId===DEFAULT_CLIENT_ID)state.clientId="o-sole-e-napule";
+        for(const document of soleDocuments){
+          state.soleDocuments=state.soleDocuments.filter(previous=>previous.kind!==document.kind||!(previous.source===document.source||(document.invoiceNumber&&previous.invoiceNumber===document.invoiceNumber)));
+          state.soleDocuments.push(document);
+        }
+        const sole=reconcileSoleDocuments(state.soleDocuments,state.rows),others=state.rows.filter(row=>row.clientId!=="o-sole-e-napule"&&!((!row.clientId||row.clientId===DEFAULT_CLIENT_ID)&&state.soleDocuments.some(doc=>doc.source===row.source)));
+        state.rows=[...others,...sole.rows];state.soleNotices=sole.notices;state.docPackages=sole.docPackages;
+        const gfiInvoices=state.gfiDocuments.filter(doc=>doc.kind==="invoice"),gfiPackings=state.gfiDocuments.filter(doc=>doc.kind==="packing");
+        const gfiWeights=[...gfiPackings,...gfiInvoices.filter(invoice=>!gfiPackings.some(packing=>gfiInvoiceForPacking(packing)?.source===invoice.source))].map(doc=>doc.weights);
+        const zeus=state.zeusDocuments.length?reconcileZeusDocuments(state.zeusDocuments,others):null;
+        const otherWeights=[...others.filter(row=>!["gfi-group","zeus"].includes(row.clientId)),...gfiWeights,...(zeus?[{gross:zeus.docGross,net:zeus.docNet}]:[])];
+        state.docGross=zeusSum([{gross:sole.docGross},...otherWeights],"gross");state.docNet=zeusSum([{net:sole.docNet},...otherWeights],"net");
+        state.docValue=zeusSum([{value:sole.docValue},...others],"value",2);
+        state.sourceNames=[...new Set([...state.sourceNames,...names])];render();
+        const missing=sole.rows.filter(row=>!/^\d{8}$/.test(row.cn8)).length;
+        setStatus(`O SOLE E NAPULE: ${sole.rows.length} articoli, ${sole.matched} abbinati alla packing list.${missing?` ${missing} senza NCM: verifica il codice o premi Classifica tutto.`:""}${sole.notices.length?" Controlla le note dei documenti sotto.":""}`,"ok");
+        return;
+      }
       if(zeusDocuments.length){
+        if(clientId===DEFAULT_CLIENT_ID)state.clientId="zeus";
         for(const document of zeusDocuments){
           state.zeusDocuments=state.zeusDocuments.filter(previous=>previous.kind!==document.kind||!(previous.source===document.source||(document.invoiceNumber&&previous.invoiceNumber===document.invoiceNumber)));
           state.zeusDocuments.push(document);
         }
         const previous=state.rows,zeus=reconcileZeusDocuments(state.zeusDocuments,previous);
-        const others=previous.filter(row=>row.clientId!=="zeus");
+        const others=previous.filter(row=>row.clientId!=="zeus"&&!((!row.clientId||row.clientId===DEFAULT_CLIENT_ID)&&state.zeusDocuments.some(doc=>doc.source===row.source)));
         state.rows=[...others,...zeus.rows];state.zeusNotices=zeus.notices;state.docPackages=zeus.docPackages;
         const gfiInvoices=state.gfiDocuments.filter(document=>document.kind==="invoice"),gfiPackings=state.gfiDocuments.filter(document=>document.kind==="packing");
         const gfiWeights=[...gfiPackings,...gfiInvoices.filter(invoice=>!gfiPackings.some(packing=>gfiInvoiceForPacking(packing)?.source===invoice.source))].map(document=>document.weights);
@@ -26512,7 +26728,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       .map(row=>({
         desc:[row.description,row.clientId==="gfi-group"&&row.quantity?`Quantità fattura ${row.quantity} ${row.unit}`:"",row.cn8?`NC ${row.cn8}`:""].filter(Boolean).join(" — "),
         colli:rowPackages(row),
-        pezzi:row.clientId==="zeus"?row.quantity:"",
+        pezzi:["zeus","o-sole-e-napule"].includes(row.clientId)?row.quantity:"",
         gross:row.gross,
         net:row.net,
         mq:"",
@@ -26541,12 +26757,13 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     document.getElementById("dogana-section")?.scrollIntoView({behavior:"smooth",block:"start"});
   }
   function exportRows(){
-    const gfi=state.rows.some(row=>row.clientId==="gfi-group"),zeus=state.rows.some(row=>row.clientId==="zeus");
+    const gfi=state.rows.some(row=>row.clientId==="gfi-group"),zeus=state.rows.some(row=>row.clientId==="zeus"),sole=state.rows.some(row=>row.clientId==="o-sole-e-napule");
     return state.rows.filter(row=>row.description||row.ean||row.cn8).map((row,index)=>({"NR":index+1,"PRODOTTO":row.description,
-      ...((gfi||zeus)?{"QUANTITÀ FATTURA":asCell(row.quantity),"UM":row.unit}:{}),
+      ...((gfi||zeus||sole)?{"QUANTITÀ FATTURA":asCell(row.quantity),"UM":row.unit}:{}),
+      ...(sole?{"DESCRIZIONE PACKING":row.packingDescription,"FILE PACKING O SOLE E NAPULE":row.packingSource}:{}),
       ...(zeus?{"ORIGINE":row.origin,"VALORE PRIMA DELLO SCONTO":asCell(row.invoiceValue||row.value),"SCONTO RIPARTITO":asCell(row.discountValue),"FILE PACKING":row.packingSource}:{}),
       ...(gfi?{"GRUPPO PACKING":row.clientId==="gfi-group"?(gfiPackingForRow(row)?.groups.find(group=>group.key===row.packingGroup)?.description||"DA ABBINARE"):""}:{}),
-      "EAN / CODICE":row.clientId==="zeus"?row.sku:row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(rowPackages(row)),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));
+      "EAN / CODICE":["zeus","o-sole-e-napule"].includes(row.clientId)?row.sku:row.ean,"VOCE NC (8 CIFRE)":row.cn8,"COLLI":asCell(rowPackages(row)),"PESO LORDO KG":asCell(row.gross),"PESO NETTO KG":asCell(row.net),"VALORE":asCell(row.value),"FILE SORGENTE":row.source}));
   }
   function exportPackingRows(comparison=gfiComparison()){
     if(!comparison.rows.length)return [];
@@ -26565,6 +26782,12 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
         const data=zeusDocumentExportRows(),sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=Object.keys(data[0]||{}).map(key=>({wch:key==="FILE SORGENTE"?40:24}));
         const notices=state.zeusNotices||[];if(notices.length)XLSX.utils.sheet_add_aoa(sheet,[["VERIFICHE"],...notices.map(notice=>[notice])],{origin:data.length+3});
         XLSX.utils.book_append_sheet(book,sheet,"Documenti ZEUS");
+      }
+      if(state.soleDocuments.length){
+        const controls=soleDocumentExportRows(),sheet=XLSX.utils.json_to_sheet(controls);
+        sheet["!cols"]=Object.keys(controls[0]||{}).map(key=>({wch:key==="FILE SORGENTE"?40:24}));
+        if(state.soleNotices.length)XLSX.utils.sheet_add_aoa(sheet,[["VERIFICHE"],...state.soleNotices.map(notice=>[notice])],{origin:controls.length+3});
+        XLSX.utils.book_append_sheet(book,sheet,"Documenti O SOLE E NAPULE");
       }
       XLSX.writeFile(book,`${fileBase()}_voci_doganali.xlsx`,{compression:true});setStatus(packing.length?"File Excel creato: dettaglio fattura e confronto packing list.":"File Excel creato.","ok");return;
     }
@@ -26601,12 +26824,32 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
       doc.setFont("helvetica","normal");doc.setFontSize(8);const lines=doc.splitTextToSize(notice,pageWidth-margin*2);
       for(const line of lines){if(y+4>pageHeight-10)newPage();doc.setTextColor(120,53,15);doc.text(line,margin,y+4);y+=4;}y+=2;
     }
+    for(const notice of state.soleNotices||[]){
+      doc.setFont("helvetica","normal");doc.setFontSize(8);const lines=doc.splitTextToSize(notice,pageWidth-margin*2);
+      for(const line of lines){if(y+4>pageHeight-10)newPage();doc.setTextColor(120,53,15);doc.text(line,margin,y+4);y+=4;}y+=2;
+    }
     footer();doc.save(`${fileBase()}_voci_doganali.pdf`);setStatus(packing.length?"File PDF creato: dettaglio fattura e confronto packing list.":"File PDF creato.","ok");
   }
 
   elements.client.innerHTML=Object.values(CLIENT_PROFILES).map(profile=>`<option value="${escapeHtml(profile.id)}">${escapeHtml(profile.label)}</option>`).join("");
   renderClientProfile();
   elements.client.addEventListener("change",()=>{state.clientId=clientProfile(elements.client.value).id;renderClientProfile();saveState();setStatus(`Cliente selezionato: ${clientProfile(state.clientId).label}. Le nuove analisi useranno questo modello.`);});
+  function captureSelectedFile(file){
+    if(selectedFileCopies.has(file))return;
+    let reading;
+    try{reading=file.arrayBuffer();}catch(error){reading=Promise.reject(error);}
+    const ready=Promise.resolve(reading).then(buffer=>{
+      const bytes=new Uint8Array(buffer).slice();
+      if(typeof File==="function")return new File([bytes],file.name,{type:file.type||"",lastModified:file.lastModified});
+      return {name:file.name,type:file.type||"",size:bytes.length,lastModified:file.lastModified,
+        arrayBuffer:async()=>bytes.slice().buffer,text:async()=>new TextDecoder().decode(bytes)};
+    });
+    ready.catch(()=>{});selectedFileCopies.set(file,ready);
+  }
+  async function copiedSelectedFile(file){
+    captureSelectedFile(file);
+    return selectedFileCopies.get(file);
+  }
   function uniqueSelectedFiles(files){
     const seen=new Set();
     return Array.from(files||[]).filter(file=>{
@@ -26629,6 +26872,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     if(!incoming.length){setStatus("Nessun file riconosciuto. Trascina PDF, immagini, Excel o CSV.","error");return;}
     selectedFiles=uniqueSelectedFiles([...(selectedFilesAnalyzed?[]:selectedFiles),...incoming]);
     selectedFilesAnalyzed=false;
+    incoming.forEach(captureSelectedFile);
     syncSelectedFileInput();
     setStatus(`${selectedFiles.length} file pronti per l'analisi: ${selectedFiles.map(file=>file.name).join(", ")}`);
   }
@@ -26657,10 +26901,10 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   },true);
   elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.copy.addEventListener("click",copyColumn);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
   elements.add.addEventListener("click",()=>{const invoices=state.gfiDocuments.filter(document=>document.kind==="invoice"),invoice=state.clientId==="gfi-group"&&invoices.length===1?invoices[0]:null;state.rows.push(makeRow(invoice?{clientId:"gfi-group",source:invoice.source,invoiceNumber:invoice.invoiceNumber,invoiceDate:invoice.invoiceDate,documentKind:"invoice"}:{}));render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
-  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];selectedFilesAnalyzed=false;elements.input.value="";render();setStatus("Dati rimossi.");});
+  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,soleDocuments:[],soleNotices:[],zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];selectedFilesAnalyzed=false;elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docPackages.addEventListener("input",()=>{state.docPackages=elements.docPackages.value;renderTotals();saveState();});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});elements.docValue.addEventListener("input",()=>{state.docValue=cleanText(elements.docValue.value,50);saveState();});
-  elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}if(["packages","gross","net","value"].includes(input.dataset.field))renderTotals();if(row.clientId==="gfi-group"){const comparison=gfiComparison();renderGfiComparison(comparison);renderComparisonNotices(comparison);}saveState();});
+  elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=row.clientId==="o-sole-e-napule"?soleRowIssue(row):row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}if(["packages","gross","net","value"].includes(input.dataset.field))renderTotals();if(row.clientId==="gfi-group"){const comparison=gfiComparison();renderGfiComparison(comparison);renderComparisonNotices(comparison);}saveState();});
   elements.tbody.addEventListener("change",event=>{const input=event.target.closest("input[data-field], select[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;if(input.dataset.field==="packingGroup"){const packing=gfiPackingForRow(row);row.packingGroup=packing?.groups.some(group=>group.key===input.value)?input.value:"";}if(input.dataset.field==="cn8"&&/^\d{8}$/.test(row.cn8)){row.status="confirmed";row.needsReview=!!row.dataIssue;rememberRow(row);}render();});
   elements.tbody.addEventListener("click",event=>{const button=event.target.closest("button[data-delete]");if(!button)return;const id=button.closest("tr")?.dataset.rowId;state.rows=state.rows.filter(row=>row.id!==id);render();});
   elements.toggle.addEventListener("click",()=>{const minimized=!elements.panel.classList.contains("is-minimized");elements.panel.classList.toggle("is-minimized",minimized);elements.toggle.setAttribute("aria-expanded",String(!minimized));elements.toggle.setAttribute("aria-label",minimized?"Mostra Riconoscimento voce doganale":"Riduci a icona Riconoscimento voce doganale");globalThis.setDoganaModuleToggleIcon?.(elements.toggle,minimized);});
