@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-08T15:47:12.345Z",
+  "updatedAt": "2026-10-12T11:22:15.218Z",
   "products": {
     "10863290": {
       "ean": "10863290",
@@ -3806,6 +3806,72 @@
       "source": "dogana-ai",
       "verified": true,
       "updatedAt": "2026-10-07T14:07:05.138Z",
+      "updatedBy": "admin"
+    },
+    "desc:ad2198cbb1c1df943509ba11": {
+      "ean": "",
+      "description": "Rif.ordine 6.710",
+      "cn8": "01061200",
+      "taric10": "0106120000",
+      "officialDescription": "ANIMALI VIVI › Altri animali vivi › Mammiferi › Balene, delfini e marsovini (mammiferi dell'ordine dei cetacei); lamantini e dugonghi (mammiferi dell'ordine dei sireni); otarie e foche, leoni marini e trichechi (mammiferi del sottordine dei pinnipedi)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:24.481Z",
+      "updatedBy": "admin"
+    },
+    "desc:88ee00f456724ae9119b81f3": {
+      "ean": "",
+      "description": "K/KOSMO BOY 312102 KIT KOSMO BOY NE/BI XXS",
+      "cn8": "30069300",
+      "taric10": "3006930000",
+      "officialDescription": "PRODOTTI FARMACEUTICI › Preparazioni e prodotti farmaceutici elencati nella nota 4 di questo capitolo › altri › Placebo e kit di sperimentazione clinica in cieco (o in doppio cieco) da utilizzare per sperimentazioni cliniche riconosciute, presentati sotto forma di dosi",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:27.709Z",
+      "updatedBy": "admin"
+    },
+    "desc:b916785a35a7f7f42f42b4b6": {
+      "ean": "",
+      "description": "Rif.ordine 5.345",
+      "cn8": "01061200",
+      "taric10": "0106120000",
+      "officialDescription": "ANIMALI VIVI › Altri animali vivi › Mammiferi › Balene, delfini e marsovini (mammiferi dell'ordine dei cetacei); lamantini e dugonghi (mammiferi dell'ordine dei sireni); otarie e foche, leoni marini e trichechi (mammiferi del sottordine dei pinnipedi)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:27.783Z",
+      "updatedBy": "admin"
+    },
+    "desc:3f295108a12e3080ff12fdce": {
+      "ean": "",
+      "description": "TUTA CUSTOM HALF ZIP",
+      "cn8": "29161200",
+      "taric10": "2916120015",
+      "officialDescription": "PRODOTTI CHIMICI ORGANICI › Acidi monocarbossilici aciclici non saturi e acidi monocarbossilici ciclici, loro anidridi, alogenuri, perossidi e perossiacidi; loro derivati alogenati, solfonati, nitrati o nitrosi › Acidi monocarbossilici aciclici non saturi, loro anidridi, alogenuri, perossidi, perossiacidi e loro derivati › Esteri dell'acido acrilico › acrilato di butile (BA) e acrilato di 2-etilesile (2EHA), classificati rispettivamente con i numeri CAS (Chemical Abstracts Service) 141-32-2 e 103-11-7 e attualmente con i codici CUS (Customs Union and Statistics) 0012413-0 e 0017228-1",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:31.034Z",
+      "updatedBy": "admin"
+    },
+    "desc:62f203054648059b92cf0ca0": {
+      "ean": "",
+      "description": "Rif.ordine 16059",
+      "cn8": "01061200",
+      "taric10": "0106120000",
+      "officialDescription": "ANIMALI VIVI › Altri animali vivi › Mammiferi › Balene, delfini e marsovini (mammiferi dell'ordine dei cetacei); lamantini e dugonghi (mammiferi dell'ordine dei sireni); otarie e foche, leoni marini e trichechi (mammiferi del sottordine dei pinnipedi)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:31.035Z",
+      "updatedBy": "admin"
+    },
+    "desc:a709f6bf6f02b05afe1b32e7": {
+      "ean": "",
+      "description": "TUTA CUSTOM ROUND",
+      "cn8": "29161200",
+      "taric10": "2916120015",
+      "officialDescription": "PRODOTTI CHIMICI ORGANICI › Acidi monocarbossilici aciclici non saturi e acidi monocarbossilici ciclici, loro anidridi, alogenuri, perossidi e perossiacidi; loro derivati alogenati, solfonati, nitrati o nitrosi › Acidi monocarbossilici aciclici non saturi, loro anidridi, alogenuri, perossidi, perossiacidi e loro derivati › Esteri dell'acido acrilico › acrilato di butile (BA) e acrilato di 2-etilesile (2EHA), classificati rispettivamente con i numeri CAS (Chemical Abstracts Service) 141-32-2 e 103-11-7 e attualmente con i codici CUS (Customs Union and Statistics) 0012413-0 e 0017228-1",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-12T11:21:36.145Z",
       "updatedBy": "admin"
     }
   }
