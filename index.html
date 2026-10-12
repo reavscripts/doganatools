@@ -7,7 +7,7 @@
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.09.24-TOOLS-R69";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-TABELLA-PAGINE-R70";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -3893,6 +3893,69 @@ background:var(--surface);
   background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%) !important;
 }
 
+.doganaTableModuleCard .doganaTablePagesBar{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:12px 16px;
+  border-bottom:1px solid var(--grid-soft);
+  background:var(--surface);
+}
+
+.doganaTablePagesBar label{
+  color:var(--heading);
+  font-size:13px;
+  font-weight:800;
+}
+
+.doganaTablePagesBar select{
+  flex:1 1 220px;
+  width:auto;
+  min-width:0;
+  min-height:38px;
+  padding:8px 12px;
+  border:1px solid var(--grid-soft);
+  border-radius:10px;
+  background:var(--surface-soft);
+  color:var(--text);
+  font:inherit;
+  font-size:13px;
+}
+
+.doganaTablePagesBar #newTablePageBtn{
+  flex:0 0 auto;
+  width:auto;
+  min-width:0;
+  min-height:38px;
+  padding:9px 12px;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+.doganaTablePagesBar #tablePagesSaveError{
+  flex:1 1 100%;
+  margin:0;
+  color:var(--danger, #b91c1c);
+  font-size:12px;
+}
+
+.doganaTableModuleCard.is-minimized > .doganaTablePagesBar{
+  display:none !important;
+}
+
+@media (max-width:700px){
+  .doganaTablePagesBar label{
+    flex:1 1 100%;
+  }
+  .doganaTablePagesBar select{
+    flex:1 1 160px;
+  }
+  .doganaTablePagesBar #newTablePageBtn{
+    flex:1 1 120px;
+  }
+}
+
 .doganaTableModuleCard .titleField{
   grid-template-columns:260px minmax(0, 1fr) !important;
 }
@@ -7419,11 +7482,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </div>
   </div>
 
+  <div class="doganaTablePagesBar">
+    <label for="tablePageSelect">Pagina</label>
+    <select id="tablePageSelect" aria-label="Seleziona una pagina della tabella"></select>
+    <button id="newTablePageBtn" type="button" class="primary">+ Nuova pagina</button>
+    <p id="tablePagesSaveError" role="status" aria-live="polite" hidden></p>
+  </div>
+
   <div class="titleBar doganaTableTitleBar">
     <div class="titleField">
       <label class="titleLabel" for="pdfTitleInput">Titolo</label>
       <input class="titleInput" id="pdfTitleInput" maxlength="140" placeholder="Es. Packing list" type="text"/>
-      <div class="titleMeta">Questo titolo appare sopra la tabella e viene usato come intestazione principale nel PDF esportato.</div>
+      <div class="titleMeta">Ogni pagina conserva automaticamente il proprio titolo e i dati. Il titolo viene usato anche nel PDF esportato.</div>
     </div>
   </div>
 
@@ -8122,6 +8192,7 @@ button.doganaModuleSvgToggleBtn:active,
 <script>
     const LS_KEY = "peso_sheet_v3";
     const PDF_TITLE_KEY = "peso_sheet_pdf_title_v1";
+    const TABLE_PAGES_KEY = "peso_sheet_pages_v1";
 
 	function parseNumberIT(value) {
 	  if (value == null) return 0;
@@ -8173,15 +8244,7 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function savePdfTitle(){
-      try { localStorage.setItem(PDF_TITLE_KEY, getPdfTitle()); } catch {}
-    }
-
-    function loadPdfTitle(){
-      try {
-        const saved = localStorage.getItem(PDF_TITLE_KEY) || "";
-        const input = document.getElementById("pdfTitleInput");
-        if (input) input.value = saved;
-      } catch {}
+      save();
     }
 
     function sanitizeFileName(value){
@@ -8468,13 +8531,144 @@ button.doganaModuleSvgToggleBtn:active,
     let sortValueDescending = true;
 
     const TABLE_UNDO_LIMIT = 50;
-    const tableUndoStack = [];
+    let tableUndoStack = [];
     const tableEditSnapshots = new WeakMap();
     let titleEditSnapshot = null;
     let tableStateRestoring = false;
+    let tablePages = [];
+    let activeTablePageId = "";
+    let nextTablePageNumber = 1;
+    let tablePagesStorageBlocked = false;
+    const tablePageUndoStacks = new Map();
 
     function cloneTableRows(source){
       return JSON.parse(JSON.stringify(Array.isArray(source) ? source : []));
+    }
+
+    function normalizeTablePageRows(source){
+      return (Array.isArray(source) ? source : []).map(row => ({
+        desc: String(row?.desc ?? ""),
+        colli: String(row?.colli ?? ""),
+        pezzi: String(row?.pezzi ?? ""),
+        gross: String(row?.gross ?? ""),
+        net: String(row?.net ?? ""),
+        mq: String(row?.mq ?? ""),
+        value: String(row?.value ?? "")
+      }));
+    }
+
+    function makeTablePage(title, pageRows){
+      const number = nextTablePageNumber++;
+      return {
+        id: window.crypto?.randomUUID?.() || `page_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+        number,
+        title: title == null ? `Pagina ${number}` : String(title),
+        rows: normalizeTablePageRows(pageRows == null ? Array.from({ length: 8 }, () => ({})) : pageRows),
+        isMerged: false,
+        originalRows: [],
+        sortValueDescending: true
+      };
+    }
+
+    function currentTablePage(){
+      return tablePages.find(page => page.id === activeTablePageId);
+    }
+
+    function renderTablePageSelector(){
+      const select = document.getElementById("tablePageSelect");
+      if (!select) return;
+      if (select.options.length !== tablePages.length || tablePages.some((page, index) => select.options[index]?.value !== page.id)) {
+        select.replaceChildren(...tablePages.map(page => {
+          const option = document.createElement("option");
+          option.value = page.id;
+          return option;
+        }));
+      }
+      tablePages.forEach((page, index) => {
+        const title = page.title.trim();
+        select.options[index].textContent = title && title !== `Pagina ${page.number}`
+          ? `${page.number}. ${title}`
+          : `Pagina ${page.number}`;
+      });
+      select.value = activeTablePageId;
+    }
+
+    function showTablePagesSaveError(message){
+      const status = document.getElementById("tablePagesSaveError");
+      if (!status) return;
+      status.textContent = message;
+      status.hidden = !message;
+    }
+
+    function applyTablePageState(page){
+      rows = cloneTableRows(page.rows);
+      isMerged = !!page.isMerged;
+      originalRows = cloneTableRows(page.originalRows);
+      sortValueDescending = page.sortValueDescending !== false;
+      document.getElementById("pdfTitleInput").value = page.title;
+      titleEditSnapshot = null;
+      if (!tablePageUndoStacks.has(page.id)) tablePageUndoStacks.set(page.id, []);
+      tableUndoStack = tablePageUndoStacks.get(page.id);
+    }
+
+    function commitActiveTableEdit(){
+      const active = document.activeElement;
+      if (active?.matches?.("#tbody input")) commitTableCellEdit(active);
+      if (active?.id === "pdfTitleInput") commitPdfTitleEdit();
+    }
+
+    function switchTablePage(pageId){
+      const page = tablePages.find(item => item.id === pageId);
+      if (!page || page.id === activeTablePageId || isImportingPdf) {
+        renderTablePageSelector();
+        return;
+      }
+      commitActiveTableEdit();
+      if (!save()) return;
+      const previousPage = currentTablePage();
+      activeTablePageId = page.id;
+      applyTablePageState(page);
+      if (!save()) {
+        activeTablePageId = previousPage.id;
+        applyTablePageState(previousPage);
+        renderTablePageSelector();
+      }
+      updateSortValueButtonLabel();
+      render();
+      updateUndoTableButton();
+    }
+
+    function newTablePage(){
+      if (isImportingPdf) return;
+      commitActiveTableEdit();
+      if (!save()) return;
+      const previousPage = currentTablePage();
+      const page = makeTablePage();
+      tablePages.push(page);
+      activeTablePageId = page.id;
+      applyTablePageState(page);
+      const saved = save();
+      if (!saved) {
+        tablePages.pop();
+        nextTablePageNumber--;
+        tablePageUndoStacks.delete(page.id);
+        activeTablePageId = previousPage.id;
+        applyTablePageState(previousPage);
+        renderTablePageSelector();
+      }
+      updateSortValueButtonLabel();
+      render();
+      updateUndoTableButton();
+      if (saved) {
+        const input = document.getElementById("pdfTitleInput");
+        input.focus();
+        input.select();
+      }
+    }
+
+    function setTablePageControlsDisabled(disabled){
+      document.getElementById("tablePageSelect").disabled = disabled;
+      document.getElementById("newTablePageBtn").disabled = disabled;
     }
 
     function captureTableState(){
@@ -8571,6 +8765,8 @@ button.doganaModuleSvgToggleBtn:active,
     document.getElementById("addRowBtn").addEventListener("click", () => addRows(1, true));
     document.getElementById("add10Btn").addEventListener("click", () => addRows(10, true));
     document.getElementById("exportPdfBtn")?.addEventListener("click", exportTableToPdf);
+    document.getElementById("tablePageSelect").addEventListener("change", event => switchTablePage(event.target.value));
+    document.getElementById("newTablePageBtn").addEventListener("click", newTablePage);
 
     const undoTableBtn = document.getElementById("undoTableBtn");
     const pdfTitleInput = document.getElementById("pdfTitleInput");
@@ -8602,7 +8798,7 @@ button.doganaModuleSvgToggleBtn:active,
 
     document.getElementById("sortValueBtn")?.addEventListener("click", sortRowsByInvoiceValue);
     document.getElementById("clearBtn").addEventListener("click", () => {
-      if (!confirm("Vuoi svuotare tutto?")) return;
+      if (!confirm("Vuoi svuotare la pagina corrente? Le altre pagine verranno conservate.")) return;
       pushTableUndoState();
       resetMergeState();
       rows = [];
@@ -8611,30 +8807,76 @@ button.doganaModuleSvgToggleBtn:active,
     });
 
     function save(){
-      try { localStorage.setItem(LS_KEY, JSON.stringify(rows)); } catch {}
-      savePdfTitle();
+      const page = currentTablePage();
+      if (!page) return false;
+      Object.assign(page, captureTableState());
+      renderTablePageSelector();
+      if (tablePagesStorageBlocked) return false;
+      try {
+        localStorage.setItem(TABLE_PAGES_KEY, JSON.stringify({
+          version: 1,
+          activePageId: activeTablePageId,
+          nextPageNumber: nextTablePageNumber,
+          pages: tablePages
+        }));
+        showTablePagesSaveError("");
+        return true;
+      } catch {
+        showTablePagesSaveError("Salvataggio non riuscito. Controlla lo spazio disponibile nel browser ed esporta la pagina corrente prima di chiudere.");
+        return false;
+      }
     }
 
     function load(){
       try {
+        const savedPages = localStorage.getItem(TABLE_PAGES_KEY);
+        if (savedPages !== null) {
+          try {
+            const saved = JSON.parse(savedPages);
+            if (saved?.version !== 1 || !Array.isArray(saved.pages) || !saved.pages.length) throw new Error("Pagine non valide");
+            const ids = new Set();
+            tablePages = saved.pages.map((page, index) => {
+              if (!page || typeof page.id !== "string" || !page.id || ids.has(page.id) || !Array.isArray(page.rows)) throw new Error("Pagina non valida");
+              ids.add(page.id);
+              return {
+                id: page.id,
+                number: Number.isSafeInteger(page.number) && page.number > 0 ? page.number : index + 1,
+                title: String(page.title ?? ""),
+                rows: normalizeTablePageRows(page.rows),
+                isMerged: !!page.isMerged,
+                originalRows: normalizeTablePageRows(page.originalRows),
+                sortValueDescending: page.sortValueDescending !== false
+              };
+            });
+            nextTablePageNumber = Math.max(
+              Number.isSafeInteger(saved.nextPageNumber) ? saved.nextPageNumber : 1,
+              ...tablePages.map(page => page.number + 1)
+            );
+            activeTablePageId = tablePages.some(page => page.id === saved.activePageId) ? saved.activePageId : tablePages[0].id;
+            applyTablePageState(currentTablePage());
+            return true;
+          } catch {
+            // Non sovrascrivere un archivio illeggibile con una pagina vuota.
+            tablePagesStorageBlocked = true;
+            showTablePagesSaveError("Le pagine salvate non sono leggibili. Il salvataggio è sospeso per conservare i dati esistenti.");
+          }
+        }
+      } catch {}
+
+      let legacyRows = [];
+      let legacyTitle = "";
+      try {
         const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return false;
-        const parsed = JSON.parse(raw);
-        if (!Array.isArray(parsed)) return false;
-        rows = parsed.map(r => ({
-          desc: r?.desc ?? "",
-          colli: r?.colli ?? "",
-          pezzi: r?.pezzi ?? "",
-          gross: r?.gross ?? "",
-          net: r?.net ?? "",
-          mq: r?.mq ?? "",
-          value: r?.value ?? ""
-        }));
-        resetMergeState();
-        return true;
-      } catch {
-        return false;
-      }
+        if (raw) legacyRows = normalizeTablePageRows(JSON.parse(raw));
+      } catch {}
+      try { legacyTitle = localStorage.getItem(PDF_TITLE_KEY) || ""; } catch {}
+      nextTablePageNumber = 1;
+      const firstPage = makeTablePage(legacyTitle, legacyRows.length ? legacyRows : undefined);
+      tablePages = [firstPage];
+      activeTablePageId = firstPage.id;
+      applyTablePageState(firstPage);
+      // Le vecchie chiavi restano intatte come copia della tabella precedente.
+      return true;
     }
 
     function resetMergeState(){
@@ -9279,6 +9521,7 @@ button.doganaModuleSvgToggleBtn:active,
       if (importStatus) importStatus.textContent = "Analisi PDF in corso...";
       setOcrStatus("Preparazione import PDF...", true);
       isImportingPdf = true;
+      setTablePageControlsDisabled(true);
 
       try{
         const result = await importPdfWithFallback(file);
@@ -9311,6 +9554,7 @@ button.doganaModuleSvgToggleBtn:active,
         setOcrStatus("Import PDF fallito.", true);
       } finally {
         isImportingPdf = false;
+        setTablePageControlsDisabled(false);
       }
     }
 
@@ -9344,10 +9588,9 @@ button.doganaModuleSvgToggleBtn:active,
       }
     });
 
-    const loaded = load();
-    loadPdfTitle();
-    if (!loaded || rows.length === 0) addRows(8, false, false);
-    else render();
+    load();
+    render();
+    save();
     updateSortValueButtonLabel();
     updateUndoTableButton();
 
@@ -14563,7 +14806,7 @@ window.DoganaMainTable = {
 
     const requestedTitle = String(options.title || "").trim();
     const titleInput = document.getElementById("pdfTitleInput");
-    if (requestedTitle && titleInput && !titleInput.value.trim()) titleInput.value = requestedTitle;
+    if (requestedTitle && titleInput && (!titleInput.value.trim() || (!hasExistingData && titleInput.value === `Pagina ${currentTablePage()?.number}`))) titleInput.value = requestedTitle;
 
     render();
     save();
