@@ -7404,6 +7404,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <a href="#notificationPanel" data-jump-focus="#notificationTaskInput" role="menuitem">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
         <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
         <a href="#usefulToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">TOOL UTILI</a>
+        <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">TEMPLATE EUR.1</a>
       </div>
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
@@ -7753,11 +7754,51 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <div class="usefulToolsHead">
         <div>
           <div class="usefulToolsTitle">Tool utili</div>
-          <div class="usefulToolsSubtitle">Riconosci le voci doganali, comprimi PDF o converti documenti e immagini in PDF.</div>
+          <div class="usefulToolsSubtitle">Crea EUR.1, riconosci le voci doganali, comprimi PDF o converti documenti e immagini in PDF.</div>
         </div>
         <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
       </div>
       <div class="usefulToolsBody">
+<section id="eur1TemplateModule" class="eur1-module sectionJumpTarget eur1-collapsed" aria-label="Creazione template A22 e EUR.1">
+  <div class="eur1-head">
+    <div class="eur1-title"><span>Template A22 / EUR.1</span><span class="eur1-badge">EUR.1</span></div>
+    <div class="eur1-head-actions"><button id="eur1OpenBtn" type="button">Apri EUR.1</button><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button></div>
+  </div>
+  <div id="eur1Body" class="eur1-body" hidden>
+    <p class="eur1-intro">Compila i riquadri sul documento EUR.1, scarica Word o PDF e conserva il modello per una nuova pratica.</p>
+    <div class="eur1-toolbar">
+      <button id="eur1New" type="button">+ Nuovo EUR.1</button><button id="eur1Example" type="button">Carica esempio dal Word</button><button id="eur1ArchiveToggle" type="button" aria-expanded="false" aria-controls="eur1Archive">Archivio EUR.1 <span id="eur1ArchiveCount">0</span></button><button id="eur1Original" type="button">Apri scan originale</button>
+    </div>
+    <div class="eur1-save-row">
+      <label class="eur1-name-label" for="eur1Name"><span>Nome salvataggio</span><input id="eur1Name" type="text" maxlength="120" placeholder="Es. Cliente - destinazione - riferimento" autocomplete="off"></label>
+      <button id="eur1Save" type="button" class="primary">Salva EUR.1</button><button id="eur1SaveCopy" type="button">Salva copia</button><span id="eur1SavedState" class="eur1-saved-state" role="status">Nuovo documento</span>
+    </div>
+    <div id="eur1Status" class="eur1-status" role="status" aria-live="polite">Apertura del modello EUR.1…</div>
+    <div id="eur1Archive" class="eur1-archive" hidden>
+      <div class="eur1-archive-head"><h3>EUR.1 salvati</h3><input id="eur1ArchiveSearch" type="search" placeholder="Cerca nome, esportatore, EUR.1 o MRN" aria-label="Cerca nell'archivio EUR.1"><button id="eur1ArchiveRefresh" type="button">Aggiorna archivio</button></div>
+      <div id="eur1ArchiveList" class="eur1-archive-list"></div>
+    </div>
+    <div id="eur1Workspace" class="eur1-workspace" hidden>
+      <aside class="eur1-editor" aria-label="Campi EUR.1">
+        <label for="eur1FieldSelect">Campo da compilare</label><select id="eur1FieldSelect"></select>
+        <div class="eur1-field-nav"><button id="eur1PreviousField" type="button" aria-label="Campo precedente">←</button><span id="eur1FieldNumber"></span><button id="eur1NextField" type="button" aria-label="Campo successivo">→</button></div>
+        <label for="eur1FieldValue" id="eur1FieldLabel">Valore</label><textarea id="eur1FieldValue" rows="7" spellcheck="false" placeholder="Scrivi il testo del campo"></textarea>
+        <p class="eur1-help">Puoi scrivere anche direttamente sui riquadri del documento. Usa Invio per andare a capo.</p><p id="eur1FieldFit" class="eur1-help" role="status"></p>
+        <details id="eur1FieldSettings"><summary>Allineamento del campo</summary><div class="eur1-settings-grid">
+          <label>Sinistra mm<input id="eur1FieldX" type="number" min="0" max="208" step="0.1"></label><label>Alto mm<input id="eur1FieldY" type="number" min="0" max="295" step="0.1"></label><label>Larghezza mm<input id="eur1FieldW" type="number" min="2" max="180" step="0.1"></label><label>Altezza mm<input id="eur1FieldH" type="number" min="2" max="180" step="0.1"></label><label>Corpo pt<input id="eur1FieldFont" type="number" min="7" max="16" step="0.5"></label>
+        </div><button id="eur1ResetField" type="button">Ripristina questo campo</button></details>
+        <details><summary>Allineamento di stampa</summary><p class="eur1-help">Sposta tutti i dati rispetto al formulario. Valori positivi: destra / basso.</p><div class="eur1-settings-grid"><label>Orizzontale mm<input id="eur1OffsetX" type="number" min="-10" max="10" step="0.1" value="0"></label><label>Verticale mm<input id="eur1OffsetY" type="number" min="-10" max="10" step="0.1" value="0"></label></div><button id="eur1ResetLayout" type="button">Ripristina allineamento</button><p class="eur1-help">Per il prestampato usa carta A4 e stampa al 100%, con dimensioni effettive.</p></details>
+        <details><summary>Copia di sicurezza</summary><p class="eur1-help">Esporta i campi e l'allineamento in un file riapribile nel modulo.</p><div class="eur1-backup-actions"><button id="eur1Backup" type="button">Scarica modello</button><button id="eur1Import" type="button">Importa modello</button></div><input id="eur1ImportFile" type="file" accept=".json,.eur1,application/json" hidden></details>
+      </aside>
+      <div class="eur1-preview-column">
+        <div class="eur1-preview-toolbar"><strong>Documento EUR.1</strong><label class="eur1-guides-label"><input id="eur1Guides" type="checkbox" checked> Evidenzia campi</label><label for="eur1Zoom" class="eur1-zoom-label">Zoom <select id="eur1Zoom"><option value="fit">Adatta</option><option value="100">100%</option><option value="125">125%</option><option value="150">150%</option></select></label></div>
+        <div id="eur1Viewport" class="eur1-viewport"><div id="eur1Paper" class="eur1-paper eur1-guides" aria-label="Documento EUR.1 modificabile"><img id="eur1Background" alt="Scansione originale del formulario EUR.1" draggable="false"><div id="eur1SerialMask" class="eur1-serial-mask" aria-hidden="true"></div><div id="eur1Fields"></div></div></div>
+        <div class="eur1-export-row"><label for="eur1ExportMode"><span>Contenuto da esportare</span><select id="eur1ExportMode"><option value="complete">Documento completo con sfondo EUR.1</option><option value="data">Solo dati per modulo prestampato</option></select></label><button id="eur1ExportWord" type="button">Scarica Word</button><button id="eur1ExportPdf" type="button" class="primary">Scarica PDF</button><p class="eur1-help">Sul prestampato il numero EUR.1 è già presente e viene escluso dalla stampa dei dati.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
   <div class="invoiceClassifierHead">
     <div class="invoiceClassifierTitleWrap">
@@ -27424,5 +27465,393 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
   else compact.addListener(onViewportChange);
 })();
 </script>
+<style id="dogana-eur1-style">
+#eur1TemplateModule{width:100%;min-width:0;overflow:hidden;position:relative;border:1px solid var(--grid-soft);border-radius:18px;background:var(--surface);margin:0 0 16px;color:var(--text);font-family:var(--font)}
+#eur1TemplateModule [hidden]{display:none!important}
+#eur1TemplateModule .eur1-head{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px;border-bottom:1px solid var(--grid-soft)}
+#eur1TemplateModule .eur1-head:before{content:"";position:absolute;top:0;left:16px;right:16px;height:3px;background:linear-gradient(90deg,#3b82f6,#22c55e,#eab308,#f97316,#a855f7);border-radius:0 0 4px 4px}
+#eur1TemplateModule .eur1-title{display:flex;align-items:center;gap:12px;color:var(--heading);font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;line-height:1.3}
+#eur1TemplateModule .eur1-badge{padding:5px 9px;border:1px solid var(--grid-soft);border-radius:7px;font-size:11px;letter-spacing:0;background:var(--surface-soft)}
+#eur1TemplateModule .eur1-head-actions,#eur1TemplateModule .eur1-toolbar,#eur1TemplateModule .eur1-save-row,#eur1TemplateModule .eur1-backup-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+#eur1TemplateModule .eur1-body{padding:16px}
+#eur1TemplateModule .eur1-intro{margin:0 0 12px;color:var(--muted);font-size:12px;line-height:1.5}
+#eur1TemplateModule .eur1-toolbar{margin-bottom:14px}
+#eur1TemplateModule .eur1-toolbar #eur1ArchiveCount{display:inline-block;font-size:10px;padding:2px 6px;margin-left:5px;border-radius:10px;background:var(--surface-soft)}
+#eur1TemplateModule button{min-height:38px;font:inherit;font-size:12px;font-weight:700}
+#eur1TemplateModule button:disabled{opacity:.5;cursor:wait}
+#eur1TemplateModule .eur1-save-row{align-items:flex-end}
+#eur1TemplateModule label{font-size:11px;font-weight:750;line-height:1.5;color:var(--heading)}
+#eur1TemplateModule .eur1-name-label{flex:1 1 250px;display:flex;flex-direction:column;gap:5px}
+#eur1TemplateModule input:not([type=checkbox]):not([type=file]),#eur1TemplateModule select,#eur1TemplateModule #eur1FieldValue{width:100%;min-width:0;box-sizing:border-box;min-height:38px;padding:8px 10px;border:1px solid var(--grid-soft);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;font-size:12px}
+#eur1TemplateModule .eur1-saved-state{font-size:11px;color:var(--muted);padding:0 0 11px;line-height:1.4}
+#eur1TemplateModule .eur1-status{font-size:12px;line-height:1.5;color:var(--muted);min-height:18px;margin:10px 0}
+#eur1TemplateModule .eur1-status[data-state=error]{color:var(--danger,#b91c1c)}
+#eur1TemplateModule .eur1-status[data-state=ok]{color:var(--success,#15803d)}
+#eur1TemplateModule .eur1-workspace{display:grid;grid-template-columns:290px minmax(0,1fr);gap:16px;align-items:start}
+#eur1TemplateModule .eur1-editor{min-width:0;padding:14px;border:1px solid var(--grid-soft);border-radius:12px;background:var(--surface-soft);display:flex;flex-direction:column;gap:7px}
+#eur1TemplateModule #eur1FieldValue{resize:vertical;min-height:145px;line-height:1.5}
+#eur1TemplateModule .eur1-field-nav{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);margin:2px 0 5px}
+#eur1TemplateModule .eur1-field-nav button{padding:5px 12px;min-height:30px}
+#eur1TemplateModule .eur1-help{margin:2px 0;font-size:11px;line-height:1.5;color:var(--muted)}
+#eur1TemplateModule details{border-top:1px solid var(--grid-soft);padding-top:10px;margin-top:6px;font-size:12px}
+#eur1TemplateModule summary{cursor:pointer;font-weight:750;color:var(--heading);margin-bottom:7px}
+#eur1TemplateModule .eur1-settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:8px 0}
+#eur1TemplateModule .eur1-settings-grid label{display:flex;flex-direction:column;gap:3px}
+#eur1TemplateModule .eur1-preview-column{min-width:0;overflow:hidden;border:1px solid var(--grid-soft);border-radius:12px;background:var(--surface-soft)}
+#eur1TemplateModule .eur1-preview-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:10px 12px;font-size:12px}
+#eur1TemplateModule .eur1-preview-toolbar strong{color:var(--heading)}
+#eur1TemplateModule .eur1-guides-label{display:flex;align-items:center;gap:6px;cursor:pointer}
+#eur1TemplateModule .eur1-guides-label input{margin:0;accent-color:var(--accent);width:15px;height:15px}
+#eur1TemplateModule .eur1-zoom-label{display:flex;align-items:center;gap:5px}
+#eur1TemplateModule #eur1Zoom{width:80px;min-height:30px;padding:5px}
+#eur1TemplateModule .eur1-viewport{overflow:auto;padding:14px;max-height:1050px;background:color-mix(in srgb,var(--muted) 12%,var(--surface-soft));overscroll-behavior:contain}
+#eur1TemplateModule .eur1-paper{position:relative;width:100%;max-width:794px;aspect-ratio:210/297;margin:0 auto;background:white;color:black;box-shadow:0 2px 10px #0002;isolation:isolate;overflow:hidden}
+#eur1TemplateModule #eur1Background{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:fill;pointer-events:none;user-select:none}
+#eur1TemplateModule .eur1-serial-mask{position:absolute;background:white;pointer-events:none}
+#eur1TemplateModule #eur1Fields{position:absolute;inset:0;pointer-events:none}
+#eur1TemplateModule textarea.eur1-overlay{position:absolute!important;box-sizing:border-box!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;outline:0;resize:none!important;background:transparent!important;color:#000!important;font-family:"Eur1Print","Times New Roman",serif!important;font-kerning:none!important;line-height:1.15!important;letter-spacing:normal!important;white-space:pre-wrap;overflow-wrap:anywhere;overflow:hidden!important;box-shadow:none!important;pointer-events:auto;appearance:none;transition:none!important;caret-color:#000;text-transform:none!important}
+#eur1TemplateModule textarea.eur1-overlay::placeholder{color:transparent!important}
+#eur1TemplateModule .eur1-guides textarea.eur1-overlay{outline:1px dashed #3183c180;outline-offset:0;background:#e2effb20!important}
+#eur1TemplateModule .eur1-guides textarea.eur1-overlay::placeholder{color:#34668e88!important;font-family:Arial,sans-serif!important;font-size:.8em}
+#eur1TemplateModule textarea.eur1-overlay:focus,#eur1TemplateModule textarea.eur1-overlay.eur1-active{outline:1px solid #2776b8;background:#e2effb45!important}
+#eur1TemplateModule textarea.eur1-overlay.eur1-overflow{outline:2px solid #b91c1c!important}
+#eur1TemplateModule .eur1-export-row{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap;padding:12px;border-top:1px solid var(--grid-soft)}
+#eur1TemplateModule .eur1-export-row label{display:flex;flex-direction:column;gap:5px;flex:1 1 240px}
+#eur1TemplateModule .eur1-archive{margin:12px 0;padding:12px;border:1px solid var(--grid-soft);border-radius:12px;background:var(--surface-soft)}
+#eur1TemplateModule .eur1-archive-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+#eur1TemplateModule .eur1-archive-head h3{font-size:13px;margin:0;color:var(--heading)}
+#eur1TemplateModule .eur1-archive-head input{flex:1 1 250px}
+#eur1TemplateModule .eur1-archive-list{max-height:350px;overflow:auto;display:grid;gap:7px}
+#eur1TemplateModule .eur1-archive-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px;border:1px solid var(--grid-soft);border-radius:8px;background:var(--surface)}
+#eur1TemplateModule .eur1-archive-record{flex:1 1 280px;min-width:0;overflow-wrap:anywhere}
+#eur1TemplateModule .eur1-archive-record strong{display:block;font-size:12px;color:var(--heading)}
+#eur1TemplateModule .eur1-archive-record small{display:block;font-size:11px;line-height:1.5;color:var(--muted);margin-top:2px}
+#eur1TemplateModule .eur1-archive-empty{padding:12px;font-size:12px;color:var(--muted)}
+#eur1TemplateModule.eur1-collapsed .eur1-head{border-bottom:0}
+@media(max-width:1000px){#eur1TemplateModule .eur1-workspace{grid-template-columns:250px minmax(0,1fr)}}
+@media(max-width:750px){#eur1TemplateModule .eur1-workspace{grid-template-columns:minmax(0,1fr)}#eur1TemplateModule .eur1-editor{order:2}#eur1TemplateModule .eur1-preview-column{order:1}#eur1TemplateModule .eur1-head{padding:13px;gap:8px}#eur1TemplateModule .eur1-title{flex-wrap:wrap;gap:5px;font-size:12px}#eur1TemplateModule .eur1-body{padding:10px}#eur1TemplateModule .eur1-save-row>button{flex:1}#eur1TemplateModule .eur1-saved-state{flex-basis:100%;padding:2px 0}#eur1TemplateModule .eur1-viewport{padding:8px;max-height:760px}#eur1TemplateModule .eur1-export-row>button{flex:1}#eur1TemplateModule .eur1-toolbar button{flex:1 1 130px}#eur1TemplateModule .eur1-head-actions{gap:5px}#eur1TemplateModule #eur1OpenBtn{font-size:11px;padding:6px 8px}}
+</style>
+
+<script id="dogana-eur1-script">
+(function initEur1Templates(){
+  const panel = document.getElementById("eur1TemplateModule");
+  if (!panel) return;
+  const $ = id => document.getElementById(id);
+  const clone = value => JSON.parse(JSON.stringify(value));
+  const state = { model:null, document:null, active:"exporter", records:[], busy:false, dirty:false, change:0, overflow:[], scale:1, loaded:false, loading:null, backgroundUrl:null, username:null };
+  const buttons = ["eur1New","eur1Example","eur1Save","eur1SaveCopy","eur1ArchiveToggle","eur1Original","eur1ExportWord","eur1ExportPdf","eur1Backup","eur1Import"];
+  let draftTimer, fitFrame;
+  function status(message, type = "") { $("eur1Status").textContent = message; $("eur1Status").dataset.state = type; }
+  function endpoint(path) { return typeof apiUrl === "function" ? apiUrl("/api/templates/eur1" + path) : "/api/templates/eur1" + path; }
+  async function request(path, options = {}) {
+    const response = await fetch(endpoint(path), { credentials:"include", cache:"no-store", ...options,
+      headers: { Accept:"application/json", ...(options.body ? { "Content-Type":"application/json" } : {}), ...options.headers } });
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      const message = response.status === 404 && path === "/model" ? "Modulo EUR.1 non disponibile sul server. Installa anche il backend aggiornato e riavvialo." : data?.error || `Operazione EUR.1 non riuscita (${response.status}).`;
+      throw Object.assign(new Error(message), { status:response.status });
+    }
+    return response;
+  }
+  async function json(path, options) { return (await request(path, options)).json(); }
+  function draftKey() { return "doganatools_eur1_draft_v1:" + (state.username || "utente"); }
+  function writeDraft() {
+    if (!state.document || !state.username) return;
+    try { localStorage.setItem(draftKey(), JSON.stringify({ document:state.document, dirty:state.dirty, active:state.active })); }
+    catch { status("La bozza non può essere conservata su questo dispositivo. Usa Salva EUR.1 oppure Scarica modello.", "error"); }
+  }
+  function scheduleDraft() { clearTimeout(draftTimer); draftTimer = setTimeout(writeDraft, 200); }
+  function newDocument(values = {}, name = "") {
+    const layout = {};
+    for (const field of state.model.fields) layout[field.id] = { x:field.x, y:field.y, w:field.w, h:field.h, font:field.font };
+    return { schemaVersion:state.model.version, name, values:Object.fromEntries(state.model.fields.map(field => [field.id, values[field.id] ?? state.model.defaults[field.id] ?? ""])), settings:{ offsetX:0, offsetY:0, layout } };
+  }
+  function checkedDocument(input) {
+    if (!input || typeof input !== "object" || !input.values || typeof input.values !== "object" || Array.isArray(input.values)) throw new Error("Il file non contiene un modello EUR.1 valido.");
+    const document = newDocument({}, typeof input.name === "string" ? input.name.slice(0,120) : "EUR.1");
+    for (const field of state.model.fields) {
+      const value = input.values[field.id] ?? "";
+      if (typeof value !== "string" || value.length > field.max || /[\u0000-\u0008\u000b\u000c\u000e-\u001f]/.test(value)) throw new Error(`${field.label}: testo non valido o troppo lungo.`);
+      document.values[field.id] = value.replace(/\r\n?/g,"\n");
+      const layout = input.settings?.layout?.[field.id];
+      if (layout) for (const key of ["x","y","w","h","font"]) {
+        if (layout[key] !== undefined) {
+          if (typeof layout[key] !== "number" || !Number.isFinite(layout[key])) throw new Error("Allineamento del modello non valido.");
+          document.settings.layout[field.id][key] = layout[key];
+        }
+      }
+    }
+    for (const key of ["offsetX","offsetY"]) {
+      if (input.settings?.[key] !== undefined) {
+        if (typeof input.settings[key] !== "number" || !Number.isFinite(input.settings[key]) || Math.abs(input.settings[key]) > 10) throw new Error("Allineamento di stampa non valido.");
+        document.settings[key] = input.settings[key];
+      }
+    }
+    for (const field of state.model.fields) {
+      const box = document.settings.layout[field.id];
+      if (box.x < 0 || box.y < 0 || box.w < 2 || box.h < 2 || box.w > 180 || box.h > 180 || box.x + box.w > 210.1 || box.y + box.h > 297.1 || box.font < 7 || box.font > 16) throw new Error(`${field.label}: allineamento non valido.`);
+    }
+    if (input.id && /^[0-9a-f-]{36}$/i.test(input.id)) document.id = input.id;
+    if (Number.isInteger(input.revision)) document.revision = input.revision;
+    if (input.updatedAt) document.updatedAt = input.updatedAt;
+    return document;
+  }
+  function savedState() {
+    const node = $("eur1SavedState");
+    if (state.dirty) node.textContent = "Modifiche da salvare · bozza su questo dispositivo";
+    else if (state.document?.id) node.textContent = "Salvato " + new Date(state.document.updatedAt).toLocaleString("it-IT", { dateStyle:"short",timeStyle:"short" });
+    else node.textContent = "Nuovo documento · bozza su questo dispositivo";
+  }
+  function controls() {
+    $("eur1Name").disabled = !state.loaded;
+    for (const id of buttons) $(id).disabled = !state.loaded || state.busy || ((id === "eur1ExportPdf" || id === "eur1ExportWord") && state.overflow.length > 0);
+    $("eur1ArchiveRefresh").disabled = state.busy || !state.loaded;
+    $("eur1Save").textContent = state.document?.id ? "Aggiorna EUR.1" : "Salva EUR.1";
+  }
+  function dirty() { state.dirty = true; state.change++; savedState(); scheduleDraft(); }
+  function activeField() { return state.model.fields.find(field => field.id === state.active) || state.model.fields[0]; }
+  function fitInfo() {
+    if (!state.loaded) return;
+    const field = activeField(), node = $("eur1-field-" + field.id);
+    if (state.overflow.includes(field.id)) $("eur1FieldFit").textContent = "Il testo supera il riquadro. Amplia il campo o riduci il testo per esportare.";
+    else $("eur1FieldFit").textContent = `Corpo nel documento: ${node?.dataset.font || field.font} pt. ${state.overflow.length ? "Controlla anche i riquadri evidenziati in rosso." : ""}`;
+  }
+  function fitFields() {
+    if (!state.loaded || !state.document) return;
+    state.scale = $("eur1Paper").getBoundingClientRect().width / (210 * 96 / 25.4);
+    if (!state.scale) return;
+    const overflow = [];
+    for (const field of state.model.fields) {
+      const node = $("eur1-field-" + field.id), box = state.document.settings.layout[field.id];
+      let font = Math.floor(box.font * 2) / 2;
+      const placeholder = node.placeholder;
+      node.placeholder = "";
+      node.style.fontSize = (font * 96/72 * state.scale) + "px";
+      while (font > 7 && (node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1)) {
+        font -= .5; node.style.fontSize = (font * 96/72 * state.scale) + "px";
+      }
+      const out = node.scrollHeight > node.clientHeight + 1 || node.scrollWidth > node.clientWidth + 1 || (state.document.values[field.id].trim() && (box.x + state.document.settings.offsetX < 0 || box.y + state.document.settings.offsetY < 0 || box.x + box.w + state.document.settings.offsetX > 210.1 || box.y + box.h + state.document.settings.offsetY > 297.1));
+      node.placeholder = placeholder;
+      node.dataset.font = String(font); node.classList.toggle("eur1-overflow", !!out); node.setAttribute("aria-invalid", String(!!out));
+      if (out) overflow.push(field.id);
+    }
+    state.overflow = overflow; fitInfo(); controls();
+  }
+  function scheduleFit() { cancelAnimationFrame(fitFrame); fitFrame = requestAnimationFrame(fitFields); }
+  function positionFields() {
+    if (!state.document) return;
+    const document = state.document;
+    for (const field of state.model.fields) {
+      const node = $("eur1-field-" + field.id), box = document.settings.layout[field.id];
+      node.style.left = ((box.x + document.settings.offsetX) / 210 * 100) + "%";
+      node.style.top = ((box.y + document.settings.offsetY) / 297 * 100) + "%";
+      node.style.width = (box.w / 210 * 100) + "%"; node.style.height = (box.h / 297 * 100) + "%";
+      node.style.textAlign = field.align || "left"; node.style.fontWeight = field.bold ? "bold" : "normal";
+    }
+    scheduleFit();
+  }
+  function chooseField(id, focus = false) {
+    if (!state.loaded) return;
+    state.active = state.model.fields.some(field => field.id === id) ? id : "exporter";
+    const field = activeField(), box = state.document.settings.layout[field.id];
+    $("eur1FieldSelect").value = field.id; $("eur1FieldLabel").textContent = field.label;
+    $("eur1FieldValue").value = state.document.values[field.id]; $("eur1FieldValue").maxLength = field.max;
+    $("eur1FieldNumber").textContent = `Campo ${state.model.fields.indexOf(field) + 1} di ${state.model.fields.length}`;
+    for (const [key,id] of [["x","eur1FieldX"],["y","eur1FieldY"],["w","eur1FieldW"],["h","eur1FieldH"],["font","eur1FieldFont"]]) $(id).value = box[key];
+    for (const node of $("eur1Fields").children) node.classList.toggle("eur1-active", node.dataset.field === field.id);
+    fitInfo(); scheduleDraft();
+    if (focus) { const node = $("eur1-field-" + field.id); node.scrollIntoView({ block:"nearest",inline:"nearest" }); node.focus({ preventScroll:true }); }
+  }
+  function applyDocument(document, isDirty = false) {
+    state.document = checkedDocument(document); state.dirty = isDirty; state.change++;
+    $("eur1Name").value = state.document.name;
+    for (const field of state.model.fields) $("eur1-field-" + field.id).value = state.document.values[field.id];
+    $("eur1OffsetX").value = state.document.settings.offsetX; $("eur1OffsetY").value = state.document.settings.offsetY;
+    chooseField(state.active); positionFields(); savedState(); controls(); writeDraft();
+  }
+  function mayReplace() { return !state.dirty || window.confirm("Ci sono modifiche da salvare. Vuoi sostituire la bozza aperta? Puoi annullare e usare Salva EUR.1 o Scarica modello."); }
+  function safeName(name) { return String(name || "EUR1").replace(/[\\/:*?"<>|\u0000-\u001f]/g,"_").replace(/\.+$/g,"").slice(0,100) || "EUR1"; }
+  function download(blob, name) {
+    const url = URL.createObjectURL(blob), link = document.createElement("a");
+    link.href = url; link.download = name; document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  }
+  function inferredName() {
+    return ("EUR.1 - " + (state.document.values.exporter.split("\n")[0] || "Nuovo") + (state.document.values.serial ? " - " + state.document.values.serial : "")).slice(0,120);
+  }
+  async function refreshArchive() {
+    const result = await json("/documents"); state.records = result.documents || [];
+    $("eur1ArchiveCount").textContent = String(state.records.length); renderArchive();
+  }
+  function renderArchive() {
+    const target = $("eur1ArchiveList"), term = $("eur1ArchiveSearch").value.trim().toLocaleLowerCase("it-IT"); target.replaceChildren();
+    const records = state.records.filter(record => [record.name,record.exporter,record.serial,record.mrn].some(value => String(value || "").toLocaleLowerCase("it-IT").includes(term)));
+    if (!records.length) { const empty = document.createElement("div"); empty.className = "eur1-archive-empty"; empty.textContent = term ? "Nessun EUR.1 corrisponde alla ricerca." : "Nessun EUR.1 salvato. Compila il documento e premi Salva EUR.1."; target.append(empty); return; }
+    for (const record of records) {
+      const row = document.createElement("div"), info = document.createElement("div"), title = document.createElement("strong"), detail = document.createElement("small");
+      row.className = "eur1-archive-row"; info.className = "eur1-archive-record"; title.textContent = record.name;
+      detail.textContent = [record.exporter, record.serial ? "EUR.1 " + record.serial : "", record.mrn, record.updatedAt ? new Date(record.updatedAt).toLocaleString("it-IT", {dateStyle:"short",timeStyle:"short"}) : "", record.updatedBy].filter(Boolean).join(" · ");
+      info.append(title,detail); row.append(info);
+      for (const [label, action] of [["Apri",()=>openRecord(record,false)],["Duplica",()=>openRecord(record,true)],["Elimina",()=>deleteRecord(record)]]) {
+        const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.disabled = state.busy;
+        button.addEventListener("click",()=>run(action)); row.append(button);
+      }
+      target.append(row);
+    }
+  }
+  async function run(operation) {
+    if (state.busy || !state.loaded) return;
+    state.busy = true; controls(); renderArchive();
+    try { await operation(); }
+    catch (error) { status(error.message || "Operazione EUR.1 non riuscita. Verifica la connessione.","error"); }
+    finally { state.busy = false; controls(); renderArchive(); }
+  }
+  async function openRecord(record, duplicate) {
+    if (!mayReplace()) return;
+    const result = await json("/documents/" + encodeURIComponent(record.id));
+    const document = result.document;
+    if (duplicate) { delete document.id; delete document.revision; delete document.updatedAt; document.name = (document.name + " - copia").slice(0,120); }
+    state.active = "exporter"; applyDocument(document,duplicate);
+    status(duplicate ? "Copia aperta. Aggiorna i dati della nuova pratica e salvala." : "EUR.1 aperto dall'archivio.","ok");
+  }
+  async function deleteRecord(record) {
+    if (!window.confirm(`Eliminare dall'archivio «${record.name}»?`)) return;
+    await json("/documents/" + encodeURIComponent(record.id), {method:"DELETE",body:JSON.stringify({expectedRevision:record.revision})});
+    if (state.document.id === record.id) { delete state.document.id; delete state.document.revision; dirty(); controls(); }
+    await refreshArchive(); status("EUR.1 eliminato dall'archivio.","ok");
+  }
+  async function save(copy) {
+    if (!state.document.name.trim()) { state.document.name = inferredName(); $("eur1Name").value = state.document.name; }
+    const snapshot = clone(state.document), change = state.change;
+    if (copy) { delete snapshot.id; delete snapshot.revision; }
+    status(copy ? "Salvataggio della copia…" : "Salvataggio EUR.1…");
+    const result = await json(snapshot.id ? "/documents/" + encodeURIComponent(snapshot.id) : "/documents", {method:snapshot.id ? "PATCH" : "POST",body:JSON.stringify({document:snapshot,expectedRevision:snapshot.revision})});
+    state.document.id = result.document.id; state.document.revision = result.document.revision; state.document.updatedAt = result.document.updatedAt;
+    state.dirty = state.change !== change; savedState(); writeDraft();
+    status("EUR.1 salvato. Puoi riaprirlo dall'archivio o duplicarlo per una nuova pratica.","ok");
+    try { await refreshArchive(); } catch { status("EUR.1 salvato. L'elenco dell'archivio non si è aggiornato: premi Aggiorna archivio.","ok"); }
+  }
+  async function exportDocument(format) {
+    fitFields(); if (state.overflow.length) throw new Error("Controlla i riquadri evidenziati in rosso prima di esportare.");
+    const snapshot = clone(state.document), mode = $("eur1ExportMode").value;
+    if (!snapshot.name.trim()) snapshot.name = inferredName();
+    status(`Preparazione del file ${format === "docx" ? "Word" : "PDF"}…`);
+    const response = await request("/export",{method:"POST",body:JSON.stringify({document:snapshot,format,mode}),headers:{Accept:"application/octet-stream"}});
+    const blob = await response.blob(); if (!blob.size) throw new Error("Il file esportato è vuoto.");
+    download(blob,safeName(snapshot.name) + (mode === "data" ? "_prestampato" : "") + "." + format);
+    status(`File ${format === "docx" ? "Word" : "PDF"} pronto${mode === "data" ? ": solo dati per il prestampato, stampa al 100%." : ": documento completo con sfondo EUR.1."}`,"ok");
+  }
+  function buildFields() {
+    const select = $("eur1FieldSelect"), container = $("eur1Fields"); select.replaceChildren(); container.replaceChildren();
+    let group, lastGroup;
+    for (const field of state.model.fields) {
+      if (field.group !== lastGroup) { group = document.createElement("optgroup"); group.label = field.group; select.append(group); lastGroup = field.group; }
+      const option = document.createElement("option"); option.value = field.id; option.textContent = field.label; group.append(option);
+      const node = document.createElement("textarea"); node.id = "eur1-field-" + field.id; node.className = "eur1-overlay"; node.dataset.field = field.id;
+      node.setAttribute("aria-label",field.label); node.title = field.label; node.placeholder = field.label; node.spellcheck = false; node.maxLength = field.max; node.wrap = "soft";
+      node.addEventListener("focus",()=>chooseField(field.id));
+      node.addEventListener("input",()=>{ state.document.values[field.id] = node.value; if (state.active === field.id) $("eur1FieldValue").value = node.value; dirty(); scheduleFit(); });
+      container.append(node);
+    }
+    const mask = state.model.serialMask, maskNode = $("eur1SerialMask");
+    maskNode.style.left = mask.x / 210 * 100 + "%"; maskNode.style.top = mask.y / 297 * 100 + "%"; maskNode.style.width = mask.w / 210 * 100 + "%"; maskNode.style.height = mask.h / 297 * 100 + "%";
+  }
+  async function initialize() {
+    const username = window.__doganaAuthState?.user?.username || "utente";
+    if (state.loaded && state.username === username) { scheduleFit(); return; }
+    if (state.loading) return state.loading;
+    clearTimeout(draftTimer); writeDraft();
+    state.loaded = false; state.document = null; state.records = []; state.dirty = false;
+    $("eur1Workspace").hidden = true;
+    state.loading = (async () => {
+      status("Apertura del modello EUR.1…"); controls();
+      const [modelResponse, backgroundResponse] = await Promise.all([json("/model"),request("/background",{headers:{Accept:"image/jpeg"}})]);
+      state.username = window.__doganaAuthState?.user?.username || username; state.model = modelResponse.model;
+      if (!state.model?.fields?.length) throw new Error("Modello EUR.1 non disponibile.");
+      if (state.backgroundUrl) URL.revokeObjectURL(state.backgroundUrl);
+      state.backgroundUrl = URL.createObjectURL(await backgroundResponse.blob()); $("eur1Background").src = state.backgroundUrl;
+      await $("eur1Background").decode();
+      if (typeof FontFace === "function") {
+        await Promise.all(["regular","bold"].map(async style => {
+          const response = await request("/fonts/" + style,{headers:{Accept:"font/ttf"}});
+          const face = new FontFace("Eur1Print",await response.arrayBuffer(),{weight:style === "bold" ? "700" : "400"});
+          await face.load(); document.fonts.add(face);
+        }));
+      }
+      buildFields(); state.loaded = true; $("eur1Workspace").hidden = false;
+      let draft;
+      try { draft = JSON.parse(localStorage.getItem(draftKey()) || "null"); } catch {}
+      try { applyDocument(draft?.document ? draft.document : newDocument(), !!draft?.dirty); if (draft?.active) chooseField(draft.active); }
+      catch { applyDocument(newDocument()); draft = null; }
+      status(draft ? "Bozza precedente ripristinata su questo dispositivo." : "Modello pronto. Clicca un riquadro o seleziona il campo da compilare.","ok");
+      try { await refreshArchive(); } catch { status("Modello pronto. Archivio non raggiungibile: puoi compilare ed esportare, poi riprovare il salvataggio.","error"); }
+      scheduleFit();
+    })();
+    try { await state.loading; }
+    catch (error) { state.loaded = false; controls(); status(error.message || "Impossibile aprire il modello EUR.1.","error"); }
+    finally { state.loading = null; }
+  }
+  async function reveal() {
+    window.doganaEnsureOrganizeExpanded?.();
+    const tools = $("usefulToolsPanel"); if (tools?.classList.contains("is-minimized")) $("usefulToolsToggleBtn")?.click();
+    panel.classList.remove("eur1-collapsed"); $("eur1Body").hidden = false; $("eur1OpenBtn").hidden = true;
+    $("eur1Toggle").setAttribute("aria-expanded","true"); $("eur1Toggle").setAttribute("aria-label","Riduci a icona EUR.1"); $("eur1Toggle").title = "Riduci a icona";
+    window.setDoganaModuleToggleIcon?.($("eur1Toggle"),false);
+    await initialize(); scheduleFit();
+  }
+  $("eur1OpenBtn").addEventListener("click",reveal);
+  $("eur1Toggle").addEventListener("click",()=>{
+    if (panel.classList.contains("eur1-collapsed")) reveal();
+    else { writeDraft(); panel.classList.add("eur1-collapsed"); $("eur1Body").hidden = true; $("eur1OpenBtn").hidden = false; $("eur1Toggle").setAttribute("aria-expanded","false"); $("eur1Toggle").setAttribute("aria-label","Mostra modulo EUR.1"); $("eur1Toggle").title = "Mostra modulo"; window.setDoganaModuleToggleIcon?.($("eur1Toggle"),true); }
+  });
+  document.querySelectorAll('a[href="#eur1TemplateModule"]').forEach(link=>link.addEventListener("click",()=>{reveal();},true));
+  window.addEventListener("hashchange",()=>{ if (location.hash === "#eur1TemplateModule") reveal(); });
+  $("eur1Name").addEventListener("input",()=>{if (!state.loaded) return; state.document.name = $("eur1Name").value; dirty();});
+  $("eur1FieldSelect").addEventListener("change",()=>chooseField($("eur1FieldSelect").value,true));
+  for (const [id,direction] of [["eur1PreviousField",-1],["eur1NextField",1]]) $(id).addEventListener("click",()=>{ const index = state.model.fields.findIndex(field=>field.id === state.active); chooseField(state.model.fields[(index + direction + state.model.fields.length) % state.model.fields.length].id,true); });
+  $("eur1FieldValue").addEventListener("input",()=>{ const field = activeField(); state.document.values[field.id] = $("eur1FieldValue").value; $("eur1-field-" + field.id).value = state.document.values[field.id]; dirty(); scheduleFit(); });
+  for (const [key,id] of [["x","eur1FieldX"],["y","eur1FieldY"],["w","eur1FieldW"],["h","eur1FieldH"],["font","eur1FieldFont"]]) $(id).addEventListener("input",()=>{
+    if (!$(id).value || !$(id).checkValidity()) return;
+    const field = activeField(), current = state.document.settings.layout[field.id], next = { ...current,[key]:Number($(id).value) };
+    if (next.x + next.w > 210.1 || next.y + next.h > 297.1) { status("Il riquadro deve rimanere all'interno della pagina.","error"); return; }
+    state.document.settings.layout[field.id] = next; dirty(); positionFields(); status("");
+  });
+  for (const [key,id] of [["offsetX","eur1OffsetX"],["offsetY","eur1OffsetY"]]) $(id).addEventListener("input",()=>{
+    if ($(id).value === "" || !$(id).checkValidity()) return;
+    state.document.settings[key] = Number($(id).value); dirty(); positionFields();
+  });
+  $("eur1ResetField").addEventListener("click",()=>{const field = activeField(); state.document.settings.layout[field.id] = {x:field.x,y:field.y,w:field.w,h:field.h,font:field.font}; chooseField(field.id); dirty(); positionFields();});
+  $("eur1ResetLayout").addEventListener("click",()=>{ state.document.settings = newDocument().settings; $("eur1OffsetX").value = "0"; $("eur1OffsetY").value = "0"; chooseField(state.active); dirty(); positionFields(); });
+  $("eur1Guides").addEventListener("change",()=>$("eur1Paper").classList.toggle("eur1-guides",$("eur1Guides").checked));
+  $("eur1Zoom").addEventListener("change",()=>{ const zoom = $("eur1Zoom").value, paper = $("eur1Paper"); paper.style.width = zoom === "fit" ? "100%" : (210 * 96 / 25.4 * Number(zoom)/100) + "px"; paper.style.maxWidth = zoom === "fit" ? "794px" : "none"; scheduleFit(); });
+  $("eur1New").addEventListener("click",()=>{if (!state.busy && mayReplace()) { state.active = "exporter"; applyDocument(newDocument()); status("Nuovo EUR.1 pronto da compilare.","ok"); }});
+  $("eur1Example").addEventListener("click",()=>{if (!state.busy && mayReplace()) { state.active = "exporter"; applyDocument(newDocument(state.model.example.values,state.model.example.name),true); status("Caricati i dati del Word allegato. Il numero EUR.1 resta da compilare.","ok"); }});
+  $("eur1Save").addEventListener("click",()=>run(()=>save(false))); $("eur1SaveCopy").addEventListener("click",()=>run(()=>save(true)));
+  $("eur1ExportWord").addEventListener("click",()=>run(()=>exportDocument("docx"))); $("eur1ExportPdf").addEventListener("click",()=>run(()=>exportDocument("pdf")));
+  $("eur1Original").addEventListener("click",()=>run(async()=>{
+    const popup = window.open("about:blank","_blank");
+    try { const blob = await (await request("/original",{headers:{Accept:"application/pdf"}})).blob(); const url = URL.createObjectURL(blob); if (popup) {popup.opener = null; popup.location.href = url;} else download(blob,"EUR1_originale.pdf"); setTimeout(()=>URL.revokeObjectURL(url),120000); }
+    catch (error) { popup?.close(); throw error; }
+  }));
+  $("eur1ArchiveToggle").addEventListener("click",()=>{const hidden = !$("eur1Archive").hidden; $("eur1Archive").hidden = hidden; $("eur1ArchiveToggle").setAttribute("aria-expanded",String(!hidden)); if (!hidden) run(refreshArchive);});
+  $("eur1ArchiveRefresh").addEventListener("click",()=>run(async()=>{await refreshArchive();status("Archivio aggiornato.","ok");})); $("eur1ArchiveSearch").addEventListener("input",renderArchive);
+  $("eur1Backup").addEventListener("click",()=>{download(new Blob([JSON.stringify({format:"doganatools-eur1",version:1,document:state.document},null,2)],{type:"application/json"}),safeName(state.document.name || inferredName()) + ".eur1.json");status("Modello riapribile scaricato con tutti i campi e l'allineamento.","ok");});
+  $("eur1Import").addEventListener("click",()=>$("eur1ImportFile").click());
+  $("eur1ImportFile").addEventListener("change",()=>run(async()=>{
+    const file = $("eur1ImportFile").files?.[0]; $("eur1ImportFile").value = ""; if (!file) return;
+    if (file.size > 180000) throw new Error("Modello troppo grande. Il limite è 180 KB.");
+    const input = JSON.parse(await file.text()); if (input.format !== "doganatools-eur1" || input.version !== 1) throw new Error("Seleziona un modello esportato dal modulo EUR.1.");
+    const document = checkedDocument(input.document); delete document.id; delete document.revision; delete document.updatedAt;
+    if (!mayReplace()) return; applyDocument(document,true); status("Modello importato. Usa Salva EUR.1 per aggiungerlo all'archivio.","ok");
+  }));
+  if (typeof ResizeObserver === "function") new ResizeObserver(scheduleFit).observe($("eur1Paper"));
+  else window.addEventListener("resize",scheduleFit);
+  window.addEventListener("beforeunload",event=>{writeDraft(); if (state.dirty) {event.preventDefault();event.returnValue = "";}});
+  window.addEventListener("pagehide",writeDraft);
+  window.addEventListener("dogana-auth-required",()=>{writeDraft(); state.loaded = false; $("eur1Workspace").hidden = true; controls(); });
+  controls();
+})();
+</script>
+
 </body>
 </html>
