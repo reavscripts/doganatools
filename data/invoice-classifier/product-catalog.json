@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-12T12:17:45.150Z",
+  "updatedAt": "2026-10-13T07:26:55.661Z",
   "products": {
     "10863290": {
       "ean": "10863290",
@@ -3938,6 +3938,160 @@
       "source": "dogana-ai",
       "verified": true,
       "updatedAt": "2026-10-12T12:16:08.518Z",
+      "updatedBy": "admin"
+    },
+    "8001280024221": {
+      "ean": "8001280024221",
+      "description": "FELCE AZZ. SAPONE LIQUIDO ML300 CLASSICO",
+      "cn8": "34013000",
+      "taric10": "3401300000",
+      "officialDescription": "SAPONI, AGENTI ORGANICI DI SUPERFICIE, PREPARAZIONI PER LISCIVIE, PREPARAZIONI LUBRIFICANTI, CERE ARTIFICIALI, CERE PREPARATE, PRODOTTI PER PULIRE E LUCIDARE, CANDELE E PRODOTTI SIMILI, PASTE PER MODELLI; \"CERE PER L'ODONTOIATRIA\" E COMPOSIZIONI PER L'ODONTOIATRIA A BASE DI GESSO › Saponi; prodotti e preparazioni organici tensioattivi da usare come sapone, in barre, pani, pezzi o soggetti ottenuti a stampo, anche contenenti sapone; prodotti e preparazioni organici tensioattivi per la pulizia della pelle, sotto forma liquida o di crema, condizionati per la vendita al minuto, anche contenenti sapone; carta, ovatte, feltri e stoffe non tessute, impregnati, spalmati, o ricoperti di sapone o di d",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:06.254Z",
+      "updatedBy": "admin"
+    },
+    "8000320030055": {
+      "ean": "8000320030055",
+      "description": "CIRIO LEGUMI VETRO GR 360 BORLOTTI",
+      "cn8": "70010091",
+      "taric10": "7001009100",
+      "officialDescription": "VETRO E LAVORI DI VETRO › Residui di vetreria ed altri cascami ed avanzi di vetro, escluso il vetro di tubi catodici o altro vetro attivato della voce 8549; vetro in massa › Vetro in massa › Vetro da ottica",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:11.013Z",
+      "updatedBy": "admin"
+    },
+    "8013399202247": {
+      "ean": "8013399202247",
+      "description": "SPERLARI GRAN GELEE DUETTO GR 150",
+      "cn8": "10011900",
+      "taric10": "1001190020",
+      "officialDescription": "CEREALI › Frumento (grano) e frumento segalato › Frumento (grano) duro › altro › Frumento (grano) duro di qualità media",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:11.021Z",
+      "updatedBy": "admin"
+    },
+    "5449000241092": {
+      "ean": "5449000241092",
+      "description": "FANTA LATTINA ML 150 X 6",
+      "cn8": "48059100",
+      "taric10": "4805910010",
+      "officialDescription": "CARTA E CARTONE; LAVORI DI PASTA DI CELLULOSA, DI CARTA O DI CARTONE › Altra carta ed altro cartone, non patinati né spalmati, in rotoli o in fogli che non hanno subito operazioni complementari o trattamenti diversi da quelli previsti nella nota 3 di questo capitolo › altri › di peso non superiore a 150 g per m$2 › Carta decorativa con le seguenti caratteristiche: - peso compreso tra 30 e 150 g/m²; tenore di ceneri compreso tra il 5 % e il 50 %; - assorbimento (metodo Klemm) di almeno 12 mm/10 min o tasso di impregnazione della resina compreso tra il 20 % e il 200 %; - resistenza alla trazione a umido compresa tra 6 e 12 Newton (N)/15 mm; - permeabilità all'aria (metodo Gurley) compresa tra",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:11.030Z",
+      "updatedBy": "admin"
+    },
+    "0000080025825": {
+      "ean": "0000080025825",
+      "description": "PARMALAT PANNA CHEF ML 200",
+      "cn8": "48059100",
+      "taric10": "4805910010",
+      "officialDescription": "CARTA E CARTONE; LAVORI DI PASTA DI CELLULOSA, DI CARTA O DI CARTONE › Altra carta ed altro cartone, non patinati né spalmati, in rotoli o in fogli che non hanno subito operazioni complementari o trattamenti diversi da quelli previsti nella nota 3 di questo capitolo › altri › di peso non superiore a 150 g per m$2 › Carta decorativa con le seguenti caratteristiche: - peso compreso tra 30 e 150 g/m²; tenore di ceneri compreso tra il 5 % e il 50 %; - assorbimento (metodo Klemm) di almeno 12 mm/10 min o tasso di impregnazione della resina compreso tra il 20 % e il 200 %; - resistenza alla trazione a umido compresa tra 6 e 12 Newton (N)/15 mm; - permeabilità all'aria (metodo Gurley) compresa tra",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:14.592Z",
+      "updatedBy": "admin"
+    },
+    "8002200155100": {
+      "ean": "8002200155100",
+      "description": "KIMBO MACINATO FRESCO GR 250",
+      "cn8": "12129941",
+      "taric10": "1212994100",
+      "officialDescription": "SEMI E FRUTTI OLEOSI; SEMI, SEMENTI E FRUTTI DIVERSI; PIANTE INDUSTRIALI O MEDICINALI; PAGLIE E FORAGGI › Carrube, alghe, barbabietole da zucchero e canne da zucchero, fresche, refrigerate, congelate o secche, anche polverizzate; noccioli e mandorle di frutti e altri prodotti vegetali (comprese le radici di cicoria non torrefatte della varietà Cichorium intybus sativum) impiegati principalmente nell'alimentazione umana, non nominati né compresi altrove › altri › Semi di carrube › non sgusciati, né frantumati, né macinati",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:14.598Z",
+      "updatedBy": "admin"
+    },
+    "8002270083990": {
+      "ean": "8002270083990",
+      "description": "SANBITTER VAP ML 100 X10 ROSSO",
+      "cn8": "38021000",
+      "taric10": "3802100040",
+      "officialDescription": "PRODOTTI VARI DELLE INDUSTRIE CHIMICHE › Carboni attivati; sostanze minerali naturali attivate; neri di origine animale, compreso il nero animale esaurito › Carboni attivati › Carboni attivati chimicamente per l'assorbimento e il desorbimento di vapori, di forma definita o irregolare, con capacità effettiva di butano uguale o superiore a 5 g butano/100 ml (secondo il metodo ASTM D 5228)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:17.234Z",
+      "updatedBy": "admin"
+    },
+    "8000845005149": {
+      "ean": "8000845005149",
+      "description": "CRODINO CL 10 X 10",
+      "cn8": "25010031",
+      "taric10": "2501003100",
+      "officialDescription": "SALE; ZOLFO; TERRE E PIETRE; GESSI, CALCE E CEMENTI › Sale (compreso il sale preparato da tavola ed il sale denaturato) e cloruro di sodio puro, anche in soluzione acquosa oppure addizionati di agenti agglomeranti o di agenti che assicurano una buona fluidità; acqua di mare › Sale (compreso il sale preparato da tavola ed il sale denaturato) e cloruro di sodio puro, anche in soluzione acquosa oppure addizionati di agenti agglomeranti o di agenti che assicurano una buona fluidità › destinati alla trasformazione chimica (separazione di Na da Cl) per la fabbricazione di altri prodotti",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:17.237Z",
+      "updatedBy": "admin"
+    },
+    "8005613000067": {
+      "ean": "8005613000067",
+      "description": "TASSONI SODA CEDRATA CL 18 X 4",
+      "cn8": "28151200",
+      "taric10": "2815120000",
+      "officialDescription": "PRODOTTI CHIMICI INORGANICI; COMPOSTI INORGANICI OD ORGANICI DI METALLI PREZIOSI, DI ELEMENTI RADIOATTIVI, DI METALLI DELLE TERRE RARE O DI ISOTOPI › Idrossido di sodio (soda caustica); idrossido di potassio (potassa caustica); perossidi di sodio o di potassio › Idrossido di sodio (soda caustica) › in soluzione acquosa (liscivia di soda caustica)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:17.239Z",
+      "updatedBy": "admin"
+    },
+    "8076809583039": {
+      "ean": "8076809583039",
+      "description": "BARILLA BAIOCCHI SACCO GR240 PISTACCHIO",
+      "cn8": "84249080",
+      "taric10": "8424908060",
+      "officialDescription": "REATTORI NUCLEARI, CALDAIE, MACCHINE, APPARECCHI E CONGEGNI MECCANICI; PARTI DI QUESTE MACCHINE O APPARECCHI › Apparecchi meccanici (anche a mano) per spruzzare, cospargere o polverizzare materie liquide o in polvere; estintori, anche carichi; pistole a spruzzo e apparecchi simili; macchine ed apparecchi a getto di sabbia, a getto di vapore e simili apparecchi a getto › Parti › altri › Bombole senza saldatura ad alta pressione per gas compressi o liquefatti, di acciaio, di qualsiasi diametro e capacità volumetrica, filettate o meno, indipendentemente dal rivestimento o dalla placcatura interni, indipendentemente dalla finitura esterna e dalla forma, anche dotate di una sacca di gas, anche mu",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:21.977Z",
+      "updatedBy": "admin"
+    },
+    "8000550503473": {
+      "ean": "8000550503473",
+      "description": "NESTLE ORZORO SOLUBILE GR 120",
+      "cn8": "29163100",
+      "taric10": "2916310010",
+      "officialDescription": "PRODOTTI CHIMICI ORGANICI › Acidi monocarbossilici aciclici non saturi e acidi monocarbossilici ciclici, loro anidridi, alogenuri, perossidi e perossiacidi; loro derivati alogenati, solfonati, nitrati o nitrosi › Acidi monocarbossilici aromatici, loro anidridi, alogenuri, perossidi, perossiacidi e loro derivati › Acido benzoico, suoi sali e suoi esteri › Benzoato di benzile (CAS RN 120-51-4)",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:21.982Z",
+      "updatedBy": "admin"
+    },
+    "8003000375316": {
+      "ean": "8003000375316",
+      "description": "CAMEO PANEANGELI MASTROFORNAIO X 6 GR 42",
+      "cn8": "48099000",
+      "taric10": "4809900020",
+      "officialDescription": "CARTA E CARTONE; LAVORI DI PASTA DI CELLULOSA, DI CARTA O DI CARTONE › Carta carbone, carta detta \"autocopiante\" e altra carta per riproduzione di copie (compresa la carta patinata, spalmata o impregnata per matrici di duplicatori o per lastre offset), anche stampata, in rotoli o in fogli › altra › Carta termica pesante dal peso superiore a 65 gr/m²; in rotoli di larghezza superiore o uguale a 20 cm, con peso del rotolo (compresa la carta) superiore o uguale a 50 kg e diametro del rotolo (compresa la carta) superiore o uguale a 40 cm (\"rotoli di grandi dimensioni\"); con o senza rivestimento di fondo su uno o entrambi i lati; rivestiti di una sostanza termosensibile su uno o entrambi i lati,",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:22.003Z",
+      "updatedBy": "admin"
+    },
+    "8003000016318": {
+      "ean": "8003000016318",
+      "description": "CAMEO PANEANGELI DOLCENEVE GR 300",
+      "cn8": "87149630",
+      "taric10": "8714963010",
+      "officialDescription": "VEICOLI DIVERSI DA QUELLI FERROVIARI E TRANVIARI A ROTAIA LORO PARTI ED ACCESSORI › Parti ed accessori dei veicoli delle voci da 8711 a 8713 › altri › Pedali e pedaliere, e loro parti › Pedaliere › originarie della Cina o spedite dalla Cina: - in quantitativi inferiori a 300 unità al mese in media per un periodo non superiore a 12 mesi, o da trasferire a un soggetto in quantitativi inferiori a 300 unità al mese in media per un periodo non superiore a 12 mesi; o - da trasferire a un altro titolare di un’autorizzazione di destinazione particolare oppure a soggetti esonerati",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:26.780Z",
+      "updatedBy": "admin"
+    },
+    "8006150001630": {
+      "ean": "8006150001630",
+      "description": "ROSSANA CARAMELLE GR 150 PISTACCHIO",
+      "cn8": "84382000",
+      "taric10": "8438200000",
+      "officialDescription": "REATTORI NUCLEARI, CALDAIE, MACCHINE, APPARECCHI E CONGEGNI MECCANICI; PARTI DI QUESTE MACCHINE O APPARECCHI › Macchine ed apparecchi, non nominati né compresi altrove in questo capitolo, per la preparazione o la fabbricazione industriale di alimenti o di bevande, diverse dalle macchine e dagli apparecchi per l'estrazione o la preparazione degli oli o grassi vegetali o di origine microbica fissi o animali › Macchine ed apparecchi per la fabbricazione dei confetti, caramelle e simili prodotti dolciari o per la lavorazione del cacao e la fabbricazione della cioccolata",
+      "source": "dogana-ai",
+      "verified": true,
+      "updatedAt": "2026-10-13T07:21:28.494Z",
       "updatedBy": "admin"
     }
   }

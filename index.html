@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.09.29-INVOICE-MATCH-R69 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.10.13-ORGANIZZA-R75 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.09.29-INVOICE-MATCH-R69"/>
+<meta name="doganatools-build" content="V26.10.13-ORGANIZZA-R75"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.12-QUANTITA-COLLI-R74";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.13-ORGANIZZA-R75";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7400,11 +7400,15 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         ORGANIZZA <span class="organizeNavCount" id="organizeNavCount" hidden>0</span><span class="appNavDropdownChevron" aria-hidden="true">⌄</span>
       </button>
       <div class="appNavDropdownMenu" id="organizeNavMenu" role="menu" aria-label="Organizza">
+        <span class="organizeNavGroupLabel" role="presentation">Attività e promemoria</span>
         <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput" role="menuitem">CHECKLIST</a>
         <a href="#notificationPanel" data-jump-focus="#notificationTaskInput" role="menuitem">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
         <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
-        <a href="#usefulToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">TOOL UTILI</a>
-        <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">TEMPLATE EUR.1</a>
+        <span class="organizeNavGroupLabel" role="presentation">Template doganali</span>
+        <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">TEMPLATE A22 / EUR.1</a>
+        <span class="organizeNavGroupLabel" role="presentation">Tool utili</span>
+        <a href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient" role="menuitem">RICONOSCIMENTO VOCE DOGANALE</a>
+        <a href="#pdfToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">PDF E DOCUMENTI</a>
       </div>
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
@@ -7651,14 +7655,14 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
 </div>
 
-<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: checklist, notifiche, post-it e tool utili">
+<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: attività, template doganali e tool utili">
   <div class="organizeModuleHead">
     <div>
       <div class="organizeModuleTitle">Organizza</div>
-      <div class="organizeModuleSubtitle">Checklist, Notifiche, Post-it e Tool utili per PDF, documenti e immagini.</div>
+      <div class="organizeModuleSubtitle">Attività e promemoria, template doganali e strumenti per documenti.</div>
     </div>
     <div class="organizeModuleActions">
-      <span class="organizeModuleStats" id="organizePanelStats">4 sottomoduli</span>
+      <span class="organizeModuleStats" id="organizePanelStats">5 sottomoduli</span>
       <button type="button" id="organizePanelToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Organizza" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
@@ -7667,7 +7671,8 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <a class="organizeModuleChip" href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
       <a class="organizeModuleChip" href="#notificationPanel" data-jump-focus="#notificationTaskInput">Notifiche <span class="organizeModuleChipCount" id="organizeModuleReminderCount" hidden>0</span></a>
       <a class="organizeModuleChip" href="#postItPanel" data-jump-focus="#postItInput">Post-it</a>
-      <a class="organizeModuleChip" href="#usefulToolsPanel" data-jump-focus="#pdfCompressFile">Tool utili</a>
+      <a class="organizeModuleChip" href="#eur1TemplateModule" data-jump-focus="#eur1Name">Template A22 / EUR.1</a>
+      <a class="organizeModuleChip" href="#usefulToolsPanel" data-jump-focus="#invoiceClassifierClient">Tool utili</a>
     </div>
 
     <section class="operativeChecklistPanel sectionJumpTarget" id="operativeChecklistPanel" aria-label="Checklist operativa condivisa">
@@ -7750,19 +7755,10 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       </div>
     </section>
 
-    <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili per PDF e documenti">
-      <div class="usefulToolsHead">
-        <div>
-          <div class="usefulToolsTitle">Tool utili</div>
-          <div class="usefulToolsSubtitle">Crea EUR.1, riconosci le voci doganali, comprimi PDF o converti documenti e immagini in PDF.</div>
-        </div>
-        <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
-      </div>
-      <div class="usefulToolsBody">
 <section id="eur1TemplateModule" class="eur1-module sectionJumpTarget eur1-collapsed" aria-label="Creazione template A22 e EUR.1">
   <div class="eur1-head">
     <div class="eur1-title"><span>Template A22 / EUR.1</span><span class="eur1-badge">EUR.1</span></div>
-    <div class="eur1-head-actions"><button id="eur1OpenBtn" type="button">Apri EUR.1</button><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button></div>
+    <div class="eur1-head-actions"><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button></div>
   </div>
   <div id="eur1Body" class="eur1-body" hidden>
     <p class="eur1-intro">Compila i riquadri sul documento EUR.1, scarica Word o PDF e conserva il modello per una nuova pratica.</p>
@@ -7798,6 +7794,20 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </div>
   </div>
 </section>
+
+    <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili: riconoscimento voce doganale, PDF e documenti">
+      <div class="usefulToolsHead">
+        <div>
+          <div class="usefulToolsTitle">Tool utili</div>
+          <div class="usefulToolsSubtitle">Riconoscimento voce doganale e gestione di PDF, documenti e immagini.</div>
+        </div>
+        <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-controls="usefulToolsBody" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+      </div>
+      <div class="usefulToolsBody" id="usefulToolsBody">
+        <div class="organizeModuleChips usefulToolsChips" aria-label="Strumenti disponibili">
+          <a class="organizeModuleChip" href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient">Riconoscimento voce doganale</a>
+          <a class="organizeModuleChip" href="#pdfToolsPanel" data-jump-focus="#pdfCompressFile">PDF e documenti</a>
+        </div>
 
 <section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
   <div class="invoiceClassifierHead">
@@ -7910,6 +7920,15 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <p class="invoiceClassifierNote">Le voci sono proposte operative. Le righe “da verificare” richiedono controllo della composizione, presentazione del prodotto e note della nomenclatura prima della dichiarazione.</p>
   </div>
 </section>
+        <section id="pdfToolsPanel" class="pdfToolsPanel sectionJumpTarget is-minimized" aria-label="Strumenti PDF e documenti">
+          <div class="pdfToolsHead">
+            <div>
+              <div class="pdfToolsTitle">PDF e documenti</div>
+              <div class="pdfToolsSubtitle">Comprimi PDF o converti documenti e immagini in PDF.</div>
+            </div>
+            <button type="button" id="pdfToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="false" aria-controls="pdfToolsBody" aria-label="Mostra PDF e documenti" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button>
+          </div>
+          <div id="pdfToolsBody" class="pdfToolsBody" hidden>
         <div class="usefulToolsGrid">
           <form id="pdfCompressForm" class="usefulToolCard">
             <h3>Comprimi PDF</h3>
@@ -7941,6 +7960,8 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
             <div id="pdfConvertStatus" class="usefulToolStatus" role="status" aria-live="polite"></div>
           </form>
         </div>
+          </div>
+        </section>
       </div>
     </section>
   </div>
@@ -18215,7 +18236,8 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
 
     const updateStats = function(){
       const dueCount = Number(document.getElementById("organizeNavCount")?.textContent || 0) || 0;
-      if (stats) stats.textContent = dueCount > 0 ? `4 sottomoduli · ${dueCount} promemoria` : "4 sottomoduli";
+      const moduleCount = Array.from(body.children).filter(child => child.tagName === "SECTION").length;
+      if (stats) stats.textContent = `${moduleCount} sottomoduli${dueCount > 0 ? ` · ${dueCount} promemoria` : ""}`;
       if (chipCount) {
         chipCount.textContent = String(dueCount);
         chipCount.hidden = dueCount <= 0;
@@ -18234,10 +18256,22 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     };
 
     function ensureExpandedForTarget(targetId){
-      if (!["organizePanel","operativeChecklistPanel","notificationPanel","postItPanel","usefulToolsPanel"].includes(String(targetId || "").replace(/^#/,""))) return;
-      if (panel.classList.contains("is-minimized")) applyState(false);
       const target = document.getElementById(String(targetId || "").replace(/^#/,""));
-      if (target) setTimeout(() => target.scrollIntoView({ behavior:"smooth", block:"start" }), 60);
+      if (!target || !panel.contains(target)) return;
+      if (panel.classList.contains("is-minimized")) applyState(false);
+      for (const [moduleId, toggleId] of [
+        ["operativeChecklistPanel", "operativeChecklistToggleBtn"],
+        ["notificationPanel", "notificationToggleBtn"],
+        ["postItPanel", "postItToggleBtn"],
+        ["usefulToolsPanel", "usefulToolsToggleBtn"],
+        ["invoice-classifier-section", "invoiceClassifierToggle"],
+        ["pdfToolsPanel", "pdfToolsToggleBtn"]
+      ]) {
+        const module = document.getElementById(moduleId);
+        if (module?.contains(target) && module.classList.contains("is-minimized")) {
+          document.getElementById(toggleId)?.click();
+        }
+      }
     }
 
     let saved = "0";
@@ -18245,7 +18279,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
     applyState(saved === "1");
     btn.addEventListener("click", function(){ applyState(!panel.classList.contains("is-minimized")); });
     document.addEventListener("click", function(event){
-      const trigger = event.target.closest?.('a[href="#organizePanel"],a[href="#operativeChecklistPanel"],a[href="#notificationPanel"],a[href="#postItPanel"],a[href="#usefulToolsPanel"]');
+      const trigger = event.target.closest?.('a[href^="#"]');
       if (!trigger) return;
       ensureExpandedForTarget(trigger.getAttribute("href") || "");
     }, true);
@@ -27532,6 +27566,153 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
 @media(max-width:750px){#eur1TemplateModule .eur1-workspace{grid-template-columns:minmax(0,1fr)}#eur1TemplateModule .eur1-editor{order:2}#eur1TemplateModule .eur1-preview-column{order:1}#eur1TemplateModule .eur1-head{padding:13px;gap:8px}#eur1TemplateModule .eur1-title{flex-wrap:wrap;gap:5px;font-size:12px}#eur1TemplateModule .eur1-body{padding:10px}#eur1TemplateModule .eur1-save-row>button{flex:1}#eur1TemplateModule .eur1-saved-state{flex-basis:100%;padding:2px 0}#eur1TemplateModule .eur1-viewport{padding:8px;max-height:760px}#eur1TemplateModule .eur1-export-row>button{flex:1}#eur1TemplateModule .eur1-toolbar button{flex:1 1 130px}#eur1TemplateModule .eur1-head-actions{gap:5px}#eur1TemplateModule #eur1OpenBtn{font-size:11px;padding:6px 8px}}
 </style>
 
+<style id="dogana-organize-order-r75">
+/* R75 — template autonomo e strumenti raggruppati, con la geometria esistente. */
+#organizeNavMenu{min-width:260px;max-width:calc(100vw - 32px)}
+#organizeNavMenu .organizeNavGroupLabel{
+  display:block;padding:10px 11px 5px;color:var(--muted);
+  font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
+}
+#organizeNavMenu .organizeNavGroupLabel:not(:first-child){
+  margin-top:3px;border-top:1px solid var(--grid-soft);
+}
+#organizeNavMenu a{white-space:normal;line-height:1.4}
+#organizePanel .organizeModuleChip{white-space:normal!important;line-height:1.35}
+#organizePanel .usefulToolsBody{display:flex;flex-direction:column;gap:14px}
+#organizePanel .usefulToolsChips{margin:0}
+#organizePanel #invoice-classifier-section{margin:0!important}
+#organizePanel #eur1TemplateModule,
+#organizePanel #pdfToolsPanel{
+  position:relative;width:100%;min-width:0;margin:0;overflow:hidden;
+  border:1px solid var(--grid-soft);border-radius:20px;
+  background:linear-gradient(180deg,var(--surface),var(--surface-soft));
+  box-shadow:var(--shadow-soft);
+}
+#organizePanel .usefulToolsHead,
+#organizePanel #eur1TemplateModule .eur1-head,
+#organizePanel .pdfToolsHead{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  min-width:0;padding:16px;border-bottom:1px solid var(--grid-soft);
+}
+#organizePanel .usefulToolsHead > :first-child,
+#organizePanel .pdfToolsHead > :first-child{flex:1;min-width:0}
+#organizePanel .usefulToolsTitle,
+#organizePanel #eur1TemplateModule .eur1-title,
+#organizePanel .pdfToolsTitle{
+  color:var(--heading);font-family:var(--font);font-size:15px;
+  font-weight:800;letter-spacing:.07em;line-height:1.2;text-transform:uppercase;
+}
+#organizePanel #eur1TemplateModule .eur1-title{flex:1;min-width:0}
+#organizePanel #eur1TemplateModule .eur1-title > :first-child{min-width:0}
+#organizePanel #eur1TemplateModule .eur1-badge{flex:none}
+#organizePanel #eur1TemplateModule .eur1-head-actions{flex:none}
+#organizePanel .pdfToolsSubtitle{
+  margin-top:5px;color:var(--muted);font-size:11px;font-weight:700;line-height:1.4;
+}
+#organizePanel .pdfToolsBody{padding:16px}
+#organizePanel #pdfToolsPanel [hidden]{display:none!important}
+#organizePanel .pdfToolsHead .doganaModuleSvgToggleBtn{flex:none}
+#organizePanel #usefulToolsPanel::before,
+#organizePanel #eur1TemplateModule::before,
+#organizePanel #pdfToolsPanel::before{
+  content:"";display:block;position:absolute;z-index:40;top:0;left:24px;right:24px;
+  height:2px;border-radius:999px;pointer-events:none;opacity:.74;filter:saturate(.88);
+  background:linear-gradient(90deg,transparent 0%,rgba(37,99,235,.10) 4%,#2563eb 14%,
+    #06b6d4 29%,#22c55e 43%,#f59e0b 57%,#ec4899 71%,#8b5cf6 86%,
+    rgba(37,99,235,.10) 96%,transparent 100%);
+  box-shadow:0 1px 5px rgba(56,189,248,.14),0 0 10px rgba(139,92,246,.08);
+}
+#organizePanel .usefulToolsHead::before,
+#organizePanel #eur1TemplateModule .eur1-head::before{content:none;display:none}
+#organizePanel #usefulToolsPanel.is-minimized,
+#organizePanel #pdfToolsPanel.is-minimized,
+#organizePanel #eur1TemplateModule.eur1-collapsed{
+  height:var(--dogana-collapsed-height,66px);min-height:var(--dogana-collapsed-height,66px);
+  max-height:var(--dogana-collapsed-height,66px);border-radius:var(--dogana-collapsed-radius,18px);
+}
+#organizePanel #usefulToolsPanel.is-minimized > .usefulToolsHead,
+#organizePanel #pdfToolsPanel.is-minimized > .pdfToolsHead,
+#organizePanel #eur1TemplateModule.eur1-collapsed > .eur1-head{
+  flex-wrap:nowrap;height:100%;min-height:0;
+  padding:0 var(--dogana-collapsed-pad-x,16px);border-bottom:0;
+}
+#organizePanel #pdfToolsPanel.is-minimized > .pdfToolsBody,
+#organizePanel #pdfToolsPanel.is-minimized .pdfToolsSubtitle{display:none}
+#organizePanel #eur1TemplateModule.eur1-collapsed .eur1-title{flex-wrap:nowrap}
+#organizePanel #eur1TemplateModule.eur1-collapsed .eur1-title > :first-child{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn,
+#organizePanel #pdfToolsPanel.is-minimized #pdfToolsToggleBtn,
+#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle{
+  width:var(--dogana-collapsed-toggle,40px)!important;
+  min-width:var(--dogana-collapsed-toggle,40px)!important;
+  max-width:var(--dogana-collapsed-toggle,40px)!important;
+  height:var(--dogana-collapsed-toggle,40px)!important;
+  min-height:var(--dogana-collapsed-toggle,40px)!important;
+  max-height:var(--dogana-collapsed-toggle,40px)!important;
+  padding:0!important;flex:none;
+}
+body[data-theme="dark"] #organizePanel #usefulToolsPanel::before,
+body[data-theme="dark"] #organizePanel #eur1TemplateModule::before,
+body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter:saturate(.82)}
+@media(max-width:768px){
+  #organizePanel #usefulToolsPanel::before,
+  #organizePanel #eur1TemplateModule::before,
+  #organizePanel #pdfToolsPanel::before{left:16px;right:16px}
+}
+@media(max-width:700px){
+  #organizePanelBody > .organizeModuleChips > :last-child{grid-column:1 / -1}
+  #organizePanel .usefulToolsChips{grid-template-columns:minmax(0,1fr)!important}
+  #organizePanel #eur1TemplateModule .eur1-head,
+  #organizePanel .pdfToolsHead{padding:12px}
+  #organizePanel .pdfToolsBody{padding:10px}
+}
+</style>
+
+<script id="dogana-pdf-tools-panel-script">
+(function initPdfToolsPanel(){
+  const panel = document.getElementById("pdfToolsPanel");
+  const body = document.getElementById("pdfToolsBody");
+  const toggle = document.getElementById("pdfToolsToggleBtn");
+  if (!panel || !body || !toggle) return;
+  const storageKey = "doganatools_pdf_tools_minimized_v1";
+  function setMinimized(minimized){
+    panel.classList.toggle("is-minimized", minimized);
+    body.hidden = minimized;
+    toggle.setAttribute("aria-expanded", String(!minimized));
+    toggle.setAttribute("aria-label", minimized ? "Mostra PDF e documenti" : "Riduci a icona PDF e documenti");
+    toggle.title = minimized ? "Mostra modulo" : "Riduci a icona";
+    window.setDoganaModuleToggleIcon?.(toggle, minimized);
+    try { localStorage.setItem(storageKey, minimized ? "1" : "0"); } catch {}
+  }
+  try { setMinimized(localStorage.getItem(storageKey) !== "0"); }
+  catch { setMinimized(true); }
+  toggle.addEventListener("click", () => setMinimized(!panel.classList.contains("is-minimized")));
+  function revealForTarget(hash){
+    const target = document.getElementById(String(hash || "").replace(/^#/, ""));
+    if (!target || !panel.contains(target)) return;
+    window.doganaEnsureOrganizeExpanded?.();
+    const tools = document.getElementById("usefulToolsPanel");
+    if (tools?.classList.contains("is-minimized")) document.getElementById("usefulToolsToggleBtn")?.click();
+    if (panel.classList.contains("is-minimized")) setMinimized(false);
+  }
+  document.addEventListener("click", event => {
+    const link = event.target.closest?.('a[href^="#"]');
+    if (link) revealForTarget(link.getAttribute("href"));
+  }, true);
+  window.addEventListener("hashchange", () => revealForTarget(location.hash));
+  document.querySelectorAll('#organizePanel .organizeModuleChip[data-jump-focus]').forEach(link => {
+    link.addEventListener("click", () => {
+      const focus = document.querySelector(link.dataset.jumpFocus);
+      if (focus) setTimeout(() => {
+        if (!focus.disabled && focus.getClientRects().length) focus.focus({ preventScroll:true });
+      }, 360);
+    });
+  });
+})();
+</script>
+
 <script id="dogana-eur1-script">
 (function initEur1Templates(){
   const panel = document.getElementById("eur1TemplateModule");
@@ -27793,16 +27974,14 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
   }
   async function reveal() {
     window.doganaEnsureOrganizeExpanded?.();
-    const tools = $("usefulToolsPanel"); if (tools?.classList.contains("is-minimized")) $("usefulToolsToggleBtn")?.click();
-    panel.classList.remove("eur1-collapsed"); $("eur1Body").hidden = false; $("eur1OpenBtn").hidden = true;
+    panel.classList.remove("eur1-collapsed"); $("eur1Body").hidden = false;
     $("eur1Toggle").setAttribute("aria-expanded","true"); $("eur1Toggle").setAttribute("aria-label","Riduci a icona EUR.1"); $("eur1Toggle").title = "Riduci a icona";
     window.setDoganaModuleToggleIcon?.($("eur1Toggle"),false);
     await initialize(); scheduleFit();
   }
-  $("eur1OpenBtn").addEventListener("click",reveal);
   $("eur1Toggle").addEventListener("click",()=>{
     if (panel.classList.contains("eur1-collapsed")) reveal();
-    else { writeDraft(); panel.classList.add("eur1-collapsed"); $("eur1Body").hidden = true; $("eur1OpenBtn").hidden = false; $("eur1Toggle").setAttribute("aria-expanded","false"); $("eur1Toggle").setAttribute("aria-label","Mostra modulo EUR.1"); $("eur1Toggle").title = "Mostra modulo"; window.setDoganaModuleToggleIcon?.($("eur1Toggle"),true); }
+    else { writeDraft(); panel.classList.add("eur1-collapsed"); $("eur1Body").hidden = true; $("eur1Toggle").setAttribute("aria-expanded","false"); $("eur1Toggle").setAttribute("aria-label","Mostra modulo EUR.1"); $("eur1Toggle").title = "Mostra modulo"; window.setDoganaModuleToggleIcon?.($("eur1Toggle"),true); }
   });
   document.querySelectorAll('a[href="#eur1TemplateModule"]').forEach(link=>link.addEventListener("click",()=>{reveal();},true));
   window.addEventListener("hashchange",()=>{ if (location.hash === "#eur1TemplateModule") reveal(); });
