@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.10.13-TABELLA-RIMUOVI-PAGINA-R76 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.10.13-DOGANA-AI-LATERALE-R77 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.10.13-TABELLA-RIMUOVI-PAGINA-R76"/>
+<meta name="doganatools-build" content="V26.10.13-DOGANA-AI-LATERALE-R77"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.13-TABELLA-RIMUOVI-PAGINA-R76";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.13-DOGANA-AI-LATERALE-R77";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7388,12 +7388,9 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </button>
   <nav class="appQuickNav" id="doganaMobileNav" aria-label="Scorciatoie">
     <div class="appNavDropdown" id="doganaAiNavDropdown">
-      <button type="button" class="appNavDropdownToggle" id="doganaAiNavToggle" aria-expanded="false" aria-haspopup="true" aria-controls="doganaAiNavMenu">
-        DOGANA AI <span class="appNavDropdownChevron" aria-hidden="true">⌄</span>
+      <button type="button" class="appNavDropdownToggle" id="doganaAiNavToggle" aria-expanded="false" aria-controls="doganaAiDock" aria-label="Apri DOGANA AI" title="Apri DOGANA AI">
+        DOGANA AI
       </button>
-      <div class="appNavDropdownMenu" id="doganaAiNavMenu" role="menu" aria-label="Dogana AI">
-        <a href="#customs-ai-section" data-jump-focus="#customsAiInput" role="menuitem">CLASSIFICATORE DOGANA AI</a>
-      </div>
     </div>
     <a id="doganaNavTableBtn" href="#dogana-section">TABELLA</a>
     <a id="doganaNavContainersBtn" href="#extraPanel" data-jump-focus="#extraTable input">CONTENITORI</a>
@@ -7450,6 +7447,14 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   <div class="calcHistoryWrap calcDockHistoryWrap"><div class="calcMiniTitle">Storico</div><div class="calcHistoryEmpty" id="calcDockHistory">Nessun calcolo ancora</div></div>
 </aside>
 
+<aside id="doganaAiDock" aria-label="DOGANA AI laterale" hidden>
+  <div class="aiDockHeader">
+    <strong>DOGANA AI</strong>
+    <div class="aiDockHeaderActions">
+      <button id="aiDockSwitchSide" type="button" aria-label="Sposta DOGANA AI a sinistra" title="Sposta DOGANA AI a sinistra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4 4 8l4 4M4 8h16M16 20l4-4-4-4M20 16H4"/></svg></button>
+      <button id="aiDockClose" type="button" aria-label="Chiudi DOGANA AI" title="Chiudi DOGANA AI">×</button>
+    </div>
+  </div>
 <section class="panel sectionJumpTarget customsAiPanel" id="customs-ai-section" aria-label="DOGANA AI classificatore TARIC">
   <div class="customsAiBody">
     <form id="customsAiForm" class="customsAiSearch">
@@ -7464,13 +7469,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     <div class="customsAiOutput" id="customsAiOutput" aria-live="polite"></div>
   </div>
 </section>
-
-
-
-
-
-
-
+</aside>
 <section class="panel sectionJumpTarget" id="dogana-section">
 <div class="doganaTableModuleCard">
   <div class="toolbar doganaTableTopToolbar">
@@ -15430,33 +15429,6 @@ function installExtraTabClearOnClick(){
 })();
 
 
-/* === MENU DOGANA AI DROPDOWN === */
-(function initDoganaAiDropdown(){
-  const root = document.getElementById("doganaAiNavDropdown");
-  const toggle = document.getElementById("doganaAiNavToggle");
-  const menu = document.getElementById("doganaAiNavMenu");
-  if (!root || !toggle || !menu) return;
-
-  function setOpen(open){
-    root.classList.toggle("open", !!open);
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
-  }
-
-  toggle.addEventListener("click", event => {
-    event.stopPropagation();
-    setOpen(!root.classList.contains("open"));
-  });
-  menu.addEventListener("click", event => {
-    if (event.target.closest("a")) setOpen(false);
-  });
-  document.addEventListener("click", event => {
-    if (!root.contains(event.target)) setOpen(false);
-  });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && root.classList.contains("open")) { setOpen(false); toggle.focus(); }
-  });
-})();
-
 /* === MENU ORGANIZZA DROPDOWN === */
 (function initOrganizeDropdown(){
   const root = document.getElementById("organizeNavDropdown");
@@ -15499,9 +15471,9 @@ function installExtraTabClearOnClick(){
     const extraGap = window.matchMedia("(max-width:800px)").matches ? 18 : 14;
     const targetTop = target.getBoundingClientRect().top + window.pageYOffset - topBarHeight - extraGap;
 
-    const compactCalc = document.body.classList.contains("doganaCalcDockOpen") && window.matchMedia("(max-width:1100px)").matches;
-    const scrollArea = compactCalc ? document.querySelector(".wrap") : window;
-    const nextTop = compactCalc
+    const compactDock = (document.body.classList.contains("doganaCalcDockOpen") || document.body.classList.contains("doganaAiDockOpen")) && window.matchMedia("(max-width:1100px)").matches;
+    const scrollArea = compactDock ? document.querySelector(".wrap") : window;
+    const nextTop = compactDock
       ? target.getBoundingClientRect().top - scrollArea.getBoundingClientRect().top
         + scrollArea.scrollTop - topBarHeight - extraGap
       : targetTop;
@@ -25705,7 +25677,7 @@ body[data-theme="dark"] .invoiceClassifierStatus.is-busy{background:rgba(30,64,1
 body[data-theme="dark"] .invoiceClassifierStatus.is-error{background:rgba(127,29,29,.25);border-color:#991b1b;color:#fecaca}
 body[data-theme="dark"] .invoiceClassifierStatus.is-ok{background:rgba(20,83,45,.25);border-color:#166534;color:#bbf7d0}
 /* Colori e finitura del pulsante Cerca codice TARIC (customs-ai.css).
-   Restano le dimensioni del menu e il toggle del sottomenu. */
+   Restano le dimensioni del menu; il pulsante apre il pannello laterale. */
 #doganaAiNavToggle{--nav-tone:#4f46e5}
 body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle{
   color:#fff !important;
@@ -25718,7 +25690,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle{
   transition:transform .15s ease,filter .15s ease,opacity .15s ease !important;
 }
 body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:hover,
-body .appQuickNav #doganaAiNavDropdown.open #doganaAiNavToggle.appNavDropdownToggle{
+body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle[aria-expanded="true"]{
   color:#fff !important;
   -webkit-text-fill-color:#fff !important;
   border:0 !important;
@@ -25734,7 +25706,6 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:active{
 body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   box-shadow:0 0 0 3px rgba(37,99,235,.26), 0 6px 16px rgba(37,99,235,.18) !important;
 }
-#doganaAiNavMenu{min-width:290px}
 @media(max-width:768px){#invoice-classifier-section.is-minimized #invoiceClassifierToggle{width:var(--dogana-collapsed-toggle)!important;min-width:var(--dogana-collapsed-toggle)!important;max-width:var(--dogana-collapsed-toggle)!important;height:var(--dogana-collapsed-toggle)!important;min-height:var(--dogana-collapsed-toggle)!important;max-height:var(--dogana-collapsed-toggle)!important;flex:0 0 var(--dogana-collapsed-toggle)!important}}
 @media(max-width:900px){.invoiceClassifierUploadRow{grid-template-columns:1fr}.invoiceClassifierActions{justify-content:flex-start}.invoiceClassifierSummary label{flex:1 1 210px}.invoiceClassifierHead{padding:15px}.invoiceClassifierBody{padding:13px}.invoiceClassifierTable{font-size:11px}.invoiceClassifierTable th{padding:10px 4px;font-size:9px;letter-spacing:.035em}:is(#sheet,#extraTable,#invoiceClassifierTable) tbody input{padding:11px 4px;font-size:11px}.invoiceClassifierTable col.invoiceColProduct{width:28%}.invoiceClassifierTable col.invoiceColEan{width:14%}.invoiceClassifierTable col.invoiceColCn{width:12%}.invoiceClassifierTable col.invoiceColActions{width:40px}.invoiceClassifierDelete{width:34px!important;min-width:34px!important;height:32px!important;min-height:32px!important}}
 </style>
@@ -27495,6 +27466,7 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
   });
 
   function setOpen(open){
+    if (open) window.DoganaAiDock?.close();
     const wasCompact = compact.matches;
     const scrollPosition = wasCompact && document.body.classList.contains("doganaCalcDockOpen")
       ? wrap.scrollTop : window.scrollY;
@@ -27539,6 +27511,212 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
   else compact.addListener(onViewportChange);
 })();
 </script>
+<style id="doganatools-ai-dock-r77">
+/* DOGANA AI usa una colonna riservata, come la calcolatrice. */
+body.doganaAiDockOpen{
+  --dogana-ai-dock-width:clamp(360px,30vw,620px);
+  padding-right:calc(30px + var(--dogana-ai-dock-width) + 16px)!important;
+}
+body.doganaAiDockOpen.doganaAiDockLeft{
+  padding-right:30px!important;
+  padding-left:calc(30px + var(--dogana-ai-dock-width) + 16px)!important;
+}
+#doganaAiDock[hidden]{display:none!important}
+body #doganaAiDock{
+  position:fixed;z-index:1300;top:12px;right:18px;bottom:12px;
+  display:flex;flex-direction:column;gap:10px;
+  width:var(--dogana-ai-dock-width,360px);max-width:calc(100vw - 36px);
+  min-width:0;height:auto;max-height:none;overflow:hidden;
+  padding:14px;border:1px solid var(--grid-soft);border-radius:18px;
+  background:var(--panel);color:var(--text);box-shadow:0 18px 42px rgba(15,23,42,.18);
+}
+body.doganaAiDockLeft #doganaAiDock{left:18px;right:auto}
+#doganaAiDock::before{
+  content:"";position:absolute;top:0;left:16px;right:16px;height:2px;
+  border-radius:999px;pointer-events:none;opacity:.74;
+  background:linear-gradient(90deg,transparent,#2563eb,#06b6d4,#22c55e,#f59e0b,#ec4899,#8b5cf6,transparent);
+}
+#doganaAiDock .aiDockHeader{
+  display:flex;flex:none;align-items:center;justify-content:space-between;gap:8px;min-width:0;
+}
+#doganaAiDock .aiDockHeader strong{
+  color:var(--heading);font-size:15px;text-transform:uppercase;letter-spacing:.06em;
+}
+#doganaAiDock .aiDockHeaderActions{display:flex;align-items:center;gap:7px;flex:none}
+#doganaAiDock #aiDockClose,
+#doganaAiDock #aiDockSwitchSide{
+  width:38px;height:38px;min-width:38px;min-height:38px;padding:0!important;
+  display:inline-flex;align-items:center;justify-content:center;
+}
+#doganaAiDock #aiDockClose{font-size:23px;line-height:1}
+#doganaAiDock #aiDockSwitchSide svg{display:block;width:19px;height:19px}
+body #doganaAiDock #customs-ai-section{
+  display:flex!important;flex:1 1 auto;flex-direction:column;min-width:0!important;
+  min-height:0;max-height:none;width:100%!important;max-width:100%!important;
+  margin:0!important;padding:0!important;border:0!important;border-radius:0!important;
+  background:transparent!important;box-shadow:none!important;backdrop-filter:none!important;
+}
+body #doganaAiDock #customs-ai-section::before{content:none!important;display:none!important}
+#doganaAiDock .customsAiBody{
+  display:flex;flex:1 1 auto;flex-direction:column;gap:10px;min-width:0;min-height:0;padding:0!important;
+}
+#doganaAiDock .customsAiSearch{flex:none;width:100%;min-width:0;margin:0}
+#doganaAiDock .customsAiSearchShell{
+  display:grid!important;grid-template-columns:minmax(0,1fr) 44px!important;
+  width:100%!important;min-width:0;gap:8px!important;padding:8px!important;
+}
+#doganaAiDock .customsAiSearchBrand{display:none!important}
+#doganaAiDock #customsAiInput{width:100%;min-width:0;font-size:16px}
+#doganaAiDock #customsAiSubmit{
+  width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;
+}
+#doganaAiDock .customsAiProgress,
+#doganaAiDock .customsAiMessage{flex:none;min-width:0;overflow-wrap:anywhere}
+#doganaAiDock #customsAiOutput{
+  flex:1 1 auto;min-width:0;min-height:0;max-height:none;
+  overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;
+  grid-template-columns:minmax(0,1fr);flex-direction:column;overflow-wrap:anywhere;
+}
+#doganaAiDock .customsAiAnswer,
+#doganaAiDock .customsAiClarification{min-width:0;padding:12px!important}
+#doganaAiDock .customsAiAnswerTop,
+#doganaAiDock .customsAiCodeRow,
+#doganaAiDock .customsAiMeasuresSummary{
+  display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:8px!important;min-width:0;
+}
+#doganaAiDock .customsAiAnswerConfidence{justify-self:start!important}
+#doganaAiDock .customsAiCode{overflow-wrap:anywhere!important}
+#doganaAiDock .customsAiCopy{width:100%!important;min-height:44px!important}
+#doganaAiDock .customsAiMeasuresForm{grid-template-columns:minmax(0,1fr)!important}
+#doganaAiDock .customsAiMeasuresSubmit{grid-column:auto!important;width:100%!important;min-height:44px!important}
+#doganaAiDock input,#doganaAiDock select,#doganaAiDock textarea{min-width:0;max-width:100%}
+@media(max-width:1100px){
+  body.doganaAiDockOpen,
+  body.doganaAiDockOpen.doganaAiDockLeft{
+    --ai-dock-height:min(48dvh,430px);
+    padding-top:12px!important;padding-bottom:12px!important;
+    padding-left:12px!important;padding-right:12px!important;overflow:hidden!important;
+  }
+  #doganaAiDock #aiDockSwitchSide{display:none!important}
+  body.doganaAiDockOpen > .wrap{
+    height:calc(100vh - var(--ai-dock-height) - 28px)!important;
+    height:calc(100dvh - var(--ai-dock-height) - 28px)!important;
+    overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;
+  }
+  body.doganaAiDockOpen #doganaAiDock{
+    top:auto;right:12px;bottom:8px;left:12px;width:auto;max-width:none;
+    height:var(--ai-dock-height);max-height:var(--ai-dock-height);
+  }
+}
+@media(max-width:768px){
+  body.doganaAiDockOpen,
+  body.doganaAiDockOpen.doganaAiDockLeft{
+    --ai-dock-top-pad:max(8px,env(safe-area-inset-top));
+    padding-top:var(--ai-dock-top-pad)!important;
+    padding-left:max(8px,env(safe-area-inset-left))!important;
+    padding-right:max(8px,env(safe-area-inset-right))!important;
+    padding-bottom:max(8px,env(safe-area-inset-bottom))!important;
+  }
+  body.doganaAiDockOpen #doganaAiDock{
+    right:8px;left:8px;bottom:max(8px,env(safe-area-inset-bottom));padding:10px;
+  }
+  body.doganaAiDockOpen > .wrap{
+    height:calc(100dvh - var(--ai-dock-height) - var(--ai-dock-top-pad) - max(8px,env(safe-area-inset-bottom)) - 8px)!important;
+  }
+}
+</style>
+
+<script id="doganatools-ai-dock-script-r77">
+(function initDoganaAiDock(){
+  const dock = document.getElementById("doganaAiDock");
+  const toggle = document.getElementById("doganaAiNavToggle");
+  const close = document.getElementById("aiDockClose");
+  const switchSide = document.getElementById("aiDockSwitchSide");
+  const wrap = document.querySelector(".wrap");
+  const compact = window.matchMedia("(max-width:1100px)");
+  if (!dock || !toggle || !close || !switchSide || !wrap) return;
+  document.body.appendChild(dock);
+  const sideKey = "doganatools_ai_dock_side_v1";
+
+  function setSide(side, save = true){
+    const left = side === "left";
+    document.body.classList.toggle("doganaAiDockLeft", left);
+    const label = left ? "Sposta DOGANA AI a destra" : "Sposta DOGANA AI a sinistra";
+    switchSide.setAttribute("aria-label", label);
+    switchSide.title = label;
+    if (save) { try { localStorage.setItem(sideKey, left ? "left" : "right"); } catch {} }
+  }
+  let savedSide = "right";
+  try { savedSide = localStorage.getItem(sideKey) || "right"; } catch {}
+  setSide(savedSide, false);
+  switchSide.addEventListener("click", () => {
+    setSide(document.body.classList.contains("doganaAiDockLeft") ? "right" : "left");
+  });
+
+  function setOpen(open){
+    if (open && document.body.classList.contains("mobileNavOpen")) document.getElementById("doganaMobileNavToggle")?.click();
+    if (open === !dock.hidden) {
+      if (open) document.getElementById("customsAiInput")?.focus({ preventScroll:true });
+      return;
+    }
+    if (open) {
+      const calculator = document.getElementById("doganaCalcDock");
+      if (calculator && !calculator.hidden) document.getElementById("calcDockClose")?.click();
+    }
+    const wasCompact = compact.matches;
+    const scrollPosition = wasCompact && document.body.classList.contains("doganaAiDockOpen")
+      ? wrap.scrollTop : window.scrollY;
+    dock.hidden = !open;
+    document.body.classList.toggle("doganaAiDockOpen", open);
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Chiudi DOGANA AI" : "Apri DOGANA AI");
+    toggle.title = open ? "Chiudi DOGANA AI" : "Apri DOGANA AI";
+    if (wasCompact) {
+      if (open) { window.scrollTo(0, 0); wrap.scrollTop = scrollPosition; }
+      else window.scrollTo(0, scrollPosition);
+    }
+    if (open) document.getElementById("customsAiInput")?.focus({ preventScroll:true });
+  }
+  function restoreFocus(){
+    (window.matchMedia("(max-width:768px)").matches
+      ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus({ preventScroll:true });
+  }
+  toggle.addEventListener("click", () => {
+    if (document.body.classList.contains("mobileNavOpen")) document.getElementById("doganaMobileNavToggle")?.click();
+    setOpen(dock.hidden);
+  });
+  close.addEventListener("click", () => { setOpen(false); restoreFocus(); });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !dock.hidden) { event.preventDefault(); setOpen(false); restoreFocus(); }
+  });
+  document.addEventListener("click", event => {
+    const link = event.target.closest?.('a[href="#customs-ai-section"],a[href="#doganaAiDock"]');
+    if (!link) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(true);
+  }, true);
+  window.addEventListener("hashchange", () => {
+    if (["#customs-ai-section", "#doganaAiDock"].includes(location.hash)) setOpen(true);
+  });
+  function onViewportChange(){
+    if (dock.hidden) return;
+    if (compact.matches) {
+      const pageY = window.scrollY;
+      window.scrollTo(0, 0);
+      wrap.scrollTop = pageY;
+    } else {
+      const pageY = wrap.scrollTop;
+      wrap.scrollTop = 0;
+      window.scrollTo(0, pageY);
+    }
+  }
+  if (compact.addEventListener) compact.addEventListener("change", onViewportChange);
+  else compact.addListener(onViewportChange);
+  window.DoganaAiDock = { open:() => setOpen(true), close:() => setOpen(false) };
+})();
+</script>
+
 <style id="dogana-eur1-style">
 #eur1TemplateModule{width:100%;min-width:0;overflow:hidden;position:relative;border:1px solid var(--grid-soft);border-radius:18px;background:var(--surface);margin:0 0 16px;color:var(--text);font-family:var(--font)}
 #eur1TemplateModule [hidden]{display:none!important}
