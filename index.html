@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-PANNELLI-CONTEMPORANEI-R78 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.10.14-PANNELLI-CONTEMPORANEI-R78"/>
+<meta name="doganatools-build" content="V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.14-PANNELLI-CONTEMPORANEI-R78";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7406,7 +7406,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <span class="organizeNavGroupLabel" role="presentation">Template doganali</span>
         <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">TEMPLATE A22 / EUR.1</a>
         <span class="organizeNavGroupLabel" role="presentation">Tool utili</span>
-        <a href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient" role="menuitem">RICONOSCIMENTO VOCE DOGANALE</a>
+        <a href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient" role="menuitem">ANALIZZA DOCUMENTI</a>
         <a href="#pdfToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">PDF E DOCUMENTI</a>
       </div>
     </div>
@@ -7802,24 +7802,24 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
 </section>
 
-    <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili: riconoscimento voce doganale, PDF e documenti">
+    <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili: Analizza Documenti, PDF e documenti">
       <div class="usefulToolsHead">
         <div>
           <div class="usefulToolsTitle">Tool utili</div>
-          <div class="usefulToolsSubtitle">Riconoscimento voce doganale e gestione di PDF, documenti e immagini.</div>
+          <div class="usefulToolsSubtitle">Analizza Documenti, comprimi PDF e converti documenti e immagini.</div>
         </div>
         <button type="button" id="usefulToolsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-controls="usefulToolsBody" aria-label="Riduci a icona Tool utili" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
       </div>
       <div class="usefulToolsBody" id="usefulToolsBody">
         <div class="organizeModuleChips usefulToolsChips" aria-label="Strumenti disponibili">
-          <a class="organizeModuleChip" href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient">Riconoscimento voce doganale</a>
+          <a class="organizeModuleChip" href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient">Analizza Documenti</a>
           <a class="organizeModuleChip" href="#pdfToolsPanel" data-jump-focus="#pdfCompressFile">PDF e documenti</a>
         </div>
 
-<section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Riconoscimento voce doganale">
+<section class="panel sectionJumpTarget invoiceClassifierPanel" id="invoice-classifier-section" aria-label="Analizza Documenti">
   <div class="invoiceClassifierHead">
     <div class="invoiceClassifierTitleWrap">
-      <div class="miniTitle invoiceClassifierTitle">Riconoscimento voce doganale</div>
+      <div class="miniTitle invoiceClassifierTitle">Analizza Documenti</div>
     </div>
     <label class="invoiceClassifierClientLabel" for="invoiceClassifierClient">
       <span>CLIENTE</span>
@@ -7832,7 +7832,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       </select>
     </label>
     <div class="invoiceClassifierHeadActions">
-      <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Riconoscimento voce doganale" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+      <button type="button" id="invoiceClassifierToggle" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Analizza Documenti" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
 
@@ -15472,7 +15472,9 @@ function installExtraTabClearOnClick(){
     if (!target) return;
 
     const topBar = document.querySelector(".appTopBar");
-    const topBarHeight = topBar ? Math.ceil(topBar.getBoundingClientRect().height) : 0;
+    const fixedDesktopBar = window.matchMedia("(min-width:769px)").matches;
+    const barRect = topBar?.getBoundingClientRect();
+    const topBarHeight = barRect ? Math.ceil(fixedDesktopBar ? barRect.bottom : barRect.height) : 0;
     const extraGap = window.matchMedia("(max-width:800px)").matches ? 18 : 14;
     const targetTop = target.getBoundingClientRect().top + window.pageYOffset - topBarHeight - extraGap;
 
@@ -15480,7 +15482,7 @@ function installExtraTabClearOnClick(){
     const scrollArea = compactDock ? document.querySelector(".wrap") : window;
     const nextTop = compactDock
       ? target.getBoundingClientRect().top - scrollArea.getBoundingClientRect().top
-        + scrollArea.scrollTop - topBarHeight - extraGap
+        + scrollArea.scrollTop - (fixedDesktopBar ? 0 : topBarHeight) - extraGap
       : targetTop;
     scrollArea.scrollTo({ top: Math.max(0, nextTop), behavior: "smooth" });
 
@@ -26844,7 +26846,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     }
 
     const firstSource=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"documento";
-    const result=api.importRows(sourceRows,{title:`Riconoscimento voce doganale · ${firstSource}`});
+    const result=api.importRows(sourceRows,{title:`Analizza Documenti · ${firstSource}`});
     if(!result?.added){setStatus("Nessuna riga trasferita nella Tabella.","error");return;}
 
     setStatus(`${result.added} righe esportate nella Tabella DoganaTools. Totale righe in tabella: ${result.total}.`,"ok");
@@ -26865,12 +26867,12 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
     data.push({"GRUPPO PACKING":"TOTALI","VOCI FATTURA":comparison.rows.reduce((total,row)=>total+row.items.length,0),"COLLI":asCell(sumRows(comparison.rows,"packages")),"PESO LORDO KG":asCell(sumRows(comparison.rows,"gross")),"PESO NETTO KG":asCell(sumRows(comparison.rows,"net")),"VALORE FATTURA":asCell(sumRows(comparison.rows,"value")),"FATTURA":"","FILE SORGENTE":"","ESITO":""});
     return data;
   }
-  function fileBase(){const first=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"riconoscimento_voce_doganale";return first.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,70)||"riconoscimento_voce_doganale";}
+  function fileBase(){const first=state.sourceNames[0]?.replace(/\.[^.]+$/,"")||"analizza_documenti";return first.normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z0-9_-]+/gi,"_").replace(/^_+|_+$/g,"").slice(0,70)||"analizza_documenti";}
   function exportExcel(){
     const data=exportRows(),comparison=gfiComparison(),packing=exportPackingRows(comparison);if(!data.length&&!packing.length){setStatus("Nessuna riga da esportare.","error");return;}
     if(globalThis.XLSX){
       const book=XLSX.utils.book_new();
-      if(data.length){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=Object.keys(data[0]).map(key=>({wch:key==="PRODOTTO"?48:key==="GRUPPO PACKING"?36:key==="FILE SORGENTE"?28:key==="NR"?6:18}));XLSX.utils.book_append_sheet(book,sheet,"Riconoscimento");}
+      if(data.length){const sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=Object.keys(data[0]).map(key=>({wch:key==="PRODOTTO"?48:key==="GRUPPO PACKING"?36:key==="FILE SORGENTE"?28:key==="NR"?6:18}));XLSX.utils.book_append_sheet(book,sheet,"Analizza Documenti");}
       if(packing.length){const sheet=XLSX.utils.json_to_sheet(packing);sheet["!cols"]=[{wch:38},{wch:16},{wch:12},{wch:19},{wch:19},{wch:19},{wch:12},{wch:30},{wch:30}];if(comparison.notices.length)XLSX.utils.sheet_add_aoa(sheet,[["VERIFICHE"],...comparison.notices.map(notice=>[notice])],{origin:packing.length+3});XLSX.utils.book_append_sheet(book,sheet,"Confronto packing");}
       if(state.rows.some(row=>row.clientId==="zeus")){
         const data=zeusDocumentExportRows(),sheet=XLSX.utils.json_to_sheet(data);sheet["!cols"]=Object.keys(data[0]||{}).map(key=>({wch:key==="FILE SORGENTE"?40:24}));
@@ -26908,7 +26910,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
         lines.forEach((value,i)=>{doc.text(value,x+1.2,y+1.5,{baseline:"top",maxWidth:cols[i]-2.4});x+=cols[i];});y+=height;
       });
     };
-    if(data.length)table("Riconoscimento voce doganale",`File: ${state.sourceNames.join(", ")||"—"}${state.rows.some(row=>row.clientId==="zeus")?`   Colli documenti ZEUS: ${state.docPackages||"—"}`:""}   Lordo: ${state.docGross||"—"} kg   Netto: ${state.docNet||"—"} kg   Valore: ${state.docValue||"—"}`,["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","LORDO KG","NETTO KG","VALORE"],[8,102,34,27,19,26,26,26],data.map(row=>[row.NR,[row.PRODOTTO,row["QUANTITÀ FATTURA"]!==undefined?`Quantità fattura: ${row["QUANTITÀ FATTURA"]} ${row.UM||""}`:"",row["GRUPPO PACKING"]?`Packing: ${row["GRUPPO PACKING"]}`:""].filter(Boolean).join("\n"),row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE]));
+    if(data.length)table("Analizza Documenti",`File: ${state.sourceNames.join(", ")||"—"}${state.rows.some(row=>row.clientId==="zeus")?`   Colli documenti ZEUS: ${state.docPackages||"—"}`:""}   Lordo: ${state.docGross||"—"} kg   Netto: ${state.docNet||"—"} kg   Valore: ${state.docValue||"—"}`,["NR","PRODOTTO","EAN / CODICE","VOCE NC","COLLI","LORDO KG","NETTO KG","VALORE"],[8,102,34,27,19,26,26,26],data.map(row=>[row.NR,[row.PRODOTTO,row["QUANTITÀ FATTURA"]!==undefined?`Quantità fattura: ${row["QUANTITÀ FATTURA"]} ${row.UM||""}`:"",row["GRUPPO PACKING"]?`Packing: ${row["GRUPPO PACKING"]}`:""].filter(Boolean).join("\n"),row["EAN / CODICE"],row["VOCE NC (8 CIFRE)"],row.COLLI,row["PESO LORDO KG"],row["PESO NETTO KG"],row.VALORE]));
     if(packing.length){
       if(data.length)newPage();
       table("GFI GROUP · Confronto fattura / packing list","Colli e pesi per gruppo dalla packing list; valori dagli articoli della fattura. Gli articoli da abbinare mantengono il valore, con colli e pesi vuoti.",["GRUPPO PACKING","VOCI FT","COLLI","LORDO KG","NETTO KG","VALORE FT","ESITO"],[87,16,19,30,30,30,56],packing.map(row=>[[row["GRUPPO PACKING"],row.FATTURA?`FT ${row.FATTURA}`:""].filter(Boolean).join(" · "),row["VOCI FATTURA"],formatComparisonNumber(row.COLLI,"packages"),formatComparisonNumber(row["PESO LORDO KG"],"gross"),formatComparisonNumber(row["PESO NETTO KG"],"net"),formatComparisonNumber(row["VALORE FATTURA"]),row.ESITO]));
@@ -26994,13 +26996,13 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
   },true);
   elements.analyze.addEventListener("click",analyzeFiles);elements.classify.addEventListener("click",classifyAll);elements.copy.addEventListener("click",copyColumn);elements.toTable.addEventListener("click",exportToMainTable);elements.excel.addEventListener("click",exportExcel);elements.pdf.addEventListener("click",exportPdf);
   elements.add.addEventListener("click",()=>{const invoices=state.gfiDocuments.filter(document=>document.kind==="invoice"),invoice=state.clientId==="gfi-group"&&invoices.length===1?invoices[0]:null;state.rows.push(makeRow(invoice?{clientId:"gfi-group",source:invoice.source,invoiceNumber:invoice.invoiceNumber,invoiceDate:invoice.invoiceDate,documentKind:"invoice"}:{}));render();elements.tbody.querySelector("tr:last-child input[data-field='description']")?.focus();});
-  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati del riconoscimento voce doganale?"))return;state={clientId:state.clientId,soleDocuments:[],soleNotices:[],zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];selectedFilesAnalyzed=false;elements.input.value="";render();setStatus("Dati rimossi.");});
+  elements.clear.addEventListener("click",()=>{if((state.rows.length||state.gfiDocuments.length)&&!confirm("Svuotare tutti i dati di Analizza Documenti?"))return;state={clientId:state.clientId,soleDocuments:[],soleNotices:[],zeusDocuments:[],zeusNotices:[],docPackages:"",gfiDocuments:[],dataNotices:[],rows:[],sourceNames:[],docGross:"",docNet:"",docValue:""};selectedFiles=[];selectedFilesAnalyzed=false;elements.input.value="";render();setStatus("Dati rimossi.");});
   elements.docPackages.addEventListener("input",()=>{state.docPackages=elements.docPackages.value;renderTotals();saveState();});
   elements.docGross.addEventListener("input",()=>{state.docGross=cleanText(elements.docGross.value,50);saveState();});elements.docNet.addEventListener("input",()=>{state.docNet=cleanText(elements.docNet.value,50);saveState();});elements.docValue.addEventListener("input",()=>{state.docValue=cleanText(elements.docValue.value,50);saveState();});
   elements.tbody.addEventListener("input",event=>{const input=event.target.closest("input[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;let value=input.value;if(input.dataset.field==="ean")value=digits(value,14);if(input.dataset.field==="cn8")value=cleanCn8(value);row[input.dataset.field]=value;if(input.value!==value)input.value=value;if(["gross","net"].includes(input.dataset.field)){row.dataIssue=row.clientId==="o-sole-e-napule"?soleRowIssue(row):row.clientId==="zeus"?zeusWeightIssue(row):(numericValue(row.net)===0&&numericValue(row.gross)>0?"Peso netto pari a zero nel documento: verificare.":"");row.needsReview=!!row.dataIssue||["catalog","needs_review","error","unclassified"].includes(row.status);}if(input.dataset.field==="cn8"){row.status=value.length===8?"confirmed":"pending";row.needsReview=!!row.dataIssue;}if(["packages","gross","net","value"].includes(input.dataset.field))renderTotals();if(row.clientId==="gfi-group"){const comparison=gfiComparison();renderGfiComparison(comparison);renderComparisonNotices(comparison);}saveState();});
   elements.tbody.addEventListener("change",event=>{const input=event.target.closest("input[data-field], select[data-field]");if(!input)return;const row=state.rows.find(item=>item.id===input.closest("tr")?.dataset.rowId);if(!row)return;if(input.dataset.field==="packingGroup"){const packing=gfiPackingForRow(row);row.packingGroup=packing?.groups.some(group=>group.key===input.value)?input.value:"";}if(input.dataset.field==="cn8"&&/^\d{8}$/.test(row.cn8)){row.status="confirmed";row.needsReview=!!row.dataIssue;rememberRow(row);}render();});
   elements.tbody.addEventListener("click",event=>{const button=event.target.closest("button[data-delete]");if(!button)return;const id=button.closest("tr")?.dataset.rowId;state.rows=state.rows.filter(row=>row.id!==id);render();});
-  elements.toggle.addEventListener("click",()=>{const minimized=!elements.panel.classList.contains("is-minimized");elements.panel.classList.toggle("is-minimized",minimized);elements.toggle.setAttribute("aria-expanded",String(!minimized));elements.toggle.setAttribute("aria-label",minimized?"Mostra Riconoscimento voce doganale":"Riduci a icona Riconoscimento voce doganale");globalThis.setDoganaModuleToggleIcon?.(elements.toggle,minimized);});
+  elements.toggle.addEventListener("click",()=>{const minimized=!elements.panel.classList.contains("is-minimized");elements.panel.classList.toggle("is-minimized",minimized);elements.toggle.setAttribute("aria-expanded",String(!minimized));elements.toggle.setAttribute("aria-label",minimized?"Mostra Analizza Documenti":"Riduci a icona Analizza Documenti");globalThis.setDoganaModuleToggleIcon?.(elements.toggle,minimized);});
   render();
   globalThis.DoganaInvoiceClassifier={getRows:()=>state.rows.map(row=>({...row,packages:rowPackages(row),packagesFromQuantity:packagesUseQuantity(row)})),getClientProfiles:()=>Object.values(CLIENT_PROFILES).map(({id,label})=>({id,label})),parseDocumentText};
 })();
@@ -28331,5 +28333,113 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
 })();
 </script>
 
+
+<style id="doganatools-analizza-menu-r79">
+/* Cliente sulla stessa riga del selettore, allineato a sinistra. */
+#invoice-classifier-section .invoiceClassifierClientLabel{
+  flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;
+  flex:0 1 340px;width:340px;max-width:100%;
+}
+#invoice-classifier-section .invoiceClassifierClientLabel > span{
+  flex:none;white-space:nowrap;margin:0;
+}
+#invoice-classifier-section .invoiceClassifierClientLabel > select{
+  flex:1 1 auto;width:auto;min-width:0;
+}
+
+@media(min-width:769px){
+  /* Il menu non dipende dalla larghezza lasciata dai pannelli laterali. */
+  body,
+  body.doganaSideDocksOpen.doganaCalcDockOpen,
+  body.doganaSideDocksOpen.doganaAiDockOpen{
+    padding-top:calc(var(--dogana-topbar-height,54px) + 24px)!important;
+  }
+  body .appTopBar#appTopBar{
+    position:fixed!important;top:12px!important;
+    left:max(12px,calc((100vw - 1180px)/2))!important;
+    right:max(12px,calc((100vw - 1180px)/2))!important;
+    z-index:1400!important;width:auto!important;max-width:none!important;
+    display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
+    align-items:center!important;gap:12px!important;margin:0!important;padding:10px 12px!important;
+  }
+  body.doganaSideDocksOpen .appTopBar#appTopBar{left:12px!important;right:12px!important}
+  #appTopBar .appBrand{
+    flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;white-space:nowrap;
+  }
+  #appTopBar .appBrandText strong,#appTopBar .appBrandText span{white-space:nowrap!important}
+  #appTopBar .appQuickNav#doganaMobileNav{
+    display:flex!important;flex:1 1 auto!important;flex-wrap:nowrap!important;
+    align-items:center!important;justify-content:flex-end!important;
+    gap:6px!important;width:auto!important;min-width:0!important;max-width:none!important;
+    overflow:visible!important;padding:0!important;
+  }
+  #appTopBar #doganaMobileNav > .appNavDropdown{
+    flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;
+  }
+  #appTopBar #doganaMobileNav > a,
+  #appTopBar #doganaMobileNav > button,
+  #appTopBar #doganaMobileNav > .appNavDropdown > .appNavDropdownToggle{
+    flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;
+    height:36px!important;min-height:36px!important;white-space:nowrap!important;
+    padding:7px 8px!important;font-size:11px!important;
+  }
+  #appTopBar #doganaMobileNav > #doganaCalcDockToggle,
+  #appTopBar #doganaMobileNav > #doganaMenuSettingsBtn{
+    flex:0 0 36px!important;width:36px!important;min-width:36px!important;
+    max-width:36px!important;padding:0!important;
+  }
+  #appTopBar #doganaMenuSessionName{
+    max-width:130px!important;min-width:0!important;
+    overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;
+  }
+  body.doganaSideDocksOpen.doganaCalcDockOpen,
+  body.doganaSideDocksOpen.doganaAiDockOpen{
+    --side-dock-top:calc(var(--dogana-topbar-height,54px) + 24px);
+  }
+}
+@media(min-width:1101px){
+  body.doganaSideDocksOpen #doganaCalcDock,
+  body.doganaSideDocksOpen #doganaAiDock{
+    top:calc(var(--dogana-topbar-height,54px) + 24px);
+  }
+}
+@media(min-width:769px) and (max-width:1400px){
+  #appTopBar .appBrandText span{display:none!important}
+  #appTopBar #doganaMobileNav > a,
+  #appTopBar #doganaMobileNav > button,
+  #appTopBar #doganaMobileNav > .appNavDropdown > .appNavDropdownToggle{
+    padding-left:7px!important;padding-right:7px!important;font-size:10px!important;
+  }
+  #appTopBar #doganaMenuSessionName{max-width:90px!important}
+}
+@media(min-width:769px) and (max-width:1100px){
+  #appTopBar .appBrandText{display:none!important}
+  body .appTopBar#appTopBar{gap:8px!important}
+  #appTopBar .appQuickNav#doganaMobileNav{gap:4px!important}
+  #appTopBar #doganaMenuSessionName{display:none!important}
+  #appTopBar #doganaMobileNav > #doganaMenuSessionSync{
+    flex:0 0 36px!important;width:36px!important;min-width:36px!important;
+    max-width:36px!important;padding:0!important;
+  }
+  #appTopBar #doganaMobileNav > a,
+  #appTopBar #doganaMobileNav > button,
+  #appTopBar #doganaMobileNav > .appNavDropdown > .appNavDropdownToggle{
+    font-size:clamp(9px,1vw,10px)!important;
+  }
+}
+</style>
+<script id="doganatools-topbar-height-r79">
+(function initTopbarHeight(){
+  const bar = document.getElementById("appTopBar");
+  if (!bar) return;
+  function updateHeight(){
+    const height = Math.ceil(bar.getBoundingClientRect().height);
+    if (height > 0) document.body.style.setProperty("--dogana-topbar-height", `${height}px`);
+  }
+  updateHeight();
+  if (typeof ResizeObserver === "function") new ResizeObserver(updateHeight).observe(bar);
+  else window.addEventListener("resize", updateHeight);
+})();
+</script>
 </body>
 </html>
