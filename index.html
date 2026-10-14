@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<!-- DOGANATOOLS FRONTEND BUILD: V26.10.13-DOGANA-AI-LATERALE-R77 -->
+<!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-PANNELLI-CONTEMPORANEI-R78 -->
 <meta charset="utf-8"/>
-<meta name="doganatools-build" content="V26.10.13-DOGANA-AI-LATERALE-R77"/>
+<meta name="doganatools-build" content="V26.10.14-PANNELLI-CONTEMPORANEI-R78"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta name="theme-color" content="#2563eb"/>
 <meta name="mobile-web-app-capable" content="yes"/>
-<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.13-DOGANA-AI-LATERALE-R77";</script>
+<script>window.DOGANATOOLS_FRONTEND_BUILD = "V26.10.14-PANNELLI-CONTEMPORANEI-R78";</script>
 <link rel="icon" type="image/svg+xml" href="./img/logo.svg" />
 <link rel="shortcut icon" href="./img/logo.svg" />
 <link rel="apple-touch-icon" href="./img/logo.svg" />
@@ -7424,6 +7424,11 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 </div>
 <button type="button" id="doganaMobileNavBackdrop" class="doganaMobileNavBackdrop" aria-label="Chiudi menu" aria-hidden="true" tabindex="-1"></button>
 
+<div id="doganaSideDockTabs" aria-label="Pannelli aperti" hidden>
+  <button id="sideDockTabCalc" type="button" aria-pressed="false">Calcolatrice</button>
+  <button id="sideDockTabAi" type="button" aria-pressed="false">DOGANA AI</button>
+</div>
+
 <aside id="doganaCalcDock" aria-label="Calcolatrice rapida" hidden>
   <div class="calcDockHeader">
     <strong>Calcolatrice</strong>
@@ -7451,7 +7456,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   <div class="aiDockHeader">
     <strong>DOGANA AI</strong>
     <div class="aiDockHeaderActions">
-      <button id="aiDockSwitchSide" type="button" aria-label="Sposta DOGANA AI a sinistra" title="Sposta DOGANA AI a sinistra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4 4 8l4 4M4 8h16M16 20l4-4-4-4M20 16H4"/></svg></button>
+      <button id="aiDockSwitchSide" type="button" aria-label="Sposta DOGANA AI a sinistra" title="Sposta DOGANA AI a sinistra"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 7H3l3-3M3 7h13a4 4 0 0 1 4 4M16 17h5l-3 3m3-3H8a4 4 0 0 1-4-4"/></svg></button>
       <button id="aiDockClose" type="button" aria-label="Chiudi DOGANA AI" title="Chiudi DOGANA AI">×</button>
     </div>
   </div>
@@ -15471,7 +15476,7 @@ function installExtraTabClearOnClick(){
     const extraGap = window.matchMedia("(max-width:800px)").matches ? 18 : 14;
     const targetTop = target.getBoundingClientRect().top + window.pageYOffset - topBarHeight - extraGap;
 
-    const compactDock = (document.body.classList.contains("doganaCalcDockOpen") || document.body.classList.contains("doganaAiDockOpen")) && window.matchMedia("(max-width:1100px)").matches;
+    const compactDock = document.body.classList.contains("doganaSideDocksCompact");
     const scrollArea = compactDock ? document.querySelector(".wrap") : window;
     const nextTop = compactDock
       ? target.getBoundingClientRect().top - scrollArea.getBoundingClientRect().top
@@ -27438,77 +27443,144 @@ body.doganaCalcDockLeft #doganaCalcDock{ left:18px; right:auto; }
 }
 </style>
 
-<script id="doganatools-calculator-dock-script">
-(function initCalculatorDock(){
-  const dock = document.getElementById("doganaCalcDock");
-  const toggle = document.getElementById("doganaCalcDockToggle");
-  const close = document.getElementById("calcDockClose");
-  const switchSide = document.getElementById("calcDockSwitchSide");
+<script id="doganatools-side-docks-script-r78">
+(function initSideDocks(){
   const wrap = document.querySelector(".wrap");
+  const tabs = document.getElementById("doganaSideDockTabs");
   const compact = window.matchMedia("(max-width:1100px)");
-  if (!dock || !toggle || !close || !switchSide || !wrap) return;
-  document.body.appendChild(dock);
+  const phone = window.matchMedia("(max-width:768px)");
+  const definitions = [
+    { id:"calc", label:"calcolatrice", dock:"doganaCalcDock", toggle:"doganaCalcDockToggle", close:"calcDockClose", switchSide:"calcDockSwitchSide", input:"calcDockExpr", tab:"sideDockTabCalc", openClass:"doganaCalcDockOpen", leftClass:"doganaCalcDockLeft", sideKey:"doganatools_calc_dock_side_v1" },
+    { id:"ai", label:"DOGANA AI", dock:"doganaAiDock", toggle:"doganaAiNavToggle", close:"aiDockClose", switchSide:"aiDockSwitchSide", input:"customsAiInput", tab:"sideDockTabAi", openClass:"doganaAiDockOpen", leftClass:"doganaAiDockLeft", sideKey:"doganatools_ai_dock_side_v1" }
+  ];
+  const docks = definitions.map(definition => ({
+    ...definition,
+    panel:document.getElementById(definition.dock),
+    button:document.getElementById(definition.toggle),
+    closeButton:document.getElementById(definition.close),
+    sideButton:document.getElementById(definition.switchSide),
+    tabButton:document.getElementById(definition.tab),
+    open:false, side:"right"
+  }));
+  if (!wrap || docks.some(dock => !dock.panel || !dock.button || !dock.closeButton || !dock.sideButton)) return;
+  let activeId = "ai";
 
-  const sideKey = "doganatools_calc_dock_side_v1";
-  function setSide(side, save = true){
-    const left = side === "left";
-    document.body.classList.toggle("doganaCalcDockLeft", left);
-    const label = left ? "Sposta calcolatrice a destra" : "Sposta calcolatrice a sinistra";
-    switchSide.setAttribute("aria-label", label);
-    switchSide.title = label;
-    if (save) { try { localStorage.setItem(sideKey, left ? "left" : "right"); } catch {} }
+  function opposite(side){ return side === "left" ? "right" : "left"; }
+  function storeSide(dock){
+    try { localStorage.setItem(dock.sideKey, dock.side); } catch {}
   }
-  let savedSide = "right";
-  try { savedSide = localStorage.getItem(sideKey) || "right"; } catch {}
-  setSide(savedSide, false);
-  switchSide.addEventListener("click", () => {
-    setSide(document.body.classList.contains("doganaCalcDockLeft") ? "right" : "left");
-  });
-
-  function setOpen(open){
-    if (open) window.DoganaAiDock?.close();
-    const wasCompact = compact.matches;
-    const scrollPosition = wasCompact && document.body.classList.contains("doganaCalcDockOpen")
-      ? wrap.scrollTop : window.scrollY;
-    dock.hidden = !open;
-    document.body.classList.toggle("doganaCalcDockOpen", open);
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Chiudi calcolatrice" : "Apri calcolatrice");
-    toggle.title = open ? "Chiudi calcolatrice" : "Apri calcolatrice";
-    if (wasCompact) {
-      if (open) { window.scrollTo(0, 0); wrap.scrollTop = scrollPosition; }
-      else window.scrollTo(0, scrollPosition);
-    }
-    if (open) document.getElementById("calcDockExpr")?.focus({ preventScroll:true });
+  function closeMobileMenu(){
+    if (document.body.classList.contains("mobileNavOpen")) document.getElementById("doganaMobileNavToggle")?.click();
+  }
+  function focusInput(dock){
+    document.getElementById(dock.input)?.focus({ preventScroll:true });
+  }
+  function restoreFocus(dock){
+    (phone.matches ? document.getElementById("doganaMobileNavToggle") : dock.button)?.focus({ preventScroll:true });
   }
 
-  toggle.addEventListener("click", () => {
-    if (document.body.classList.contains("mobileNavOpen")) {
-      document.getElementById("doganaMobileNavToggle")?.click();
+  function renderLayout(){
+    const wasCompact = document.body.classList.contains("doganaSideDocksCompact");
+    const pageY = wasCompact ? wrap.scrollTop : window.scrollY;
+    const opened = docks.filter(dock => dock.open);
+    if (!opened.some(dock => dock.id === activeId)) activeId = opened[0]?.id || "ai";
+    const tabbed = phone.matches && opened.length === 2;
+    const nowCompact = compact.matches && opened.length > 0;
+    for (const dock of docks){
+      const visible = dock.open && (!tabbed || dock.id === activeId);
+      dock.panel.hidden = !visible;
+      document.body.classList.toggle(dock.openClass, dock.open);
+      document.body.classList.toggle(dock.leftClass, dock.side === "left");
+      dock.button.setAttribute("aria-expanded", String(visible));
+      const label = `${visible ? "Chiudi" : dock.open ? "Mostra" : "Apri"} ${dock.label}`;
+      dock.button.setAttribute("aria-label", label);
+      dock.button.title = label;
+      const sideLabel = `Sposta ${dock.label} a ${dock.side === "left" ? "destra" : "sinistra"}`;
+      dock.sideButton.setAttribute("aria-label", sideLabel);
+      dock.sideButton.title = sideLabel;
+      dock.tabButton?.setAttribute("aria-pressed", String(dock.id === activeId));
     }
-    setOpen(dock.hidden);
-  });
-  close.addEventListener("click", () => {
-    setOpen(false);
-    (window.matchMedia("(max-width:768px)").matches
-      ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus();
-  });
+    if (tabs) tabs.hidden = !tabbed;
+    document.body.classList.toggle("doganaSideDocksOpen", opened.length > 0);
+    document.body.classList.toggle("doganaSideDocksCompact", nowCompact);
+    if (nowCompact){
+      if (!wasCompact) window.scrollTo(0, 0);
+      wrap.scrollTop = pageY;
+    } else if (wasCompact){
+      wrap.scrollTop = 0;
+      window.scrollTo(0, pageY);
+    }
+  }
+
+  function setOpen(dock, open, focus = false){
+    if (open){
+      closeMobileMenu();
+      const other = docks.find(item => item !== dock && item.open);
+      if (other && dock.side === other.side){
+        dock.side = opposite(other.side);
+        storeSide(dock);
+      }
+      activeId = dock.id;
+    }
+    dock.open = open;
+    renderLayout();
+    if (open && focus) focusInput(dock);
+  }
+  function switchSide(dock){
+    const side = opposite(dock.side);
+    const other = docks.find(item => item !== dock && item.open);
+    dock.side = side;
+    storeSide(dock);
+    if (dock.open && other && other.side === side){
+      other.side = opposite(side);
+      storeSide(other);
+    }
+    renderLayout();
+  }
+
+  for (const dock of docks){
+    document.body.appendChild(dock.panel);
+    try { dock.side = localStorage.getItem(dock.sideKey) === "left" ? "left" : "right"; } catch {}
+    dock.button.addEventListener("click", () => {
+      closeMobileMenu();
+      // Sul telefono, un pannello già aperto può essere dietro l'altro tab.
+      if (dock.open && dock.panel.hidden) setOpen(dock, true, true);
+      else setOpen(dock, !dock.open, !dock.open);
+    });
+    dock.closeButton.addEventListener("click", () => { setOpen(dock, false); restoreFocus(dock); });
+    dock.sideButton.addEventListener("click", () => switchSide(dock));
+    dock.panel.addEventListener("focusin", () => { if (dock.open) activeId = dock.id; });
+    dock.panel.addEventListener("pointerdown", () => { if (dock.open) activeId = dock.id; });
+    dock.tabButton?.addEventListener("click", () => { if (dock.open) setOpen(dock, true, true); });
+  }
+  if (tabs) document.body.appendChild(tabs);
+  renderLayout();
+
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !dock.hidden) {
-      setOpen(false);
-      (window.matchMedia("(max-width:768px)").matches
-        ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus();
-    }
+    if (event.key !== "Escape" || event.defaultPrevented) return;
+    const dock = docks.find(item => item.open && item.panel.contains(event.target))
+      || docks.find(item => item.open && item.id === activeId);
+    if (!dock) return;
+    event.preventDefault();
+    setOpen(dock, false);
+    restoreFocus(dock);
   });
-  function onViewportChange(){
-    if (dock.hidden) return;
-    // Leave the scroll position in the document when switching back to the side column.
-    const current = wrap.scrollTop;
-    if (!compact.matches && current) { wrap.scrollTop = 0; window.scrollTo(0, current); }
-    else if (compact.matches) { const pageY = window.scrollY; window.scrollTo(0, 0); wrap.scrollTop = pageY; }
+  const ai = docks.find(dock => dock.id === "ai");
+  document.addEventListener("click", event => {
+    const link = event.target.closest?.('a[href="#customs-ai-section"],a[href="#doganaAiDock"]');
+    if (!link) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setOpen(ai, true, true);
+  }, true);
+  window.addEventListener("hashchange", () => {
+    if (["#customs-ai-section", "#doganaAiDock"].includes(location.hash)) setOpen(ai, true, true);
+  });
+  for (const query of [compact, phone]){
+    if (query.addEventListener) query.addEventListener("change", renderLayout);
+    else query.addListener(renderLayout);
   }
-  if (compact.addEventListener) compact.addEventListener("change", onViewportChange);
-  else compact.addListener(onViewportChange);
+  window.DoganaAiDock = { open:() => setOpen(ai, true, true), close:() => setOpen(ai, false) };
 })();
 </script>
 <style id="doganatools-ai-dock-r77">
@@ -27626,96 +27698,105 @@ body #doganaAiDock #customs-ai-section::before{content:none!important;display:no
 }
 </style>
 
-<script id="doganatools-ai-dock-script-r77">
-(function initDoganaAiDock(){
-  const dock = document.getElementById("doganaAiDock");
-  const toggle = document.getElementById("doganaAiNavToggle");
-  const close = document.getElementById("aiDockClose");
-  const switchSide = document.getElementById("aiDockSwitchSide");
-  const wrap = document.querySelector(".wrap");
-  const compact = window.matchMedia("(max-width:1100px)");
-  if (!dock || !toggle || !close || !switchSide || !wrap) return;
-  document.body.appendChild(dock);
-  const sideKey = "doganatools_ai_dock_side_v1";
 
-  function setSide(side, save = true){
-    const left = side === "left";
-    document.body.classList.toggle("doganaAiDockLeft", left);
-    const label = left ? "Sposta DOGANA AI a destra" : "Sposta DOGANA AI a sinistra";
-    switchSide.setAttribute("aria-label", label);
-    switchSide.title = label;
-    if (save) { try { localStorage.setItem(sideKey, left ? "left" : "right"); } catch {} }
-  }
-  let savedSide = "right";
-  try { savedSide = localStorage.getItem(sideKey) || "right"; } catch {}
-  setSide(savedSide, false);
-  switchSide.addEventListener("click", () => {
-    setSide(document.body.classList.contains("doganaAiDockLeft") ? "right" : "left");
-  });
 
-  function setOpen(open){
-    if (open && document.body.classList.contains("mobileNavOpen")) document.getElementById("doganaMobileNavToggle")?.click();
-    if (open === !dock.hidden) {
-      if (open) document.getElementById("customsAiInput")?.focus({ preventScroll:true });
-      return;
-    }
-    if (open) {
-      const calculator = document.getElementById("doganaCalcDock");
-      if (calculator && !calculator.hidden) document.getElementById("calcDockClose")?.click();
-    }
-    const wasCompact = compact.matches;
-    const scrollPosition = wasCompact && document.body.classList.contains("doganaAiDockOpen")
-      ? wrap.scrollTop : window.scrollY;
-    dock.hidden = !open;
-    document.body.classList.toggle("doganaAiDockOpen", open);
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.setAttribute("aria-label", open ? "Chiudi DOGANA AI" : "Apri DOGANA AI");
-    toggle.title = open ? "Chiudi DOGANA AI" : "Apri DOGANA AI";
-    if (wasCompact) {
-      if (open) { window.scrollTo(0, 0); wrap.scrollTop = scrollPosition; }
-      else window.scrollTo(0, scrollPosition);
-    }
-    if (open) document.getElementById("customsAiInput")?.focus({ preventScroll:true });
+<style id="doganatools-side-docks-style-r78">
+/* Il campo e la sua evidenziazione condividono gli stessi angoli. */
+#doganaAiDock #customs-ai-section .customsAiSearchShell,
+#doganaAiDock #customs-ai-section .customsAiSearchShell:focus-within{
+  border-radius:12px!important;outline:none!important;
+}
+#doganaAiDock #customsAiInput{border-radius:12px!important;outline:none!important}
+#doganaAiDock #customsAiInput:focus,
+#doganaAiDock #customsAiInput:focus-visible{
+  border-radius:12px!important;outline:none!important;background:var(--input-focus)!important;
+  box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent),
+    0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)!important;
+}
+
+/* Una colonna per lato: lo spazio centrale resta destinato ai moduli. */
+body.doganaSideDocksOpen.doganaCalcDockOpen,
+body.doganaSideDocksOpen.doganaAiDockOpen{
+  --side-dock-left-space:0px;--side-dock-right-space:0px;
+  padding-left:calc(30px + var(--side-dock-left-space))!important;
+  padding-right:calc(30px + var(--side-dock-right-space))!important;
+}
+body.doganaSideDocksOpen.doganaCalcDockOpen.doganaCalcDockLeft{
+  --side-dock-left-space:calc(var(--dogana-calc-dock-width) + 16px);
+}
+body.doganaSideDocksOpen.doganaCalcDockOpen:not(.doganaCalcDockLeft){
+  --side-dock-right-space:calc(var(--dogana-calc-dock-width) + 16px);
+}
+body.doganaSideDocksOpen.doganaAiDockOpen.doganaAiDockLeft{
+  --side-dock-left-space:calc(var(--dogana-ai-dock-width) + 16px);
+}
+body.doganaSideDocksOpen.doganaAiDockOpen:not(.doganaAiDockLeft){
+  --side-dock-right-space:calc(var(--dogana-ai-dock-width) + 16px);
+}
+body.doganaCalcDockOpen.doganaAiDockOpen{
+  --dogana-calc-dock-width:clamp(270px,22vw,360px);
+  --dogana-ai-dock-width:clamp(300px,24vw,460px);
+}
+#doganaSideDockTabs[hidden]{display:none!important}
+body #doganaSideDockTabs{display:none}
+
+@media(max-width:1100px){
+  body.doganaSideDocksOpen.doganaCalcDockOpen,
+  body.doganaSideDocksOpen.doganaAiDockOpen{
+    --side-dock-height:min(46dvh,380px);
+    --side-dock-top:12px;--side-dock-bottom:8px;--side-dock-inset:12px;--side-dock-tabs-height:0px;
+    padding:12px!important;overflow:hidden!important;
   }
-  function restoreFocus(){
-    (window.matchMedia("(max-width:768px)").matches
-      ? document.getElementById("doganaMobileNavToggle") : toggle)?.focus({ preventScroll:true });
+  body.doganaSideDocksOpen.doganaAiDockOpen{--side-dock-height:min(48dvh,430px)}
+  body.doganaSideDocksOpen > .wrap{
+    height:calc(100vh - var(--side-dock-height) - var(--side-dock-top) - var(--side-dock-bottom) - var(--side-dock-tabs-height) - 8px)!important;
+    height:calc(100dvh - var(--side-dock-height) - var(--side-dock-top) - var(--side-dock-bottom) - var(--side-dock-tabs-height) - 8px)!important;
+    overflow-x:hidden!important;overflow-y:auto!important;overscroll-behavior:contain;
   }
-  toggle.addEventListener("click", () => {
-    if (document.body.classList.contains("mobileNavOpen")) document.getElementById("doganaMobileNavToggle")?.click();
-    setOpen(dock.hidden);
-  });
-  close.addEventListener("click", () => { setOpen(false); restoreFocus(); });
-  document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && !dock.hidden) { event.preventDefault(); setOpen(false); restoreFocus(); }
-  });
-  document.addEventListener("click", event => {
-    const link = event.target.closest?.('a[href="#customs-ai-section"],a[href="#doganaAiDock"]');
-    if (!link) return;
-    event.preventDefault();
-    event.stopPropagation();
-    setOpen(true);
-  }, true);
-  window.addEventListener("hashchange", () => {
-    if (["#customs-ai-section", "#doganaAiDock"].includes(location.hash)) setOpen(true);
-  });
-  function onViewportChange(){
-    if (dock.hidden) return;
-    if (compact.matches) {
-      const pageY = window.scrollY;
-      window.scrollTo(0, 0);
-      wrap.scrollTop = pageY;
-    } else {
-      const pageY = wrap.scrollTop;
-      wrap.scrollTop = 0;
-      window.scrollTo(0, pageY);
-    }
+  body.doganaSideDocksOpen #doganaCalcDock,
+  body.doganaSideDocksOpen #doganaAiDock{
+    top:auto;left:var(--side-dock-inset);right:var(--side-dock-inset);bottom:var(--side-dock-bottom);
+    width:auto;max-width:none;height:var(--side-dock-height);max-height:var(--side-dock-height);
   }
-  if (compact.addEventListener) compact.addEventListener("change", onViewportChange);
-  else compact.addListener(onViewportChange);
-  window.DoganaAiDock = { open:() => setOpen(true), close:() => setOpen(false) };
-})();
-</script>
+}
+@media(min-width:769px) and (max-width:1100px){
+  body.doganaCalcDockOpen.doganaAiDockOpen.doganaCalcDockLeft #doganaCalcDock,
+  body.doganaCalcDockOpen.doganaAiDockOpen.doganaAiDockLeft #doganaAiDock{
+    left:var(--side-dock-inset);right:calc(50% + 5px);
+  }
+  body.doganaCalcDockOpen.doganaAiDockOpen:not(.doganaCalcDockLeft) #doganaCalcDock,
+  body.doganaCalcDockOpen.doganaAiDockOpen:not(.doganaAiDockLeft) #doganaAiDock{
+    left:calc(50% + 5px);right:var(--side-dock-inset);
+  }
+  body.doganaCalcDockOpen.doganaAiDockOpen #calcDockSwitchSide,
+  body.doganaCalcDockOpen.doganaAiDockOpen #aiDockSwitchSide{display:inline-flex!important}
+}
+@media(max-width:768px){
+  body.doganaSideDocksOpen.doganaCalcDockOpen,
+  body.doganaSideDocksOpen.doganaAiDockOpen{
+    --side-dock-top:max(8px,env(safe-area-inset-top));
+    --side-dock-bottom:max(8px,env(safe-area-inset-bottom));--side-dock-inset:8px;
+    padding-top:var(--side-dock-top)!important;padding-bottom:var(--side-dock-bottom)!important;
+    padding-left:max(8px,env(safe-area-inset-left))!important;padding-right:max(8px,env(safe-area-inset-right))!important;
+  }
+  body.doganaSideDocksOpen.doganaCalcDockOpen.doganaAiDockOpen{--side-dock-tabs-height:44px}
+  body.doganaSideDocksOpen #doganaCalcDock,
+  body.doganaSideDocksOpen #doganaAiDock{padding:10px}
+  body #doganaSideDockTabs{
+    position:fixed;z-index:1301;left:8px;right:8px;
+    bottom:calc(var(--side-dock-bottom) + var(--side-dock-height) + 6px);
+    display:flex;gap:8px;height:38px;
+  }
+  #doganaSideDockTabs button{
+    flex:1;min-width:0;min-height:38px!important;height:38px!important;
+    padding:6px 8px!important;font-size:12px;
+  }
+  #doganaSideDockTabs button[aria-pressed="true"]{
+    border-color:var(--accent)!important;
+    box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 20%,transparent)!important;
+  }
+}
+</style>
 
 <style id="dogana-eur1-style">
 #eur1TemplateModule{width:100%;min-width:0;overflow:hidden;position:relative;border:1px solid var(--grid-soft);border-radius:18px;background:var(--surface);margin:0 0 16px;color:var(--text);font-family:var(--font)}
