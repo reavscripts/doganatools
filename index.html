@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta name="doganatools-ui-build" content="A22-DESCRIZIONE-SOMMARIA-R4-20261020">
+<meta name="doganatools-ui-build" content="A22-MULTI-DAU-R5-20261020">
 <!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79 -->
 <meta charset="utf-8"/>
 <meta name="doganatools-build" content="V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79"/>
@@ -7773,16 +7773,17 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   <div id="a22Body" class="a22-body" hidden>
     <div class="a22-import-row">
       <label id="a22Drop" class="a22-drop" for="a22File" tabindex="0" role="button" aria-label="Carica un DAU o DAE in PDF o immagine">
-        <strong>Carica il DAU / DAE</strong><span>Trascina qui un PDF o un'immagine, oppure scegli un file</span>
-        <input id="a22File" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,application/pdf,image/*" hidden>
+        <strong>Aggiungi DAU / DAE all'A22</strong><span>Trascina uno o più PDF o immagini, oppure scegli i file. I DAU vengono aggiunti all'A22 in preparazione.</span>
+        <input id="a22File" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,application/pdf,image/*" multiple hidden>
       </label>
       <div class="a22-import-actions">
         <button id="a22New" type="button">Nuovo A22</button>
         <button id="a22Example" type="button">Esempio allegato</button>
+        <select id="a22SourceChoice" aria-label="Documento da aprire" hidden></select>
         <button id="a22OpenDae" type="button" disabled>Apri DAU / DAE</button>
       </div>
     </div>
-    <div id="a22Status" class="a22-status" role="status" aria-live="polite">Importa un DAU o DAE oppure compila i dati. Ogni A22 si riferisce a un solo MRN.</div>
+    <div id="a22Status" class="a22-status" role="status" aria-live="polite">Importa uno o più DAU per un unico A22. Il peso lordo viene sommato e tutti gli MRN vengono riportati nel PDF, tre per riga.</div>
     <ul id="a22Notices" class="a22-notices" hidden></ul>
     <details class="a22-text-import"><summary>Incolla il testo del DAU / DAE</summary><label for="a22RawText">Testo del documento</label><textarea id="a22RawText" rows="5" maxlength="100000" placeholder="Incolla qui il testo copiato dal DAU o DAE"></textarea><button id="a22ReadText" type="button">Compila dal testo</button></details>
     <div class="a22-workspace">
@@ -7792,15 +7793,16 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
             <label class="a22-full" for="a22Exporter">Ragione sociale speditore<input id="a22Exporter" data-a22="exporter" type="text" maxlength="180" autocomplete="off"></label>
             <label for="a22Vat">Partita IVA / EORI speditore<input id="a22Vat" data-a22="vat" type="text" maxlength="24" autocomplete="off" spellcheck="false"></label>
             <label for="a22Nationality">Nazionalità<input id="a22Nationality" data-a22="nationality" type="text" maxlength="2" value="IT" autocomplete="off"></label>
-            <label class="a22-full" for="a22Mrn">MRN<input id="a22Mrn" data-a22="mrn" type="text" maxlength="18" autocomplete="off" spellcheck="false"></label>
-            <label class="a22-full" for="a22Container">Numero contenitore (se presente)<input id="a22Container" data-a22="container" type="text" maxlength="180" placeholder="Es. MRSU5791662 · separa più contenitori con una virgola" autocomplete="off" spellcheck="false"></label>
+            <input id="a22Mrn" data-a22="mrn" type="hidden">
+            <div class="a22-full a22-document-area"><div class="a22-document-head"><strong id="a22DocumentCount">DAU e MRN</strong><button id="a22AddMrn" type="button">Aggiungi DAU / MRN</button></div><div id="a22Documents" class="a22-documents"></div><p class="a22-help">Una casella per ogni MRN. Con più DAU, correggi qui il peso e i contenitori di ciascun documento.</p></div>
+            <label class="a22-full" for="a22Container">Contenitori dell'A22 (se presenti)<input id="a22Container" data-a22="container" type="text" maxlength="5000" placeholder="Es. MRSU5791662 · separa più contenitori con una virgola" autocomplete="off" spellcheck="false"></label>
             <label for="a22Gross">Peso lordo totale (kg)<input id="a22Gross" data-a22="gross" type="text" inputmode="decimal" maxlength="25" placeholder="Es. 8835" autocomplete="off"></label>
             <label for="a22Hs">Voce doganale (facoltativa)<input id="a22Hs" data-a22="hs" type="text" inputmode="numeric" maxlength="10" autocomplete="off"></label>
             <label class="a22-full" for="a22Description">Qualità della merce · descrizione sommaria<input id="a22Description" data-a22="description" type="text" list="a22DescriptionOptions" maxlength="500" placeholder="Es. ALIMENTI, BEVANDE, VARIE o altra descrizione" autocomplete="off"></label>
             <datalist id="a22DescriptionOptions"><option value="ALIMENTI"></option><option value="BEVANDE"></option><option value="VARIE"></option><option value="ALTRO"></option><option value="ABBIGLIAMENTO"></option><option value="ELETTRODOMESTICI"></option><option value="MACCHINARI"></option><option value="ARREDAMENTO"></option><option value="IMBALLAGGI"></option></datalist>
           </div>
           <p class="a22-help">La descrizione proposta è sommaria: puoi scegliere un suggerimento o scrivere liberamente la descrizione adatta alla pratica.</p>
-          <p class="a22-help">Il peso è la massa lorda totale della testata (riquadro 35). I contenitori vengono cercati anche nei fogli degli articoli; i pesi ripetuti non si sommano.</p>
+          <p class="a22-help">Il peso dell'A22 è la somma delle masse lorde delle testate dei DAU (riquadro 35). Lo stesso MRN viene conteggiato una sola volta. Usa Nuovo A22 per iniziare un'altra autorizzazione.</p>
         </fieldset>
         <fieldset><legend>Liquidazione</legend>
           <div class="a22-fields">
@@ -28563,6 +28565,15 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
 #a22TemplateModule .a22-fields{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 #a22TemplateModule label:not(.a22-drop):not(.a22-review){display:flex;min-width:0;flex-direction:column;gap:5px;font-size:11px;font-weight:750;line-height:1.5;color:var(--heading)}
 #a22TemplateModule .a22-full{grid-column:1/-1}
+#a22TemplateModule .a22-document-area{min-width:0}
+#a22TemplateModule .a22-document-head{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:10px;font-size:12px;color:var(--heading)}
+#a22TemplateModule .a22-documents{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,175px),1fr));gap:10px;max-height:470px;overflow:auto;padding:1px}
+#a22TemplateModule .a22-document-card{min-width:0;padding:10px;border:1px solid var(--grid-soft);border-radius:10px;background:var(--surface-soft)}
+#a22TemplateModule .a22-document-card>label+label{margin-top:8px}
+#a22TemplateModule .a22-document-card input[data-doc-field="mrn"]{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;font-size:11px;letter-spacing:0}
+#a22TemplateModule .a22-document-source{margin:7px 0;font-size:10px;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+#a22TemplateModule .a22-document-remove{width:100%;margin-top:7px}
+#a22TemplateModule #a22SourceChoice{flex:1 1 100%;max-width:240px}
 #a22TemplateModule input:not([type="checkbox"]):not([type="file"]),#a22TemplateModule select,#a22TemplateModule textarea{box-sizing:border-box;width:100%;min-width:0;min-height:38px;padding:8px 10px;border:1px solid var(--grid-soft);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;font-size:12px;line-height:1.45}
 #a22TemplateModule input[readonly]{background:var(--surface-soft);color:var(--muted)}
 #a22TemplateModule textarea{resize:vertical;min-height:80px}
@@ -28684,6 +28695,8 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
   "use strict";
   const clean = value => String(value ?? "").replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, "").trim();
   const fold = value => clean(value).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase();
+  const MAX_DOCUMENTS=100;
+  const mrnCodes=value=>fold(value).split(/[\s,;]+/).filter(Boolean);
   const fields = ["office","officeName","officeCode","billType","exporter","vat","nationality","representative","mrn","container","gross","description","hs","provenance","origin","taxCode","rate","paymentMethod","account","cin","mp","registration","registrationDate","footer"];
   const defaults = { office:"salerno",officeName:"SALERNO",officeCode:"IT084100",billType:"ALTRO",exporter:"",vat:"",nationality:"IT",representative:"TOBIA IMPARATO",mrn:"",container:"",gross:"",description:"",hs:"",provenance:"IT",origin:"IT",taxCode:"9AE",rate:"0,843",paymentMethod:"CONTO DI DEBITO",account:"14419",cin:"P",mp:"G",registration:"",registrationDate:"",footer:"TOBIA IMPARATO\nDOGANALISTA\nPAT. N. 7854\np.c. VITALE SRL" };
   const containerCodes = value => fold(value).split(/[,;\n]+/).map(code=>code.replace(/[\s-]/g, "")).filter(Boolean);
@@ -28710,19 +28723,69 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     const result = {};
     for(const field of fields){
       const value = input[field] ?? defaults[field];
-      if(typeof value !== "string" || value.length > (field === "description" ? 500 : field === "footer" ? 250 : 180)) throw new Error("Un campo del modello A22 non è valido o è troppo lungo.");
+      if(typeof value !== "string" || value.length > (field === "mrn" || field === "container" ? 5000 : field === "description" ? 500 : field === "footer" ? 250 : 180)) throw new Error("Un campo del modello A22 non è valido o è troppo lungo.");
       result[field] = clean(value);
     }
     result.office = result.office === "other" ? "other" : "salerno";
     if(result.office === "salerno") Object.assign(result,{officeName:"SALERNO",officeCode:"IT084100",taxCode:"9AE",rate:"0,843"});
-    result.mrn = fold(result.mrn).replace(/\s/g, "");
+    result.mrn = mrnCodes(result.mrn).join(", ");
     result.container = [...new Set(containerCodes(result.container))].join(", ");
     result.vat = fold(result.vat).replace(/\s/g, "");
     if(/^IT\d{11}$/.test(result.vat)) result.vat = result.vat.slice(2);
     result.nationality = fold(result.nationality);
     result.taxCode = fold(result.taxCode);
     result.hs = result.hs.replace(/\s/g, "");
+    const documents=input.documents ?? [];
+    if(!Array.isArray(documents) || documents.length>MAX_DOCUMENTS)throw new Error("Un A22 può contenere al massimo 100 DAU.");
+    result.documents=documents.map(normalizeDocument);
     return result;
+  }
+  function normalizeDocument(input){
+    if(!input || typeof input!=="object" || Array.isArray(input))throw new Error("Dati del DAU non validi.");
+    const result=normalize(Object.fromEntries(fields.map(field=>[field,input[field]??defaults[field]])));
+    delete result.documents;
+    for(const field of ["sourceName","sourceKey"]){
+      if(input[field]!==undefined && (typeof input[field]!=="string" || input[field].length>250))throw new Error("Riferimento del DAU non valido.");
+      result[field]=clean(input[field]);
+    }
+    return result;
+  }
+  function totalWeight(documents){
+    let grams=0;
+    for(const doc of documents){const gross=number(doc.gross);if(gross===null || gross<=0 || gross>1e9)return "";grams+=Math.round(gross*1000);}
+    return documents.length?decimal(grams/1000):"";
+  }
+  function aggregateDocuments(input){
+    if(!Array.isArray(input) || !input.length || input.length>MAX_DOCUMENTS)throw new Error("Carica da 1 a 100 DAU per creare l'A22.");
+    const notices=[],documents=[],seen=new Map();
+    for(const raw of input){
+      const doc=normalizeDocument(raw),codes=mrnCodes(doc.mrn),keys=[codes.length===1?"MRN:"+codes[0]:"",doc.sourceKey?"FILE:"+doc.sourceKey:""].filter(Boolean);
+      const repeated=keys.find(key=>seen.has(key));
+      if(repeated){
+        const previous=seen.get(repeated);
+        if(number(previous.gross)!==number(doc.gross))throw new Error(`Il DAU ${doc.mrn||doc.sourceName} è già presente con un peso diverso: verifica i dati prima di aggiungerlo.`);
+        previous.container=[...new Set([...containerCodes(previous.container),...containerCodes(doc.container)])].join(", ");
+        notices.push(`DAU ${doc.mrn||doc.sourceName} già presente: peso conteggiato una sola volta.`);continue;
+      }
+      documents.push(doc);for(const key of keys)seen.set(key,doc);
+    }
+    const first=documents[0],values={...first,documents};
+    delete values.sourceName;delete values.sourceKey;
+    values.mrn=documents.flatMap(doc=>mrnCodes(doc.mrn)).join(", ");
+    values.gross=documents.length===1?first.gross:totalWeight(documents);
+    values.container=[...new Set(documents.flatMap(doc=>containerCodes(doc.container)))].join(", ");
+    const identity=new Set(documents.map(doc=>doc.vat+"|"+fold(doc.exporter)));
+    if(identity.size>1){values.exporter="";values.vat="";notices.push("I DAU hanno speditori diversi: indica l'intestatario e la partita IVA dell'A22 nei campi principali.");}
+    const descriptions=[...new Set(documents.map(doc=>doc.description).filter(Boolean))];
+    values.description=descriptions.length>1?"VARIE":descriptions[0]||"";
+    values.hs=new Set(documents.map(doc=>doc.hs)).size===1?first.hs:"";
+    if(documents.some(doc=>!doc.description))notices.push("Verifica la descrizione sommaria: non è stata riconosciuta in tutti i DAU.");
+    if(new Set(documents.map(doc=>doc.officeCode)).size>1){Object.assign(values,{office:"other",officeName:"",officeCode:"",taxCode:"",rate:""});notices.push("I DAU riportano uffici di uscita diversi: completa la dogana e la liquidazione dell'A22.");}
+    for(const [index,doc] of documents.entries()){
+      if(!/^\d{2}[A-Z]{2}[A-Z0-9]{14}$/.test(doc.mrn))notices.push(`DAU ${index+1}: completa o correggi l'MRN.`);
+      if(number(doc.gross)===null || number(doc.gross)<=0)notices.push(`DAU ${index+1}: completa o correggi la massa lorda.`);
+    }
+    return {values:normalize(values),notices,documents};
   }
   function calculate(input){
     const model = normalize(input), gross = number(model.gross), rate = number(model.rate,false);
@@ -28737,7 +28800,18 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     const model = normalize(input), errors = [], calc = calculate(model);
     if(!model.exporter) errors.push("Inserisci la ragione sociale dello speditore.");
     if(!model.vat || (model.nationality === "IT" && !/^\d{11}$/.test(model.vat))) errors.push("Inserisci la partita IVA dello speditore (11 cifre per IT).");
-    if(!/^\d{2}[A-Z]{2}[A-Z0-9]{14}$/.test(model.mrn)) errors.push("L'MRN deve contenere 18 caratteri.");
+    const mrns=mrnCodes(model.mrn);
+    if(!mrns.length || mrns.some(code=>!/^\d{2}[A-Z]{2}[A-Z0-9]{14}$/.test(code))) errors.push("Ogni MRN deve contenere 18 caratteri.");
+    if(mrns.length>MAX_DOCUMENTS)errors.push("Un A22 può contenere al massimo 100 MRN.");
+    if(new Set(mrns).size!==mrns.length)errors.push("Un MRN è ripetuto: rimuovi il DAU duplicato.");
+    if(model.documents.length){
+      for(const [index,doc] of model.documents.entries()){
+        if(!/^\d{2}[A-Z]{2}[A-Z0-9]{14}$/.test(doc.mrn))errors.push(`Completa l'MRN del DAU ${index+1}.`);
+        if(number(doc.gross)===null || number(doc.gross)<=0)errors.push(`Completa il peso lordo del DAU ${index+1}.`);
+      }
+      if(model.documents.flatMap(doc=>mrnCodes(doc.mrn)).join(", ")!==model.mrn)errors.push("L'elenco MRN non corrisponde ai DAU inseriti.");
+      if(number(totalWeight(model.documents))!==number(model.gross))errors.push("Il peso totale non corrisponde alla somma dei DAU.");
+    }
     if(containerCodes(model.container).some(code=>!/^[A-Z]{4}\d{7}$/.test(code))) errors.push("Ogni contenitore deve avere 4 lettere e 7 cifre. Se sono più di uno, separali con una virgola.");
     if(calc.error) errors.push(calc.error);
     if(!model.description) errors.push("Inserisci una descrizione sommaria della merce.");
@@ -28790,7 +28864,7 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     const unique=new Set(categories);
     return unique.size>1 || (unique.has("ALTRO")&&products.length>1) ? "VARIE" : categories[0];
   }
-  function extract(pages){
+  function extractSingle(pages){
     const notices = [], result = {}, candidates = [];
     for(const [index,page] of pages.entries()){
       const text = clean(page.text), words = Array.isArray(page.words) ? page.words : [];
@@ -28817,7 +28891,7 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
       const candidates = fold(page.text).match(/\b\d{2}[A-Z]{2}[A-Z0-9]{14}\b/g) || [];
       for(const candidate of candidates) mrns.add(candidate);
     }
-    if(mrns.size > 1) throw new Error("Il file contiene più MRN diversi. Importa un solo DAU/DAE per ciascun A22.");
+    if(mrns.size > 1) throw new Error("Sono stati letti più MRN senza una testata DAU distinta per ciascuno. Carica i DAU in file separati o con tutte le pagine di testata.");
     result.mrn = [...mrns][0] || "";
     const main = usedPages.find(p=>p.main), words = main.words;
     const label = main.lines.find(line=>/SPEDIT|ESPORTATOR|ESPORATOR/.test(fold(line.text)) && line.y < .3);
@@ -28916,6 +28990,38 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     if(result.gross && /^\d{1,3}[.,]\d{3}$/.test(result.gross)) notices.push("Il separatore del peso può essere ambiguo: verifica il valore in kg.");
     return {values:result,notices,pages:usedPages.map(p=>p.index+1)};
   }
+  function extract(pages){
+    const groups=[];let group=[];
+    function startsDeclaration(page){
+      const words=Array.isArray(page.words)?page.words:[],text=fold(page.text);
+      const senderWords=words.filter(w=>w.x>.08 && w.x<.60 && w.y>.035 && w.y<.18);
+      const senderVat=vatFromText(senderWords.map(w=>w.text).join(" "));
+      const type=words.some(w=>w.x>.50 && w.x<.72 && w.y<.2 && /^(?:EX|IM|EU|CO)$/.test(fold(w.text)));
+      const label=senderWords.some(w=>/SPEDIT|ESPORTAT/.test(fold(w.text)));
+      if(/\d/.test(senderVat)&&(type||label))return true;
+      return !words.length && /SPEDIT|ESPORTAT/.test(text.slice(0,500)) && /\d/.test(vatFromText(text.slice(0,500))) && /MASSA\s*LORDA/.test(text);
+    }
+    for(const [index,page] of pages.entries()){
+      if(/BOLLETTA\s*A\s*22/i.test(clean(page.text).slice(0,450)))continue;
+      if(group.length && startsDeclaration(page)){groups.push(group);group=[];}
+      group.push({...page,originalIndex:index});
+    }
+    if(group.length)groups.push(group);
+    const documents=[],notices=[],usedPages=[];
+    for(const part of groups){
+      const parsed=extractSingle(part);
+      if(!parsed.pages.length){notices.push(...parsed.notices);continue;}
+      let hash=2166136261;
+      const text=part.map(p=>clean(p.text)).join("\n");
+      for(let i=0;i<text.length;i++)hash=Math.imul(hash^text.charCodeAt(i),16777619);
+      documents.push({...parsed.values,sourceKey:`text-${(hash>>>0).toString(16)}-${text.length}`,sourceName:`DAU ${documents.length+1}`});
+      notices.push(...parsed.notices);
+      usedPages.push(...parsed.pages.map(n=>part[n-1].originalIndex+1));
+    }
+    if(!documents.length)return {values:{},documents:[],notices:[...new Set(notices.length?notices:["Non è stato riconosciuto un DAU/DAE."])],pages:[]};
+    const merged=aggregateDocuments(documents);
+    return {...merged,notices:[...new Set([...notices,...merged.notices])],pages:usedPages};
+  }
   function createPdf(input, Constructor, draft=false){
     const {model:m,calc,errors}=validate(input);
     if(!draft && errors.length) throw new Error(errors.join(" "));
@@ -28924,7 +29030,8 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     if(!fonts)throw new Error("Carattere del modulo A22 non disponibile. Ricarica la pagina.");
     pdf.addFileToVFS("A22Sans-Regular.ttf",fonts.regular);pdf.addFont("A22Sans-Regular.ttf","A22Sans","normal");
     pdf.addFileToVFS("A22Sans-Bold.ttf",fonts.bold);pdf.addFont("A22Sans-Bold.ttf","A22Sans","bold");
-    pdf.setProperties({title:`A22 ${m.mrn || "bozza"}`,subject:"Bolletta A22",creator:"DoganaTools"});
+    const mrns=mrnCodes(m.mrn);
+    pdf.setProperties({title:`A22 ${mrns[0] || "bozza"}${mrns.length>1?` e altri ${mrns.length-1}`:""}`,subject:"Bolletta A22",creator:"DoganaTools"});
     pdf.setDrawColor(35);pdf.setTextColor(0);pdf.setLineWidth(.22);
     function text(value,x,y,width,size=10,bold=false,align="left",maxLines=1){
       if(Array.from(clean(value)).some(char=>char!=="\n" && !fonts.characters.includes(char)))throw new Error("Un campo contiene un carattere non disponibile nel modulo. Sostituiscilo prima di esportare.");
@@ -28948,30 +29055,37 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     text("Nazionalità:",12,90,25,10);box(37,85,27,7,m.nationality,{bold:true});
     text("CF/IVA/Codice EORI",76,90,47,10);box(123,85,75,7,m.vat,{bold:true,align:"center"});
     text("Documento:",12,107,26,10);text("MRN NR.",38,107,26,10);
-    box(65,102,133,7,m.mrn,{bold:true});box(65,109,133,7);box(65,116,133,7);
-    if(m.container){
-      text(containerCodes(m.container).length>1?"Contenitori:":"Contenitore:",12,114,51,10);
-      pdf.setFont("A22Sans","bold");pdf.setFontSize(9);
-      const containerLines=pdf.splitTextToSize(m.container,130.2);
-      if(containerLines.length>2)throw new Error("Troppi contenitori per il modulo A22: abbrevia l'elenco prima di esportare.");
-      containerLines.forEach((line,index)=>text(line,66.4,114+index*7,130.2,9,true));
-    }
-    text("Merci provenienti da:",12,128,51,10);box(65,123,133,7,m.provenance,{bold:true});
-    text("Accertata origine da:",12,135,51,10);box(65,130,133,7,m.origin,{bold:true});
-    text("Colli e designazione delle merci:",12,151,150,10);
-    const gx=[12,38,98,140,198],gy=153,gh=6;
+    const firstMrns=mrns.slice(0,12),mrnRows=Math.max(1,Math.ceil(firstMrns.length/3));
+    if(mrns.length>12)text("L'elenco MRN prosegue nelle pagine successive dello stesso A22.",65,99,133,7);
+    for(let row=0;row<mrnRows;row++)for(let col=0;col<3;col++)box(65+col*133/3,102+row*7,133/3,7,firstMrns[row*3+col]||"",{bold:true,size:8.5});
+    let y=102+mrnRows*7;
+    pdf.setFont("A22Sans","bold");pdf.setFontSize(9);
+    const containerLines=pdf.splitTextToSize(m.container,130.2),frontContainers=containerLines.slice(0,2),containerRows=Math.max(1,frontContainers.length);
+    text(containerCodes(m.container).length>1?"Contenitori:":"Contenitore:",12,y+5,51,10);
+    for(let row=0;row<containerRows;row++)box(65,y+row*7,133,7,frontContainers[row]||"",{bold:true,size:9});
+    const printedContainers=new Set(containerCodes(frontContainers.join(" "))),otherContainers=containerCodes(m.container).filter(code=>!printedContainers.has(code));
+    if(otherContainers.length)text("Altri contenitori: seguito.",12,y+11,51,6);
+    y+=containerRows*7;
+    text("Merci provenienti da:",12,y+5,51,10);box(65,y,133,7,m.provenance,{bold:true});y+=7;
+    text("Accertata origine da:",12,y+5,51,10);box(65,y,133,7,m.origin,{bold:true});y+=7;
+    text("Colli e designazione delle merci:",12,y+11,150,10);
+    const gx=[12,38,98,140,198],gy=y+13,gh=6;
     let goodsFont=9,goodsLines=[];
     pdf.setFont("A22Sans","bold");
     for(;;){pdf.setFontSize(goodsFont);goodsLines=pdf.splitTextToSize(m.description,57.2);if(goodsLines.length<=4 || goodsFont<=7)break;goodsFont-=.5;}
     if(goodsLines.length>4)throw new Error("Testo troppo lungo per il modulo A22. Abbrevia la descrizione della merce.");
-    for(let r=0;r<5;r++) for(let c=0;c<4;c++){
+    let goodsRows=Math.max(2,goodsLines.length+1),taxRows=2;
+    let blankRows=Math.max(0,Math.floor((226-(gy+goodsRows*6+11+taxRows*6))/6));
+    const goodsBlanks=Math.min(5-goodsRows,blankRows);goodsRows+=goodsBlanks;blankRows-=goodsBlanks;taxRows+=Math.min(3,blankRows);
+    for(let r=0;r<goodsRows;r++) for(let c=0;c<4;c++){
       const goods=r>0&&c===1;
       const v=r===0?["Singolo","Qualità della merce","Quantità della merce","Voce doganale"][c]:goods?goodsLines[r-1]||"":r===1?["1","",qty,m.hs][c]:"";
       box(gx[c],gy+r*gh,gx[c+1]-gx[c],gh,v,{bold:r<2||goods,size:goods?goodsFont:r===0?9:10,align:goods?"left":"center"});
     }
-    text("Liquidazione:",12,194,150,10);
-    const tx=[12,38,65,98,119,140,166,198],ty=196,th=6;
-    for(let r=0;r<5;r++) for(let c=0;c<7;c++){
+    const ty=gy+goodsRows*gh+11;
+    text("Liquidazione:",12,ty-2,150,10);
+    const tx=[12,38,65,98,119,140,166,198],th=6;
+    for(let r=0;r<taxRows;r++) for(let c=0;c<7;c++){
       const v=r===0?["Singolo","Tributo","Base imponibile","ope","Aliquota","Importo €","MP"][c]:r===1?["1",m.taxCode,base,"*",calc.rate===null?"":decimal(calc.rate),amount,m.mp][c]:"";
       box(tx[c],ty+r*th,tx[c+1]-tx[c],th,v,{bold:r<2,size:r===0?9:10,align:"center"});
     }
@@ -28989,9 +29103,26 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     box(65,284,40,6,m.registration,{size:9});
     const date=m.registrationDate?m.registrationDate.split("-").reverse().join("/"):"";
     box(105,284,35,6,date,{size:9});
+    function appendix(items,title,size){
+      let index=0;
+      while(index<items.length){
+        pdf.addPage();text(`BOLLETTA A22 - ${title}`,12,18,186,11,true,"center");
+        text(`Intestatario: ${m.exporter}`,12,30,186,10,true,"left",2);
+        text("Parte integrante della stessa autorizzazione all'imbarco.",12,39,186,9);
+        let rowY=49;
+        while(index<items.length && rowY+7<=282){
+          for(let col=0;col<3;col++)box(12+col*62,rowY,62,7,items[index+col]||"",{bold:true,size});
+          index+=3;rowY+=7;
+        }
+      }
+    }
+    if(mrns.length>12)appendix(mrns.slice(12),"ELENCO MRN (SEGUE)",10);
+    if(otherContainers.length)appendix(otherContainers,"ELENCO CONTENITORI (SEGUE)",10);
+    const pageCount=pdf.getNumberOfPages();
+    if(pageCount>1)for(let page=1;page<=pageCount;page++){pdf.setPage(page);text(`A22 - Pagina ${page} di ${pageCount}`,12,295,186,7,false,"right");}
     return pdf;
   }
-  root.DoganaA22Core={fields,defaults,number,decimal,money,normalize,calculate,validate,linesFromWords,extract,createPdf};
+  root.DoganaA22Core={fields,defaults,number,decimal,money,normalize,calculate,validate,linesFromWords,extract,aggregateDocuments,totalWeight,mrnCodes,createPdf};
 })(globalThis);
 </script>
 <script id="dogana-a22-script">
@@ -29001,13 +29132,43 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
   if(!panel || !core) return;
   const $=id=>document.getElementById(id);
   const inputs=Object.fromEntries(Array.from(panel.querySelectorAll("[data-a22]")).map(node=>[node.dataset.a22,node]));
-  const state={user:null,busy:false,epoch:0,sourceName:"",sourceUrl:null,pdfUrl:null,needsReview:false,fitError:"",notices:[],changed:false};
+  const state={user:null,busy:false,epoch:0,sourceName:"",sourceUrl:null,sources:[],documents:[],example:false,pdfUrl:null,needsReview:false,fitError:"",notices:[],changed:false};
   let previewTimer,draftTimer;
   const user=()=>window.__doganaAuthState?.user?.username || "anteprima";
   const draftKey=()=>"doganatools_a22_draft_v1:"+state.user;
   function status(message,type=""){ $("a22Status").textContent=message;$("a22Status").dataset.state=type; }
-  function read(){return core.normalize(Object.fromEntries(Object.entries(inputs).map(([field,node])=>[field,node.value])));}
-  function apply(values){const checked=core.normalize(values);for(const [field,node] of Object.entries(inputs))node.value=checked[field];officeFields();}
+  function read(){return core.normalize({...Object.fromEntries(Object.entries(inputs).map(([field,node])=>[field,node.value])),documents:state.documents});}
+  function apply(values){
+    const checked=core.normalize(values);for(const [field,node] of Object.entries(inputs))node.value=checked[field];
+    state.documents=checked.documents.length?checked.documents.map(doc=>({...doc})):[{...checked,documents:undefined,sourceName:"Compilazione manuale",sourceKey:""}];
+    state.example=false;renderDocuments();officeFields();
+  }
+  function updateTotals(){
+    inputs.mrn.value=state.documents.flatMap(doc=>core.mrnCodes(doc.mrn)).join(", ");
+    inputs.gross.value=state.documents.length===1?state.documents[0].gross:core.totalWeight(state.documents);
+    inputs.container.value=core.normalize({container:state.documents.map(doc=>doc.container).filter(Boolean).join(", ")}).container;
+    inputs.gross.readOnly=state.documents.length>1;inputs.container.readOnly=state.documents.length>1;
+    $("a22DocumentCount").textContent=`${state.documents.length} DAU · ${core.mrnCodes(inputs.mrn.value).length} MRN`;
+    $("a22AddMrn").disabled=state.busy||state.documents.length>=100;
+  }
+  function renderDocuments(){
+    const list=$("a22Documents");list.replaceChildren();const multiple=state.documents.length>1;
+    state.documents.forEach((doc,index)=>{
+      const card=document.createElement("div");card.className="a22-document-card";
+      for(const [field,label] of [["mrn",`MRN ${index+1}`],["gross","Peso lordo DAU (kg)"],["container","Contenitori del DAU"]]){
+        const wrapper=document.createElement("label"),input=document.createElement("input");wrapper.textContent=label;
+        input.type="text";input.id=`a22Doc${index+1}${field}`;input.dataset.docField=field;input.dataset.docIndex=String(index);input.value=doc[field]||"";
+        input.maxLength=field==="mrn"?18:field==="gross"?25:5000;input.autocomplete="off";input.spellcheck=false;if(field==="gross")input.inputMode="decimal";
+        if(field!=="mrn")wrapper.hidden=!multiple;
+        input.addEventListener("input",()=>{if(state.busy)return;state.example=false;state.documents[index][field]=input.value;updateTotals();$("a22Review").checked=false;changed();});
+        wrapper.appendChild(input);card.appendChild(wrapper);
+      }
+      const source=document.createElement("p");source.className="a22-document-source";source.textContent=doc.sourceName||`DAU ${index+1}`;card.appendChild(source);
+      const remove=document.createElement("button");remove.type="button";remove.className="a22-document-remove";remove.textContent="Rimuovi DAU";remove.setAttribute("aria-label",`Rimuovi DAU ${index+1}`);
+      remove.addEventListener("click",()=>{if(state.busy)return;const current=read(),remaining=state.documents.filter((_,i)=>i!==index);if(remaining.length)installDocuments(remaining,[],true);else{apply({...current,mrn:"",gross:"",container:"",documents:[]});state.needsReview=false;notices([]);changed();}const keys=new Set(remaining.map(doc=>doc.sourceKey));state.sources=state.sources.filter(source=>{if(source.key.split("|").some(key=>keys.has(key)))return true;URL.revokeObjectURL(source.url);return false;});renderSources();$("a22Review").checked=false;refresh();writeDraft();});
+      card.appendChild(remove);list.appendChild(card);
+    });updateTotals();
+  }
   function officeFields(){
     const salerno=inputs.office.value!=="other";
     for(const node of panel.querySelectorAll(".a22-other"))node.hidden=salerno;
@@ -29020,21 +29181,27 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
   }
   function writeDraft(){
     if(!state.user || state.user!==user()) return;
-    try{localStorage.setItem(draftKey(),JSON.stringify({version:1,values:read(),sourceName:state.sourceName,needsReview:state.needsReview,reviewed:$("a22Review").checked,notices:state.notices,updatedAt:new Date().toISOString()}));$("a22DraftStatus").textContent="Bozza su questo dispositivo · i file DAU/DAE non vengono conservati.";}
+    try{localStorage.setItem(draftKey(),JSON.stringify({version:1,values:read(),example:state.example,sourceName:state.sourceName,needsReview:state.needsReview,reviewed:$("a22Review").checked,notices:state.notices,updatedAt:new Date().toISOString()}));$("a22DraftStatus").textContent="Bozza su questo dispositivo · i file DAU/DAE non vengono conservati.";}
     catch{$("a22DraftStatus").textContent="Bozza non salvata: scarica il modello riapribile per conservarla.";}
   }
-  function releaseSource(){if(state.sourceUrl)URL.revokeObjectURL(state.sourceUrl);state.sourceUrl=null;$("a22OpenDae").disabled=true;}
+  function releaseSource(){for(const source of state.sources)URL.revokeObjectURL(source.url);state.sources=[];state.sourceUrl=null;$("a22SourceChoice").replaceChildren();$("a22SourceChoice").hidden=true;$("a22OpenDae").disabled=true;}
+  function renderSources(){
+    const choice=$("a22SourceChoice");choice.replaceChildren();state.sources.forEach((source,index)=>{const option=document.createElement("option");option.value=String(index);option.textContent=source.name;choice.appendChild(option);});
+    choice.hidden=state.sources.length<2;choice.value=String(Math.max(0,state.sources.length-1));state.sourceUrl=state.sources.at(-1)?.url||null;$("a22OpenDae").disabled=!state.sourceUrl;
+    state.sourceName=state.sources.map(source=>source.name).join(", ").slice(0,180);
+  }
   function ensureUser(){
     if(document.body.classList.contains("dogana-auth-locked")) return;
     const name=user();if(name===state.user)return;
     state.epoch++;releaseSource();state.user=name;state.sourceName="";state.needsReview=false;$("a22Review").checked=false;state.changed=false;
     apply({...core.defaults});notices([]);$("a22RawText").value="";
-    try{const saved=JSON.parse(localStorage.getItem(draftKey())||"null");if(saved?.version===1){apply(saved.values);state.sourceName=String(saved.sourceName||"").slice(0,180);state.needsReview=!!saved.needsReview;$("a22Review").checked=!!saved.reviewed;notices(Array.isArray(saved.notices)?saved.notices.filter(v=>typeof v==="string"):[]);state.changed=true;status("Ripristinata la bozza A22 su questo dispositivo. Per riaprire il DAU/DAE, caricalo nuovamente.");}}
+    try{const saved=JSON.parse(localStorage.getItem(draftKey())||"null");if(saved?.version===1){apply(saved.values);state.example=!!saved.example;state.sourceName=String(saved.sourceName||"").slice(0,180);state.needsReview=!!saved.needsReview;$("a22Review").checked=!!saved.reviewed;notices(Array.isArray(saved.notices)?saved.notices.filter(v=>typeof v==="string"):[]);state.changed=true;status("Ripristinata la bozza A22 con tutti i DAU e gli MRN. Per consultare i PDF originali, caricali nuovamente.");}}
     catch{status("La precedente bozza A22 non è leggibile. Puoi compilare un nuovo modulo.","error");}
     refresh();
   }
   function refresh(){
     const {calc,errors}=core.validate(read());
+    $("a22AddMrn").disabled=state.busy||state.documents.length>=100;
     $("a22Base").textContent=calc.base===null?"-":String(calc.base);
     $("a22RateResult").textContent=calc.rate===null?"-":core.decimal(calc.rate);
     $("a22Amount").textContent=calc.cents===null?"-":core.money(calc.cents)+" €";
@@ -29069,11 +29236,23 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
     finally{setBusy(false);}
   }
   function checkEpoch(epoch){if(epoch!==state.epoch)throw new Error("Sessione cambiata: ricarica il DAU/DAE per il nuovo utente.");}
+  function entered(doc){return !!(doc.mrn||doc.gross||doc.container||doc.sourceKey);}
+  function installDocuments(documents,messages=[],preserve=true){
+    const current=read(),old=state.documents.filter(entered),merged=core.aggregateDocuments(documents),values={...current};
+    let previous=null;if(preserve&&old.length){try{previous=core.aggregateDocuments(old).values;}catch{}}
+    for(const field of ["exporter","vat","nationality","office","officeName","officeCode","taxCode","rate","description","hs"]){
+      const manual=preserve&&previous&&current[field]&&current[field]!==previous[field];
+      if(!manual)values[field]=merged.values[field];
+    }
+    Object.assign(values,{mrn:merged.values.mrn,gross:merged.values.gross,container:merged.values.container,documents:merged.documents});
+    apply(values);state.needsReview=true;$("a22Review").checked=false;notices([...new Set([...messages,...merged.notices])]);changed();writeDraft();
+    status(`${state.documents.length} DAU nell'A22 · peso totale ${inputs.gross.value||"da completare"} kg. Verifica tutti gli MRN e i dati prima di scaricare.`,state.notices.length?"":"ok");
+  }
   function receive(pages,sourceName){
-    const parsed=core.extract(pages),current=read();
-    for(const field of ["exporter","vat","mrn","container","gross","description","hs","registration","registrationDate"])current[field]="";
-    apply({...current,...parsed.values});state.sourceName=sourceName;state.needsReview=true;$("a22Review").checked=false;notices(parsed.notices);changed();writeDraft();
-    status(`${sourceName}: lettura completata${parsed.pages.length?` · pagine DAU/DAE ${parsed.pages.join(", ")}`:""}. Verifica i campi prima di scaricare.`,parsed.notices.length?"":"ok");
+    const parsed=core.extract(pages);if(!parsed.documents.length)throw new Error(parsed.notices.join(" "));
+    const incoming=parsed.documents.map((doc,i)=>({...doc,sourceName:sourceName+(parsed.documents.length>1?` · DAU ${i+1}`:"")}));
+    const existing=state.example?[]:state.documents.filter(entered);state.sourceName=sourceName;
+    installDocuments([...existing,...incoming],parsed.notices,!state.example);
   }
   function pdfWords(content,viewport){
     const words=[];
@@ -29120,7 +29299,7 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
         if(!window.pdfjsLib)throw new Error("Libreria PDF non disponibile. Ricarica la pagina.");
         const bytes=new Uint8Array(await file.arrayBuffer());checkEpoch(epoch);
         pdf=await pdfjsLib.getDocument({data:bytes}).promise;
-        if(pdf.numPages>20)throw new Error("Il DAU/DAE può contenere al massimo 20 pagine. Seleziona il solo documento da utilizzare.");
+        if(pdf.numPages>200)throw new Error("Il PDF può contenere al massimo 200 pagine di DAU/DAE.");
         for(let i=1;i<=pdf.numPages;i++){
           checkEpoch(epoch);status(`Lettura DAU/DAE · pagina ${i} di ${pdf.numPages}…`);
           const page=await pdf.getPage(i),base=page.getViewport({scale:1}),content=await page.getTextContent();
@@ -29137,27 +29316,47 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
         canvas.width=Math.round(bitmap.width*scale);canvas.height=Math.round(bitmap.height*scale);canvas.getContext("2d").drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();pages.push(await ocr(canvas,1));canvas.width=0;canvas.height=0;
       }
       checkEpoch(epoch);
-      // Mantiene il testo riconosciuto consultabile, escludendo eventuali A22 già compilati.
-      $("a22RawText").value=pages.filter(p=>!/BOLLETTA\s*A\s*22/i.test(p.text.slice(0,450))).map(p=>p.text).join("\n\n").slice(0,100000);
-      receive(pages,file.name);releaseSource();state.sourceUrl=URL.createObjectURL(file);$("a22OpenDae").disabled=false;
+      return pages;
     }finally{if(worker)await worker.terminate().catch(()=>null);if(pdf)await pdf.destroy().catch(()=>null);}
+  }
+  async function readFiles(files,epoch){
+    if(!files.length || files.length>100)throw new Error("Seleziona da 1 a 100 file DAU/DAE.");
+    if(files.reduce((sum,file)=>sum+file.size,0)>100*1024*1024)throw new Error("I file selezionati superano complessivamente 100 MB.");
+    const incoming=[],messages=[],texts=[],sources=[];
+    for(const [index,file] of files.entries()){
+      checkEpoch(epoch);status(`Lettura file ${index+1} di ${files.length}: ${file.name}…`);
+      let pages,parsed;
+      try{pages=await readDae(file,epoch);parsed=core.extract(pages);if(!parsed.documents.length)throw new Error(parsed.notices.join(" "));}
+      catch(error){throw new Error(`${file.name}: ${error.message} Nessun DAU di questo caricamento è stato aggiunto.`);}
+      incoming.push(...parsed.documents.map((doc,i)=>({...doc,sourceName:(file.name+(parsed.documents.length>1?` · DAU ${i+1}`:"")).slice(0,250)})));
+      messages.push(...parsed.notices.map(message=>`${file.name}: ${message}`));
+      texts.push(pages.filter(p=>!/BOLLETTA\s*A\s*22/i.test(p.text.slice(0,450))).map(p=>p.text).join("\n\n"));
+      sources.push({file,key:parsed.documents.map(doc=>doc.sourceKey).join("|")});
+    }
+    checkEpoch(epoch);const example=state.example,existing=example?[]:state.documents.filter(entered);
+    installDocuments([...existing,...incoming],messages,!example);
+    if(example)releaseSource();
+    for(const source of sources){if(!state.sources.some(item=>item.key===source.key))state.sources.push({key:source.key,name:source.file.name,url:URL.createObjectURL(source.file)});}
+    renderSources();$("a22RawText").value=texts.join("\n\f\n").slice(0,100000);writeDraft();
   }
   function download(blob,name){
     const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }
-  function filename(){return "A22_"+(read().mrn||read().exporter||"modello").replace(/[^A-Za-z0-9._-]+/g,"_").slice(0,90);}
+  function filename(){const model=read(),mrns=core.mrnCodes(model.mrn);return "A22_"+(mrns.length>1?`${mrns[0]}_e_altri_${mrns.length-1}`:mrns[0]||model.exporter||"modello").replace(/[^A-Za-z0-9._-]+/g,"_").slice(0,90);}
   function reveal(){ensureUser();window.doganaEnsureOrganizeExpanded?.();panel.classList.remove("is-minimized");$("a22Body").hidden=false;$("a22Toggle").setAttribute("aria-expanded","true");$("a22Toggle").setAttribute("aria-label","Riduci a icona A22");$("a22Toggle").title="Riduci a icona";window.setDoganaModuleToggleIcon?.($("a22Toggle"),false);refresh();}
   $("a22Toggle").addEventListener("click",()=>{if(panel.classList.contains("is-minimized"))reveal();else{writeDraft();panel.classList.add("is-minimized");$("a22Body").hidden=true;$("a22Toggle").setAttribute("aria-expanded","false");$("a22Toggle").setAttribute("aria-label","Mostra modulo A22");$("a22Toggle").title="Mostra modulo";window.setDoganaModuleToggleIcon?.($("a22Toggle"),true);}});
-  for(const node of Object.values(inputs))node.addEventListener(node.tagName==="SELECT"?"change":"input",()=>{ensureUser();if(node===inputs.office){if(node.value==="other"){inputs.officeName.value="";inputs.officeCode.value="";inputs.taxCode.value="";inputs.rate.value="";}officeFields();}changed();});
+  for(const node of Object.values(inputs))node.addEventListener(node.tagName==="SELECT"?"change":"input",()=>{ensureUser();state.example=false;if(node===inputs.office){if(node.value==="other"){inputs.officeName.value="";inputs.officeCode.value="";inputs.taxCode.value="";inputs.rate.value="";}officeFields();}if(state.documents.length===1){for(const field of ["gross","container"]){if(node===inputs[field]){state.documents[0][field]=node.value;const detail=$(`a22Doc1${field}`);if(detail)detail.value=node.value;}}if(!state.documents[0].sourceKey){for(const field of ["exporter","vat","nationality","description"]){if(node===inputs[field])state.documents[0][field]=node.value;}}}changed();});
   $("a22Review").addEventListener("change",changed);
-  $("a22File").addEventListener("change",()=>{const file=$("a22File").files?.[0];$("a22File").value="";if(file)run(epoch=>readDae(file,epoch));});
+  $("a22File").addEventListener("change",()=>{const files=Array.from($("a22File").files||[]);$("a22File").value="";if(files.length)run(epoch=>readFiles(files,epoch));});
   $("a22Drop").addEventListener("keydown",event=>{if(["Enter"," "].includes(event.key)&&!state.busy){event.preventDefault();$("a22File").click();}});
   for(const name of ["dragenter","dragover"])$("a22Drop").addEventListener(name,event=>{event.preventDefault();if(!state.busy)$("a22Drop").classList.add("is-dragging");});
   for(const name of ["dragleave","drop"])$("a22Drop").addEventListener(name,event=>{event.preventDefault();$("a22Drop").classList.remove("is-dragging");});
-  $("a22Drop").addEventListener("drop",event=>{event.stopPropagation();if(state.busy)return;const files=Array.from(event.dataTransfer?.files||[]);if(files.length!==1){status("Carica un solo DAE per creare l'A22.","error");return;}run(epoch=>readDae(files[0],epoch));});
-  $("a22ReadText").addEventListener("click",()=>run(async()=>{if(!$("a22RawText").value.trim())throw new Error("Incolla prima il testo del DAE.");releaseSource();receive([{text:$("a22RawText").value}],"Testo DAU/DAE");}));
+  $("a22Drop").addEventListener("drop",event=>{event.stopPropagation();if(state.busy)return;const files=Array.from(event.dataTransfer?.files||[]);run(epoch=>readFiles(files,epoch));});
+  $("a22ReadText").addEventListener("click",()=>run(async()=>{if(!$("a22RawText").value.trim())throw new Error("Incolla prima il testo dei DAU/DAE.");receive($("a22RawText").value.split(/\f/).map(text=>({text})),"Testo DAU/DAE");}));
+  $("a22AddMrn").addEventListener("click",()=>{ensureUser();if(state.busy||state.documents.length>=100)return;state.example=false;const current=read();state.documents.push({...core.defaults,exporter:current.exporter,vat:current.vat,nationality:current.nationality,description:current.description,sourceName:"Compilazione manuale",sourceKey:""});renderDocuments();$("a22Review").checked=false;changed();});
   $("a22New").addEventListener("click",()=>{ensureUser();state.epoch++;releaseSource();state.sourceName="";state.needsReview=false;state.changed=false;state.fitError="";$("a22Review").checked=false;$("a22RawText").value="";apply({...core.defaults});notices([]);refresh();writeDraft();status("Nuovo A22 pronto. Importa il DAU/DAE o compila i campi.");});
-  $("a22Example").addEventListener("click",()=>{ensureUser();releaseSource();apply({...core.defaults,exporter:"ARISTON SPA",vat:"02853230429",mrn:"26ITQXF1THF38286A9",gross:"8835",description:"ELETTRODOMESTICI"});state.sourceName="Esempio allegato";state.needsReview=true;$("a22Review").checked=false;notices(["Dati di esempio dell'allegato: sostituiscili con quelli della pratica da predisporre."]);changed();status("Esempio: 8.835 kg → base 9 × 0,843 = 7,59 €.","ok");});
+  $("a22Example").addEventListener("click",()=>{ensureUser();releaseSource();apply({...core.defaults,exporter:"ARISTON SPA",vat:"02853230429",mrn:"26ITQXF1THF38286A9",gross:"8835",description:"ELETTRODOMESTICI"});state.example=true;state.sourceName="Esempio allegato";state.needsReview=true;$("a22Review").checked=false;notices(["Dati di esempio dell'allegato: sostituiscili con quelli della pratica da predisporre."]);changed();status("Esempio: 8.835 kg → base 9 × 0,843 = 7,59 €.","ok");});
+  $("a22SourceChoice").addEventListener("change",()=>{state.sourceUrl=state.sources[Number($("a22SourceChoice").value)]?.url||null;$("a22OpenDae").disabled=!state.sourceUrl;});
   $("a22OpenDae").addEventListener("click",()=>{if(state.sourceUrl)window.open(state.sourceUrl,"_blank","noopener");});
   $("a22ExportPdf").addEventListener("click",()=>run(async()=>{
     if(state.needsReview&&!$("a22Review").checked)throw new Error("Verifica prima i dati estratti dal DAU/DAE.");
@@ -29166,7 +29365,7 @@ globalThis.DoganaA22Fonts={"regular":"AAEAAAASAQAABAAgR0RFRnvVfzAAASF0AAABRkdQT1
   }));
   $("a22SaveModel").addEventListener("click",()=>{ensureUser();download(new Blob([JSON.stringify({format:"doganatools-a22",version:1,values:read()},null,2)],{type:"application/json"}),filename()+".a22.json");writeDraft();status("Modello A22 scaricato: puoi riaprirlo dal pulsante Apri modello.","ok");});
   $("a22LoadModel").addEventListener("click",()=>$("a22ModelFile").click());
-  $("a22ModelFile").addEventListener("change",()=>{const file=$("a22ModelFile").files?.[0];$("a22ModelFile").value="";if(!file)return;run(async epoch=>{if(file.size>180000)throw new Error("Il modello supera il limite di 180 KB.");const data=JSON.parse(await file.text());checkEpoch(epoch);if(data.format!=="doganatools-a22"||data.version!==1)throw new Error("Scegli un modello esportato dal modulo A22.");const values=core.normalize(data.values);releaseSource();apply(values);state.sourceName=file.name;state.needsReview=false;notices([]);changed();writeDraft();status("Modello A22 riaperto.","ok");});});
+  $("a22ModelFile").addEventListener("change",()=>{const file=$("a22ModelFile").files?.[0];$("a22ModelFile").value="";if(!file)return;run(async epoch=>{if(file.size>2*1024*1024)throw new Error("Il modello supera il limite di 2 MB.");const data=JSON.parse(await file.text());checkEpoch(epoch);if(data.format!=="doganatools-a22"||data.version!==1)throw new Error("Scegli un modello esportato dal modulo A22.");const values=core.normalize(data.values);releaseSource();apply(values);state.sourceName=file.name;state.needsReview=false;notices([]);changed();writeDraft();status("Modello A22 riaperto con tutti i DAU e gli MRN.","ok");});});
   document.querySelectorAll('a[href="#a22TemplateModule"]').forEach(link=>link.addEventListener("click",reveal,true));
   window.addEventListener("hashchange",()=>{if(location.hash==="#a22TemplateModule")reveal();});
   window.addEventListener("pagehide",writeDraft);
