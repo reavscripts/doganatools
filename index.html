@@ -25186,6 +25186,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 #shipPanel::before,
 #bookingLookupPanel::before,
 #serverConsolePanel::before,
+#doganaCalcDock::before,
 .appFooter::before{
   content:"" !important;
   display:block !important;
@@ -25247,6 +25248,7 @@ body[data-theme="dark"] #postItPanel::before,
 body[data-theme="dark"] #shipPanel::before,
 body[data-theme="dark"] #bookingLookupPanel::before,
 body[data-theme="dark"] #serverConsolePanel::before,
+body[data-theme="dark"] #doganaCalcDock::before,
 body[data-theme="dark"] .appFooter::before{
   opacity:.66 !important;
   filter:saturate(.82) !important;
@@ -25264,6 +25266,7 @@ body[data-theme="dark"] .appFooter::before{
   #shipPanel::before,
   #bookingLookupPanel::before,
   #serverConsolePanel::before,
+  #doganaCalcDock::before,
   .appFooter::before{
     left:16px !important;
     right:16px !important;
@@ -27009,6 +27012,7 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 </script>
 <style id="dogana-useful-tools-style">
 #organizePanel .usefulToolsPanel{
+  position:relative;
   width:100%; min-width:0; margin:0; overflow:hidden; border:1px solid var(--grid-soft);
   border-radius:20px; background:linear-gradient(180deg,var(--surface),var(--surface-soft));
   box-shadow:var(--shadow-soft);
@@ -27367,6 +27371,7 @@ body #doganaCalcDock{
   height:auto; max-height:none;
   overflow-x:hidden; overflow-y:auto; overscroll-behavior:contain;
   padding:14px; border:1px solid var(--grid-soft); border-radius:18px;
+  border-top-color:transparent;
   background:var(--panel); color:var(--text);
   box-shadow:0 18px 42px rgba(15,23,42,.18);
 }
