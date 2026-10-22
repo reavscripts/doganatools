@@ -1,0 +1,217 @@
+{
+  "schemaVersion": "EUR1-20261012-R1",
+  "name": "EUR.1 - ACM INTERNATIONAL SRL",
+  "values": {
+    "serial": "",
+    "exporter": "ACM INTERNATIONAL SRL\nVIA OROS, 2-G\n00071 POMEZIA (RM)\nIT",
+    "countryFrom": "IT",
+    "countryTo": "DZ",
+    "consignee": "SARL MAAF SECURITE'\nXC1C63 RUE ZAABATE RAMDANE CITE'\n19000 SETIF ALGERIA - YAHIAOUI\nDZ",
+    "originCountry": "",
+    "destinationCountry": "DZ",
+    "transport": "CONT. N. AKKU4024780",
+    "remarks": "",
+    "goods": "160 COLLI\nMOTORI ELETTRICI AD INGRANAGGIO\nDISPOSITIVI DI MEMORIZZAZIONE DI DATI DI BASE DI SEMICONDUTTORI\nTELECOMANDI ..",
+    "mass": "28000,00 KG",
+    "invoices": "5E/560",
+    "certificateReference": "CERTIFICATO: A26IT",
+    "exportModel": "EX A",
+    "mrn": "26IT",
+    "exportDate": "00.10.2026",
+    "customsOffice": "SALERNO",
+    "issueCountry": "ITALIA",
+    "issuePlace": "SALERNO",
+    "issueDate": "",
+    "customsStamp": "",
+    "customsSignature": "",
+    "declarationPlace": "SALERNO",
+    "declarationDate": "00.10.26",
+    "declarationSignature": "p.c. ACM INTERNATIONAL SRL\n(TOBIA IMPARATO)"
+  },
+  "settings": {
+    "offsetX": 0,
+    "offsetY": 0,
+    "layout": {
+      "serial": {
+        "x": 159.2,
+        "y": 26,
+        "w": 26.2,
+        "h": 5.8,
+        "font": 12
+      },
+      "exporter": {
+        "x": 29.5,
+        "y": 30.5,
+        "w": 75.4,
+        "h": 17.3,
+        "font": 10
+      },
+      "countryFrom": {
+        "x": 110.1,
+        "y": 48.9,
+        "w": 74.2,
+        "h": 4.8,
+        "font": 10
+      },
+      "countryTo": {
+        "x": 110.1,
+        "y": 58.3,
+        "w": 74.2,
+        "h": 4.8,
+        "font": 10
+      },
+      "consignee": {
+        "x": 29.5,
+        "y": 56.5,
+        "w": 75.4,
+        "h": 25.7,
+        "font": 10
+      },
+      "originCountry": {
+        "x": 108.5,
+        "y": 78.2,
+        "w": 38.1,
+        "h": 4.7,
+        "font": 10
+      },
+      "destinationCountry": {
+        "x": 148,
+        "y": 78.2,
+        "w": 38.4,
+        "h": 4.7,
+        "font": 10
+      },
+      "transport": {
+        "x": 29.7,
+        "y": 90.6,
+        "w": 75.2,
+        "h": 20.8,
+        "font": 10
+      },
+      "remarks": {
+        "x": 108.5,
+        "y": 90.6,
+        "w": 78,
+        "h": 20.8,
+        "font": 10
+      },
+      "goods": {
+        "x": 30,
+        "y": 135.9,
+        "w": 110.6,
+        "h": 62.1,
+        "font": 10
+      },
+      "mass": {
+        "x": 144,
+        "y": 131.8,
+        "w": 20.7,
+        "h": 91.2,
+        "font": 10
+      },
+      "invoices": {
+        "x": 167.1,
+        "y": 131.8,
+        "w": 19.3,
+        "h": 91.2,
+        "font": 9
+      },
+      "certificateReference": {
+        "x": 40.9,
+        "y": 201.9,
+        "w": 97.5,
+        "h": 20.8,
+        "font": 10
+      },
+      "exportModel": {
+        "x": 43.2,
+        "y": 241,
+        "w": 27.5,
+        "h": 4,
+        "font": 10
+      },
+      "mrn": {
+        "x": 76.3,
+        "y": 241,
+        "w": 41.6,
+        "h": 4,
+        "font": 9.5
+      },
+      "exportDate": {
+        "x": 35.1,
+        "y": 245,
+        "w": 56,
+        "h": 4,
+        "font": 10
+      },
+      "customsOffice": {
+        "x": 53.5,
+        "y": 249.3,
+        "w": 38,
+        "h": 4,
+        "font": 10
+      },
+      "issueCountry": {
+        "x": 30.2,
+        "y": 257,
+        "w": 61.5,
+        "h": 4,
+        "font": 10
+      },
+      "issuePlace": {
+        "x": 34.5,
+        "y": 261.1,
+        "w": 37.5,
+        "h": 4,
+        "font": 10
+      },
+      "issueDate": {
+        "x": 78.5,
+        "y": 261.1,
+        "w": 13.5,
+        "h": 4,
+        "font": 9
+      },
+      "customsStamp": {
+        "x": 96,
+        "y": 239.7,
+        "w": 26.8,
+        "h": 23.2,
+        "font": 9
+      },
+      "customsSignature": {
+        "x": 30.2,
+        "y": 265.9,
+        "w": 61.5,
+        "h": 3.7,
+        "font": 9
+      },
+      "declarationPlace": {
+        "x": 138.5,
+        "y": 249.6,
+        "w": 27.8,
+        "h": 4,
+        "font": 10
+      },
+      "declarationDate": {
+        "x": 173.1,
+        "y": 249.6,
+        "w": 13.3,
+        "h": 4,
+        "font": 9
+      },
+      "declarationSignature": {
+        "x": 127.8,
+        "y": 262,
+        "w": 58.4,
+        "h": 7.6,
+        "font": 9
+      }
+    }
+  },
+  "id": "5a083c59-a70f-4c5e-9259-abd8f829fedf",
+  "revision": 1,
+  "createdAt": "2026-10-21T15:28:20.145Z",
+  "updatedAt": "2026-10-21T15:28:20.145Z",
+  "updatedBy": "admin"
+}
