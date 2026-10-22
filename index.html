@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta name="doganatools-ui-build" content="EUR1-ARTICOLI-26YY-R12-20261021">
+<meta name="doganatools-ui-build" content="BOOKING-EORI-R13-20261022">
 <!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79 -->
 <meta charset="utf-8"/>
 <meta name="doganatools-build" content="V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79"/>
@@ -7413,7 +7413,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       </div>
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
-    <a id="doganaNavBookingBtn" href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING</a>
+    <a id="doganaNavBookingBtn" href="#bookingLookupPanel" data-jump-focus="#bookingLookupInput">BOOKING &amp; EORI</a>
     <button id="doganaCalcDockToggle" type="button" aria-controls="doganaCalcDock" aria-expanded="false" aria-label="Apri calcolatrice" title="Apri calcolatrice">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="5" y="2.5" width="14" height="19" rx="2"/><path d="M8 6h8v3H8zM8 13h1m3 0h1m3 0h.01M8 17h1m3 0h1m3 0h.01"/></svg>
     </button>
@@ -7768,7 +7768,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 <section id="a22TemplateModule" class="a22-module sectionJumpTarget is-minimized" aria-label="Creazione bolletta A22 da DAU o DAE">
   <div class="a22-head">
     <div class="a22-title">A22</div>
-    <button id="a22Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="a22Body" aria-label="Mostra modulo A22" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button>
+    <button id="a22Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="a22Body" aria-label="Mostra modulo A22" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button>
   </div>
   <div id="a22Body" class="a22-body" hidden>
     <div class="a22-import-row">
@@ -7848,7 +7848,7 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 <section id="eur1TemplateModule" class="eur1-module sectionJumpTarget eur1-collapsed" aria-label="Creazione template EUR.1">
   <div class="eur1-head">
     <div class="eur1-title"><span>EUR.1</span></div>
-    <div class="eur1-head-actions"><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 10 4.75 4.75M6.2 4.75H4.75V6.2M14 14l5.25 5.25M17.8 19.25h1.45V17.8"/></svg></button></div>
+    <div class="eur1-head-actions"><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button></div>
   </div>
   <div id="eur1Body" class="eur1-body" hidden>
     <p class="eur1-intro">Prepara la bozza per il cliente, poi completa la stessa pratica con il DAE definitivo e stampa sul formulario EUR.1.</p>
@@ -8219,22 +8219,57 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </div>
   </div>
 </div>
-<section class="miniPanel sctBookingPanel bookingStandalonePanel sectionJumpTarget is-visible" id="bookingLookupPanel" aria-label="Ricerca booking SCT">
+<section class="miniPanel sctBookingPanel bookingStandalonePanel sectionJumpTarget is-visible" id="bookingLookupPanel" aria-label="Booking &amp; EORI">
   <div class="bookingModuleHead">
     <div class="bookingModuleTitleWrap">
-      <div class="miniTitle bookingModuleTitle">Ricerca Booking SCT</div>
-      <div class="bookingModuleSubtitle">Usa la stessa sessione JMT/SCT già collegata.</div>
+      <div class="miniTitle bookingModuleTitle">BOOKING &amp; EORI</div>
     </div>
     <div class="bookingModuleActions">
-      <button id="minimizeBookingLookupBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Ricerca Booking" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+      <button id="minimizeBookingLookupBtn" type="button" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-controls="bookingEoriModules" aria-label="Riduci a icona Booking &amp; EORI" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
-  <div class="sctBookingForm bookingLookupForm bookingModuleBody">
-    <input class="sctBookingInput" id="bookingLookupInput" type="text" inputmode="text" placeholder="INSERISCI NUMERO BOOKING SCT" autocomplete="off" />
-    <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
-    <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri PDF</button>
-    <div class="sctBookingStatus" id="bookingLookupStatus">Inserisci il booking SCT da controllare tramite JMT.</div>
-    <div class="bookingLookupResult" id="bookingLookupResult" aria-live="polite"></div>
+  <div class="bookingEoriModules" id="bookingEoriModules">
+    <section class="bookingEoriSubmodule" aria-labelledby="bookingSctTitle">
+      <div class="bookingEoriSubHead">
+        <h3 id="bookingSctTitle">BOOKING</h3>
+        <p>Ricerca Booking SCT · Usa la stessa sessione JMT/SCT già collegata.</p>
+      </div>
+      <div class="sctBookingForm bookingLookupForm bookingModuleBody">
+        <input class="sctBookingInput" id="bookingLookupInput" type="text" inputmode="text" placeholder="INSERISCI NUMERO BOOKING SCT" autocomplete="off" />
+        <button class="primary" id="bookingLookupSearchBtn" type="button">Cerca booking</button>
+        <button class="success" id="bookingLookupOpenBtn" type="button" disabled>Apri PDF</button>
+        <div class="sctBookingStatus" id="bookingLookupStatus">Inserisci il booking SCT da controllare tramite JMT.</div>
+        <div class="bookingLookupResult" id="bookingLookupResult" aria-live="polite"></div>
+      </div>
+    </section>
+    <section class="bookingEoriSubmodule" aria-labelledby="eoriVerificationTitle">
+      <div class="bookingEoriSubHead">
+        <h3 id="eoriVerificationTitle">VERIFICA CODICE EORI</h3>
+        <p id="eoriLookupHint">Verifica la validità del codice nel registro ufficiale della Commissione europea.</p>
+      </div>
+      <form class="eoriValidationForm" id="eoriValidationForm" novalidate>
+        <div class="eoriInputField">
+          <label for="eoriLookupInput">Codice EORI</label>
+          <input class="sctBookingInput" id="eoriLookupInput" name="eori" type="text" inputmode="text" placeholder="ES. IT + PARTITA IVA O CODICE FISCALE" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="eoriLookupHint" />
+        </div>
+        <button class="primary" id="eoriLookupSearchBtn" type="submit">Verifica EORI</button>
+        <button id="eoriLookupClearBtn" type="reset">Pulisci</button>
+        <div class="eoriLookupStatus" id="eoriLookupStatus" role="status" aria-live="polite">Inserisci il codice completo, incluso il prefisso del Paese.</div>
+        <div class="eoriLookupResult" id="eoriLookupResult" hidden>
+          <div class="eoriResultHead">
+            <strong class="eoriResultOutcome" id="eoriLookupOutcome"></strong>
+            <code id="eoriLookupCode"></code>
+          </div>
+          <dl class="eoriResultDetails">
+            <div><dt>Ragione sociale</dt><dd id="eoriLookupName"></dd></div>
+            <div><dt>Indirizzo</dt><dd id="eoriLookupAddress"></dd></div>
+            <div><dt>Verificato il</dt><dd id="eoriLookupCheckedAt"></dd></div>
+          </dl>
+          <p class="eoriResultNote" id="eoriLookupNote" hidden>Il registro UE può confermare la validità senza pubblicare ragione sociale e indirizzo.</p>
+        </div>
+        <a class="eoriOfficialLink" id="eoriOfficialLink" href="https://ec.europa.eu/taxation_customs/dds2/eos/eori_validation.jsp?Lang=it" target="_blank" rel="noopener noreferrer">Apri sul portale UE ↗</a>
+      </form>
+    </section>
   </div>
 </section>
 
@@ -12353,7 +12388,7 @@ button.doganaModuleSvgToggleBtn:active,
       minimizeBookingLookupBtn.textContent = minimized ? "Mostra modulo" : "Riduci a icona";
       if (window.setDoganaModuleToggleIcon) window.setDoganaModuleToggleIcon(minimizeBookingLookupBtn, minimized);
       minimizeBookingLookupBtn.setAttribute("aria-expanded", minimized ? "false" : "true");
-      minimizeBookingLookupBtn.setAttribute("aria-label", minimized ? "Mostra modulo Ricerca Booking" : "Riduci a icona Ricerca Booking");
+      minimizeBookingLookupBtn.setAttribute("aria-label", minimized ? "Mostra modulo Booking & EORI" : "Riduci a icona Booking & EORI");
       minimizeBookingLookupBtn.setAttribute("title", minimized ? "Mostra modulo" : "Riduci a icona");
       try { localStorage.setItem("doganatools_booking_lookup_minimized", minimized ? "1" : "0"); } catch {}
     }
@@ -20578,13 +20613,17 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     { id:"notificationToggleBtn", panel:"#notificationPanel,.notificationPanel", reduce:"Riduci a icona Notifiche", show:"Mostra modulo Notifiche" },
     { id:"postItToggleBtn", panel:"#postItPanel,.postItPanel", reduce:"Riduci a icona Post-it", show:"Mostra modulo Post-it" },
     { id:"minimizeShipsBtn", panel:"#shipPanel,.shipPanel", reduce:"Riduci a icona Previsione Navi", show:"Mostra modulo Previsione Navi" },
-    { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Ricerca Booking", show:"Mostra modulo Ricerca Booking" },
-    { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" }
+    { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Booking & EORI", show:"Mostra modulo Booking & EORI" },
+    { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" },
+    { id:"a22Toggle", panel:"#a22TemplateModule", reduce:"Riduci a icona A22", show:"Mostra modulo A22" },
+    { id:"eur1Toggle", panel:"#eur1TemplateModule", reduce:"Riduci a icona EUR.1", show:"Mostra modulo EUR.1" },
+    { id:"usefulToolsToggleBtn", panel:"#usefulToolsPanel", reduce:"Riduci a icona Tool utili", show:"Mostra modulo Tool utili" }
   ];
+  const toggleSelector = configs.map(cfg => "#" + cfg.id).join(",");
 
   function isMinimized(btn, cfg){
     const panel = cfg.panel ? btn.closest(cfg.panel) || document.querySelector(cfg.panel) : null;
-    if (panel && (panel.classList.contains("is-minimized") || panel.classList.contains("minimized"))) return true;
+    if (panel && (panel.classList.contains("is-minimized") || panel.classList.contains("minimized") || panel.classList.contains("eur1-collapsed"))) return true;
     if (btn.getAttribute("aria-expanded") === "false") return true;
     const label = `${btn.getAttribute("aria-label") || ""} ${btn.getAttribute("title") || ""} ${btn.textContent || ""}`;
     return /mostra\s+modulo/i.test(label);
@@ -20621,7 +20660,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
   else normalizeAll();
 
   document.addEventListener("click", (event) => {
-    if (event.target && event.target.closest && event.target.closest("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#postItToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) {
+    if (event.target && event.target.closest && event.target.closest(toggleSelector)) {
       setTimeout(normalizeAll, 0);
       setTimeout(normalizeAll, 80);
     }
@@ -20632,7 +20671,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
       const node = m.target;
       if (!node) continue;
       if (node.id && configs.some(c => c.id === node.id)) { scheduleNormalize(); return; }
-      if (node.querySelector && node.querySelector("#doganaMinimizeBtn,#minimizeExtraBtn,#operativeChecklistToggleBtn,#notificationToggleBtn,#postItToggleBtn,#minimizeShipsBtn,#minimizeBookingLookupBtn,#serverConsoleToggle")) { scheduleNormalize(); return; }
+      if (node.querySelector && node.querySelector(toggleSelector)) { scheduleNormalize(); return; }
     }
   });
   if (document.documentElement) observer.observe(document.documentElement, { childList:true, subtree:true, attributes:true, attributeFilter:["class","aria-expanded","title","aria-label"] });
@@ -22706,7 +22745,10 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn.doganaModuleSvgToggleBtn,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-#serverConsoleToggle.doganaModuleSvgToggleBtn{
+#serverConsoleToggle.doganaModuleSvgToggleBtn,
+#a22Toggle.doganaModuleSvgToggleBtn,
+#eur1Toggle.doganaModuleSvgToggleBtn,
+#usefulToolsToggleBtn.doganaModuleSvgToggleBtn{
   --dogana-btn-tone:var(--module-toggle-purple) !important;
   width:38px !important;
   height:38px !important;
@@ -22746,7 +22788,10 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
-#serverConsoleToggle.doganaModuleSvgToggleBtn:hover{
+#serverConsoleToggle.doganaModuleSvgToggleBtn:hover,
+#a22Toggle.doganaModuleSvgToggleBtn:hover,
+#eur1Toggle.doganaModuleSvgToggleBtn:hover,
+#usefulToolsToggleBtn.doganaModuleSvgToggleBtn:hover{
   color:#5b21b6 !important;
   border-color:color-mix(in srgb, var(--module-toggle-purple) 70%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -22766,7 +22811,10 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn.doganaModuleSvgToggleBtn:active,
 #minimizeShipsBtn.doganaModuleSvgToggleBtn:active,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:active,
-#serverConsoleToggle.doganaModuleSvgToggleBtn:active{
+#serverConsoleToggle.doganaModuleSvgToggleBtn:active,
+#a22Toggle.doganaModuleSvgToggleBtn:active,
+#eur1Toggle.doganaModuleSvgToggleBtn:active,
+#usefulToolsToggleBtn.doganaModuleSvgToggleBtn:active{
   transform:translateY(0) !important;
   box-shadow:inset 0 1px 2px rgba(91,33,182,.08), 0 2px 6px rgba(124,58,237,.06) !important;
 }
@@ -22779,7 +22827,10 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn .doganaModuleToggleSvg,
 #minimizeShipsBtn .doganaModuleToggleSvg,
 #minimizeBookingLookupBtn .doganaModuleToggleSvg,
-#serverConsoleToggle .doganaModuleToggleSvg{
+#serverConsoleToggle .doganaModuleToggleSvg,
+#a22Toggle .doganaModuleToggleSvg,
+#eur1Toggle .doganaModuleToggleSvg,
+#usefulToolsToggleBtn .doganaModuleToggleSvg{
   width:19px !important;
   height:19px !important;
   display:block !important;
@@ -22793,7 +22844,10 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 #postItToggleBtn .doganaModuleToggleSvg path,
 #minimizeShipsBtn .doganaModuleToggleSvg path,
 #minimizeBookingLookupBtn .doganaModuleToggleSvg path,
-#serverConsoleToggle .doganaModuleToggleSvg path{
+#serverConsoleToggle .doganaModuleToggleSvg path,
+#a22Toggle .doganaModuleToggleSvg path,
+#eur1Toggle .doganaModuleToggleSvg path,
+#usefulToolsToggleBtn .doganaModuleToggleSvg path{
   stroke:currentColor !important;
   stroke-width:1.9 !important;
 }
@@ -22806,7 +22860,10 @@ body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn{
+body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #a22Toggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #eur1Toggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #usefulToolsToggleBtn.doganaModuleSvgToggleBtn{
   color:#c4b5fd !important;
   border-color:color-mix(in srgb, #8b5cf6 48%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -23003,6 +23060,9 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 #serverConsoleToggle.doganaModuleSvgToggleBtn,
+#a22Toggle.doganaModuleSvgToggleBtn,
+#eur1Toggle.doganaModuleSvgToggleBtn,
+#usefulToolsToggleBtn.doganaModuleSvgToggleBtn,
 #invoiceClassifierToggle.doganaModuleSvgToggleBtn{
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   color:color-mix(in srgb, var(--dogana-user-accent) 82%, var(--heading)) !important;
@@ -23024,6 +23084,9 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 #minimizeShipsBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn:hover,
 #serverConsoleToggle.doganaModuleSvgToggleBtn:hover,
+#a22Toggle.doganaModuleSvgToggleBtn:hover,
+#eur1Toggle.doganaModuleSvgToggleBtn:hover,
+#usefulToolsToggleBtn.doganaModuleSvgToggleBtn:hover,
 #invoiceClassifierToggle.doganaModuleSvgToggleBtn:hover{
   color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
@@ -23045,6 +23108,9 @@ body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeShipsBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #serverConsoleToggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #a22Toggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #eur1Toggle.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] #usefulToolsToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #invoiceClassifierToggle.doganaModuleSvgToggleBtn{
   color:color-mix(in srgb, var(--dogana-user-accent) 56%, #f8fafc) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 48%, var(--btn-border)) !important;
@@ -23675,7 +23741,10 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   #postItToggleBtn.doganaModuleSvgToggleBtn,
   #minimizeShipsBtn.doganaModuleSvgToggleBtn,
   #minimizeBookingLookupBtn.doganaModuleSvgToggleBtn,
-  #serverConsoleToggle.doganaModuleSvgToggleBtn{
+  #serverConsoleToggle.doganaModuleSvgToggleBtn,
+  #a22Toggle.doganaModuleSvgToggleBtn,
+  #eur1Toggle.doganaModuleSvgToggleBtn,
+  #usefulToolsToggleBtn.doganaModuleSvgToggleBtn{
     width:44px !important;
     min-width:44px !important;
     max-width:44px !important;
@@ -25076,7 +25145,10 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #serverConsolePanel.is-minimized #serverConsoleToggle,
 #organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
 #organizePanel .notificationPanel.is-minimized #notificationToggleBtn,
-#organizePanel .postItPanel.is-minimized #postItToggleBtn{
+#organizePanel .postItPanel.is-minimized #postItToggleBtn,
+#organizePanel #a22TemplateModule.is-minimized #a22Toggle,
+#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle,
+#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn{
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   box-sizing:border-box !important;
   position:static !important;
@@ -25126,7 +25198,10 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #serverConsolePanel.is-minimized #serverConsoleToggle .doganaModuleToggleSvg,
 #organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg,
 #organizePanel .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg,
-#organizePanel .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg{
+#organizePanel .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg,
+#organizePanel #a22TemplateModule.is-minimized #a22Toggle .doganaModuleToggleSvg,
+#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle .doganaModuleToggleSvg,
+#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn .doganaModuleToggleSvg{
   display:block !important;
   width:19px !important;
   min-width:19px !important;
@@ -30337,5 +30412,219 @@ nuclear facility.
 })();
 
 </script>
+<style id="booking-eori-module-style">
+/* BOOKING & EORI: due sottomoduli nello stesso pannello, in ordine verticale. */
+#bookingLookupPanel .bookingEoriModules{
+  display:grid;
+  gap:12px;
+  padding:16px;
+}
+#bookingLookupPanel .bookingEoriSubmodule{
+  min-width:0;
+  border:1px solid var(--grid-soft);
+  border-radius:14px;
+  background:var(--surface);
+  overflow:hidden;
+}
+#bookingLookupPanel .bookingEoriSubHead{ padding:14px 16px 0; }
+#bookingLookupPanel .bookingEoriSubHead h3{
+  margin:0;
+  color:var(--heading);
+  font-family:var(--font);
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.045em;
+}
+#bookingLookupPanel .bookingEoriSubHead p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+  line-height:1.5;
+}
+#bookingLookupPanel .eoriValidationForm{
+  display:grid;
+  grid-template-columns:minmax(240px,1fr) auto auto;
+  gap:8px;
+  align-items:end;
+  margin:0;
+  padding:14px 16px 16px;
+}
+#bookingLookupPanel .eoriInputField{ display:grid; gap:6px; min-width:0; }
+#bookingLookupPanel .eoriInputField label{
+  color:var(--muted);
+  font-size:11px;
+  font-weight:800;
+}
+#bookingLookupPanel #eoriLookupInput{ width:100%; min-width:0; box-sizing:border-box; }
+#bookingLookupPanel #eoriLookupInput[aria-invalid="true"]{ border-color:var(--danger); }
+#bookingLookupPanel .eoriValidationForm > button{ min-height:42px; white-space:nowrap; }
+#bookingLookupPanel .eoriLookupStatus{
+  grid-column:1/-1;
+  min-height:18px;
+  padding:2px 2px 0;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  line-height:1.5;
+}
+#bookingLookupPanel .eoriLookupStatus[data-state="error"]{ color:var(--danger); }
+#bookingLookupPanel .eoriLookupStatus[data-state="unavailable"]{ color:#a16207; }
+body[data-theme="dark"] #bookingLookupPanel .eoriLookupStatus[data-state="unavailable"]{ color:#fbbf24; }
+#bookingLookupPanel .eoriLookupResult{
+  grid-column:1/-1;
+  min-width:0;
+  padding:14px;
+  border:1px solid var(--grid-soft);
+  border-radius:12px;
+  background:var(--surface-soft);
+}
+#bookingLookupPanel .eoriLookupResult[hidden],
+#bookingLookupPanel .eoriResultNote[hidden]{ display:none !important; }
+#bookingLookupPanel .eoriResultHead{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+#bookingLookupPanel .eoriResultOutcome{
+  display:inline-flex;
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;
+  font-weight:900;
+}
+#bookingLookupPanel .eoriLookupResult[data-valid="true"] .eoriResultOutcome{ color:#166534; background:#dcfce7; }
+#bookingLookupPanel .eoriLookupResult[data-valid="false"] .eoriResultOutcome{ color:#991b1b; background:#fee2e2; }
+body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="true"] .eoriResultOutcome{ color:#bbf7d0; background:#14532d; }
+body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"] .eoriResultOutcome{ color:#fecaca; background:#7f1d1d; }
+#bookingLookupPanel #eoriLookupCode{ color:var(--heading); font-size:13px; font-weight:800; overflow-wrap:anywhere; }
+#bookingLookupPanel .eoriResultDetails{ display:grid; grid-template-columns:1fr 1.5fr 1fr; gap:16px; margin:14px 0 0; }
+#bookingLookupPanel .eoriResultDetails > div{ min-width:0; }
+#bookingLookupPanel .eoriResultDetails dt{ margin-bottom:5px; color:var(--muted); font-size:11px; font-weight:800; }
+#bookingLookupPanel .eoriResultDetails dd{ margin:0; color:var(--heading); font-size:12px; font-weight:700; line-height:1.5; overflow-wrap:anywhere; white-space:pre-line; }
+#bookingLookupPanel .eoriResultNote{ margin:12px 0 0; color:var(--muted); font-size:12px; line-height:1.5; }
+#bookingLookupPanel .eoriOfficialLink{ grid-column:1/-1; justify-self:start; padding:3px 0; color:var(--accent); font-size:12px; font-weight:800; text-decoration:none; }
+#bookingLookupPanel .eoriOfficialLink:hover{ text-decoration:underline; }
+@media(max-width:700px){
+  #bookingLookupPanel .bookingEoriModules{ padding:12px; gap:12px; }
+  #bookingLookupPanel .bookingEoriSubHead{ padding:12px 12px 0; }
+  #bookingLookupPanel .eoriValidationForm{ grid-template-columns:minmax(0,1fr); padding:12px; }
+  #bookingLookupPanel .eoriValidationForm > button{ width:100%; }
+  #bookingLookupPanel .eoriResultDetails{ grid-template-columns:1fr; gap:12px; }
+  #bookingLookupPanel #eoriLookupInput::placeholder{ font-size:10px; letter-spacing:0; }
+}
+</style>
+
+<script id="doganatools-eori-validation">
+(function initDoganaEoriValidation(){
+  const form = document.getElementById("eoriValidationForm");
+  if (!form) return;
+  const input = document.getElementById("eoriLookupInput");
+  const button = document.getElementById("eoriLookupSearchBtn");
+  const status = document.getElementById("eoriLookupStatus");
+  const result = document.getElementById("eoriLookupResult");
+  const officialLink = document.getElementById("eoriOfficialLink");
+  const officialUrl = "https://ec.europa.eu/taxation_customs/dds2/eos/eori_validation.jsp";
+  const initialMessage = "Inserisci il codice completo, incluso il prefisso del Paese.";
+  let controller = null;
+  let generation = 0;
+  let busy = false;
+
+  function normalize(value){ return String(value || "").replace(/\s+/g, "").toUpperCase(); }
+  function setStatus(message, state = ""){
+    status.textContent = message;
+    status.dataset.state = state;
+  }
+  function setBusy(value){
+    busy = value;
+    button.disabled = value;
+    button.textContent = value ? "Verifica in corso…" : "Verifica EORI";
+    form.setAttribute("aria-busy", value ? "true" : "false");
+  }
+  function updateOfficialLink(){
+    const eori = normalize(input.value);
+    const params = new URLSearchParams({ Lang: "it" });
+    if (/^[A-Z]{2}[A-Z0-9]{1,15}$/.test(eori)) {
+      params.set("EoriNumb", eori);
+      params.set("Expand", "true");
+    }
+    officialLink.href = officialUrl + "?" + params.toString();
+  }
+  function clearResult(){
+    generation++;
+    if (controller) controller.abort();
+    controller = null;
+    setBusy(false);
+    result.hidden = true;
+    result.removeAttribute("data-valid");
+    for (const id of ["Outcome", "Code", "Name", "Address", "CheckedAt"]) {
+      document.getElementById("eoriLookup" + id).textContent = "";
+    }
+    input.removeAttribute("aria-invalid");
+    setStatus(initialMessage);
+  }
+
+  input.addEventListener("input", () => { clearResult(); updateOfficialLink(); });
+  input.addEventListener("blur", () => { input.value = normalize(input.value); updateOfficialLink(); });
+  form.addEventListener("reset", () => {
+    clearResult();
+    // Il reset nativo aggiorna il valore dopo aver emesso l'evento.
+    setTimeout(() => { updateOfficialLink(); input.focus(); }, 0);
+  });
+  window.addEventListener("dogana-auth-required", () => {
+    clearResult();
+    input.value = "";
+    updateOfficialLink();
+  });
+  form.addEventListener("submit", async event => {
+    event.preventDefault();
+    if (busy) return;
+    clearResult();
+    const eori = normalize(input.value);
+    input.value = eori;
+    updateOfficialLink();
+    if (!/^[A-Z]{2}[A-Z0-9]{1,15}$/.test(eori)) {
+      input.setAttribute("aria-invalid", "true");
+      setStatus("Inserisci il codice EORI completo: 2 lettere del Paese seguite da massimo 15 lettere o cifre.", "error");
+      input.focus();
+      return;
+    }
+    const current = generation;
+    controller = new AbortController();
+    const currentController = controller;
+    const timeout = setTimeout(() => currentController.abort(), 30000);
+    setBusy(true);
+    setStatus("Verifica in corso nel registro EORI della Commissione europea…");
+    try {
+      const endpoint = "/api/validate-eori?eori=" + encodeURIComponent(eori) + "&_=" + Date.now();
+      const response = await fetch(apiUrl(endpoint), {
+        method: "GET", cache: "no-store", headers: { Accept: "application/json" }, signal: currentController.signal
+      });
+      const data = await response.json().catch(() => null);
+      if (current !== generation) return;
+      if (response.status === 401) throw new Error("Sessione scaduta. Accedi nuovamente per verificare il codice EORI.");
+      if (!response.ok || !data?.success) throw new Error(data?.error || "Verifica EORI non disponibile. Riprova tra poco.");
+      if (typeof data.valid !== "boolean" || data.eori !== eori || !data.checkedAt || !Number.isFinite(Date.parse(data.checkedAt))) {
+        throw new Error("Il servizio EORI UE non ha restituito un esito verificabile. Riprova.");
+      }
+      const outcome = data.valid ? "CODICE EORI VALIDO" : "CODICE EORI NON VALIDO";
+      document.getElementById("eoriLookupOutcome").textContent = outcome;
+      document.getElementById("eoriLookupCode").textContent = eori;
+      document.getElementById("eoriLookupName").textContent = data.name || (data.valid ? "Non disponibile nel registro pubblico" : "—");
+      document.getElementById("eoriLookupAddress").textContent = data.address || (data.valid ? "Non disponibile nel registro pubblico" : "—");
+      document.getElementById("eoriLookupCheckedAt").textContent = new Date(data.checkedAt).toLocaleString("it-IT", { dateStyle: "short", timeStyle: "medium" });
+      document.getElementById("eoriLookupNote").hidden = !data.valid || !!(data.name && data.address);
+      result.dataset.valid = String(data.valid);
+      result.hidden = false;
+      setStatus(data.valid ? "Il registro UE conferma la validità del codice EORI." : "Il codice EORI risulta non valido nel registro UE.");
+    } catch (error) {
+      if (current !== generation) return;
+      result.hidden = true;
+      setStatus(error?.name === "AbortError" ? "Il servizio EORI UE non ha risposto in tempo. Riprova." : (error?.message || "Collegamento al servizio EORI UE non riuscito. Riprova."), "unavailable");
+    } finally {
+      clearTimeout(timeout);
+      if (current === generation) { controller = null; setBusy(false); }
+    }
+  });
+  updateOfficialLink();
+})();
+</script>
+
 </body>
 </html>
