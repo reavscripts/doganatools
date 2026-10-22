@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta name="doganatools-ui-build" content="BOOKING-EORI-R13-20261022">
+<meta name="doganatools-ui-build" content="BOOKING-EORI-TOPBAR-CENTRATA-R14-20261022">
 <!-- DOGANATOOLS FRONTEND BUILD: V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79 -->
 <meta charset="utf-8"/>
 <meta name="doganatools-build" content="V26.10.14-ANALIZZA-DOCUMENTI-MENU-R79"/>
@@ -29053,7 +29053,12 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
     display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;
     align-items:center!important;gap:12px!important;margin:0!important;padding:10px 12px!important;
   }
-  body.doganaSideDocksOpen .appTopBar#appTopBar{left:12px!important;right:12px!important}
+  body.doganaSideDocksOpen .appTopBar#appTopBar{
+    left:12px!important;right:12px!important;justify-content:center!important;
+  }
+  body.doganaSideDocksOpen #appTopBar .appQuickNav#doganaMobileNav{
+    flex:0 1 auto!important;justify-content:center!important;
+  }
   #appTopBar .appBrand{
     flex:0 0 auto!important;width:auto!important;min-width:0!important;max-width:none!important;white-space:nowrap;
   }
