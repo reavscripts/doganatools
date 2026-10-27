@@ -7888,12 +7888,12 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
           <label>Sinistra mm<input id="eur1FieldX" type="number" min="0" max="208" step="0.1"></label><label>Alto mm<input id="eur1FieldY" type="number" min="0" max="295" step="0.1"></label><label>Larghezza mm<input id="eur1FieldW" type="number" min="2" max="180" step="0.1"></label><label>Altezza mm<input id="eur1FieldH" type="number" min="2" max="180" step="0.1"></label><label>Corpo pt<input id="eur1FieldFont" type="number" min="7" max="16" step="0.5"></label>
         </div><button id="eur1ResetField" type="button">Ripristina questo campo</button></details>
         <details><summary>Allineamento di stampa</summary><p class="eur1-help">Sposta tutti i dati rispetto al formulario. Valori positivi: destra / basso.</p><div class="eur1-settings-grid"><label>Orizzontale mm<input id="eur1OffsetX" type="number" min="-10" max="10" step="0.1" value="0"></label><label>Verticale mm<input id="eur1OffsetY" type="number" min="-10" max="10" step="0.1" value="0"></label></div><button id="eur1ResetLayout" type="button">Ripristina allineamento</button><p class="eur1-help">Per il prestampato usa carta A4 e stampa al 100%, con dimensioni effettive.</p></details>
-        <details><summary>Modelli e riferimenti</summary><p class="eur1-help">Conserva un modello riapribile o consulta il formulario originale.</p><div class="eur1-backup-actions"><button id="eur1Backup" type="button">Scarica modello</button><button id="eur1Import" type="button">Importa modello</button><button id="eur1Example" type="button">Carica esempio</button><button id="eur1Original" type="button">Apri scan originale</button></div><input id="eur1ImportFile" type="file" accept=".json,.eur1,application/json" hidden></details>
+        <details><summary>Modelli e riferimenti</summary><p class="eur1-help">Conserva un modello riapribile o consulta il formulario originale.</p><div class="eur1-backup-actions"><button id="eur1Backup" type="button">Scarica modello riapribile</button><button id="eur1Import" type="button">Importa modello</button><button id="eur1Example" type="button">Carica esempio</button><button id="eur1Original" type="button">Apri scan originale</button></div><input id="eur1ImportFile" type="file" accept=".json,.eur1,application/json" hidden></details>
       </aside>
       <div class="eur1-preview-column">
         <div class="eur1-preview-toolbar"><strong>Documento EUR.1</strong><label class="eur1-guides-label"><input id="eur1Guides" type="checkbox" checked> Evidenzia campi</label><label for="eur1Zoom" class="eur1-zoom-label">Zoom <select id="eur1Zoom"><option value="fit">Adatta</option><option value="100">100%</option><option value="125">125%</option><option value="150">150%</option></select></label></div>
         <div id="eur1Viewport" class="eur1-viewport"><div id="eur1Paper" class="eur1-paper eur1-guides" aria-label="Documento EUR.1 modificabile"><img id="eur1Background" alt="Scansione originale del formulario EUR.1" draggable="false"><div id="eur1SerialMask" class="eur1-serial-mask" aria-hidden="true"></div><div id="eur1Fields"></div></div></div>
-        <div class="eur1-export-row"><label for="eur1ExportMode"><span>Destinazione del documento</span><select id="eur1ExportMode"><option value="complete">Copia per il cliente con formulario EUR.1</option><option value="data">Stampa sul formulario prestampato · solo dati</option></select></label><div class="eur1-toolbar-group"><button id="eur1ExportWord" type="button">Scarica Word</button><button id="eur1ExportPdf" type="button" class="primary">Scarica PDF</button></div><p class="eur1-help">Il prestampato richiede MRN e date completi. Il numero EUR.1 già presente sul formulario viene escluso dalla stampa dei dati.</p></div>
+        <div class="eur1-export-row"><label for="eur1ExportMode"><span>Contenuto del PDF</span><select id="eur1ExportMode"><option value="complete">Copia per il cliente con formulario EUR.1</option><option value="data">Stampa sul formulario prestampato · solo dati</option></select></label><div class="eur1-toolbar-group"><button id="eur1ExportWord" type="button" class="primary" title="Scarica un Word con i soli dati, senza sfondo, per stampare sul certificato EUR.1 originale">Word per stampa EUR.1</button><button id="eur1ExportPdf" type="button">Scarica PDF</button></div><p class="eur1-help">Il Word contiene sempre solo i dati compilati, senza sfondo né numero EUR.1 prestampato, nelle posizioni del certificato originale. Puoi completare i campi mancanti anche in Word. Stampa in A4 al 100%, con dimensioni effettive. Per il PDF solo dati occorrono MRN e date completi.</p></div>
       </div>
     </div>
   </div>
@@ -28602,8 +28602,8 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
   }
   function controls() {
     $("eur1Name").disabled = !state.loaded;
-    const printBlocked=(state.document&&$("eur1ExportMode").value==="data"&&core.printErrors(state.document.values).length>0)||(state.loaded&&!core.date($("eur1WorkflowDate").value));
-    for (const id of buttons) $(id).disabled = !state.loaded || state.busy || ((id === "eur1ExportPdf" || id === "eur1ExportWord") && (state.overflow.length > 0||printBlocked));
+    const printBlocked=(state.document&&exportMode("pdf")==="data"&&core.printErrors(state.document.values).length>0)||(state.loaded&&!core.date($("eur1WorkflowDate").value));
+    for (const id of buttons) $(id).disabled = !state.loaded || state.busy || (id === "eur1ExportPdf" && (exportOverflow(exportMode("pdf")) || printBlocked)) || (id === "eur1ExportWord" && exportOverflow("data"));
     for(const id of ["eur1WorkflowMrn","eur1WorkflowDate","eur1DaeFile","eur1WordFile"])$(id).disabled=!state.loaded||state.busy;
     if(state.pending){
       $("eur1ApplyUpdate").disabled=state.busy||!state.document?.values.exporter?.trim()||!!importMismatch();
@@ -28772,16 +28772,21 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
     status("EUR.1 salvato. Puoi riaprirlo dall'archivio o duplicarlo per una nuova pratica.","ok");
     try { await refreshArchive(); } catch { status("EUR.1 salvato. L'elenco dell'archivio non si è aggiornato: premi Aggiorna archivio.","ok"); }
   }
+  function exportMode(format) { return format === "docx" ? "data" : $("eur1ExportMode").value; }
+  function exportOverflow(mode) { return state.overflow.some(id => mode !== "data" || id !== "serial"); }
   async function exportDocument(format) {
-    fitFields(); if (state.overflow.length) throw new Error("Controlla i riquadri evidenziati in rosso prima di esportare.");
-    const snapshot = clone(state.document), mode = $("eur1ExportMode").value;
-    if(mode==="data"&&core.printErrors(snapshot.values).length)throw new Error(core.printErrors(snapshot.values).join(" "));
+    const mode = exportMode(format);
+    fitFields(); if (exportOverflow(mode)) throw new Error("Controlla i riquadri evidenziati in rosso prima di esportare.");
+    const snapshot = clone(state.document);
+    if (mode === "data") snapshot.values.serial = "";
+    if(format!=="docx"&&mode==="data"&&core.printErrors(snapshot.values).length)throw new Error(core.printErrors(snapshot.values).join(" "));
     if (!snapshot.name.trim()) snapshot.name = inferredName();
     status(`Preparazione del file ${format === "docx" ? "Word" : "PDF"}…`);
     const response = await request("/export",{method:"POST",body:JSON.stringify({document:snapshot,format,mode}),headers:{Accept:"application/octet-stream"}});
     const blob = await response.blob(); if (!blob.size) throw new Error("Il file esportato è vuoto.");
     download(blob,safeName(snapshot.name) + (mode === "data" ? "_prestampato" : core.phase(snapshot.values)==="draft"?"_bozza_cliente":"_copia_cliente") + "." + format);
-    status(`File ${format === "docx" ? "Word" : "PDF"} pronto${mode === "data" ? ": solo dati per il prestampato, stampa al 100%." : ": documento completo con sfondo EUR.1."}`,"ok");
+    const incomplete = format === "docx" && core.printErrors(snapshot.values).length ? " Completa MRN e date mancanti prima della stampa definitiva." : "";
+    status(`File ${format === "docx" ? "Word" : "PDF"} pronto${mode === "data" ? ": solo dati per il prestampato, stampa al 100%." : ": documento completo con sfondo EUR.1."}${incomplete}`,"ok");
   }
   function reviewImport(parsed,file,kind="word"){
     state.pending={...parsed,sourceName:file.name,kind};archiveView(false);
