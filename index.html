@@ -10145,9 +10145,9 @@ button.doganaModuleSvgToggleBtn:active,
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
-    // SCT: intervallo dinamico lineare. Ogni riga aggiunge 30 secondi.
-    // Esempi: 1 riga = 30s, 10 righe = 5m, 20 righe = 10m.
-    const EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW = 30;
+    // SCT: intervallo dinamico lineare. Ogni contenitore da cercare aggiunge 60 secondi.
+    // Esempi: 1 da cercare = 1m, 10 da cercare = 10m, 20 da cercare = 20m.
+    const EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW = 60;
     const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
@@ -12496,7 +12496,7 @@ button.doganaModuleSvgToggleBtn:active,
 
     function getExtraAutomaticCheckSeconds(){
       // Solo i contenitori validi ancora da cercare contribuiscono al cooldown.
-      // Mantiene il minimo di 30s anche a lista esaurita, senza richiedere
+      // Mantiene il minimo di 60s anche a lista esaurita, senza richiedere
       // nuovamente i memorandum già trovati.
       return Math.max(1, getExtraSctPendingSearchCount()) * EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW;
     }
@@ -12539,7 +12539,7 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
-      // SCT: 30 secondi per ogni contenitore ancora da cercare.
+      // SCT: 60 secondi per ogni contenitore ancora da cercare.
       const sctInterval = getExtraEffectiveCheckInterval();
       extraAutoCheckScheduledInterval = sctInterval;
       extraNextCheckAt = Date.now() + sctInterval;
@@ -12623,13 +12623,13 @@ button.doganaModuleSvgToggleBtn:active,
       const remainingLabel = formatExtraCountdown(remaining);
 
       // Badge contestuale: mostra soltanto il terminal attualmente selezionato.
-      // SCT: 30s × contenitore da cercare; CONATECO e TFG mantengono il ciclo rapido.
+      // SCT: 60s × contenitore da cercare; CONATECO e TFG mantengono il ciclo rapido.
       if (dynamicBadge) {
         dynamicBadge.textContent = `${terminalLabel} · ${activeIntervalLabel} · TRA ${remainingLabel}`;
         dynamicBadge.title = activeIsSct
           ? (sctRowCount
-            ? `${sctRowCount} ${sctRowCount === 1 ? "contenitore SCT da cercare" : "contenitori SCT da cercare"} × 30 secondi = ciclo ogni ${sctIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`
-            : "Nessun contenitore SCT da cercare. I container già trovati non vengono ricercati; intervallo minimo 30 secondi.")
+            ? `${sctRowCount} ${sctRowCount === 1 ? "contenitore SCT da cercare" : "contenitori SCT da cercare"} × ${EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW} secondi = ciclo ogni ${sctIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`
+            : "Nessun contenitore SCT da cercare. I container già trovati non vengono ricercati; intervallo minimo 60 secondi.")
           : `${terminalLabel}: ciclo automatico ogni ${fastIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`;
       }
 
