@@ -2591,11 +2591,11 @@ body[data-theme="dark"] .shipStatus.tomorrow{
   min-width:280px;
   max-width:380px;
   border-radius:18px;
-  padding:13px 14px;
-  background:linear-gradient(180deg, var(--surface) 0%, var(--surface-soft) 100%);
+  padding:0;
+  background:transparent;
   color:var(--text);
-  border:1px solid var(--grid-soft);
-  box-shadow:0 18px 45px rgba(15,23,42,.22);
+  border:0;
+  box-shadow:none;
   pointer-events:auto;
   animation:extraToastIn .22s ease-out;
 }
@@ -11734,6 +11734,48 @@ button.doganaModuleSvgToggleBtn:active,
 
 
     const extraVesselCache = new Map();
+    const EXTRA_VESSEL_STORAGE = "doganatools_vessel_cache_v1";
+    function readExtraVesselPersistent(key) {
+      try {
+        const entries = JSON.parse(localStorage.getItem(EXTRA_VESSEL_STORAGE) || "{}");
+        const entry = entries[key];
+        return entry && entry.until > Date.now() ? entry.value : null;
+      } catch { return null; }
+    }
+    function writeExtraVesselPersistent(key, value, ttl) {
+      try {
+        const entries = JSON.parse(localStorage.getItem(EXTRA_VESSEL_STORAGE) || "{}");
+        const now = Date.now();
+        for (const id of Object.keys(entries)) if (!entries[id] || entries[id].until <= now) delete entries[id];
+        entries[key] = {value, until:now + ttl};
+        const keys = Object.keys(entries).sort((a,b) => entries[b].until - entries[a].until);
+        for (const id of keys.slice(500)) delete entries[id];
+        localStorage.setItem(EXTRA_VESSEL_STORAGE, JSON.stringify(entries));
+      } catch {} // La ricerca continua anche se la memoria locale non è disponibile.
+    }
+    const extraClosingRequests = new Map();
+    async function loadExtraVesselClosing(info, terminal, force = false) {
+      // Senza viaggio non esiste una chiave abbastanza sicura per il riuso persistente.
+      const key = info.name && info.voyage
+        ? "closing:" + JSON.stringify([extraVesselKey(terminal), extraVesselKey(info.name), String(info.voyage).trim().toUpperCase()]) : "";
+      if (key && !force) {
+        const saved = readExtraVesselPersistent(key);
+        if (saved && saved.closing) return saved;
+        if (extraClosingRequests.has(key)) return extraClosingRequests.get(key);
+      }
+      const task = (async () => {
+        const dataset = await loadShipSearchDataset();
+        const errors = dataset.errors.filter(e => e.startsWith(terminal+":"));
+        const match = extraMatchVessel(info, dataset.ships, terminal);
+        const result = {...match, errors};
+        if (key && match.closing && !errors.length) writeExtraVesselPersistent(key, result, 60*60*1000);
+        return result;
+      })();
+      if (key) extraClosingRequests.set(key, task);
+      try { return await task; }
+      finally { if (key && extraClosingRequests.get(key) === task) extraClosingRequests.delete(key); }
+    }
+
     function extraVesselIdentity(value) {
       const text = String(value || "").toUpperCase().replace(/\s+/g," ").trim();
       const m = text.match(/^(.*?)\s+(?:VOY(?:AGE)?\.?|VIAGGIO|V\.)\s*:?\s*(.+)$/i);
@@ -11749,7 +11791,7 @@ button.doganaModuleSvgToggleBtn:active,
       const voyageOf = ship => ship.viaggio || ship.voyage || ship.depVoy || ship.arrVoy || ship.voy || ship.codiceViaggio || extraVesselIdentity(getShipRowName(ship)).voyage;
       const exact = info.voyage ? candidates.filter(ship => extraVesselKey(voyageOf(ship)) === extraVesselKey(info.voyage)) : [];
       // Non abbina un viaggio diverso; senza viaggio noto accetta solo una chiusura univoca.
-      const usable = info.voyage ? (exact.length ? exact : candidates.filter(ship => !voyageOf(ship))) : candidates;
+      const usable = info.voyage ? exact : candidates;
       const closingOf = ship => {
         if (/FORECAST/i.test(String(ship.fonteSct || ship.section || ""))) return "";
         return ship.chiusura || ship.customCloseTime || ship.tdtcd1 || ship.closing || "";
@@ -11823,6 +11865,14 @@ button.doganaModuleSvgToggleBtn:active,
         renderDoganaMessage(td,"Ricerca nave…","pending");
         try {
           let cached = extraVesselCache.get(key);
+          const reportKey = "report:" + JSON.stringify([key, row.sctPdfUrl || "", tracking?.DataStimataImbarco || tracking?.estimatedBoarding || ""]);
+          if (!force && !cached) {
+            const saved = readExtraVesselPersistent(reportKey);
+            if (saved && saved.name) {
+              cached = {promise:Promise.resolve(saved), until:Date.now()+10*60*1000};
+              extraVesselCache.set(key, cached);
+            }
+          }
           if (force || !cached || cached.until <= Date.now()) {
             const task = (async () => {
               if (term !== "sct") {
@@ -11838,7 +11888,9 @@ button.doganaModuleSvgToggleBtn:active,
             })();
             cached = {promise:task, until:Date.now()+10*60*1000};
             extraVesselCache.set(key,cached);
-            task.catch(() => { if (extraVesselCache.get(key)===cached) cached.until=Date.now()+60000; });
+            task.then(info => {
+              if (info.name) writeExtraVesselPersistent(reportKey, info, 8*60*60*1000);
+            }, () => { if (extraVesselCache.get(key)===cached) cached.until=Date.now()+60000; });
           }
           const info = await cached.promise;
           td.textContent="";
@@ -11853,12 +11905,11 @@ button.doganaModuleSvgToggleBtn:active,
             td.appendChild(title);
             const close = document.createElement("div"); renderDoganaMessage(close,"Verifica chiusura…","pending"); td.appendChild(close);
             try {
-              const dataset = await loadShipSearchDataset();
-              const match = extraMatchVessel(info, dataset.ships, cfg.label);
+              const match = await loadExtraVesselClosing(info, cfg.label, force);
               close.textContent="";
               if (match.closing) close.appendChild(extraVesselDateLine("closing",match.closing,"Chiusura doganale stimata"));
               else renderDoganaMessage(close,match.message,"warning");
-              if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) renderDoganaError(close,dataset.errors.filter(e=>e.startsWith(cfg.label+":")).join("; "),"Dati NAVI non disponibili");
+              if (match.errors.length) renderDoganaError(close,match.errors.join("; "),"Dati NAVI non disponibili");
               if (match.closing) close.style.fontWeight="700";
             } catch(error) { renderDoganaError(close,error,"Dati NAVI non disponibili"); }
             if (info.estimatedBoarding) td.appendChild(extraVesselDateLine("boarding",info.estimatedBoarding,"Data stimata imbarco"));
@@ -13788,7 +13839,7 @@ function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, 
       new Notification(title, {
         body,
         tag: `container-entered-${key}-${code}`,
-        requireInteraction: false
+        requireInteraction: true
       });
     }
   } catch {}
@@ -15754,6 +15805,39 @@ async function requestExtraDesktopNotificationPermission(){
   }
 }
 
+// Il permesso viene richiesto da un gesto utente, anche per gli avvisi in background.
+function installExtraDesktopNotificationButton(){
+  const sound = document.getElementById("extraSoundNotifyBtn");
+  if (!sound || document.getElementById("extraDesktopNotifyBtn")) return;
+  const button = document.createElement("button");
+  button.id = "extraDesktopNotifyBtn";
+  button.type = "button";
+  button.className = "soundNotifyBtn";
+  const refresh = () => {
+    const supported = "Notification" in window && window.isSecureContext;
+    const permission = supported ? Notification.permission : "unsupported";
+    button.textContent = permission === "granted" ? "🔔 Notifiche Windows ON" : "🔔 Notifiche Windows OFF";
+    button.setAttribute("aria-pressed", String(permission === "granted"));
+    button.title = permission === "granted"
+      ? "Avvisi di entrata anche con il browser in secondo piano. Mantieni questa pagina aperta."
+      : "Abilita gli avvisi di entrata sul desktop";
+    button.disabled = !supported;
+    if (!supported) button.title = "Le notifiche desktop richiedono HTTPS o localhost e un browser compatibile.";
+  };
+  button.addEventListener("click", async () => {
+    const allowed = await requestExtraDesktopNotificationPermission();
+    refresh();
+    if (allowed) {
+      try { new Notification("DoganaTools", {body:"Notifiche di entrata abilitate anche con il browser in secondo piano.", tag:"doganatools-notification-test"}); } catch {}
+    } else {
+      showExtraToast("Notifiche Windows", "Consenti le notifiche nelle impostazioni del sito del browser e verifica che Windows consenta le notifiche del browser.", "info");
+    }
+  });
+  sound.insertAdjacentElement("afterend", button);
+  window.addEventListener("focus", refresh);
+  refresh();
+}
+
 function notifyExtraDesktop(container, terminal){
   const title = "Container entrato";
   const body = `${container} - PDF generato (${terminal || "Utility Doganalista"})`;
@@ -15765,7 +15849,7 @@ function notifyExtraDesktop(container, terminal){
       new Notification(title, {
         body,
         tag: `container-${container}`,
-        requireInteraction: false
+        requireInteraction: true
       });
     } catch {}
   }
@@ -15924,7 +16008,7 @@ function installExtraTabClearOnClick(){
 }
 
 (function initExtraNotifications(){
-  requestExtraDesktopNotificationPermission();
+  installExtraDesktopNotificationButton();
   patchFetchPdfForExtraNotifications();
   installExtraTabClearOnClick();
 
@@ -31219,7 +31303,7 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
 :is(#doganaErrorUI,body) button.extraErrorBadge{width:fit-content !important;max-width:100% !important;margin:0 !important;}
 #extraPanel #extraTable button.extraErrorBadge{width:100% !important;margin:0 auto !important;}
 #doganaErrorNotifications{position:fixed;right:16px;bottom:16px;z-index:99990;display:grid;gap:8px;max-width:calc(100vw - 32px);}
-.doganaErrorNotification{padding:12px;border:1px solid var(--grid,#e2e8f0);border-radius:14px;background:var(--surface,#fff);box-shadow:0 8px 28px #0f172a22;}
+.doganaErrorNotification{padding:0;border:0;background:transparent;box-shadow:none;}
 </style>
 <script id="dogana-common-errors">
 (function(){
