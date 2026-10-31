@@ -11588,6 +11588,22 @@ button.doganaModuleSvgToggleBtn:active,
       return {label:label || detail,detail,isError:!!label};
     }
     window.doganaCompactContainerError=extraCompactError;
+    function renderDoganaError(target, error, fallback="Errore"){
+      if(!target)return;
+      const detail=String(error?.message || error || fallback).trim();
+      const info=extraCompactError(detail);
+      target.textContent="";target.removeAttribute("title");target.removeAttribute("aria-label");
+      const badge=document.createElement("button");badge.type="button";badge.className="extraErrorBadge";
+      badge.dataset.errorDetail=detail;
+      const label=info.isError?info.label:(detail.length<=45?detail:fallback);
+      badge.setAttribute("aria-label",`${label}. Mostra dettagli errore`);
+      const icon=document.createElement("span");icon.className="extraErrorBadgeIcon";icon.setAttribute("aria-hidden","true");
+      icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v1"/></svg>';
+      const text=document.createElement("span");text.textContent=label;badge.append(icon,text);target.appendChild(badge);
+      return badge;
+    }
+    window.doganaRenderError=renderDoganaError;
+
 
     function renderExtraStatusCell(td, row, cfg, containerValue){
       td.className = cfg.statusClass;
@@ -11757,11 +11773,12 @@ button.doganaModuleSvgToggleBtn:active,
       const cfg = EXTRA_TERMINALS[term];
       const container = extraVesselKey(row[cfg.containerField]);
       if (!/^[A-Z]{4}\d{7}$/.test(container)) { td.textContent="—"; return; }
-      const entered = !!row.sctPdfUrl && row.sctStatus === "PDF PRONTO";
+      const status = String(row[cfg.statusField] || "");
+      const sessionUnavailable=term === "sct" && /sessione.*(?:JMT|scadut|disconness)|JMT_RECONNECT_COOLDOWN/i.test(status);
+      const entered = (!!row.sctPdfUrl && row.sctStatus === "PDF PRONTO") || sessionUnavailable;
       const tracking = term === "conateco" ? row.conatecoTracking : row.flavioTracking;
       const rawName = tracking?.NomeNave || tracking?.nave || tracking?.vessel || tracking?.vesselName || "";
       const key = `${term}:${container}:${term === 'sct' ? entered : rawName+':'+(tracking?.IdViaggio || tracking?.voyage || '')}`;
-      const status = String(row[cfg.statusField] || "");
       if (term === "sct" && !entered && !/NON TROVATO|NON ENTRATO|PDF non trovato/i.test(status)) {
         td.textContent = /Controllo/i.test(status) ? "In attesa del controllo ingresso…" : "Controllare prima l’ingresso";
         return;
@@ -11778,7 +11795,7 @@ button.doganaModuleSvgToggleBtn:active,
                 info.voyage = tracking?.IdViaggio || tracking?.voyage || info.voyage;
                 return {...info, estimatedBoarding:tracking?.DataStimataImbarco || tracking?.dataStimataImbarco || tracking?.estimatedBoarding || "", source:`Tracking ${cfg.label}`};
               }
-              const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
+              const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${sessionUnavailable ? '&cacheOnly=1' : ''}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
               const payload = await res.json();
               if (!res.ok || !payload.success) throw new Error(payload.error || "Report nave non disponibile");
               return {...await extraReadVesselPdf(payload.pdfBase64, container), source:payload.source, pdfUrl:payload.pdfUrl, fetchedAt:payload.fetchedAt};
@@ -11805,14 +11822,13 @@ button.doganaModuleSvgToggleBtn:active,
               close.textContent="";
               if (match.closing) close.appendChild(extraVesselDateLine("closing",match.closing,"Chiusura doganale stimata"));
               else close.textContent=match.message;
-              if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) close.textContent="Dati NAVI del terminal non disponibili";
+              if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) renderDoganaError(close,dataset.errors.filter(e=>e.startsWith(cfg.label+":")).join("; "),"Dati NAVI non disponibili");
               if (match.closing) close.style.fontWeight="700";
-            } catch { close.textContent="Dati NAVI non disponibili"; }
+            } catch(error) { renderDoganaError(close,error,"Dati NAVI non disponibili"); }
             if (info.estimatedBoarding) td.appendChild(extraVesselDateLine("boarding",info.estimatedBoarding,"Data stimata imbarco"));
           } else td.appendChild(document.createTextNode(info.message));
         } catch (err) {
-          const errorInfo=extraCompactError(err.message || "Recupero nave non riuscito");
-          td.textContent=errorInfo.label;td.title=errorInfo.detail;td.setAttribute("aria-label",errorInfo.detail);
+          renderDoganaError(td,err,"Recupero nave non riuscito");
         }
       };
       // I timer iniziali lasciano completare l'inizializzazione dei dati NAVI.
@@ -12235,6 +12251,7 @@ button.doganaModuleSvgToggleBtn:active,
       bookingLookupStatus.textContent = message || "";
       bookingLookupStatus.classList.remove("ok", "error");
       if (type) bookingLookupStatus.classList.add(type);
+      if(type === "error") renderDoganaError(bookingLookupStatus,message);
     }
 
     function clearBookingLookupResult(){
@@ -12943,9 +12960,7 @@ function showJmtDisconnectedMessage(container = "", details = {}) {
     document.querySelector(".extraAutoStatus");
 
   if (statusEl) {
-    statusEl.textContent = "Sessione JMT disconnessa";
-    statusEl.title = details?.error || msg;
-    statusEl.setAttribute("aria-label",details?.error || msg);
+    renderDoganaError(statusEl,details?.error || msg);
     statusEl.style.color = "var(--danger)";
     statusEl.style.fontWeight = "900";
   }
@@ -13597,17 +13612,7 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const errorInfo = extraCompactError(status);
   cell.textContent = errorInfo.label || "-";
   if (errorInfo.isError) {
-    cell.textContent="";
-    cell.removeAttribute("title");
-    cell.removeAttribute("aria-label");
-    const badge=document.createElement("button");badge.type="button";
-    badge.className="extraErrorBadge";
-    badge.dataset.errorDetail=errorInfo.detail;
-    badge.setAttribute("aria-label",`${errorInfo.label}. Mostra dettagli errore`);
-    const icon=document.createElement("span");icon.className="extraErrorBadgeIcon";icon.setAttribute("aria-hidden","true");
-    icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v1"/></svg>';
-    const label=document.createElement("span");label.textContent=errorInfo.label;
-    badge.append(icon,label);cell.appendChild(badge);
+    renderDoganaError(cell,errorInfo.detail);
   } else {
     cell.removeAttribute("title");
     cell.removeAttribute("aria-label");
@@ -15657,7 +15662,8 @@ function showExtraToast(title, message, type = "success"){
   const stack = ensureExtraToastStack();
   const toast = document.createElement("div");
   toast.className = `extraToast ${type}`;
-  toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span>`;
+  if(type === "error") renderDoganaError(toast,[title,message].filter(Boolean).join(": "));
+  else toast.innerHTML = `<strong>${escapeHtml(title)}</strong><span>${escapeHtml(message)}</span>`;
   stack.appendChild(toast);
 
   setTimeout(() => {
@@ -31046,7 +31052,7 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
         if(status){status.textContent='Sessione JMT ricollegata.';status.removeAttribute('title');status.removeAttribute('aria-label');status.style.removeProperty('color');status.style.removeProperty('font-weight');}
       }catch(error){
         button.hidden=false;button.title=error.message;
-        const status=document.getElementById('extraAutoStatus');if(status){status.textContent=window.doganaCompactContainerError?.(error.message).label || 'Errore ricollegamento JMT';status.title=error.message;}
+        const status=document.getElementById('extraAutoStatus');if(status)window.doganaRenderError(status,error,'Errore ricollegamento JMT');
       }finally{busy=false;button.disabled=false;button.textContent='Ricollega JMT ora';}
     });
     toolbar.appendChild(button);return button;
@@ -31065,7 +31071,7 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
 </script>
 
 <style id="extra-modern-error-style">
-#extraPanel #extraTable button.extraErrorBadge{
+:is(#doganaErrorUI,body) button.extraErrorBadge{
  display:inline-flex !important;align-items:center;justify-content:center;gap:6px;
  max-width:100%;min-height:34px;padding:7px 9px !important;border-radius:10px !important;
  border:1px solid #fecaca !important;background:linear-gradient(180deg,#fff7f7,#feecec) !important;
@@ -31073,8 +31079,8 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
  text-align:left;white-space:normal;box-shadow:0 2px 5px rgba(185,28,28,.06) !important;
  cursor:help;transform:none !important;transition:border-color .15s,box-shadow .15s !important;
 }
-#extraPanel #extraTable button.extraErrorBadge:hover,
-#extraPanel #extraTable button.extraErrorBadge:focus-visible{
+:is(#doganaErrorUI,body) button.extraErrorBadge:hover,
+:is(#doganaErrorUI,body) button.extraErrorBadge:focus-visible{
  border-color:#f87171 !important;box-shadow:0 0 0 3px rgba(239,68,68,.10) !important;outline:none;
 }
 .extraErrorBadgeIcon{display:inline-flex;flex:0 0 16px;width:16px;height:16px;}
@@ -31087,10 +31093,10 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
 }
 #extraModernErrorTooltip[hidden]{display:none !important;}
 #extraModernErrorTooltip strong{display:block;color:#fca5a5;font-size:11px;letter-spacing:.04em;margin-bottom:5px;}
-body[data-theme="dark"] #extraPanel #extraTable button.extraErrorBadge{
+:is(#doganaErrorUI,body)[data-theme="dark"] button.extraErrorBadge{
  background:#331f29 !important;border-color:#7f3641 !important;color:#fca5a5 !important;
 }
-@media(max-width:768px){#extraPanel #extraTable button.extraErrorBadge{font-size:12px !important;min-height:38px;}}
+@media(max-width:768px){:is(#doganaErrorUI,body) button.extraErrorBadge{font-size:12px !important;min-height:38px;}}
 </style>
 <script id="extra-modern-error-tooltip">
 (function(){
@@ -31122,7 +31128,7 @@ body[data-theme="dark"] #extraPanel #extraTable button.extraErrorBadge{
 })();
 </script>
 <style id="extra-error-badge-fit">
-#extraPanel #extraTable button.extraErrorBadge{
+:is(#doganaErrorUI,body) button.extraErrorBadge{
  box-sizing:border-box !important;
  display:flex !important;
  width:100% !important;
@@ -31135,12 +31141,50 @@ body[data-theme="dark"] #extraPanel #extraTable button.extraErrorBadge{
  letter-spacing:.02em !important;
  overflow-wrap:anywhere;
 }
-#extraPanel #extraTable button.extraErrorBadge > span:last-child{
+:is(#doganaErrorUI,body) button.extraErrorBadge > span:last-child{
  min-width:0;flex:0 1 auto;white-space:normal;overflow-wrap:anywhere;
 }
-#extraPanel #extraTable button.extraErrorBadge .extraErrorBadgeIcon{
+:is(#doganaErrorUI,body) button.extraErrorBadge .extraErrorBadgeIcon{
  flex:0 0 14px;width:14px;height:14px;
 }
 </style>
+<style id="dogana-common-error-notifications">
+:is(#doganaErrorUI,body) button.extraErrorBadge{width:fit-content !important;max-width:100% !important;margin:0 !important;}
+#extraPanel #extraTable button.extraErrorBadge{width:100% !important;margin:0 auto !important;}
+#doganaErrorNotifications{position:fixed;right:16px;bottom:16px;z-index:99990;display:grid;gap:8px;max-width:calc(100vw - 32px);}
+.doganaErrorNotification{padding:12px;border:1px solid var(--grid,#e2e8f0);border-radius:14px;background:var(--surface,#fff);box-shadow:0 8px 28px #0f172a22;}
+</style>
+<script id="dogana-common-errors">
+(function(){
+ window.doganaShowError=function(error){
+  let stack=document.getElementById('doganaErrorNotifications');
+  if(!stack){stack=document.createElement('div');stack.id='doganaErrorNotifications';stack.setAttribute('aria-live','polite');document.body.appendChild(stack);}
+  const item=document.createElement('div');item.className='doganaErrorNotification';window.doganaRenderError(item,error);stack.appendChild(item);
+  setTimeout(()=>{if(item.matches(':hover')||item.contains(document.activeElement)){item.addEventListener('pointerleave',()=>item.remove(),{once:true});item.addEventListener('focusout',()=>item.remove(),{once:true});}else item.remove();},12000);
+ };
+ const originalAlert=window.alert.bind(window);
+ window.alert=function(message){
+  const text=String(message||'');
+  if(/errore|error|non riuscit|impossibile|non disponibile|non consentit|fallit|sessione.*(?:scadut|disconness)/i.test(text))window.doganaShowError(text);
+  else originalAlert(message);
+ };
+ // Uniforma anche i pannelli di errore testuali dei moduli esistenti.
+ // I messaggi complessi con campi o azioni restano sotto il controllo del modulo.
+ const selector='.is-error, .error, [role="alert"]';
+ function upgrade(root){
+  const targets=[];if(root.matches?.(selector))targets.push(root);if(root.querySelectorAll)targets.push(...root.querySelectorAll(selector));
+  for(const target of targets){
+   if(target.matches('button,input,select,textarea,svg')||target.closest('#extraModernErrorTooltip')||target.querySelector('.extraErrorBadge,button,input,select,textarea,a')||target.children.length)continue;
+   const text=target.textContent.trim();if(text)window.doganaRenderError(target,text);
+  }
+ }
+ let pending=false;
+ new MutationObserver(records=>{
+  if(pending)return;pending=true;
+  queueMicrotask(()=>{pending=false;for(const record of records){upgrade(record.target);for(const node of record.addedNodes||[])if(node.nodeType===1)upgrade(node);}});
+ }).observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['class','role']});
+ upgrade(document.body);
+})();
+</script>
 </body>
 </html>
