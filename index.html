@@ -13822,8 +13822,8 @@ function getExtraEnteredNotificationContent(container, terminal, row = null){
   const client=String(cfg ? liveRow?.[cfg.clientField] || "" : "").trim();
   const terminalLabel=cfg?.label || String(terminal || "Terminal non indicato").toUpperCase();
   return {
-    title:`Contenitore ${code} entrato`,
-    body:`Cliente: ${client || "Non indicato"}\nTerminal: ${terminalLabel}`
+    title:"Contenitore Entrato",
+    body:`Cliente: ${client || "Non indicato"}\nContenitore: ${code}\nTerminal: ${terminalLabel}`
   };
 }
 
