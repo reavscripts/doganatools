@@ -7198,6 +7198,17 @@ body[data-theme="dark"] #extraTable .extraVesselDate--boarding .extraVesselIcon{
  #extraPanel #extraTable td:nth-child(4){overflow-wrap:anywhere;}
 }
 </style>
+<style id="extra-stable-pdf-links">
+/* I link restano fermi: nessun cambio dell'area cliccabile al passaggio del mouse. */
+#extraPanel #extraTbody td a[href],
+#extraPanel #extraTbody td a[href]:hover,
+#extraPanel #extraTbody td a[href]:active,
+#extraPanel #extraTbody td a[href]:focus{
+ transform:none !important;
+ animation:none !important;
+ transition:background-color .16s ease,border-color .16s ease,color .16s ease !important;
+}
+</style>
 </head>
 <body class="dogana-auth-locked">
 
@@ -11090,10 +11101,12 @@ button.doganaModuleSvgToggleBtn:active,
         const state = payload?.state;
         if (!res.ok || !state) return false;
 
+        const previousRows = JSON.stringify(extraRows);
         if (Array.isArray(state.extraRows)) {
           extraRows = mergeRemoteExtraRows(state.extraRows);
           extraLastRemoteState = state;
         }
+        const rowsChanged = previousRows !== JSON.stringify(extraRows);
 
         // Non applicare state.activeExtraTerminal dal backend.
         // Il tab attivo è locale: applicarlo qui causava il ritorno automatico su SCT
@@ -11125,7 +11138,13 @@ button.doganaModuleSvgToggleBtn:active,
           setExtraAutoCheck(extraAutoCheckEnabled, { skipSave: true, skipRender: true });
         }
 
-        if (forceRender) renderExtra();
+        // Una lettura identica non deve distruggere e ricreare i link PDF.
+        if (forceRender && (rowsChanged || !extraTbody?.children.length)) renderExtra();
+        else {
+          updateExtraTabs();
+          updateAutoCheckUI();
+          updateExtraCheckInfo();
+        }
         return true;
       } catch (err) {
         console.warn("Lettura stato condiviso non riuscita", err);
@@ -11779,8 +11798,18 @@ button.doganaModuleSvgToggleBtn:active,
       setTimeout(() => { if (td.isConnected) paint(); }, 0);
     }
 
+    let extraPdfInteractionRenderTimer = null;
     function renderExtra(){
       if(!extraTbody || !extraThead) return;
+      // Mantiene lo stesso nodo fra pointerdown e click, anche se arriva un SSE
+      // o termina il controllo di un'altra riga. Applica poi lo stato più recente.
+      if (extraTbody.querySelector('a[href]:hover, a[href]:active')) {
+        clearTimeout(extraPdfInteractionRenderTimer);
+        extraPdfInteractionRenderTimer = setTimeout(renderExtra, 150);
+        return;
+      }
+      clearTimeout(extraPdfInteractionRenderTimer);
+      extraPdfInteractionRenderTimer = null;
       const cfg = EXTRA_TERMINALS[activeExtraTerminal] || EXTRA_TERMINALS.sct;
       extraThead.innerHTML = `
         <tr>
