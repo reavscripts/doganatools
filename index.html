@@ -11577,6 +11577,18 @@ button.doganaModuleSvgToggleBtn:active,
       td.appendChild(small);
     }
 
+    function extraCompactError(value){
+      const detail=String(value || "").trim();
+      let label="";
+      if (/sessione.*(?:JMT|scadut|disconness)|JMT.*(?:disconness|scadut)|SESSIONE JMT|JMT_RECONNECT_COOLDOWN|fatal error.*backend|-999/i.test(detail)) label="Sessione JMT disconnessa";
+      else if (/NO PERMESSI|permission|permess/i.test(detail)) label="Accesso non autorizzato";
+      else if (/timeout|timed out|tempo.*scadut/i.test(detail)) label="Tempo di attesa scaduto";
+      else if (/backend.*(?:non raggiungibile|scollegato)|failed to fetch|network error/i.test(detail)) label="Backend non raggiungibile";
+      else if (/errore|error|non riuscit|non valida/i.test(detail) && detail.length>45) label="Errore di ricerca";
+      return {label:label || detail,detail,isError:!!label};
+    }
+    window.doganaCompactContainerError=extraCompactError;
+
     function renderExtraStatusCell(td, row, cfg, containerValue){
       td.className = cfg.statusClass;
       const status = row?.[cfg.statusField] || "-";
@@ -11663,7 +11675,9 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
-      td.textContent = status;
+      const errorInfo=extraCompactError(status);
+      td.textContent = errorInfo.label;
+      if(errorInfo.isError){td.title=errorInfo.detail;td.setAttribute("aria-label",errorInfo.detail);}
       colorStatus(td, status, containerValue, activeExtraTerminal);
       appendExtraLastCheckTime(td, row, activeExtraTerminal, status);
       if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
@@ -11799,7 +11813,10 @@ button.doganaModuleSvgToggleBtn:active,
             } catch { close.textContent="Dati NAVI non disponibili"; }
             if (info.estimatedBoarding) td.appendChild(extraVesselDateLine("boarding",info.estimatedBoarding,"Data stimata imbarco"));
           } else td.appendChild(document.createTextNode(info.message));
-        } catch (err) { td.textContent=err.message || "Recupero nave non riuscito"; }
+        } catch (err) {
+          const errorInfo=extraCompactError(err.message || "Recupero nave non riuscito");
+          td.textContent=errorInfo.label;td.title=errorInfo.detail;td.setAttribute("aria-label",errorInfo.detail);
+        }
       };
       // I timer iniziali lasciano completare l'inizializzazione dei dati NAVI.
       setTimeout(() => { if (td.isConnected) paint(); }, 0);
@@ -12921,7 +12938,7 @@ function showJmtDisconnectedMessage(container = "", details = {}) {
   if (scheduledText) msg += ` Orario previsto: ${scheduledText}.`;
 
   if (typeof showExtraToast === "function") {
-    showExtraToast("JMT disconnesso", msg, "error");
+    showExtraToast("Sessione JMT disconnessa");
   }
 
   const statusEl =
@@ -12929,13 +12946,14 @@ function showJmtDisconnectedMessage(container = "", details = {}) {
     document.querySelector(".extraAutoStatus");
 
   if (statusEl) {
-    statusEl.textContent = msg;
+    statusEl.textContent = "Sessione JMT disconnessa";
+    statusEl.title = details?.error || msg;
+    statusEl.setAttribute("aria-label",details?.error || msg);
     statusEl.style.color = "var(--danger)";
     statusEl.style.fontWeight = "900";
   }
 
   window.doganaUpdateJmtOverride?.({reconnectBlocked:true, logged:false});
-  alert(msg);
 }
 
 async function checkContainerSCT(container) {
@@ -31009,10 +31027,10 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
         if(!response.ok||!data.success)throw new Error(data.error||data.message||'Ricollegamento JMT non riuscito');
         button.hidden=true;
         const status=document.getElementById('extraAutoStatus');
-        if(status){status.textContent='Sessione JMT ricollegata.';status.style.removeProperty('color');status.style.removeProperty('font-weight');}
+        if(status){status.textContent='Sessione JMT ricollegata.';status.removeAttribute('title');status.removeAttribute('aria-label');status.style.removeProperty('color');status.style.removeProperty('font-weight');}
       }catch(error){
         button.hidden=false;button.title=error.message;
-        const status=document.getElementById('extraAutoStatus');if(status)status.textContent=error.message;
+        const status=document.getElementById('extraAutoStatus');if(status){status.textContent=window.doganaCompactContainerError?.(error.message).label || 'Errore ricollegamento JMT';status.title=error.message;}
       }finally{busy=false;button.disabled=false;button.textContent='Ricollega JMT ora';}
     });
     toolbar.appendChild(button);return button;
