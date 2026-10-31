@@ -7163,13 +7163,22 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 </style>
 
 <style>
-#extraTable th:nth-child(5), #extraTable td:nth-child(5){width:250px !important;white-space:normal;}
+#extraTable th:nth-child(5), #extraTable td:nth-child(5){width:196px !important;white-space:normal;}
 #extraTable th:nth-child(6), #extraTable td:nth-child(6){width:90px !important;}
 #extraTable .extraVesselCell{padding:10px;line-height:1.5;overflow-wrap:anywhere;}
 #extraTable .extraVesselCell strong,#extraTable .extraVesselCell small,#extraTable .extraVesselCell a{display:block;}
 #extraTable .extraVesselCell small{color:var(--muted);}
-#extraTable .extraVesselRefresh{margin-top:5px;font-size:11px;min-height:26px;padding:3px 7px;}
-@media(max-width:760px){#extraTable td.extraVesselCell{width:auto !important;}}
+#extraTable .extraVesselName{line-height:1.35;margin-bottom:3px;font-size:12px;}
+#extraTable .extraVesselVoyage{display:inline-block;margin-left:5px;font-size:10px;color:var(--muted);font-weight:600;}
+#extraTable .extraVesselDate{display:flex;align-items:center;gap:5px;font-size:11px;line-height:1.6;font-weight:600;}
+#extraTable .extraVesselDate > span:last-child{min-width:0;overflow-wrap:anywhere;}
+#extraTable .extraVesselIcon{display:inline-flex;flex:0 0 15px;width:15px;height:15px;color:var(--muted);}
+#extraTable .extraVesselIcon svg{width:100%;height:100%;}
+@media(max-width:900px){
+ #extraPanel #extraTable td.extraVesselCell{width:auto !important;min-width:0;max-width:100%;}
+ #extraTable .extraVesselName{font-size:13px;}
+ #extraTable .extraVesselDate{font-size:12px;}
+}
 </style>
 </head>
 <body class="dogana-auth-locked">
@@ -11670,7 +11679,22 @@ button.doganaModuleSvgToggleBtn:active,
       if (index < 0) throw new Error("Nome nave non presente nel report");
       const name = lines[index].replace(/^\s*(?:Nave|Vessel)(?:\s+di\s+imbarco)?\s*:\s*/i, "").trim() || String(lines[index+1] || "").trim();
       if (!name || /^(?:Spedizioniere|Attivit|Merce|Imex|Non disponibile)/i.test(name)) throw new Error("Nome nave non presente nel report");
-      return extraVesselIdentity(name);
+      const boardingLine = lines.find(line => /^\s*Data\s+Stimata\s+Imbarco\s*:/i.test(line));
+      const estimatedBoarding = boardingLine
+        ? (boardingLine.match(/\b\d{1,2}\/\d{1,2}\/\d{4}(?:\s+\d{1,2}:\d{2})?\b/) || [""])[0] : "";
+      return {...extraVesselIdentity(name), estimatedBoarding};
+    }
+    function extraVesselDateLine(icon, value, label) {
+      const line = document.createElement("div"); line.className="extraVesselDate";
+      line.title=label; line.setAttribute("aria-label", `${label}: ${value}`);
+      const symbol = document.createElement("span"); symbol.className="extraVesselIcon";
+      symbol.setAttribute("aria-hidden", "true");
+      const paths = icon === "closing"
+        ? '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-12 5 2 2 4-4"/>'
+        : '<path d="M5 12V5h10v7M9 5V2m-6 11 9 3 9-3-3 7H6l-3-7ZM16 3h6m-3-3 3 3-3 3"/>';
+      symbol.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+      const date=document.createElement("span"); date.textContent=value;
+      line.append(symbol,date); return line;
     }
     function renderExtraVesselCell(td, row, term) {
       td.className = "extraMobileField extraVesselCell";
@@ -11697,7 +11721,7 @@ button.doganaModuleSvgToggleBtn:active,
                 if (!rawName) return {name:"", message:"Nave non disponibile nel tracking"};
                 const info = extraVesselIdentity(rawName);
                 info.voyage = tracking?.IdViaggio || tracking?.voyage || info.voyage;
-                return {...info, source:`Tracking ${cfg.label}`};
+                return {...info, estimatedBoarding:tracking?.DataStimataImbarco || tracking?.dataStimataImbarco || tracking?.estimatedBoarding || "", source:`Tracking ${cfg.label}`};
               }
               const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
               const payload = await res.json();
@@ -11712,15 +11736,24 @@ button.doganaModuleSvgToggleBtn:active,
           td.textContent="";
           if (info.name) {
             const title = document.createElement("strong");
-            title.textContent=info.name; td.appendChild(title);
+            title.className="extraVesselName"; title.textContent=info.name;
+            if (info.voyage) {
+              const voyage=document.createElement("span"); voyage.className="extraVesselVoyage";
+              voyage.textContent=info.voyage; voyage.title=`Viaggio ${info.voyage}`;
+              voyage.setAttribute("aria-label",`Viaggio ${info.voyage}`); title.appendChild(voyage);
+            }
+            td.appendChild(title);
             const close = document.createElement("div"); close.textContent="Verifica chiusura…"; td.appendChild(close);
             try {
               const dataset = await loadShipSearchDataset();
               const match = extraMatchVessel(info, dataset.ships, cfg.label);
-              close.textContent = match.closing ? `Chiusura stimata: ${match.closing}` : match.message;
+              close.textContent="";
+              if (match.closing) close.appendChild(extraVesselDateLine("closing",match.closing,"Chiusura doganale stimata"));
+              else close.textContent=match.message;
               if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) close.textContent="Dati NAVI del terminal non disponibili";
               if (match.closing) close.style.fontWeight="700";
             } catch { close.textContent="Dati NAVI non disponibili"; }
+            if (info.estimatedBoarding) td.appendChild(extraVesselDateLine("boarding",info.estimatedBoarding,"Data stimata imbarco"));
           } else td.appendChild(document.createTextNode(info.message));
         } catch (err) { td.textContent=err.message || "Recupero nave non riuscito"; }
       };
