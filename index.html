@@ -7182,6 +7182,22 @@ body[data-theme="dark"] #extraTable .extraVesselDate--boarding .extraVesselIcon{
  #extraTable .extraVesselDate{font-size:13px;}
 }
 </style>
+<style id="extra-content-column-widths">
+/* Solo desktop: Cliente assorbe tutto lo spazio residuo della tabella. */
+@media (min-width:769px){
+ #extraPanel #extraTable{width:100% !important;min-width:760px !important;table-layout:fixed !important;}
+ #extraPanel #extraTable th:nth-child(1),#extraPanel #extraTable td:nth-child(1){width:60px !important;}
+ #extraPanel #extraTable th:nth-child(2),#extraPanel #extraTable td:nth-child(2){width:auto !important;min-width:0 !important;}
+ #extraPanel #extraTable th:nth-child(3),#extraPanel #extraTable td:nth-child(3){width:144px !important;}
+ #extraPanel #extraTable th:nth-child(4),#extraPanel #extraTable td:nth-child(4){width:140px !important;}
+ #extraPanel #extraTable th:nth-child(5),#extraPanel #extraTable td:nth-child(5){width:190px !important;}
+ #extraPanel #extraTable th:nth-child(6),#extraPanel #extraTable td:nth-child(6){width:96px !important;}
+ #extraPanel #extraTable input[data-extra-field="sct"],
+ #extraPanel #extraTable input[data-extra-field="conateco"],
+ #extraPanel #extraTable input[data-extra-field="flavio"]{padding-left:8px;padding-right:8px;}
+ #extraPanel #extraTable td:nth-child(4){overflow-wrap:anywhere;}
+}
+</style>
 </head>
 <body class="dogana-auth-locked">
 
@@ -11700,7 +11716,7 @@ button.doganaModuleSvgToggleBtn:active,
     }
     function renderExtraVesselCell(td, row, term) {
       td.className = "extraMobileField extraVesselCell";
-      td.dataset.extraLabel = "Nave / chiusura doganale";
+      td.dataset.extraLabel = "Nave";
       const cfg = EXTRA_TERMINALS[term];
       const container = extraVesselKey(row[cfg.containerField]);
       if (!/^[A-Z]{4}\d{7}$/.test(container)) { td.textContent="—"; return; }
@@ -11772,7 +11788,7 @@ button.doganaModuleSvgToggleBtn:active,
           <th>Cliente</th>
           <th>${cfg.title}</th>
           <th>Stato</th>
-          <th>Nave / chiusura doganale</th>
+          <th>NAVE</th>
           <th class="actions">Azioni</th>
         </tr>`;
       extraTbody.innerHTML = "";
