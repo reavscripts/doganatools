@@ -15805,37 +15805,14 @@ async function requestExtraDesktopNotificationPermission(){
   }
 }
 
-// Il permesso viene richiesto da un gesto utente, anche per gli avvisi in background.
-function installExtraDesktopNotificationButton(){
-  const sound = document.getElementById("extraSoundNotifyBtn");
-  if (!sound || document.getElementById("extraDesktopNotifyBtn")) return;
-  const button = document.createElement("button");
-  button.id = "extraDesktopNotifyBtn";
-  button.type = "button";
-  button.className = "soundNotifyBtn";
-  const refresh = () => {
-    const supported = "Notification" in window && window.isSecureContext;
-    const permission = supported ? Notification.permission : "unsupported";
-    button.textContent = permission === "granted" ? "🔔 Notifiche Windows ON" : "🔔 Notifiche Windows OFF";
-    button.setAttribute("aria-pressed", String(permission === "granted"));
-    button.title = permission === "granted"
-      ? "Avvisi di entrata anche con il browser in secondo piano. Mantieni questa pagina aperta."
-      : "Abilita gli avvisi di entrata sul desktop";
-    button.disabled = !supported;
-    if (!supported) button.title = "Le notifiche desktop richiedono HTTPS o localhost e un browser compatibile.";
+// Richiede il permesso dal primo gesto nel modulo, senza aggiungere pulsanti.
+function installExtraDesktopNotificationPermission(){
+  const request = event => {
+    if (!event.target.closest?.("#extraPanel")) return;
+    if (!("Notification" in window) || Notification.permission !== "default") return;
+    requestExtraDesktopNotificationPermission();
   };
-  button.addEventListener("click", async () => {
-    const allowed = await requestExtraDesktopNotificationPermission();
-    refresh();
-    if (allowed) {
-      try { new Notification("DoganaTools", {body:"Notifiche di entrata abilitate anche con il browser in secondo piano.", tag:"doganatools-notification-test"}); } catch {}
-    } else {
-      showExtraToast("Notifiche Windows", "Consenti le notifiche nelle impostazioni del sito del browser e verifica che Windows consenta le notifiche del browser.", "info");
-    }
-  });
-  sound.insertAdjacentElement("afterend", button);
-  window.addEventListener("focus", refresh);
-  refresh();
+  document.addEventListener("click", request, {capture:true});
 }
 
 function notifyExtraDesktop(container, terminal){
@@ -16008,7 +15985,7 @@ function installExtraTabClearOnClick(){
 }
 
 (function initExtraNotifications(){
-  installExtraDesktopNotificationButton();
+  installExtraDesktopNotificationPermission();
   patchFetchPdfForExtraNotifications();
   installExtraTabClearOnClick();
 
