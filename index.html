@@ -11675,9 +11675,6 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
-      const errorInfo=extraCompactError(status);
-      td.textContent = errorInfo.label;
-      if(errorInfo.isError){td.title=errorInfo.detail;td.setAttribute("aria-label",errorInfo.detail);}
       colorStatus(td, status, containerValue, activeExtraTerminal);
       appendExtraLastCheckTime(td, row, activeExtraTerminal, status);
       if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
@@ -13595,7 +13592,17 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
     return;
   }
 
-  cell.textContent = status || "-";
+  // Compatta nel punto finale di scrittura: i chiamanti possono passare
+  // lo stato completo senza che la colorazione ripristini il messaggio lungo.
+  const errorInfo = extraCompactError(status);
+  cell.textContent = errorInfo.label || "-";
+  if (errorInfo.isError) {
+    cell.title = errorInfo.detail;
+    cell.setAttribute("aria-label", errorInfo.detail);
+  } else {
+    cell.removeAttribute("title");
+    cell.removeAttribute("aria-label");
+  }
 
   if (value.includes("NON ENTRATO")) {
     cell.style.color = "#dc2626";
