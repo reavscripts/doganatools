@@ -13872,8 +13872,8 @@ function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, 
     }
   } catch {}
 
-  // Allinea anche il vecchio sistema anti-duplicati, così il MutationObserver
-  // non genera una seconda notifica quando renderExtra() ridisegna la riga.
+  // Il badge e la memoria di notifica seguono soltanto il vero ingresso.
+  try { incrementExtraTerminalNotify(key, code); } catch {}
   try { markExtraNotifyFired?.(key, code); } catch {}
   try { window.doganaMarkContainerNotified?.(key, code); } catch {}
 
@@ -15923,72 +15923,9 @@ function rowLooksPdfGenerated(row){
   );
 }
 
-function scanExtraRowsForEnteredContainers(){
-  const terminal = getActiveExtraTerminalKey();
-  const rows = Array.from(document.querySelectorAll("#extraTable tbody tr"));
-
-  rows.forEach(row => {
-    const container = getContainerFromExtraRow(row);
-    if (!container || !rowLooksPdfGenerated(row)) return;
-
-    const key = terminal === "tfg" ? "flavio" : terminal;
-    if (!EXTRA_NOTIFY_STATE[key]) EXTRA_NOTIFY_STATE[key] = new Set();
-
-    if (!EXTRA_NOTIFY_STATE[key].has(container)) {
-      incrementExtraTerminalNotify(key, container);
-      notifyExtraDesktop(container, key.toUpperCase());
-    }
-  });
-}
-
-function installExtraNotificationObserver(){
-  const tbody = document.querySelector("#extraTable tbody");
-  if (!tbody || tbody.dataset.extraNotifyObserver === "1") return;
-
-  tbody.dataset.extraNotifyObserver = "1";
-
-  const observer = new MutationObserver(() => {
-    clearTimeout(window.__extraNotifyTimer);
-    window.__extraNotifyTimer = setTimeout(scanExtraRowsForEnteredContainers, 250);
-  });
-
-  observer.observe(tbody, {
-    childList:true,
-    subtree:true,
-    characterData:true,
-    attributes:true
-  });
-}
-
-function patchFetchPdfForExtraNotifications(){
-  if (window.__extraPdfFetchPatched) return;
-  window.__extraPdfFetchPatched = true;
-
-  const originalFetch = window.fetch.bind(window);
-
-  window.fetch = async function(input, init){
-    const response = await originalFetch(input, init);
-
-    try {
-      const url = typeof input === "string" ? input : String(input?.url || "");
-      if (url.includes("/get-pdf")) {
-        const parsed = new URL(url, window.location.origin);
-        const container = String(parsed.searchParams.get("container") || "").toUpperCase();
-        const terminal = getActiveExtraTerminalKey();
-
-        response.clone().json().then(data => {
-          if (container && data && data.success && data.found && data.pdfUrl) {
-            incrementExtraTerminalNotify(terminal, container);
-            notifyExtraDesktop(container, terminal.toUpperCase());
-          }
-        }).catch(() => {});
-      }
-    } catch {}
-
-    return response;
-  };
-}
-
+// Le notifiche di ingresso vengono emesse esclusivamente da
+// notifyExtraEnteredTransition. Il caricamento di PDF, nave e chiusura
+// doganale non è un nuovo ingresso e non deve generare notifiche.
 function installExtraTabClearOnClick(){
   document.addEventListener("click", e => {
     const tab = e.target.closest(".extraTab[data-extra-terminal]");
@@ -16000,20 +15937,7 @@ function installExtraTabClearOnClick(){
 
 (function initExtraNotifications(){
   installExtraDesktopNotificationPermission();
-  patchFetchPdfForExtraNotifications();
   installExtraTabClearOnClick();
-
-  const wait = setInterval(() => {
-    installExtraNotificationObserver();
-    if (document.querySelector("#extraTable tbody")) clearInterval(wait);
-  }, 700);
-
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden) {
-      installExtraNotificationObserver();
-      scanExtraRowsForEnteredContainers();
-    }
-  });
 })();
 
 
