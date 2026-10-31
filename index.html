@@ -13810,6 +13810,23 @@ function isExtraEnteredNotificationState(terminal, row, result = null){
   return status === "ENTRATO" || status.startsWith("ENTRATO (");
 }
 
+function getExtraEnteredNotificationContent(container, terminal, row = null){
+  const raw=String(terminal || "").trim().toLowerCase();
+  const key=raw === "tfg" ? "flavio" : raw;
+  const cfg=EXTRA_TERMINALS?.[key];
+  const code=String(container || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const liveRow=row || (cfg ? extraRows.find(item=>
+    rowBelongsToTerminal(item,key) &&
+    String(item?.[cfg.containerField] || "").toUpperCase().replace(/[^A-Z0-9]/g, "")===code
+  ) : null);
+  const client=String(cfg ? liveRow?.[cfg.clientField] || "" : "").trim();
+  const terminalLabel=cfg?.label || String(terminal || "Terminal non indicato").toUpperCase();
+  return {
+    title:`Contenitore ${code} entrato`,
+    body:`Cliente: ${client || "Non indicato"}\nTerminal: ${terminalLabel}`
+  };
+}
+
 function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, result = null){
   const keyRaw = String(terminal || "").toLowerCase();
   const key = keyRaw === "tfg" ? "flavio" : keyRaw;
@@ -13828,9 +13845,7 @@ function notifyExtraEnteredTransition(terminal, container, wasEntered, liveRow, 
   // Non notificare un semplice ricontrollo di una riga che era già entrata.
   if (wasEntered) return false;
 
-  const terminalLabel = EXTRA_TERMINALS?.[key]?.label || key.toUpperCase();
-  const title = "Container entrato";
-  const body = `${code} - ENTRATO (${terminalLabel})`;
+  const {title,body}=getExtraEnteredNotificationContent(code,key,liveRow);
 
   try { showExtraToast?.(title, body, "success"); } catch {}
 
@@ -15816,8 +15831,7 @@ function installExtraDesktopNotificationPermission(){
 }
 
 function notifyExtraDesktop(container, terminal){
-  const title = "Container entrato";
-  const body = `${container} - PDF generato (${terminal || "Utility Doganalista"})`;
+  const {title,body}=getExtraEnteredNotificationContent(container,terminal);
 
   showExtraToast(title, body, "success");
 
