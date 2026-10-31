@@ -11866,12 +11866,29 @@ button.doganaModuleSvgToggleBtn:active,
       setTimeout(() => { if (td.isConnected) paint(); }, 0);
     }
 
+    function refreshExtraPriorityButtons(){
+      if(!extraTbody)return;
+      extraTbody.querySelectorAll("button.rowCheckBtn").forEach(button=>{
+        const id=button.dataset.rowId,term=button.dataset.terminal;
+        const row=extraRows.find(item=>String(item?.__id || "")===id);
+        const cfg=EXTRA_TERMINALS[term];
+        const value=cfg?normalizeExtraContainerValue(row?.[cfg.containerField]):"";
+        const checking=isExtraRowChecking(id,term),queued=isExtraRowQueuedForCheck(id,term);
+        const valid=!!value && isValidExtraContainerCode(value);
+        button.disabled=!valid || checking || queued;
+        button.classList.toggle("is-checking",checking || queued);
+        button.title=checking?"Controllo del container in corso":queued?"Container inserito come prossimo controllo":valid?`Controlla subito questo container su ${cfg.label}`:"Inserisci un numero container valido";
+        button.setAttribute("aria-label",button.title);
+      });
+    }
+
     let extraPdfInteractionRenderTimer = null;
     function renderExtra(){
       if(!extraTbody || !extraThead) return;
+      refreshExtraPriorityButtons();
       // Mantiene lo stesso nodo fra pointerdown e click, anche se arriva un SSE
       // o termina il controllo di un'altra riga. Applica poi lo stato più recente.
-      if (extraTbody.querySelector('a[href]:hover, a[href]:active, .extraErrorBadge:hover, .extraErrorBadge:focus')) {
+      if (extraTbody.querySelector('a[href]:hover, a[href]:active, .extraErrorBadge:hover, .extraErrorBadge:focus, button.rowCheckBtn:hover, button.rowCheckBtn:active')) {
         clearTimeout(extraPdfInteractionRenderTimer);
         extraPdfInteractionRenderTimer = setTimeout(renderExtra, 150);
         return;
@@ -12089,6 +12106,7 @@ button.doganaModuleSvgToggleBtn:active,
             if (isExtraContainerField(key)) {
               refreshExtraAutoCheckSchedule();
               updateAutoCheckUI();
+              refreshExtraPriorityButtons();
             }
             scheduleSharedRowPatch(rowIndex, patch);
           });
@@ -12149,6 +12167,8 @@ button.doganaModuleSvgToggleBtn:active,
         const checkBtn = document.createElement("button");
         checkBtn.type = "button";
         checkBtn.className = "rowBtn rowCheckBtn";
+        checkBtn.dataset.rowId=String(row.__id || "");
+        checkBtn.dataset.terminal=rowTerminal;
         if (rowIsChecking || rowIsQueued) checkBtn.classList.add("is-checking");
         checkBtn.disabled = !rowCanBeChecked || rowIsChecking || rowIsQueued;
         checkBtn.title = rowIsChecking
@@ -14143,8 +14163,13 @@ async function requestExtraPriorityRowCheck(rowId, terminalKey = activeExtraTerm
   // Se il controllo classico è già in corso, i suoi worker prelevano prima
   // questa riga e poi proseguono dalla posizione corrente. In assenza di un
   // ciclo attivo viene eseguita soltanto la riga richiesta.
-  const existing = extraTerminalCheckPromises.get(term);
-  if (existing) return existing;
+  // I worker attivi normalmente prelevano la priorità alla prossima ricerca.
+  // Se il click arriva quando il ciclo sta già terminando, drena la coda
+  // residua subito: non rimandarla alla scadenza del prossimo timer.
+  while(extraTerminalCheckPromises.has(term)){
+    await extraTerminalCheckPromises.get(term).catch(()=>null);
+  }
+  if(!getExtraPriorityRowQueue(term).length)return;
 
   const task = runExtraPriorityOnlyTerminal(term)
     .finally(() => {
