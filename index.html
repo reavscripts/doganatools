@@ -11649,13 +11649,20 @@ button.doganaModuleSvgToggleBtn:active,
       try {
         for (let n=1; n<=pdf.numPages; n++) {
           const content = await (await pdf.getPage(n)).getTextContent();
-          let y = null, line = "";
+          // Il memorandum SCT non conserva l'ordine di lettura: i valori
+          // possono precedere le etichette. Ricostruisce le righe geometriche.
+          const pageRows = [];
           for (const item of content.items) {
-            if (y !== null && Math.abs(item.transform[5]-y)>3) { lines.push(line); line=""; }
-            line += " " + item.str; y = item.transform[5];
-            if (item.hasEOL) {lines.push(line); line=""; y=null;}
+            if (!item.str || !item.str.trim() || !item.transform) continue;
+            const x = item.transform[4], y = item.transform[5];
+            let line = pageRows.find(row => Math.abs(row.y - y) <= 3);
+            if (!line) { line = {y, items:[]}; pageRows.push(line); }
+            line.items.push({x, text:item.str});
           }
-          if (line) lines.push(line);
+          pageRows.sort((a,b) => b.y-a.y);
+          for (const row of pageRows) {
+            lines.push(row.items.sort((a,b) => a.x-b.x).map(item => item.text).join(" "));
+          }
         }
       } finally { await pdf.destroy(); }
       if (!extraVesselKey(lines.join(" ")).includes(extraVesselKey(container))) throw new Error("Il report non corrisponde al container");
@@ -11705,24 +11712,17 @@ button.doganaModuleSvgToggleBtn:active,
           td.textContent="";
           if (info.name) {
             const title = document.createElement("strong");
-            title.textContent=info.name+(info.voyage ? ` · ${info.voyage}` : ""); td.appendChild(title);
+            title.textContent=info.name; td.appendChild(title);
             const close = document.createElement("div"); close.textContent="Verifica chiusura…"; td.appendChild(close);
             try {
               const dataset = await loadShipSearchDataset();
               const match = extraMatchVessel(info, dataset.ships, cfg.label);
-              close.textContent = match.closing ? `Chiusura: ${match.closing}` : match.message;
+              close.textContent = match.closing ? `Chiusura stimata: ${match.closing}` : match.message;
               if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) close.textContent="Dati NAVI del terminal non disponibili";
               if (match.closing) close.style.fontWeight="700";
             } catch { close.textContent="Dati NAVI non disponibili"; }
-            const source = document.createElement("small"); source.textContent=info.source; td.appendChild(source);
-            if (info.pdfUrl) {
-              const link = document.createElement("a"); link.href=info.pdfUrl; link.target="_blank"; link.rel="noopener noreferrer";
-              link.textContent="Apri report nave"; td.appendChild(link);
-            }
           } else td.appendChild(document.createTextNode(info.message));
         } catch (err) { td.textContent=err.message || "Recupero nave non riuscito"; }
-        const button = document.createElement("button"); button.type="button"; button.className="extraVesselRefresh";
-        button.textContent="Aggiorna nave"; button.addEventListener("click", () => paint(true)); td.appendChild(button);
       };
       // I timer iniziali lasciano completare l'inizializzazione dei dati NAVI.
       setTimeout(() => { if (td.isConnected) paint(); }, 0);
