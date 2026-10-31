@@ -31121,5 +31121,26 @@ body[data-theme="dark"] #extraPanel #extraTable button.extraErrorBadge{
  window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
 })();
 </script>
+<style id="extra-error-badge-fit">
+#extraPanel #extraTable button.extraErrorBadge{
+ box-sizing:border-box !important;
+ display:flex !important;
+ width:100% !important;
+ min-width:0 !important;
+ max-width:100% !important;
+ margin:0 auto !important;
+ padding:7px 6px !important;
+ text-align:center !important;
+ justify-content:center !important;
+ letter-spacing:.02em !important;
+ overflow-wrap:anywhere;
+}
+#extraPanel #extraTable button.extraErrorBadge > span:last-child{
+ min-width:0;flex:0 1 auto;white-space:normal;overflow-wrap:anywhere;
+}
+#extraPanel #extraTable button.extraErrorBadge .extraErrorBadgeIcon{
+ flex:0 0 14px;width:14px;height:14px;
+}
+</style>
 </body>
 </html>
