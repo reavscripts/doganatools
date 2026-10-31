@@ -12417,11 +12417,20 @@ button.doganaModuleSvgToggleBtn:active,
       return extraRows.filter(row => rowBelongsToTerminal(row, terminalKey)).length;
     }
 
+    function getExtraSctPendingSearchCount(){
+      return extraRows.filter(row =>
+        rowBelongsToTerminal(row, "sct") &&
+        !isExtraRowPendingDelete(row?.__id) &&
+        isValidExtraContainerCode(normalizeExtraContainerValue(row?.sct)) &&
+        !(row?.sctStatus === "PDF PRONTO" && String(row?.sctPdfUrl || "").trim())
+      ).length;
+    }
+
     function getExtraAutomaticCheckSeconds(){
-      // La cadenza SCT dipende dal NUMERO DI RIGHE, non dai soli container compilati.
-      // Ogni nuova riga aggiunge esattamente 30 secondi.
-      const rowCount = getExtraAutoRowCount("sct");
-      return Math.max(1, rowCount) * EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW;
+      // Solo i contenitori validi ancora da cercare contribuiscono al cooldown.
+      // Mantiene il minimo di 30s anche a lista esaurita, senza richiedere
+      // nuovamente i memorandum già trovati.
+      return Math.max(1, getExtraSctPendingSearchCount()) * EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW;
     }
 
     function getExtraAutomaticCheckMinutes(){
@@ -12462,7 +12471,7 @@ button.doganaModuleSvgToggleBtn:active,
         return;
       }
 
-      // SCT: 30 secondi per ogni riga SCT.
+      // SCT: 30 secondi per ogni contenitore ancora da cercare.
       const sctInterval = getExtraEffectiveCheckInterval();
       extraAutoCheckScheduledInterval = sctInterval;
       extraNextCheckAt = Date.now() + sctInterval;
@@ -12499,7 +12508,7 @@ button.doganaModuleSvgToggleBtn:active,
 
     function updateExtraCheckInfo(){
       const terminalLabel = EXTRA_TERMINALS?.[activeExtraTerminal]?.label || String(activeExtraTerminal || "sct").toUpperCase();
-      const sctRowCount = getExtraAutoRowCount("sct");
+      const sctRowCount = getExtraSctPendingSearchCount();
       const sctSeconds = getExtraAutomaticCheckSeconds();
       const sctIntervalLabel = formatExtraIntervalCompact(sctSeconds);
       const fastSeconds = Math.round(EXTRA_FAST_CHECK_INTERVAL / 1000);
@@ -12546,11 +12555,13 @@ button.doganaModuleSvgToggleBtn:active,
       const remainingLabel = formatExtraCountdown(remaining);
 
       // Badge contestuale: mostra soltanto il terminal attualmente selezionato.
-      // SCT mantiene la cadenza dinamica 30s × riga; CONATECO e TFG mostrano il loro ciclo rapido.
+      // SCT: 30s × contenitore da cercare; CONATECO e TFG mantengono il ciclo rapido.
       if (dynamicBadge) {
         dynamicBadge.textContent = `${terminalLabel} · ${activeIntervalLabel} · TRA ${remainingLabel}`;
         dynamicBadge.title = activeIsSct
-          ? `${sctRowCount} ${sctRowCount === 1 ? "riga SCT" : "righe SCT"} × 30 secondi = ciclo ogni ${sctIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`
+          ? (sctRowCount
+            ? `${sctRowCount} ${sctRowCount === 1 ? "contenitore SCT da cercare" : "contenitori SCT da cercare"} × 30 secondi = ciclo ogni ${sctIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`
+            : "Nessun contenitore SCT da cercare. I container già trovati non vengono ricercati; intervallo minimo 30 secondi.")
           : `${terminalLabel}: ciclo automatico ogni ${fastIntervalLabel}. Prossimo controllo tra ${remainingLabel}.`;
       }
 
