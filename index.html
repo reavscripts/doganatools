@@ -11824,7 +11824,7 @@ button.doganaModuleSvgToggleBtn:active,
       if(!extraTbody || !extraThead) return;
       // Mantiene lo stesso nodo fra pointerdown e click, anche se arriva un SSE
       // o termina il controllo di un'altra riga. Applica poi lo stato più recente.
-      if (extraTbody.querySelector('a[href]:hover, a[href]:active')) {
+      if (extraTbody.querySelector('a[href]:hover, a[href]:active, .extraErrorBadge:hover, .extraErrorBadge:focus')) {
         clearTimeout(extraPdfInteractionRenderTimer);
         extraPdfInteractionRenderTimer = setTimeout(renderExtra, 150);
         return;
@@ -13597,8 +13597,17 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   const errorInfo = extraCompactError(status);
   cell.textContent = errorInfo.label || "-";
   if (errorInfo.isError) {
-    cell.title = errorInfo.detail;
-    cell.setAttribute("aria-label", errorInfo.detail);
+    cell.textContent="";
+    cell.removeAttribute("title");
+    cell.removeAttribute("aria-label");
+    const badge=document.createElement("button");badge.type="button";
+    badge.className="extraErrorBadge";
+    badge.dataset.errorDetail=errorInfo.detail;
+    badge.setAttribute("aria-label",`${errorInfo.label}. Mostra dettagli errore`);
+    const icon=document.createElement("span");icon.className="extraErrorBadgeIcon";icon.setAttribute("aria-hidden","true");
+    icon.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v6m0 3v1"/></svg>';
+    const label=document.createElement("span");label.textContent=errorInfo.label;
+    badge.append(icon,label);cell.appendChild(badge);
   } else {
     cell.removeAttribute("title");
     cell.removeAttribute("aria-label");
@@ -31052,6 +31061,64 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
   }
   function start(){ensureButton();refresh();setInterval(refresh,10000);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
+
+<style id="extra-modern-error-style">
+#extraPanel #extraTable button.extraErrorBadge{
+ display:inline-flex !important;align-items:center;justify-content:center;gap:6px;
+ max-width:100%;min-height:34px;padding:7px 9px !important;border-radius:10px !important;
+ border:1px solid #fecaca !important;background:linear-gradient(180deg,#fff7f7,#feecec) !important;
+ color:#b91c1c !important;font-size:11px !important;font-weight:750 !important;line-height:1.35 !important;
+ text-align:left;white-space:normal;box-shadow:0 2px 5px rgba(185,28,28,.06) !important;
+ cursor:help;transform:none !important;transition:border-color .15s,box-shadow .15s !important;
+}
+#extraPanel #extraTable button.extraErrorBadge:hover,
+#extraPanel #extraTable button.extraErrorBadge:focus-visible{
+ border-color:#f87171 !important;box-shadow:0 0 0 3px rgba(239,68,68,.10) !important;outline:none;
+}
+.extraErrorBadgeIcon{display:inline-flex;flex:0 0 16px;width:16px;height:16px;}
+.extraErrorBadgeIcon svg{width:100%;height:100%;}
+#extraModernErrorTooltip{
+ position:fixed;z-index:100000;box-sizing:border-box;width:340px;max-width:calc(100vw - 24px);
+ padding:14px 16px;border:1px solid #334155;border-radius:14px;background:#0f172a;color:#e2e8f0;
+ box-shadow:0 14px 40px rgba(15,23,42,.25);font-size:12px;line-height:1.65;overflow-wrap:anywhere;
+ pointer-events:none;font-family:inherit;text-align:left;
+}
+#extraModernErrorTooltip[hidden]{display:none !important;}
+#extraModernErrorTooltip strong{display:block;color:#fca5a5;font-size:11px;letter-spacing:.04em;margin-bottom:5px;}
+body[data-theme="dark"] #extraPanel #extraTable button.extraErrorBadge{
+ background:#331f29 !important;border-color:#7f3641 !important;color:#fca5a5 !important;
+}
+@media(max-width:768px){#extraPanel #extraTable button.extraErrorBadge{font-size:12px !important;min-height:38px;}}
+</style>
+<script id="extra-modern-error-tooltip">
+(function(){
+ let current=null,tip=null;
+ function ensure(){
+  if(tip)return tip;
+  tip=document.createElement('div');tip.id='extraModernErrorTooltip';tip.setAttribute('role','tooltip');tip.hidden=true;
+  const heading=document.createElement('strong');heading.textContent='DETTAGLI ERRORE';
+  const text=document.createElement('div');text.className='extraErrorTooltipText';tip.append(heading,text);document.body.appendChild(tip);return tip;
+ }
+ function hide(){if(current)current.removeAttribute('aria-describedby');current=null;if(tip)tip.hidden=true;}
+ function show(button){
+  if(current&&current!==button)current.removeAttribute('aria-describedby');
+  current=button;const box=ensure();box.querySelector('.extraErrorTooltipText').textContent=button.dataset.errorDetail||'';
+  button.setAttribute('aria-describedby',box.id);box.hidden=false;
+  const rect=button.getBoundingClientRect(),width=box.offsetWidth,height=box.offsetHeight;
+  const left=Math.max(12,Math.min(rect.left+rect.width/2-width/2,window.innerWidth-width-12));
+  const above=rect.top-height-10;
+  const top=above>=12?above:Math.max(12,Math.min(rect.bottom+10,window.innerHeight-height-12));
+  box.style.left=left+'px';box.style.top=top+'px';
+ }
+ document.addEventListener('pointerover',event=>{if(event.pointerType==='touch')return;const button=event.target.closest?.('.extraErrorBadge');if(button)show(button);});
+ document.addEventListener('pointerout',event=>{const button=event.target.closest?.('.extraErrorBadge');if(button&&!button.contains(event.relatedTarget))hide();});
+ document.addEventListener('focusin',event=>{const button=event.target.closest?.('.extraErrorBadge');if(button)show(button);});
+ document.addEventListener('focusout',event=>{if(event.target.closest?.('.extraErrorBadge'))hide();});
+ document.addEventListener('click',event=>{const button=event.target.closest?.('.extraErrorBadge');if(button)show(button);else hide();});
+ document.addEventListener('keydown',event=>{if(event.key==='Escape')hide();});
+ window.addEventListener('scroll',hide,true);window.addEventListener('resize',hide);
 })();
 </script>
 </body>
