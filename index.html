@@ -12904,7 +12904,7 @@ const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minut
 
 function showJmtDisconnectedMessage(container = "", details = {}) {
   const code = String(container || "").trim().toUpperCase();
-  const reconnectMinutes = Number(details?.reconnectDelayMinutes || 10);
+  const reconnectMinutes = Number(details?.reconnectDelayMinutes || 5);
   const remainingMs = Number(details?.reconnectRemainingMs || 0);
   const remainingText = details?.reconnectRemainingText || (remainingMs > 0 && typeof formatExtraCountdown === "function" ? formatExtraCountdown(remainingMs) : "");
   const scheduledAt = details?.reconnectScheduledAt ? new Date(details.reconnectScheduledAt) : null;
@@ -12934,6 +12934,7 @@ function showJmtDisconnectedMessage(container = "", details = {}) {
     statusEl.style.fontWeight = "900";
   }
 
+  window.doganaUpdateJmtOverride?.({reconnectBlocked:true, logged:false});
   alert(msg);
 }
 
@@ -30983,5 +30984,50 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
   #appTopBar .appQuickNav#doganaMobileNav{flex-wrap:wrap!important}
 }
 </style>
+
+<style id="jmt-manual-override-style">
+#extraPanel #jmtManualOverrideBtn[hidden]{display:none !important;}
+#extraPanel #jmtManualOverrideBtn{color:var(--danger,#dc2626);font-weight:800;}
+</style>
+<script id="jmt-manual-override">
+(function(){
+  let busy=false;
+  function ensureButton(){
+    const toolbar=document.querySelector('#extraPanel .extraTopToolbar');
+    if(!toolbar)return null;
+    let button=document.getElementById('jmtManualOverrideBtn');
+    if(button)return button;
+    button=document.createElement('button');button.id='jmtManualOverrideBtn';button.type='button';button.hidden=true;
+    button.textContent='Ricollega JMT ora';
+    button.title='Forza accesso subito, senza attendere i 5 minuti';
+    button.addEventListener('click',async()=>{
+      if(busy)return;
+      busy=true;button.disabled=true;button.textContent='Ricollegamento…';
+      try{
+        const response=await fetch(apiUrl('/api/jmt-reconnect'),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({override:true,reason:'override manuale dopo disconnessione'})});
+        const data=await response.json();
+        if(!response.ok||!data.success)throw new Error(data.error||data.message||'Ricollegamento JMT non riuscito');
+        button.hidden=true;
+        const status=document.getElementById('extraAutoStatus');
+        if(status){status.textContent='Sessione JMT ricollegata.';status.style.removeProperty('color');status.style.removeProperty('font-weight');}
+      }catch(error){
+        button.hidden=false;button.title=error.message;
+        const status=document.getElementById('extraAutoStatus');if(status)status.textContent=error.message;
+      }finally{busy=false;button.disabled=false;button.textContent='Ricollega JMT ora';}
+    });
+    toolbar.appendChild(button);return button;
+  }
+  window.doganaUpdateJmtOverride=function(state){
+    const button=ensureButton();if(!button||busy)return;
+    button.hidden=!(state && !state.logged && (state.reconnectBlocked||state.reconnectScheduled||state.lastReconnectError));
+    button.disabled=!!state?.reconnectInProgress;
+  };
+  async function refresh(){
+    try{const response=await fetch(apiUrl('/api/jmt-status'),{cache:'no-store'});if(response.ok){const data=await response.json();window.doganaUpdateJmtOverride(data.reconnect);}}catch{}
+  }
+  function start(){ensureButton();refresh();setInterval(refresh,10000);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+</script>
 </body>
 </html>
