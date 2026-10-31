@@ -7162,6 +7162,15 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 }
 </style>
 
+<style>
+#extraTable th:nth-child(5), #extraTable td:nth-child(5){width:250px !important;white-space:normal;}
+#extraTable th:nth-child(6), #extraTable td:nth-child(6){width:90px !important;}
+#extraTable .extraVesselCell{padding:10px;line-height:1.5;overflow-wrap:anywhere;}
+#extraTable .extraVesselCell strong,#extraTable .extraVesselCell small,#extraTable .extraVesselCell a{display:block;}
+#extraTable .extraVesselCell small{color:var(--muted);}
+#extraTable .extraVesselRefresh{margin-top:5px;font-size:11px;min-height:26px;padding:3px 7px;}
+@media(max-width:760px){#extraTable td.extraVesselCell{width:auto !important;}}
+</style>
 </head>
 <body class="dogana-auth-locked">
 
@@ -7404,12 +7413,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
         <a href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput" role="menuitem">CHECKLIST</a>
         <a href="#notificationPanel" data-jump-focus="#notificationTaskInput" role="menuitem">NOTIFICHE <span class="notificationNavCount" id="notificationNavCount" hidden>0</span></a>
         <a href="#postItPanel" data-jump-focus="#postItInput" role="menuitem">POST-IT</a>
-        <span class="organizeNavGroupLabel" role="presentation">Template doganali</span>
-        <a href="#a22TemplateModule" data-jump-focus="#a22Exporter" role="menuitem">A22</a>
-        <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">EUR.1</a>
         <span class="organizeNavGroupLabel" role="presentation">Tool utili</span>
         <a href="#invoice-classifier-section" data-jump-focus="#invoiceClassifierClient" role="menuitem">ANALIZZA DOCUMENTI</a>
         <a href="#pdfToolsPanel" data-jump-focus="#pdfCompressFile" role="menuitem">PDF E DOCUMENTI</a>
+      </div>
+    </div>
+    <div class="appNavDropdown" id="customsDocumentsNavDropdown">
+      <button type="button" class="appNavDropdownToggle" id="customsDocumentsNavToggle" aria-expanded="false" aria-haspopup="true" aria-controls="customsDocumentsNavMenu">
+        DOCUMENTI DOGANALI <span class="appNavDropdownChevron" aria-hidden="true">⌄</span>
+      </button>
+      <div class="appNavDropdownMenu" id="customsDocumentsNavMenu" role="menu" aria-label="Documenti doganali">
+        <a href="#eur1TemplateModule" data-jump-focus="#eur1Name" role="menuitem">EUR.1</a>
+        <a href="#a22TemplateModule" data-jump-focus="#a22Exporter" role="menuitem">A22</a>
       </div>
     </div>
     <a id="doganaNavShipsBtn" href="#navi-section">NAVI</a>
@@ -7664,14 +7679,14 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
   </div>
 </div>
 
-<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: attività, template doganali e tool utili">
+<section class="organizeModulePanel sectionJumpTarget" id="organizePanel" aria-label="Organizza: attività, promemoria e tool utili">
   <div class="organizeModuleHead">
     <div>
       <div class="organizeModuleTitle">Organizza</div>
-      <div class="organizeModuleSubtitle">Attività e promemoria, template doganali e strumenti per documenti.</div>
+      <div class="organizeModuleSubtitle">Attività, promemoria e strumenti per documenti.</div>
     </div>
     <div class="organizeModuleActions">
-      <span class="organizeModuleStats" id="organizePanelStats">6 sottomoduli</span>
+      <span class="organizeModuleStats" id="organizePanelStats">4 sottomoduli</span>
       <button type="button" id="organizePanelToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-label="Riduci a icona Organizza" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
     </div>
   </div>
@@ -7680,8 +7695,6 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       <a class="organizeModuleChip" href="#operativeChecklistPanel" data-jump-focus="#operativeChecklistInput">Checklist</a>
       <a class="organizeModuleChip" href="#notificationPanel" data-jump-focus="#notificationTaskInput">Notifiche <span class="organizeModuleChipCount" id="organizeModuleReminderCount" hidden>0</span></a>
       <a class="organizeModuleChip" href="#postItPanel" data-jump-focus="#postItInput">Post-it</a>
-      <a class="organizeModuleChip" href="#a22TemplateModule" data-jump-focus="#a22Exporter">A22</a>
-      <a class="organizeModuleChip" href="#eur1TemplateModule" data-jump-focus="#eur1Name">EUR.1</a>
       <a class="organizeModuleChip" href="#usefulToolsPanel" data-jump-focus="#invoiceClassifierClient">Tool utili</a>
     </div>
 
@@ -7765,139 +7778,10 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
       </div>
     </section>
 
-<section id="a22TemplateModule" class="a22-module sectionJumpTarget is-minimized" aria-label="Creazione bolletta A22 da DAU o DAE">
-  <div class="a22-head">
-    <div class="a22-title">A22</div>
-    <button id="a22Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="a22Body" aria-label="Mostra modulo A22" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button>
-  </div>
-  <div id="a22Body" class="a22-body" hidden>
-    <div class="a22-import-row">
-      <label id="a22Drop" class="a22-drop" for="a22File" tabindex="0" role="button" aria-label="Carica un DAU o DAE in PDF o immagine">
-        <strong>Aggiungi DAU / DAE all'A22</strong><span>Trascina uno o più PDF o immagini, oppure scegli i file. I DAU vengono aggiunti all'A22 in preparazione. Lettura MRN dai codici a barre Code 39 / Code 128.</span>
-        <input id="a22File" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,application/pdf,image/*" multiple hidden>
-      </label>
-      <div class="a22-import-actions">
-        <button id="a22New" type="button">Nuovo A22</button>
-        <button id="a22Example" type="button">Esempio allegato</button>
-        <select id="a22SourceChoice" aria-label="Documento da aprire" hidden></select>
-        <button id="a22OpenDae" type="button" disabled>Apri DAU / DAE</button>
-      </div>
-    </div>
-    <div id="a22Status" class="a22-status" role="status" aria-live="polite">Importa uno o più DAU per un unico A22. Il peso lordo viene sommato e tutti gli MRN vengono riportati nel PDF, tre per riga.</div>
-    <ul id="a22Notices" class="a22-notices" hidden></ul>
-    <details class="a22-text-import"><summary>Incolla il testo del DAU / DAE</summary><label for="a22RawText">Testo del documento</label><textarea id="a22RawText" rows="5" maxlength="100000" placeholder="Incolla qui il testo copiato dal DAU o DAE"></textarea><button id="a22ReadText" type="button">Compila dal testo</button></details>
-    <div class="a22-workspace">
-      <div class="a22-editor">
-        <fieldset><legend>Dati dal DAU / DAE</legend>
-          <div class="a22-fields">
-            <label class="a22-full" for="a22Exporter">Ragione sociale speditore<input id="a22Exporter" data-a22="exporter" type="text" maxlength="180" autocomplete="off"></label>
-            <label for="a22Vat">Partita IVA / EORI speditore<input id="a22Vat" data-a22="vat" type="text" maxlength="24" autocomplete="off" spellcheck="false"></label>
-            <label for="a22Nationality">Nazionalità<input id="a22Nationality" data-a22="nationality" type="text" maxlength="2" value="IT" autocomplete="off"></label>
-            <input id="a22Mrn" data-a22="mrn" type="hidden">
-            <div class="a22-full a22-document-area"><div class="a22-document-head"><strong id="a22DocumentCount">DAU e MRN</strong><button id="a22AddMrn" type="button">Aggiungi DAU / MRN</button></div><div id="a22Documents" class="a22-documents"></div><p class="a22-help">Una casella per ogni MRN. Con più DAU, correggi qui il peso e i contenitori di ciascun documento.</p></div>
-            <label class="a22-full" for="a22Container">Contenitori dell'A22 (se presenti)<input id="a22Container" data-a22="container" type="text" maxlength="5000" placeholder="Es. MRSU5791662 · separa più contenitori con una virgola" autocomplete="off" spellcheck="false"></label>
-            <label for="a22Gross">Peso lordo totale (kg)<input id="a22Gross" data-a22="gross" type="text" inputmode="decimal" maxlength="25" placeholder="Es. 8835" autocomplete="off"></label>
-            <label for="a22Hs">Voce doganale (facoltativa)<input id="a22Hs" data-a22="hs" type="text" inputmode="numeric" maxlength="10" autocomplete="off"></label>
-            <label class="a22-full" for="a22Description">Qualità della merce · descrizione sommaria<input id="a22Description" data-a22="description" type="text" list="a22DescriptionOptions" maxlength="500" placeholder="Es. ALIMENTI, BEVANDE, VARIE o altra descrizione" autocomplete="off"></label>
-            <datalist id="a22DescriptionOptions"><option value="ALIMENTI"></option><option value="BEVANDE"></option><option value="VARIE"></option><option value="ALTRO"></option><option value="ABBIGLIAMENTO"></option><option value="ELETTRODOMESTICI"></option><option value="MACCHINARI"></option><option value="ARREDAMENTO"></option><option value="IMBALLAGGI"></option></datalist>
-          </div>
-          <p class="a22-help">La descrizione proposta è sommaria: puoi scegliere un suggerimento o scrivere liberamente la descrizione adatta alla pratica.</p>
-          <p class="a22-help">Il peso dell'A22 è la somma delle masse lorde delle testate dei DAU (riquadro 35). Lo stesso MRN viene conteggiato una sola volta. Usa Nuovo A22 per iniziare un'altra autorizzazione.</p>
-        </fieldset>
-        <fieldset><legend>Liquidazione</legend>
-          <div class="a22-fields">
-            <label class="a22-full" for="a22Office">Dogana<select id="a22Office" data-a22="office"><option value="salerno">Salerno - IT084100</option><option value="other">Altra dogana</option></select></label>
-            <label class="a22-other" for="a22OfficeName" hidden>Nome dogana<input id="a22OfficeName" data-a22="officeName" type="text" maxlength="100"></label>
-            <label class="a22-other" for="a22OfficeCode" hidden>Codice ufficio<input id="a22OfficeCode" data-a22="officeCode" type="text" maxlength="10"></label>
-            <label for="a22TaxCode">Codice tributo<input id="a22TaxCode" data-a22="taxCode" type="text" maxlength="4" value="9AE" readonly></label>
-            <label for="a22Rate">Aliquota<input id="a22Rate" data-a22="rate" type="text" inputmode="decimal" maxlength="15" value="0,843" readonly></label>
-          </div>
-          <div class="a22-calculation" aria-live="polite"><div><span>Base imponibile</span><strong id="a22Base">-</strong></div><span class="a22-multiply">×</span><div><span>Aliquota</span><strong id="a22RateResult">0,843</strong></div><span class="a22-multiply">=</span><div><span>Importo</span><strong id="a22Amount">-</strong></div></div>
-          <p id="a22CalculationNote" class="a22-help">Da 101 a 1.000 kg: base 1; da 1.001 a 2.000 kg: base 2, e così via. Le frazioni oltre 1.000 kg passano allo scaglione successivo.</p>
-        </fieldset>
-        <details class="a22-settings"><summary>Rappresentante, pagamento e altri campi</summary>
-          <div class="a22-fields">
-            <label class="a22-full" for="a22Representative">Rappresentato da<input id="a22Representative" data-a22="representative" type="text" maxlength="180"></label>
-            <label for="a22BillType">Bolletta di<input id="a22BillType" data-a22="billType" type="text" maxlength="40"></label>
-            <label for="a22Mp">MP<input id="a22Mp" data-a22="mp" type="text" maxlength="4"></label>
-            <label for="a22Provenance">Merci provenienti da<input id="a22Provenance" data-a22="provenance" type="text" maxlength="50"></label>
-            <label for="a22Origin">Accertata origine da<input id="a22Origin" data-a22="origin" type="text" maxlength="50"></label>
-            <label class="a22-full" for="a22PaymentMethod">Metodo di pagamento<input id="a22PaymentMethod" data-a22="paymentMethod" type="text" maxlength="50"></label>
-            <label for="a22Account">Conto di debito<input id="a22Account" data-a22="account" type="text" maxlength="30"></label>
-            <label for="a22Cin">CIN<input id="a22Cin" data-a22="cin" type="text" maxlength="4"></label>
-            <label for="a22Registration">N. registrazione<input id="a22Registration" data-a22="registration" type="text" maxlength="40" placeholder="Da compilare se disponibile"></label>
-            <label for="a22Date">Data registrazione<input id="a22Date" data-a22="registrationDate" type="date"></label>
-            <label class="a22-full" for="a22Footer">Indicazioni in calce<textarea id="a22Footer" data-a22="footer" rows="4" maxlength="250"></textarea></label>
-          </div>
-        </details>
-        <label id="a22ReviewRow" class="a22-review" hidden><input id="a22Review" type="checkbox">Ho verificato MRN, speditore, peso lordo, contenitori e descrizione sommaria con il DAU / DAE.</label>
-        <div id="a22Validation" class="a22-validation" role="status"></div>
-        <div class="a22-export"><button id="a22ExportPdf" type="button" class="primary" disabled>Scarica A22 PDF</button><button id="a22SaveModel" type="button">Scarica modello riapribile</button><button id="a22LoadModel" type="button">Apri modello</button><input id="a22ModelFile" type="file" accept=".json,.a22,application/json" hidden></div>
-        <div id="a22DraftStatus" class="a22-help">Bozza su questo dispositivo.</div>
-      </div>
-      <div class="a22-preview">
-        <div class="a22-preview-head"><strong>Anteprima A22</strong><span>Formato A4</span></div>
-        <p id="a22PreviewHint" class="a22-help">Completa i dati per il documento da inoltrare alla dogana.</p>
-        <iframe id="a22Preview" title="Anteprima del PDF A22 compilato" class="a22-preview-frame" hidden></iframe>
-      </div>
-    </div>
-  </div>
-</section>
 
 
-<section id="eur1TemplateModule" class="eur1-module sectionJumpTarget eur1-collapsed" aria-label="Creazione template EUR.1">
-  <div class="eur1-head">
-    <div class="eur1-title"><span>EUR.1</span></div>
-    <div class="eur1-head-actions"><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button></div>
-  </div>
-  <div id="eur1Body" class="eur1-body" hidden>
-    <p class="eur1-intro">Prepara la bozza per il cliente, poi completa la stessa pratica con il DAE definitivo e stampa sul formulario EUR.1.</p>
-    <div class="eur1-toolbar">
-      <div class="eur1-toolbar-group" aria-label="Compilazione"><button id="eur1New" type="button">Nuovo EUR.1</button><button id="eur1LoadDae" type="button" class="primary">Carica DAE / DAU</button><button id="eur1LoadWord" type="button">Carica Word</button></div>
-      <button id="eur1ArchiveToggle" type="button" aria-expanded="false" aria-controls="eur1Archive">Archivio EUR.1 <span id="eur1ArchiveCount">0</span></button>
-      <input id="eur1DaeFile" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" hidden><input id="eur1WordFile" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
-    </div>
-    <div id="eur1ImportReview" class="eur1-import-review" hidden aria-label="Dati del documento caricato">
-      <strong id="eur1ImportTitle"></strong><p id="eur1ImportSummary"></p><ul id="eur1ImportNotices"></ul>
-      <div class="eur1-toolbar-group"><button id="eur1ApplyNew" type="button" class="primary">Crea nuovo EUR.1 dai dati</button><button id="eur1ApplyUpdate" type="button">Completa EUR.1 aperto</button><button id="eur1CancelImport" type="button">Annulla</button></div>
-      <p class="eur1-help">“Completa EUR.1 aperto” conserva i testi e l'allineamento della bozza, aggiunge i dati mancanti e aggiorna MRN e date definitivi.</p>
-    </div>
-    <div id="eur1EditorView">
-    <div class="eur1-workflow" aria-label="Preparazione EUR.1">
-      <div class="eur1-workflow-heading"><strong id="eur1Phase">Bozza cliente</strong><button id="eur1MakeDraft" type="button">Prepara bozza cliente</button></div>
-      <div class="eur1-workflow-fields"><label for="eur1WorkflowMrn">Numero documento / MRN<input id="eur1WorkflowMrn" type="text" maxlength="100" placeholder="MRN parziale nella bozza" autocomplete="off"></label><label for="eur1WorkflowDate">Data prevista o definitiva<input id="eur1WorkflowDate" type="text" maxlength="10" placeholder="00.10.2026" autocomplete="off"></label></div>
-      <p id="eur1WorkflowHint" class="eur1-help"></p>
-    </div>
-    <div class="eur1-save-row">
-      <label class="eur1-name-label" for="eur1Name"><span>Nome salvataggio</span><input id="eur1Name" type="text" maxlength="120" placeholder="Es. Cliente - destinazione - riferimento" autocomplete="off"></label>
-      <button id="eur1Save" type="button" class="primary">Salva EUR.1</button><button id="eur1SaveCopy" type="button">Salva copia</button><span id="eur1SavedState" class="eur1-saved-state" role="status">Nuovo documento</span>
-    </div>
-    </div>
-    <div id="eur1Status" class="eur1-status" role="status" aria-live="polite">Apertura del modello EUR.1…</div>
-    <div id="eur1Archive" class="eur1-archive" hidden>
-      <div class="eur1-archive-head"><h3>EUR.1 salvati</h3><button id="eur1ArchiveBack" type="button">Torna alla compilazione</button></div><div class="eur1-archive-filters"><input id="eur1ArchiveSearch" type="search" placeholder="Cerca nome, esportatore, EUR.1 o MRN" aria-label="Cerca nell'archivio EUR.1"><button id="eur1ArchiveRefresh" type="button">Aggiorna archivio</button></div>
-      <div id="eur1ArchiveList" class="eur1-archive-list"></div>
-    </div>
-    <div id="eur1Workspace" class="eur1-workspace" hidden>
-      <aside class="eur1-editor" aria-label="Campi EUR.1">
-        <label for="eur1FieldSelect">Campo da compilare</label><select id="eur1FieldSelect"></select>
-        <div class="eur1-field-nav"><button id="eur1PreviousField" type="button" aria-label="Campo precedente">←</button><span id="eur1FieldNumber"></span><button id="eur1NextField" type="button" aria-label="Campo successivo">→</button></div>
-        <label for="eur1FieldValue" id="eur1FieldLabel">Valore</label><textarea id="eur1FieldValue" rows="7" spellcheck="false" placeholder="Scrivi il testo del campo"></textarea>
-        <p class="eur1-help">Puoi scrivere anche direttamente sui riquadri del documento. Usa Invio per andare a capo.</p><p id="eur1FieldFit" class="eur1-help" role="status"></p>
-        <details id="eur1FieldSettings"><summary>Allineamento del campo</summary><div class="eur1-settings-grid">
-          <label>Sinistra mm<input id="eur1FieldX" type="number" min="0" max="208" step="0.1"></label><label>Alto mm<input id="eur1FieldY" type="number" min="0" max="295" step="0.1"></label><label>Larghezza mm<input id="eur1FieldW" type="number" min="2" max="180" step="0.1"></label><label>Altezza mm<input id="eur1FieldH" type="number" min="2" max="180" step="0.1"></label><label>Corpo pt<input id="eur1FieldFont" type="number" min="7" max="16" step="0.5"></label>
-        </div><button id="eur1ResetField" type="button">Ripristina questo campo</button></details>
-        <details><summary>Allineamento di stampa</summary><p class="eur1-help">Sposta tutti i dati rispetto al formulario. Valori positivi: destra / basso.</p><div class="eur1-settings-grid"><label>Orizzontale mm<input id="eur1OffsetX" type="number" min="-10" max="10" step="0.1" value="0"></label><label>Verticale mm<input id="eur1OffsetY" type="number" min="-10" max="10" step="0.1" value="0"></label></div><button id="eur1ResetLayout" type="button">Ripristina allineamento</button><p class="eur1-help">Per il prestampato usa carta A4 e stampa al 100%, con dimensioni effettive.</p></details>
-        <details><summary>Modelli e riferimenti</summary><p class="eur1-help">Conserva un modello riapribile o consulta il formulario originale.</p><div class="eur1-backup-actions"><button id="eur1Backup" type="button">Scarica modello riapribile</button><button id="eur1Import" type="button">Importa modello</button><button id="eur1Example" type="button">Carica esempio</button><button id="eur1Original" type="button">Apri scan originale</button></div><input id="eur1ImportFile" type="file" accept=".json,.eur1,application/json" hidden></details>
-      </aside>
-      <div class="eur1-preview-column">
-        <div class="eur1-preview-toolbar"><strong>Documento EUR.1</strong><label class="eur1-guides-label"><input id="eur1Guides" type="checkbox" checked> Evidenzia campi</label><label for="eur1Zoom" class="eur1-zoom-label">Zoom <select id="eur1Zoom"><option value="fit">Adatta</option><option value="100">100%</option><option value="125">125%</option><option value="150">150%</option></select></label></div>
-        <div id="eur1Viewport" class="eur1-viewport"><div id="eur1Paper" class="eur1-paper eur1-guides" aria-label="Documento EUR.1 modificabile"><img id="eur1Background" alt="Scansione originale del formulario EUR.1" draggable="false"><div id="eur1SerialMask" class="eur1-serial-mask" aria-hidden="true"></div><div id="eur1Fields"></div></div></div>
-        <div class="eur1-export-row"><label for="eur1ExportMode"><span>Contenuto del PDF</span><select id="eur1ExportMode"><option value="complete">Copia per il cliente con formulario EUR.1</option><option value="data">Stampa sul formulario prestampato · solo dati</option></select></label><div class="eur1-toolbar-group"><button id="eur1ExportWord" type="button" class="primary" title="Scarica un Word con i soli dati, senza sfondo, per stampare sul certificato EUR.1 originale">Word per stampa EUR.1</button><button id="eur1ExportPdf" type="button">Scarica PDF</button></div><p class="eur1-help">Il Word contiene sempre solo i dati compilati, senza sfondo né numero EUR.1 prestampato, nelle posizioni del certificato originale. Puoi completare i campi mancanti anche in Word. Stampa in A4 al 100%, con dimensioni effettive. Per il PDF solo dati occorrono MRN e date completi.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
+
+
 
     <section class="usefulToolsPanel sectionJumpTarget" id="usefulToolsPanel" aria-label="Tool utili: Analizza Documenti, PDF e documenti">
       <div class="usefulToolsHead">
@@ -8070,6 +7954,158 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
     </section>
   </div>
 </section>
+
+<section class="organizeModulePanel customsDocumentsPanel sectionJumpTarget" id="customsDocumentsPanel" aria-label="Documenti doganali: EUR.1 e A22">
+  <div class="organizeModuleHead">
+    <div>
+      <div class="organizeModuleTitle">Documenti doganali</div>
+      <div class="organizeModuleSubtitle">Compilazione, anteprima e stampa di EUR.1 e A22.</div>
+    </div>
+    <div class="organizeModuleActions">
+      <span class="organizeModuleStats" id="customsDocumentsStats">2 sottomoduli</span>
+      <button type="button" id="customsDocumentsToggleBtn" class="doganaModuleSvgToggleBtn" aria-expanded="true" aria-controls="customsDocumentsBody" aria-label="Riduci a icona Documenti doganali" title="Riduci a icona"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4.75 4.75L10 10"/><path d="M10 6.2V10H6.2"/><path d="M19.25 19.25L14 14"/><path d="M14 17.8V14h3.8"/></svg></button>
+    </div>
+  </div>
+  <div class="organizeModuleBody" id="customsDocumentsBody">
+    <div class="organizeModuleChips" aria-label="Sottomoduli Documenti doganali">
+      <a class="organizeModuleChip" href="#eur1TemplateModule" data-jump-focus="#eur1Name">EUR.1</a>
+      <a class="organizeModuleChip" href="#a22TemplateModule" data-jump-focus="#a22Exporter">A22</a>
+    </div>
+<section id="eur1TemplateModule" class="eur1-module sectionJumpTarget eur1-collapsed" aria-label="Creazione template EUR.1">
+  <div class="eur1-head">
+    <div class="eur1-title"><span>EUR.1</span></div>
+    <div class="eur1-head-actions"><button id="eur1Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="eur1Body" aria-label="Mostra modulo EUR.1" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button></div>
+  </div>
+  <div id="eur1Body" class="eur1-body" hidden>
+    <p class="eur1-intro">Prepara la bozza per il cliente, poi completa la stessa pratica con il DAE definitivo e stampa sul formulario EUR.1.</p>
+    <div class="eur1-toolbar">
+      <div class="eur1-toolbar-group" aria-label="Compilazione"><button id="eur1New" type="button">Nuovo EUR.1</button><button id="eur1LoadDae" type="button" class="primary">Carica DAE / DAU</button><button id="eur1LoadWord" type="button">Carica Word</button></div>
+      <button id="eur1ArchiveToggle" type="button" aria-expanded="false" aria-controls="eur1Archive">Archivio EUR.1 <span id="eur1ArchiveCount">0</span></button>
+      <input id="eur1DaeFile" type="file" accept=".pdf,.png,.jpg,.jpeg,application/pdf,image/png,image/jpeg" hidden><input id="eur1WordFile" type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" hidden>
+    </div>
+    <div id="eur1ImportReview" class="eur1-import-review" hidden aria-label="Dati del documento caricato">
+      <strong id="eur1ImportTitle"></strong><p id="eur1ImportSummary"></p><ul id="eur1ImportNotices"></ul>
+      <div class="eur1-toolbar-group"><button id="eur1ApplyNew" type="button" class="primary">Crea nuovo EUR.1 dai dati</button><button id="eur1ApplyUpdate" type="button">Completa EUR.1 aperto</button><button id="eur1CancelImport" type="button">Annulla</button></div>
+      <p class="eur1-help">“Completa EUR.1 aperto” conserva i testi e l'allineamento della bozza, aggiunge i dati mancanti e aggiorna MRN e date definitivi.</p>
+    </div>
+    <div id="eur1EditorView">
+    <div class="eur1-workflow" aria-label="Preparazione EUR.1">
+      <div class="eur1-workflow-heading"><strong id="eur1Phase">Bozza cliente</strong><button id="eur1MakeDraft" type="button">Prepara bozza cliente</button></div>
+      <div class="eur1-workflow-fields"><label for="eur1WorkflowMrn">Numero documento / MRN<input id="eur1WorkflowMrn" type="text" maxlength="100" placeholder="MRN parziale nella bozza" autocomplete="off"></label><label for="eur1WorkflowDate">Data prevista o definitiva<input id="eur1WorkflowDate" type="text" maxlength="10" placeholder="00.10.2026" autocomplete="off"></label></div>
+      <p id="eur1WorkflowHint" class="eur1-help"></p>
+    </div>
+    <div class="eur1-save-row">
+      <label class="eur1-name-label" for="eur1Name"><span>Nome salvataggio</span><input id="eur1Name" type="text" maxlength="120" placeholder="Es. Cliente - destinazione - riferimento" autocomplete="off"></label>
+      <button id="eur1Save" type="button" class="primary">Salva EUR.1</button><button id="eur1SaveCopy" type="button">Salva copia</button><span id="eur1SavedState" class="eur1-saved-state" role="status">Nuovo documento</span>
+    </div>
+    </div>
+    <div id="eur1Status" class="eur1-status" role="status" aria-live="polite">Apertura del modello EUR.1…</div>
+    <div id="eur1Archive" class="eur1-archive" hidden>
+      <div class="eur1-archive-head"><h3>EUR.1 salvati</h3><button id="eur1ArchiveBack" type="button">Torna alla compilazione</button></div><div class="eur1-archive-filters"><input id="eur1ArchiveSearch" type="search" placeholder="Cerca nome, esportatore, EUR.1 o MRN" aria-label="Cerca nell'archivio EUR.1"><button id="eur1ArchiveRefresh" type="button">Aggiorna archivio</button></div>
+      <div id="eur1ArchiveList" class="eur1-archive-list"></div>
+    </div>
+    <div id="eur1Workspace" class="eur1-workspace" hidden>
+      <aside class="eur1-editor" aria-label="Campi EUR.1">
+        <label for="eur1FieldSelect">Campo da compilare</label><select id="eur1FieldSelect"></select>
+        <div class="eur1-field-nav"><button id="eur1PreviousField" type="button" aria-label="Campo precedente">←</button><span id="eur1FieldNumber"></span><button id="eur1NextField" type="button" aria-label="Campo successivo">→</button></div>
+        <label for="eur1FieldValue" id="eur1FieldLabel">Valore</label><textarea id="eur1FieldValue" rows="7" spellcheck="false" placeholder="Scrivi il testo del campo"></textarea>
+        <p class="eur1-help">Puoi scrivere anche direttamente sui riquadri del documento. Usa Invio per andare a capo.</p><p id="eur1FieldFit" class="eur1-help" role="status"></p>
+        <details id="eur1FieldSettings"><summary>Allineamento del campo</summary><div class="eur1-settings-grid">
+          <label>Sinistra mm<input id="eur1FieldX" type="number" min="0" max="208" step="0.1"></label><label>Alto mm<input id="eur1FieldY" type="number" min="0" max="295" step="0.1"></label><label>Larghezza mm<input id="eur1FieldW" type="number" min="2" max="180" step="0.1"></label><label>Altezza mm<input id="eur1FieldH" type="number" min="2" max="180" step="0.1"></label><label>Corpo pt<input id="eur1FieldFont" type="number" min="7" max="16" step="0.5"></label>
+        </div><button id="eur1ResetField" type="button">Ripristina questo campo</button></details>
+        <details><summary>Allineamento di stampa</summary><p class="eur1-help">Sposta tutti i dati rispetto al formulario. Valori positivi: destra / basso.</p><div class="eur1-settings-grid"><label>Orizzontale mm<input id="eur1OffsetX" type="number" min="-10" max="10" step="0.1" value="0"></label><label>Verticale mm<input id="eur1OffsetY" type="number" min="-10" max="10" step="0.1" value="0"></label></div><button id="eur1ResetLayout" type="button">Ripristina allineamento</button><p class="eur1-help">Per il prestampato usa carta A4 e stampa al 100%, con dimensioni effettive.</p></details>
+        <details><summary>Modelli e riferimenti</summary><p class="eur1-help">Conserva un modello riapribile o consulta il formulario originale.</p><div class="eur1-backup-actions"><button id="eur1Backup" type="button">Scarica modello riapribile</button><button id="eur1Import" type="button">Importa modello</button><button id="eur1Example" type="button">Carica esempio</button><button id="eur1Original" type="button">Apri scan originale</button></div><input id="eur1ImportFile" type="file" accept=".json,.eur1,application/json" hidden></details>
+      </aside>
+      <div class="eur1-preview-column">
+        <div class="eur1-preview-toolbar"><strong>Documento EUR.1</strong><label class="eur1-guides-label"><input id="eur1Guides" type="checkbox" checked> Evidenzia campi</label><label for="eur1Zoom" class="eur1-zoom-label">Zoom <select id="eur1Zoom"><option value="fit">Adatta</option><option value="100">100%</option><option value="125">125%</option><option value="150">150%</option></select></label></div>
+        <div id="eur1Viewport" class="eur1-viewport"><div id="eur1Paper" class="eur1-paper eur1-guides" aria-label="Documento EUR.1 modificabile"><img id="eur1Background" alt="Scansione originale del formulario EUR.1" draggable="false"><div id="eur1SerialMask" class="eur1-serial-mask" aria-hidden="true"></div><div id="eur1Fields"></div></div></div>
+        <div class="eur1-export-row"><label for="eur1ExportMode"><span>Contenuto del PDF</span><select id="eur1ExportMode"><option value="complete">Copia per il cliente con formulario EUR.1</option><option value="data">Stampa sul formulario prestampato · solo dati</option></select></label><div class="eur1-toolbar-group"><button id="eur1ExportWord" type="button" class="primary" title="Scarica un Word con i soli dati, senza sfondo, per stampare sul certificato EUR.1 originale">Word per stampa EUR.1</button><button id="eur1ExportPdf" type="button">Scarica PDF</button></div><p class="eur1-help">Il Word contiene sempre solo i dati compilati, senza sfondo né numero EUR.1 prestampato, nelle posizioni del certificato originale. Puoi completare i campi mancanti anche in Word. Stampa in A4 al 100%, con dimensioni effettive. Per il PDF solo dati occorrono MRN e date completi.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="a22TemplateModule" class="a22-module sectionJumpTarget is-minimized" aria-label="Creazione bolletta A22 da DAU o DAE">
+  <div class="a22-head">
+    <div class="a22-title">A22</div>
+    <button id="a22Toggle" class="doganaModuleSvgToggleBtn" type="button" aria-expanded="false" aria-controls="a22Body" aria-label="Mostra modulo A22" title="Mostra modulo"><svg class="doganaModuleToggleSvg" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M10 10L4.75 4.75"/><path d="M4.75 8.55v-3.8h3.8"/><path d="M14 14l5.25 5.25"/><path d="M19.25 15.45v3.8h-3.8"/></svg></button>
+  </div>
+  <div id="a22Body" class="a22-body" hidden>
+    <div class="a22-import-row">
+      <label id="a22Drop" class="a22-drop" for="a22File" tabindex="0" role="button" aria-label="Carica un DAU o DAE in PDF o immagine">
+        <strong>Aggiungi DAU / DAE all'A22</strong><span>Trascina uno o più PDF o immagini, oppure scegli i file. I DAU vengono aggiunti all'A22 in preparazione. Lettura MRN dai codici a barre Code 39 / Code 128.</span>
+        <input id="a22File" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.bmp,application/pdf,image/*" multiple hidden>
+      </label>
+      <div class="a22-import-actions">
+        <button id="a22New" type="button">Nuovo A22</button>
+        <button id="a22Example" type="button">Esempio allegato</button>
+        <select id="a22SourceChoice" aria-label="Documento da aprire" hidden></select>
+        <button id="a22OpenDae" type="button" disabled>Apri DAU / DAE</button>
+      </div>
+    </div>
+    <div id="a22Status" class="a22-status" role="status" aria-live="polite">Importa uno o più DAU per un unico A22. Il peso lordo viene sommato e tutti gli MRN vengono riportati nel PDF, tre per riga.</div>
+    <ul id="a22Notices" class="a22-notices" hidden></ul>
+    <details class="a22-text-import"><summary>Incolla il testo del DAU / DAE</summary><label for="a22RawText">Testo del documento</label><textarea id="a22RawText" rows="5" maxlength="100000" placeholder="Incolla qui il testo copiato dal DAU o DAE"></textarea><button id="a22ReadText" type="button">Compila dal testo</button></details>
+    <div class="a22-workspace">
+      <div class="a22-editor">
+        <fieldset><legend>Dati dal DAU / DAE</legend>
+          <div class="a22-fields">
+            <label class="a22-full" for="a22Exporter">Ragione sociale speditore<input id="a22Exporter" data-a22="exporter" type="text" maxlength="180" autocomplete="off"></label>
+            <label for="a22Vat">Partita IVA / EORI speditore<input id="a22Vat" data-a22="vat" type="text" maxlength="24" autocomplete="off" spellcheck="false"></label>
+            <label for="a22Nationality">Nazionalità<input id="a22Nationality" data-a22="nationality" type="text" maxlength="2" value="IT" autocomplete="off"></label>
+            <input id="a22Mrn" data-a22="mrn" type="hidden">
+            <div class="a22-full a22-document-area"><div class="a22-document-head"><strong id="a22DocumentCount">DAU e MRN</strong><button id="a22AddMrn" type="button">Aggiungi DAU / MRN</button></div><div id="a22Documents" class="a22-documents"></div><p class="a22-help">Una casella per ogni MRN. Con più DAU, correggi qui il peso e i contenitori di ciascun documento.</p></div>
+            <label class="a22-full" for="a22Container">Contenitori dell'A22 (se presenti)<input id="a22Container" data-a22="container" type="text" maxlength="5000" placeholder="Es. MRSU5791662 · separa più contenitori con una virgola" autocomplete="off" spellcheck="false"></label>
+            <label for="a22Gross">Peso lordo totale (kg)<input id="a22Gross" data-a22="gross" type="text" inputmode="decimal" maxlength="25" placeholder="Es. 8835" autocomplete="off"></label>
+            <label for="a22Hs">Voce doganale (facoltativa)<input id="a22Hs" data-a22="hs" type="text" inputmode="numeric" maxlength="10" autocomplete="off"></label>
+            <label class="a22-full" for="a22Description">Qualità della merce · descrizione sommaria<input id="a22Description" data-a22="description" type="text" list="a22DescriptionOptions" maxlength="500" placeholder="Es. ALIMENTI, BEVANDE, VARIE o altra descrizione" autocomplete="off"></label>
+            <datalist id="a22DescriptionOptions"><option value="ALIMENTI"></option><option value="BEVANDE"></option><option value="VARIE"></option><option value="ALTRO"></option><option value="ABBIGLIAMENTO"></option><option value="ELETTRODOMESTICI"></option><option value="MACCHINARI"></option><option value="ARREDAMENTO"></option><option value="IMBALLAGGI"></option></datalist>
+          </div>
+          <p class="a22-help">La descrizione proposta è sommaria: puoi scegliere un suggerimento o scrivere liberamente la descrizione adatta alla pratica.</p>
+          <p class="a22-help">Il peso dell'A22 è la somma delle masse lorde delle testate dei DAU (riquadro 35). Lo stesso MRN viene conteggiato una sola volta. Usa Nuovo A22 per iniziare un'altra autorizzazione.</p>
+        </fieldset>
+        <fieldset><legend>Liquidazione</legend>
+          <div class="a22-fields">
+            <label class="a22-full" for="a22Office">Dogana<select id="a22Office" data-a22="office"><option value="salerno">Salerno - IT084100</option><option value="other">Altra dogana</option></select></label>
+            <label class="a22-other" for="a22OfficeName" hidden>Nome dogana<input id="a22OfficeName" data-a22="officeName" type="text" maxlength="100"></label>
+            <label class="a22-other" for="a22OfficeCode" hidden>Codice ufficio<input id="a22OfficeCode" data-a22="officeCode" type="text" maxlength="10"></label>
+            <label for="a22TaxCode">Codice tributo<input id="a22TaxCode" data-a22="taxCode" type="text" maxlength="4" value="9AE" readonly></label>
+            <label for="a22Rate">Aliquota<input id="a22Rate" data-a22="rate" type="text" inputmode="decimal" maxlength="15" value="0,843" readonly></label>
+          </div>
+          <div class="a22-calculation" aria-live="polite"><div><span>Base imponibile</span><strong id="a22Base">-</strong></div><span class="a22-multiply">×</span><div><span>Aliquota</span><strong id="a22RateResult">0,843</strong></div><span class="a22-multiply">=</span><div><span>Importo</span><strong id="a22Amount">-</strong></div></div>
+          <p id="a22CalculationNote" class="a22-help">Da 101 a 1.000 kg: base 1; da 1.001 a 2.000 kg: base 2, e così via. Le frazioni oltre 1.000 kg passano allo scaglione successivo.</p>
+        </fieldset>
+        <details class="a22-settings"><summary>Rappresentante, pagamento e altri campi</summary>
+          <div class="a22-fields">
+            <label class="a22-full" for="a22Representative">Rappresentato da<input id="a22Representative" data-a22="representative" type="text" maxlength="180"></label>
+            <label for="a22BillType">Bolletta di<input id="a22BillType" data-a22="billType" type="text" maxlength="40"></label>
+            <label for="a22Mp">MP<input id="a22Mp" data-a22="mp" type="text" maxlength="4"></label>
+            <label for="a22Provenance">Merci provenienti da<input id="a22Provenance" data-a22="provenance" type="text" maxlength="50"></label>
+            <label for="a22Origin">Accertata origine da<input id="a22Origin" data-a22="origin" type="text" maxlength="50"></label>
+            <label class="a22-full" for="a22PaymentMethod">Metodo di pagamento<input id="a22PaymentMethod" data-a22="paymentMethod" type="text" maxlength="50"></label>
+            <label for="a22Account">Conto di debito<input id="a22Account" data-a22="account" type="text" maxlength="30"></label>
+            <label for="a22Cin">CIN<input id="a22Cin" data-a22="cin" type="text" maxlength="4"></label>
+            <label for="a22Registration">N. registrazione<input id="a22Registration" data-a22="registration" type="text" maxlength="40" placeholder="Da compilare se disponibile"></label>
+            <label for="a22Date">Data registrazione<input id="a22Date" data-a22="registrationDate" type="date"></label>
+            <label class="a22-full" for="a22Footer">Indicazioni in calce<textarea id="a22Footer" data-a22="footer" rows="4" maxlength="250"></textarea></label>
+          </div>
+        </details>
+        <label id="a22ReviewRow" class="a22-review" hidden><input id="a22Review" type="checkbox">Ho verificato MRN, speditore, peso lordo, contenitori e descrizione sommaria con il DAU / DAE.</label>
+        <div id="a22Validation" class="a22-validation" role="status"></div>
+        <div class="a22-export"><button id="a22ExportPdf" type="button" class="primary" disabled>Scarica A22 PDF</button><button id="a22SaveModel" type="button">Scarica modello riapribile</button><button id="a22LoadModel" type="button">Apri modello</button><input id="a22ModelFile" type="file" accept=".json,.a22,application/json" hidden></div>
+        <div id="a22DraftStatus" class="a22-help">Bozza su questo dispositivo.</div>
+      </div>
+      <div class="a22-preview">
+        <div class="a22-preview-head"><strong>Anteprima A22</strong><span>Formato A4</span></div>
+        <p id="a22PreviewHint" class="a22-help">Completa i dati per il documento da inoltrare alla dogana.</p>
+        <iframe id="a22Preview" title="Anteprima del PDF A22 compilato" class="a22-preview-frame" hidden></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+  </div>
+</section>
+
 
 <div id="navi-section" class="sectionJumpTarget"></div>
 <div class="panel shipPanel sectionJumpTarget" id="shipPanel">
@@ -11576,6 +11612,118 @@ button.doganaModuleSvgToggleBtn:active,
       if (activeExtraTerminal === "flavio" && status === "-") td.style.color = "var(--muted)";
     }
 
+
+    const extraVesselCache = new Map();
+    function extraVesselIdentity(value) {
+      const text = String(value || "").toUpperCase().replace(/\s+/g," ").trim();
+      const m = text.match(/^(.*?)\s+(?:VOY(?:AGE)?\.?|VIAGGIO|V\.)\s*:?\s*(.+)$/i);
+      return {name:m ? m[1].trim() : text, voyage:m ? m[2].trim() : ""};
+    }
+    function extraVesselKey(value) {
+      return String(value || "").toUpperCase().replace(/[^A-Z0-9]/g, "");
+    }
+    function extraMatchVessel(info, ships, terminal) {
+      const candidates = ships.filter(ship =>
+        extraVesselKey(ship.terminalRicerca) === extraVesselKey(terminal) &&
+        extraVesselKey(extraVesselIdentity(getShipRowName(ship)).name) === extraVesselKey(info.name));
+      const voyageOf = ship => ship.viaggio || ship.voyage || ship.depVoy || ship.arrVoy || ship.voy || ship.codiceViaggio || extraVesselIdentity(getShipRowName(ship)).voyage;
+      const exact = info.voyage ? candidates.filter(ship => extraVesselKey(voyageOf(ship)) === extraVesselKey(info.voyage)) : [];
+      // Non abbina un viaggio diverso; senza viaggio noto accetta solo una chiusura univoca.
+      const usable = info.voyage ? (exact.length ? exact : candidates.filter(ship => !voyageOf(ship))) : candidates;
+      const closingOf = ship => {
+        if (/FORECAST/i.test(String(ship.fonteSct || ship.section || ""))) return "";
+        return ship.chiusura || ship.customCloseTime || ship.tdtcd1 || ship.closing || "";
+      };
+      const values = [...new Set(usable.map(closingOf).filter(Boolean))];
+      return {closing:values.length === 1 ? values[0] : "", message:values.length > 1 ? "Più viaggi: chiusura da verificare" : (candidates.length && !usable.length ? "Viaggio non presente in NAVI" : "Chiusura non disponibile in NAVI")};
+    }
+    async function extraReadVesselPdf(base64, container) {
+      if (!window.pdfjsLib) throw new Error("Lettore PDF non disponibile");
+      const bytes = Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+      const pdf = await pdfjsLib.getDocument({data:bytes}).promise;
+      const lines = [];
+      try {
+        for (let n=1; n<=pdf.numPages; n++) {
+          const content = await (await pdf.getPage(n)).getTextContent();
+          let y = null, line = "";
+          for (const item of content.items) {
+            if (y !== null && Math.abs(item.transform[5]-y)>3) { lines.push(line); line=""; }
+            line += " " + item.str; y = item.transform[5];
+            if (item.hasEOL) {lines.push(line); line=""; y=null;}
+          }
+          if (line) lines.push(line);
+        }
+      } finally { await pdf.destroy(); }
+      if (!extraVesselKey(lines.join(" ")).includes(extraVesselKey(container))) throw new Error("Il report non corrisponde al container");
+      const index = lines.findIndex(line => /^\s*(?:Nave|Vessel)(?:\s+di\s+imbarco)?\s*:/i.test(line));
+      if (index < 0) throw new Error("Nome nave non presente nel report");
+      const name = lines[index].replace(/^\s*(?:Nave|Vessel)(?:\s+di\s+imbarco)?\s*:\s*/i, "").trim() || String(lines[index+1] || "").trim();
+      if (!name || /^(?:Spedizioniere|Attivit|Merce|Imex|Non disponibile)/i.test(name)) throw new Error("Nome nave non presente nel report");
+      return extraVesselIdentity(name);
+    }
+    function renderExtraVesselCell(td, row, term) {
+      td.className = "extraMobileField extraVesselCell";
+      td.dataset.extraLabel = "Nave / chiusura doganale";
+      const cfg = EXTRA_TERMINALS[term];
+      const container = extraVesselKey(row[cfg.containerField]);
+      if (!/^[A-Z]{4}\d{7}$/.test(container)) { td.textContent="—"; return; }
+      const entered = !!row.sctPdfUrl && row.sctStatus === "PDF PRONTO";
+      const tracking = term === "conateco" ? row.conatecoTracking : row.flavioTracking;
+      const rawName = tracking?.NomeNave || tracking?.nave || tracking?.vessel || tracking?.vesselName || "";
+      const key = `${term}:${container}:${term === 'sct' ? entered : rawName+':'+(tracking?.IdViaggio || tracking?.voyage || '')}`;
+      const status = String(row[cfg.statusField] || "");
+      if (term === "sct" && !entered && !/NON TROVATO|NON ENTRATO|PDF non trovato/i.test(status)) {
+        td.textContent = /Controllo/i.test(status) ? "In attesa del controllo ingresso…" : "Controllare prima l’ingresso";
+        return;
+      }
+      const paint = async (force=false) => {
+        td.textContent="Ricerca nave…";
+        try {
+          let cached = extraVesselCache.get(key);
+          if (force || !cached || cached.until <= Date.now()) {
+            const task = (async () => {
+              if (term !== "sct") {
+                if (!rawName) return {name:"", message:"Nave non disponibile nel tracking"};
+                const info = extraVesselIdentity(rawName);
+                info.voyage = tracking?.IdViaggio || tracking?.voyage || info.voyage;
+                return {...info, source:`Tracking ${cfg.label}`};
+              }
+              const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
+              const payload = await res.json();
+              if (!res.ok || !payload.success) throw new Error(payload.error || "Report nave non disponibile");
+              return {...await extraReadVesselPdf(payload.pdfBase64, container), source:payload.source, pdfUrl:payload.pdfUrl, fetchedAt:payload.fetchedAt};
+            })();
+            cached = {promise:task, until:Date.now()+10*60*1000};
+            extraVesselCache.set(key,cached);
+            task.catch(() => { if (extraVesselCache.get(key)===cached) cached.until=Date.now()+60000; });
+          }
+          const info = await cached.promise;
+          td.textContent="";
+          if (info.name) {
+            const title = document.createElement("strong");
+            title.textContent=info.name+(info.voyage ? ` · ${info.voyage}` : ""); td.appendChild(title);
+            const close = document.createElement("div"); close.textContent="Verifica chiusura…"; td.appendChild(close);
+            try {
+              const dataset = await loadShipSearchDataset();
+              const match = extraMatchVessel(info, dataset.ships, cfg.label);
+              close.textContent = match.closing ? `Chiusura: ${match.closing}` : match.message;
+              if (dataset.errors.some(e => e.startsWith(cfg.label+":"))) close.textContent="Dati NAVI del terminal non disponibili";
+              if (match.closing) close.style.fontWeight="700";
+            } catch { close.textContent="Dati NAVI non disponibili"; }
+            const source = document.createElement("small"); source.textContent=info.source; td.appendChild(source);
+            if (info.pdfUrl) {
+              const link = document.createElement("a"); link.href=info.pdfUrl; link.target="_blank"; link.rel="noopener noreferrer";
+              link.textContent="Apri report nave"; td.appendChild(link);
+            }
+          } else td.appendChild(document.createTextNode(info.message));
+        } catch (err) { td.textContent=err.message || "Recupero nave non riuscito"; }
+        const button = document.createElement("button"); button.type="button"; button.className="extraVesselRefresh";
+        button.textContent="Aggiorna nave"; button.addEventListener("click", () => paint(true)); td.appendChild(button);
+      };
+      // I timer iniziali lasciano completare l'inizializzazione dei dati NAVI.
+      setTimeout(() => { if (td.isConnected) paint(); }, 0);
+    }
+
     function renderExtra(){
       if(!extraTbody || !extraThead) return;
       const cfg = EXTRA_TERMINALS[activeExtraTerminal] || EXTRA_TERMINALS.sct;
@@ -11585,6 +11733,7 @@ button.doganaModuleSvgToggleBtn:active,
           <th>Cliente</th>
           <th>${cfg.title}</th>
           <th>Stato</th>
+          <th>Nave / chiusura doganale</th>
           <th class="actions">Azioni</th>
         </tr>`;
       extraTbody.innerHTML = "";
@@ -11595,7 +11744,7 @@ button.doganaModuleSvgToggleBtn:active,
         const tr = document.createElement("tr");
         const td = document.createElement("td");
         const terminalLabel = cfg.label || "TERMINAL";
-        td.colSpan = 5;
+        td.colSpan = 6;
         td.className = "extraEmptyCell";
         td.innerHTML = `
           <div class="extraEmptyCompact" role="status" aria-live="polite">
@@ -11813,6 +11962,9 @@ button.doganaModuleSvgToggleBtn:active,
         statusTd.classList.add("extraMobileField", "extraMobileStatus");
         statusTd.dataset.extraLabel = "Stato";
         tr.appendChild(statusTd);
+        const vesselTd = document.createElement("td");
+        renderExtraVesselCell(vesselTd, row, activeExtraTerminal);
+        tr.appendChild(vesselTd);
 
         const tdActions = document.createElement("td");
         tdActions.className = "actions extraMobileCardActions";
@@ -15566,32 +15718,49 @@ function installExtraTabClearOnClick(){
 })();
 
 
-/* === MENU ORGANIZZA DROPDOWN === */
-(function initOrganizeDropdown(){
-  const root = document.getElementById("organizeNavDropdown");
-  const toggle = document.getElementById("organizeNavToggle");
-  const menu = document.getElementById("organizeNavMenu");
-  if (!root || !toggle || !menu) return;
+/* === MENU MODULI RAGGRUPPATI: ORGANIZZA E DOCUMENTI DOGANALI === */
+(function initGroupedModuleDropdowns(){
+  const menus = [
+    ["organizeNavDropdown", "organizeNavToggle", "organizeNavMenu"],
+    ["customsDocumentsNavDropdown", "customsDocumentsNavToggle", "customsDocumentsNavMenu"]
+  ].map(ids => ids.map(id => document.getElementById(id))).filter(nodes => nodes.every(Boolean));
 
-  function setOpen(open){
-    root.classList.toggle("open", !!open);
-    toggle.setAttribute("aria-expanded", open ? "true" : "false");
+  function setOpen(nodes, open){
+    nodes[0].classList.toggle("open", !!open);
+    nodes[1].setAttribute("aria-expanded", String(!!open));
   }
-
-  toggle.addEventListener("click", event => {
-    event.stopPropagation();
-    setOpen(!root.classList.contains("open"));
-  });
-  menu.addEventListener("click", event => {
-    if (event.target.closest("a")) setOpen(false);
-  });
-  document.addEventListener("click", event => {
-    if (!root.contains(event.target)) setOpen(false);
+  menus.forEach(nodes => {
+    const [root, toggle, menu] = nodes;
+    toggle.addEventListener("click", event => {
+      event.stopPropagation();
+      const open = !root.classList.contains("open");
+      menus.forEach(other => setOpen(other, other === nodes && open));
+    });
+    menu.addEventListener("click", event => {
+      if (event.target.closest("a")) setOpen(nodes, false);
+    });
+    document.addEventListener("click", event => {
+      if (!root.contains(event.target)) setOpen(nodes, false);
+    });
+    root.addEventListener("keydown", event => {
+      if (event.key !== "ArrowDown" && event.key !== "ArrowUp") return;
+      event.preventDefault();
+      menus.forEach(other => setOpen(other, other === nodes));
+      const items = Array.from(menu.querySelectorAll('[role="menuitem"]'));
+      if (!items.length) return;
+      const index = items.indexOf(document.activeElement);
+      const next = index < 0 ? (event.key === "ArrowDown" ? 0 : items.length - 1)
+        : (index + (event.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+      items[next].focus();
+    });
   });
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape") { setOpen(false); toggle.focus(); }
+    if (event.key !== "Escape") return;
+    const opened = menus.find(nodes => nodes[0].classList.contains("open"));
+    if (opened) { setOpen(opened, false); opened[1].focus(); }
   });
 })();
+
 
 /* === UX IMPROVEMENTS DOGANATOOLS JS === */
 (function initDoganaToolsUx(){
@@ -18416,8 +18585,7 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
         ["postItPanel", "postItToggleBtn"],
         ["usefulToolsPanel", "usefulToolsToggleBtn"],
         ["invoice-classifier-section", "invoiceClassifierToggle"],
-        ["pdfToolsPanel", "pdfToolsToggleBtn"],
-        ["a22TemplateModule", "a22Toggle"]
+        ["pdfToolsPanel", "pdfToolsToggleBtn"]
       ]) {
         const module = document.getElementById(moduleId);
         if (module?.contains(target) && module.classList.contains("is-minimized")) {
@@ -18444,6 +18612,65 @@ body[data-theme="dark"] .shipClosingUrgencyBadge.future{
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initOrganizePanel);
   else initOrganizePanel();
+})();
+</script>
+
+
+<script id="customs-documents-panel-toggle-script">
+(function initCustomsDocumentsPanel(){
+  const panel = document.getElementById("customsDocumentsPanel");
+  const body = document.getElementById("customsDocumentsBody");
+  const toggle = document.getElementById("customsDocumentsToggleBtn");
+  if (!panel || !body || !toggle) return;
+  const storageKey = "doganatools_customs_documents_panel_minimized_v1";
+
+  function setMinimized(minimized){
+    panel.classList.toggle("is-minimized", minimized);
+    body.hidden = minimized;
+    toggle.setAttribute("aria-expanded", String(!minimized));
+    toggle.setAttribute("aria-label", minimized ? "Mostra modulo Documenti doganali" : "Riduci a icona Documenti doganali");
+    toggle.title = minimized ? "Mostra modulo" : "Riduci a icona";
+    window.setDoganaModuleToggleIcon?.(toggle, minimized);
+    try { localStorage.setItem(storageKey, minimized ? "1" : "0"); } catch {}
+  }
+  window.doganaEnsureCustomsDocumentsExpanded = () => setMinimized(false);
+  let minimized = false;
+  try { minimized = localStorage.getItem(storageKey) === "1"; } catch {}
+  setMinimized(minimized);
+  toggle.addEventListener("click", () => setMinimized(!panel.classList.contains("is-minimized")));
+
+  function revealTarget(hash){
+    const target = document.getElementById(String(hash || "").replace(/^#/, ""));
+    if (!target || !panel.contains(target)) return;
+    setMinimized(false);
+    for (const [moduleId, toggleId, collapsedClass] of [
+      ["eur1TemplateModule", "eur1Toggle", "eur1-collapsed"],
+      ["a22TemplateModule", "a22Toggle", "is-minimized"]
+    ]) {
+      const module = document.getElementById(moduleId);
+      if (module?.contains(target) && module.classList.contains(collapsedClass)) {
+        document.getElementById(toggleId)?.click();
+      }
+    }
+  }
+  document.addEventListener("click", event => {
+    const link = event.target.closest?.('a[href^="#"]');
+    if (link) revealTarget(link.getAttribute("href"));
+  }, true);
+  window.addEventListener("hashchange", () => revealTarget(location.hash));
+  document.querySelectorAll('#customsDocumentsBody .organizeModuleChip').forEach(link => {
+    link.addEventListener("click", event => {
+      const target = document.getElementById(link.hash.slice(1));
+      if (!target) return;
+      event.preventDefault();
+      target.scrollIntoView({ behavior:"smooth", block:"start" });
+      try { history.replaceState(null, "", link.hash); } catch {}
+      const focus = target.querySelector(link.dataset.jumpFocus);
+      if (focus) setTimeout(() => {
+        if (!focus.disabled && focus.getClientRects().length) focus.focus({ preventScroll:true });
+      }, 360);
+    });
+  });
 })();
 </script>
 
@@ -20615,6 +20842,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #extraCheckNowBtn.extraChec
     { id:"minimizeShipsBtn", panel:"#shipPanel,.shipPanel", reduce:"Riduci a icona Previsione Navi", show:"Mostra modulo Previsione Navi" },
     { id:"minimizeBookingLookupBtn", panel:"#bookingLookupPanel,.bookingStandalonePanel", reduce:"Riduci a icona Booking & EORI", show:"Mostra modulo Booking & EORI" },
     { id:"serverConsoleToggle", panel:"#serverConsolePanel,.serverConsolePanel", reduce:"Riduci a icona Console", show:"Mostra modulo Console" },
+    { id:"customsDocumentsToggleBtn", panel:"#customsDocumentsPanel", reduce:"Riduci a icona Documenti doganali", show:"Mostra modulo Documenti doganali" },
     { id:"a22Toggle", panel:"#a22TemplateModule", reduce:"Riduci a icona A22", show:"Mostra modulo A22" },
     { id:"eur1Toggle", panel:"#eur1TemplateModule", reduce:"Riduci a icona EUR.1", show:"Mostra modulo EUR.1" },
     { id:"usefulToolsToggleBtn", panel:"#usefulToolsPanel", reduce:"Riduci a icona Tool utili", show:"Mostra modulo Tool utili" }
@@ -21192,8 +21420,8 @@ button[data-extra-empty-add]{
 }
 
 /* ORGANIZZA — viola */
-#organizeNavToggle,
-#organizePanelToggleBtn{
+:is(#organizeNavToggle,#customsDocumentsNavToggle),
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn){
   --dogana-btn-tone:var(--dogana-btn-purple) !important;
 }
 
@@ -21551,7 +21779,7 @@ body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
 .appQuickNav > a[href="#customs-ai-section"]{ --nav-tone:#4f46e5; }
 .appQuickNav > a[href="#dogana-section"]{ --nav-tone:#2563eb; }
 .appQuickNav > a[href="#extraPanel"]{ --nav-tone:#16a34a; }
-.appQuickNav #organizeNavToggle{ --nav-tone:#7c3aed; }
+.appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle){ --nav-tone:#7c3aed; }
 .appQuickNav > a[href="#navi-section"]{ --nav-tone:#0891b2; }
 .appQuickNav > a[href="#bookingLookupPanel"]{ --nav-tone:#d97706; }
 .appQuickNav #doganaMenuSettingsBtn{ --nav-tone:#64748b; }
@@ -21559,7 +21787,7 @@ body[data-theme="dark"] #extraPanel #extraTbody button.rowBtn{
 
 body .appQuickNav > a,
 body .appQuickNav > button,
-body .appQuickNav #organizeNavToggle,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle),
 body .appQuickNav #doganaMenuSettingsBtn,
 body .appQuickNav #doganaMenuSessionSync{
   position:relative !important;
@@ -21587,7 +21815,7 @@ body .appQuickNav #doganaMenuSessionSync{
 /* Riflesso superiore: è l'effetto distintivo che aveva ORGANIZZA. */
 body .appQuickNav > a::before,
 body .appQuickNav > button::before,
-body .appQuickNav #organizeNavToggle::before,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle)::before,
 body .appQuickNav #doganaMenuSettingsBtn::before,
 body .appQuickNav #doganaMenuSessionSync::before{
   content:"" !important;
@@ -21608,8 +21836,8 @@ body .appQuickNav #doganaMenuSessionSync::before{
 
 body .appQuickNav > a:hover,
 body .appQuickNav > button:hover:not(:disabled),
-body .appQuickNav #organizeNavToggle:hover:not(:disabled),
-body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover:not(:disabled),
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle){
   border-color:color-mix(in srgb, var(--nav-tone, var(--nav-default)) 62%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
     color-mix(in srgb, var(--nav-tone, var(--nav-default)) 20%, var(--surface)) 0%,
@@ -21869,8 +22097,8 @@ body .appQuickNav > a::before,
 body .appQuickNav > a::after,
 body .appQuickNav > button::before,
 body .appQuickNav > button::after,
-body .appQuickNav #organizeNavToggle::before,
-body .appQuickNav #organizeNavToggle::after,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle)::before,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle)::after,
 body .appQuickNav #doganaMenuSettingsBtn::before,
 body .appQuickNav #doganaMenuSettingsBtn::after,
 body .appQuickNav #doganaMenuSessionSync::before,
@@ -21882,7 +22110,7 @@ body .appQuickNav #doganaMenuSessionSync::after{
 /* Base comune: più piatta e pulita del precedente effetto R20. */
 body .appQuickNav > a,
 body .appQuickNav > button,
-body .appQuickNav #organizeNavToggle,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle),
 body .appQuickNav #doganaMenuSettingsBtn,
 body .appQuickNav #doganaMenuSessionSync{
   position:relative !important;
@@ -21898,7 +22126,7 @@ body .appQuickNav #doganaMenuSessionSync{
 /* Celestino unico per i moduli operativi. */
 body #doganaNavTableBtn,
 body #doganaNavContainersBtn,
-body #organizeNavToggle,
+body :is(#organizeNavToggle,#customsDocumentsNavToggle),
 body #doganaNavShipsBtn,
 body #doganaNavBookingBtn{
   color:color-mix(in srgb, #0369a1 82%, var(--heading)) !important;
@@ -21913,8 +22141,8 @@ body #doganaNavBookingBtn{
 
 body #doganaNavTableBtn:hover,
 body #doganaNavContainersBtn:hover,
-body #organizeNavToggle:hover,
-body .appNavDropdown.open #organizeNavToggle,
+body :is(#organizeNavToggle,#customsDocumentsNavToggle):hover,
+body .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle),
 body #doganaNavShipsBtn:hover,
 body #doganaNavBookingBtn:hover{
   color:color-mix(in srgb, #075985 88%, var(--heading)) !important;
@@ -21930,7 +22158,7 @@ body #doganaNavBookingBtn:hover{
 
 body #doganaNavTableBtn:active,
 body #doganaNavContainersBtn:active,
-body #organizeNavToggle:active,
+body :is(#organizeNavToggle,#customsDocumentsNavToggle):active,
 body #doganaNavShipsBtn:active,
 body #doganaNavBookingBtn:active{
   transform:translateY(0) !important;
@@ -22021,7 +22249,7 @@ body .appQuickNav > a[href="#customs-ai-section"]:focus-visible{
 
 body[data-theme="dark"] #doganaNavTableBtn,
 body[data-theme="dark"] #doganaNavContainersBtn,
-body[data-theme="dark"] #organizeNavToggle,
+body[data-theme="dark"] :is(#organizeNavToggle,#customsDocumentsNavToggle),
 body[data-theme="dark"] #doganaNavShipsBtn,
 body[data-theme="dark"] #doganaNavBookingBtn{
   color:#bae6fd !important;
@@ -22324,7 +22552,7 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
 
 /* Il pannello principale diventa il riferimento della linea. */
 .doganaTableModuleCard,
-#organizePanel.organizeModulePanel,
+:is(#organizePanel,#customsDocumentsPanel).organizeModulePanel,
 #shipPanel.shipPanel,
 #bookingLookupPanel.bookingStandalonePanel,
 #serverConsolePanel.serverConsolePanel{
@@ -22333,7 +22561,7 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
 
 /* Geometria identica alla .appTopBar::before R22. */
 .doganaTableModuleCard::before,
-#organizePanel.organizeModulePanel::before,
+:is(#organizePanel,#customsDocumentsPanel).organizeModulePanel::before,
 #shipPanel.shipPanel::before,
 #bookingLookupPanel.bookingStandalonePanel::before,
 #serverConsolePanel.serverConsolePanel::before{
@@ -22369,7 +22597,7 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
 }
 
 /* ORGANIZZA PRINCIPALE — viola -> magenta */
-#organizePanel.organizeModulePanel::before{
+:is(#organizePanel,#customsDocumentsPanel).organizeModulePanel::before{
   background:linear-gradient(90deg,
     transparent 0%,
     rgba(99,102,241,.08) 5%,
@@ -22420,7 +22648,7 @@ body[data-theme="dark"] .serverConsolePanel .serverConsoleHead::before{
 }
 
 body[data-theme="dark"] .doganaTableModuleCard::before,
-body[data-theme="dark"] #organizePanel.organizeModulePanel::before,
+body[data-theme="dark"] :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel::before,
 body[data-theme="dark"] #shipPanel.shipPanel::before,
 body[data-theme="dark"] #bookingLookupPanel.bookingStandalonePanel::before,
 body[data-theme="dark"] #serverConsolePanel.serverConsolePanel::before{
@@ -22430,7 +22658,7 @@ body[data-theme="dark"] #serverConsolePanel.serverConsolePanel::before{
 
 @media (max-width:700px){
   .doganaTableModuleCard::before,
-  #organizePanel.organizeModulePanel::before,
+  :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel::before,
   #shipPanel.shipPanel::before,
   #bookingLookupPanel.bookingStandalonePanel::before,
   #serverConsolePanel.serverConsolePanel::before{
@@ -22739,7 +22967,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 #notificationToggleBtn.doganaModuleSvgToggleBtn,
 #postItToggleBtn.doganaModuleSvgToggleBtn,
@@ -22782,7 +23010,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn:hover,
-#organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn:hover,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:hover,
 #notificationToggleBtn.doganaModuleSvgToggleBtn:hover,
 #postItToggleBtn.doganaModuleSvgToggleBtn:hover,
@@ -22805,7 +23033,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn:active,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn:active,
-#organizePanelToggleBtn.doganaModuleSvgToggleBtn:active,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn:active,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:active,
 #notificationToggleBtn.doganaModuleSvgToggleBtn:active,
 #postItToggleBtn.doganaModuleSvgToggleBtn:active,
@@ -22821,7 +23049,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 #doganaMinimizeBtn .doganaModuleToggleSvg,
 #minimizeExtraBtn .doganaModuleToggleSvg,
-#organizePanelToggleBtn .doganaModuleToggleSvg,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn) .doganaModuleToggleSvg,
 #operativeChecklistToggleBtn .doganaModuleToggleSvg,
 #notificationToggleBtn .doganaModuleToggleSvg,
 #postItToggleBtn .doganaModuleToggleSvg,
@@ -22838,7 +23066,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 #doganaMinimizeBtn .doganaModuleToggleSvg path,
 #minimizeExtraBtn .doganaModuleToggleSvg path,
-#organizePanelToggleBtn .doganaModuleToggleSvg path,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn) .doganaModuleToggleSvg path,
 #operativeChecklistToggleBtn .doganaModuleToggleSvg path,
 #notificationToggleBtn .doganaModuleToggleSvg path,
 #postItToggleBtn .doganaModuleToggleSvg path,
@@ -22854,7 +23082,7 @@ body[data-theme="dark"] #doganaSettingsPanel.doganaSettingsPanel::before{
 
 body[data-theme="dark"] #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-body[data-theme="dark"] #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
@@ -22881,7 +23109,7 @@ body[data-theme="dark"] #usefulToolsToggleBtn.doganaModuleSvgToggleBtn{
 <style id="dogana-organizza-header-background-fix-r29">
 /* R30 — ORGANIZZA: header neutro, nessun background/gradient.
    La sola identità cromatica resta affidata alla linea superiore. */
-#organizePanel.organizeModulePanel > .organizeModuleHead{
+:is(#organizePanel,#customsDocumentsPanel).organizeModulePanel > .organizeModuleHead{
   background:transparent !important;
   background-image:none !important;
 }
@@ -22892,10 +23120,10 @@ body[data-theme="dark"] #usefulToolsToggleBtn.doganaModuleSvgToggleBtn{
    R30 — ORGANIZZA: niente icona DOGANA AI + persistenza stato
    L'icona viene neutralizzata anche se definita dal tema esterno.
    ========================================================= */
-body #organizePanel.organizeModulePanel .organizeModuleHead .organizeModuleTitle::before,
-body #organizePanel.organizeModulePanel .organizeModuleHead .organizeModuleTitle::after,
-body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::before,
-body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::after{
+body :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel .organizeModuleHead .organizeModuleTitle::before,
+body :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel .organizeModuleHead .organizeModuleTitle::after,
+body :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel .organizeModuleHead > div:first-child::before,
+body :is(#organizePanel,#customsDocumentsPanel).organizeModulePanel .organizeModuleHead > div:first-child::after{
   content:none !important;
   display:none !important;
   background:none !important;
@@ -22905,7 +23133,7 @@ body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::a
   box-shadow:none !important;
 }
 
-#organizePanel .organizeModuleTitle{
+:is(#organizePanel,#customsDocumentsPanel) .organizeModuleTitle{
   padding-left:0 !important;
   margin-left:0 !important;
   background-image:none !important;
@@ -22913,7 +23141,7 @@ body #organizePanel.organizeModulePanel .organizeModuleHead > div:first-child::a
 </style>
 <style id="dogana-organize-topnav-color-r31">
 /* R31 — ORGANIZZA usa esattamente il celestino degli altri moduli della topbar. */
-body .appQuickNav #organizeNavToggle{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle){
   --dogana-btn-tone:var(--topnav-sky, #38bdf8) !important;
   color:color-mix(in srgb, #0369a1 82%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 42%, var(--btn-border)) !important;
@@ -22922,8 +23150,8 @@ body .appQuickNav #organizeNavToggle{
     color-mix(in srgb, var(--topnav-sky, #38bdf8) 6%, var(--surface-soft)) 100%) !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.74), 0 4px 12px rgba(14,165,233,.08) !important;
 }
-body .appQuickNav #organizeNavToggle:hover,
-body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover,
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle){
   color:color-mix(in srgb, #075985 88%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 62%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -22931,10 +23159,10 @@ body .appQuickNav .appNavDropdown.open #organizeNavToggle{
     color-mix(in srgb, var(--topnav-sky, #38bdf8) 9%, var(--surface-soft)) 100%) !important;
   box-shadow:inset 0 1px 0 rgba(255,255,255,.82), 0 6px 15px rgba(14,165,233,.13) !important;
 }
-body .appQuickNav #organizeNavToggle .appNavDropdownChevron{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle) .appNavDropdownChevron{
   color:inherit !important;
 }
-body[data-theme="dark"] .appQuickNav #organizeNavToggle{
+body[data-theme="dark"] .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle){
   color:#bae6fd !important;
   border-color:color-mix(in srgb, var(--topnav-sky, #38bdf8) 34%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -23053,7 +23281,7 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 /* Toggle moduli: sostituisce definitivamente il lilla fisso di R28. */
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-#organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 #notificationToggleBtn.doganaModuleSvgToggleBtn,
 #postItToggleBtn.doganaModuleSvgToggleBtn,
@@ -23077,7 +23305,7 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 
 #doganaMinimizeBtn.doganaModuleSvgToggleBtn:hover,
 #minimizeExtraBtn.doganaModuleSvgToggleBtn:hover,
-#organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover,
+:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn:hover,
 #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn:hover,
 #notificationToggleBtn.doganaModuleSvgToggleBtn:hover,
 #postItToggleBtn.doganaModuleSvgToggleBtn:hover,
@@ -23101,7 +23329,7 @@ body[data-theme="dark"] .appQuickNav > a:hover{
 
 body[data-theme="dark"] #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-body[data-theme="dark"] #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+body[data-theme="dark"] :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #notificationToggleBtn.doganaModuleSvgToggleBtn,
 body[data-theme="dark"] #postItToggleBtn.doganaModuleSvgToggleBtn,
@@ -23322,8 +23550,8 @@ body[data-theme="dark"] #invoiceClassifierToggle.doganaModuleSvgToggleBtn{
    La base topbar resta celestina; hover/menu aperto seguono
    --dogana-user-accent. Anche il toggle del modulo è forzato.
    ========================================================= */
-body .appQuickNav #organizeNavToggle:hover:not(:disabled),
-body .appQuickNav .appNavDropdown.open #organizeNavToggle{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover:not(:disabled),
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle){
   color:color-mix(in srgb, var(--dogana-user-accent) 88%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 62%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -23335,12 +23563,12 @@ body .appQuickNav .appNavDropdown.open #organizeNavToggle{
     0 6px 15px color-mix(in srgb, var(--dogana-user-accent) 15%, transparent) !important;
   transform:translateY(-1px) !important;
 }
-body .appQuickNav #organizeNavToggle:hover .appNavDropdownChevron,
-body .appQuickNav .appNavDropdown.open #organizeNavToggle .appNavDropdownChevron{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover .appNavDropdownChevron,
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle) .appNavDropdownChevron{
   color:inherit !important;
 }
 
-body #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
+body :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn:hover:not(:disabled){
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   color:color-mix(in srgb, var(--dogana-user-accent) 92%, var(--heading)) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 70%, var(--btn-border)) !important;
@@ -23353,8 +23581,8 @@ body #organizePanelToggleBtn.doganaModuleSvgToggleBtn:hover:not(:disabled){
     0 6px 14px color-mix(in srgb, var(--dogana-user-accent) 16%, transparent) !important;
 }
 
-body[data-theme="dark"] .appQuickNav #organizeNavToggle:hover:not(:disabled),
-body[data-theme="dark"] .appQuickNav .appNavDropdown.open #organizeNavToggle{
+body[data-theme="dark"] .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover:not(:disabled),
+body[data-theme="dark"] .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle){
   color:color-mix(in srgb, var(--dogana-user-accent) 52%, #f8fafc) !important;
   border-color:color-mix(in srgb, var(--dogana-user-accent) 60%, var(--btn-border)) !important;
   background:linear-gradient(180deg,
@@ -23408,9 +23636,9 @@ body[data-theme="dark"] #extraTable tbody tr:hover > td input:focus{
    La superficie resta celestina; l'accent utente agisce solo
    su bordo e glow tramite il sistema globale R32.
    ========================================================= */
-body .appQuickNav #organizeNavToggle:hover:not(:disabled),
-body .appQuickNav .appNavDropdown.open #organizeNavToggle,
-body .appQuickNav .appNavDropdown #organizeNavToggle[aria-expanded="true"]{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover:not(:disabled),
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle),
+body .appQuickNav .appNavDropdown :is(#organizeNavToggle,#customsDocumentsNavToggle)[aria-expanded="true"]{
   color:color-mix(in srgb, #075985 88%, var(--heading)) !important;
   background:linear-gradient(180deg,
     color-mix(in srgb, var(--topnav-sky, #38bdf8) 21%, var(--surface)) 0%,
@@ -23421,14 +23649,14 @@ body .appQuickNav .appNavDropdown #organizeNavToggle[aria-expanded="true"]{
     0 0 0 2px color-mix(in srgb, var(--dogana-user-accent) 9%, transparent),
     0 7px 16px color-mix(in srgb, var(--dogana-user-accent) 15%, transparent) !important;
 }
-body .appQuickNav #organizeNavToggle:hover .appNavDropdownChevron,
-body .appQuickNav .appNavDropdown.open #organizeNavToggle .appNavDropdownChevron,
-body .appQuickNav #organizeNavToggle[aria-expanded="true"] .appNavDropdownChevron{
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover .appNavDropdownChevron,
+body .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle) .appNavDropdownChevron,
+body .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle)[aria-expanded="true"] .appNavDropdownChevron{
   color:inherit !important;
 }
-body[data-theme="dark"] .appQuickNav #organizeNavToggle:hover:not(:disabled),
-body[data-theme="dark"] .appQuickNav .appNavDropdown.open #organizeNavToggle,
-body[data-theme="dark"] .appQuickNav .appNavDropdown #organizeNavToggle[aria-expanded="true"]{
+body[data-theme="dark"] .appQuickNav :is(#organizeNavToggle,#customsDocumentsNavToggle):hover:not(:disabled),
+body[data-theme="dark"] .appQuickNav .appNavDropdown.open :is(#organizeNavToggle,#customsDocumentsNavToggle),
+body[data-theme="dark"] .appQuickNav .appNavDropdown :is(#organizeNavToggle,#customsDocumentsNavToggle)[aria-expanded="true"]{
   color:#bae6fd !important;
   background:linear-gradient(180deg,
     color-mix(in srgb, var(--topnav-sky, #38bdf8) 17%, var(--surface)) 0%,
@@ -23645,7 +23873,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   #customs-ai-section,
   #dogana-section,
   #extraPanel,
-  #organizePanel,
+  :is(#organizePanel,#customsDocumentsPanel),
   #shipPanel,
   #bookingLookupPanel,
   #serverConsolePanel,
@@ -23663,7 +23891,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   #customs-ai-section,
   #dogana-section,
   #extraPanel,
-  #organizePanel,
+  :is(#organizePanel,#customsDocumentsPanel),
   #shipPanel,
   #bookingLookupPanel,
   #serverConsolePanel{
@@ -23673,7 +23901,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
   /* Header aperti: titolo sopra, azioni sotto e scorribili. */
   #extraPanel:not(.is-minimized):not(.minimized) > .extraHead,
-  #organizePanel:not(.is-minimized) > .organizeModuleHead,
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) > .organizeModuleHead,
   #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead,
   #notificationPanel:not(.is-minimized) > .notificationHead,
   #postItPanel:not(.is-minimized) > .postItHead,
@@ -23722,7 +23950,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
   /* Il comando riduci resta sempre tra i primi controlli visibili. */
   #minimizeExtraBtn,
-  #organizePanelToggleBtn,
+  :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn),
   #operativeChecklistToggleBtn,
   #notificationToggleBtn,
   #postItToggleBtn,
@@ -23735,7 +23963,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   /* Area touch uniforme: 44px solo su mobile. */
   #doganaMinimizeBtn.doganaModuleSvgToggleBtn,
   #minimizeExtraBtn.doganaModuleSvgToggleBtn,
-  #organizePanelToggleBtn.doganaModuleSvgToggleBtn,
+  :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn).doganaModuleSvgToggleBtn,
   #operativeChecklistToggleBtn.doganaModuleSvgToggleBtn,
   #notificationToggleBtn.doganaModuleSvgToggleBtn,
   #postItToggleBtn.doganaModuleSvgToggleBtn,
@@ -24612,7 +24840,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   /* Intestazioni aperte: titolo in alto e toggle sempre nell'angolo destro. */
   #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableTopToolbar,
   #extraPanel:not(.is-minimized):not(.minimized) > .extraHead,
-  #organizePanel:not(.is-minimized) > .organizeModuleHead,
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) > .organizeModuleHead,
   #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead,
   #notificationPanel:not(.is-minimized) > .notificationHead,
   #postItPanel:not(.is-minimized) > .postItHead,
@@ -24629,7 +24857,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
   #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTableHeaderGroup,
   #extraPanel:not(.is-minimized):not(.minimized) > .extraHead > :first-child,
-  #organizePanel:not(.is-minimized) > .organizeModuleHead > :first-child,
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) > .organizeModuleHead > :first-child,
   #operativeChecklistPanel:not(.is-minimized) > .operativeChecklistHead > :first-child,
   #notificationPanel:not(.is-minimized) > .notificationHead > :first-child,
   #postItPanel:not(.is-minimized) > .postItHead > :first-child,
@@ -24646,7 +24874,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   /* Le toolbar sfruttano tutta la riga: l'ultimo comando si allarga invece di lasciare buchi. */
   #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons,
   #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar,
-  #organizePanel:not(.is-minimized) .organizeModuleActions,
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) .organizeModuleActions,
   #operativeChecklistPanel:not(.is-minimized) .operativeChecklistActions,
   #notificationPanel:not(.is-minimized) .notificationActions,
   #postItPanel:not(.is-minimized) .postItActions,
@@ -24671,7 +24899,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
   #dogana-section .doganaTableModuleCard:not(.is-minimized) .doganaTopButtons > :not(.doganaModuleSvgToggleBtn),
   #extraPanel:not(.is-minimized):not(.minimized) .extraTopToolbar > :not(.doganaModuleSvgToggleBtn),
-  #organizePanel:not(.is-minimized) .organizeModuleActions > :not(.doganaModuleSvgToggleBtn),
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) .organizeModuleActions > :not(.doganaModuleSvgToggleBtn),
   #operativeChecklistPanel:not(.is-minimized) .operativeChecklistActions > :not(.doganaModuleSvgToggleBtn),
   #notificationPanel:not(.is-minimized) .notificationActions > :not(.doganaModuleSvgToggleBtn),
   #postItPanel:not(.is-minimized) .postItActions > :not(.doganaModuleSvgToggleBtn),
@@ -24710,7 +24938,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 
   #dogana-section .doganaTableModuleCard:not(.is-minimized) #doganaMinimizeBtn,
   #extraPanel:not(.is-minimized):not(.minimized) #minimizeExtraBtn,
-  #organizePanel:not(.is-minimized) #organizePanelToggleBtn,
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn),
   #operativeChecklistPanel:not(.is-minimized) #operativeChecklistToggleBtn,
   #notificationPanel:not(.is-minimized) #notificationToggleBtn,
   #postItPanel:not(.is-minimized) #postItToggleBtn,
@@ -24790,11 +25018,11 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
   }
 
   /* Organizza: contenuto realmente mobile e navigazione interna senza scorrimento. */
-  #organizePanel:not(.is-minimized) > .organizeModuleHead{
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) > .organizeModuleHead{
     border-radius:16px 16px 0 0 !important;
   }
 
-  #organizePanel:not(.is-minimized) .organizeModuleBody{
+  :is(#organizePanel,#customsDocumentsPanel):not(.is-minimized) .organizeModuleBody{
     display:grid !important;
     grid-template-columns:minmax(0, 1fr) !important;
     gap:10px !important;
@@ -24803,7 +25031,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
     padding:10px !important;
   }
 
-  #organizePanel .organizeModuleChips{
+  :is(#organizePanel,#customsDocumentsPanel) .organizeModuleChips{
     display:grid !important;
     grid-template-columns:repeat(3, minmax(0, 1fr)) !important;
     width:100% !important;
@@ -24813,7 +25041,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
     scroll-snap-type:none !important;
   }
 
-  #organizePanel .organizeModuleChip{
+  :is(#organizePanel,#customsDocumentsPanel) .organizeModuleChip{
     display:flex !important;
     width:100% !important;
     min-width:0 !important;
@@ -24829,9 +25057,9 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
     white-space:nowrap !important;
   }
 
-  #organizePanel .operativeChecklistPanel,
-  #organizePanel .notificationPanel,
-  #organizePanel .postItPanel{
+  :is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel,
+  :is(#organizePanel,#customsDocumentsPanel) .notificationPanel,
+  :is(#organizePanel,#customsDocumentsPanel) .postItPanel{
     width:100% !important;
     min-width:0 !important;
     max-width:100% !important;
@@ -24885,7 +25113,7 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized,
 #extraPanel.is-minimized,
 #extraPanel.minimized,
-#organizePanel.is-minimized,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized,
 #shipPanel.is-minimized,
 #bookingLookupPanel.is-minimized,
 #bookingLookupPanel.minimized,
@@ -24909,9 +25137,9 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 }
 
 /* Stessa scatola per Checklist, Notifiche e Post-it ridotti. */
-#organizePanel .operativeChecklistPanel.is-minimized,
-#organizePanel .notificationPanel.is-minimized,
-#organizePanel .postItPanel.is-minimized{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized{
   box-sizing:border-box !important;
   display:block !important;
   width:100% !important;
@@ -24933,15 +25161,15 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized > :not(.doganaTableTopToolbar),
 #extraPanel.is-minimized > :not(.extraHead),
 #extraPanel.minimized > :not(.extraHead),
-#organizePanel.is-minimized > :not(.organizeModuleHead),
+:is(#organizePanel,#customsDocumentsPanel).is-minimized > :not(.organizeModuleHead),
 #shipPanel.is-minimized > :not(.shipToolbar),
 #bookingLookupPanel.is-minimized > :not(.bookingModuleHead),
 #bookingLookupPanel.minimized > :not(.bookingModuleHead),
 #invoice-classifier-section.is-minimized > :not(.invoiceClassifierHead),
 #serverConsolePanel.is-minimized > :not(.serverConsoleHead),
-#organizePanel .operativeChecklistPanel.is-minimized > :not(.operativeChecklistHead),
-#organizePanel .notificationPanel.is-minimized > :not(.notificationHead),
-#organizePanel .postItPanel.is-minimized > :not(.postItHead){
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized > :not(.operativeChecklistHead),
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized > :not(.notificationHead),
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized > :not(.postItHead){
   display:none !important;
 }
 
@@ -24949,15 +25177,15 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized > .doganaTableTopToolbar,
 #extraPanel.is-minimized > .extraHead,
 #extraPanel.minimized > .extraHead,
-#organizePanel.is-minimized > .organizeModuleHead,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized > .organizeModuleHead,
 #shipPanel.is-minimized > .shipToolbar,
 #bookingLookupPanel.is-minimized > .bookingModuleHead,
 #bookingLookupPanel.minimized > .bookingModuleHead,
 #invoice-classifier-section.is-minimized > .invoiceClassifierHead,
 #serverConsolePanel.is-minimized > .serverConsoleHead,
-#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead,
-#organizePanel .notificationPanel.is-minimized > .notificationHead,
-#organizePanel .postItPanel.is-minimized > .postItHead{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized > .operativeChecklistHead,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized > .notificationHead,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized > .postItHead{
   box-sizing:border-box !important;
   position:relative !important;
   display:flex !important;
@@ -24986,14 +25214,14 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized > .doganaTableTopToolbar::before,
 #extraPanel.is-minimized > .extraHead::before,
 #extraPanel.minimized > .extraHead::before,
-#organizePanel.is-minimized > .organizeModuleHead::before,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized > .organizeModuleHead::before,
 #shipPanel.is-minimized > .shipToolbar::before,
 #bookingLookupPanel.is-minimized > .bookingModuleHead::before,
 #bookingLookupPanel.minimized > .bookingModuleHead::before,
 #serverConsolePanel.is-minimized > .serverConsoleHead::before,
-#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead::before,
-#organizePanel .notificationPanel.is-minimized > .notificationHead::before,
-#organizePanel .postItPanel.is-minimized > .postItHead::before{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized > .operativeChecklistHead::before,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized > .notificationHead::before,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized > .postItHead::before{
   content:none !important;
   display:none !important;
   background:none !important;
@@ -25004,15 +25232,15 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized .doganaTableHeaderGroup,
 #extraPanel.is-minimized > .extraHead > :first-child,
 #extraPanel.minimized > .extraHead > :first-child,
-#organizePanel.is-minimized > .organizeModuleHead > :first-child,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized > .organizeModuleHead > :first-child,
 #shipPanel.is-minimized > .shipToolbar > .shipToolbarTitle,
 #bookingLookupPanel.is-minimized .bookingModuleTitleWrap,
 #bookingLookupPanel.minimized .bookingModuleTitleWrap,
 #invoice-classifier-section.is-minimized .invoiceClassifierTitleWrap,
 #serverConsolePanel.is-minimized > .serverConsoleHead > :first-child,
-#organizePanel .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
-#organizePanel .notificationPanel.is-minimized > .notificationHead > :first-child,
-#organizePanel .postItPanel.is-minimized > .postItHead > :first-child{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized > .operativeChecklistHead > :first-child,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized > .notificationHead > :first-child,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized > .postItHead > :first-child{
   box-sizing:border-box !important;
   position:static !important;
   display:flex !important;
@@ -25037,15 +25265,15 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized .miniTitle,
 #extraPanel.is-minimized .miniTitle,
 #extraPanel.minimized .miniTitle,
-#organizePanel.is-minimized .organizeModuleTitle,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized .organizeModuleTitle,
 #shipPanel.is-minimized .shipToolbarTitle h2,
 #bookingLookupPanel.is-minimized .bookingModuleTitle,
 #bookingLookupPanel.minimized .bookingModuleTitle,
 #invoice-classifier-section.is-minimized .invoiceClassifierTitle,
 #serverConsolePanel.is-minimized .serverConsoleTitle,
-#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
-#organizePanel .notificationPanel.is-minimized .notificationTitle,
-#organizePanel .postItPanel.is-minimized .postItTitle{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized .notificationTitle,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized .postItTitle{
   box-sizing:border-box !important;
   position:static !important;
   top:auto !important;
@@ -25082,20 +25310,20 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 #extraPanel.minimized .extraSubtitle,
 #extraPanel.is-minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
 #extraPanel.minimized .extraTopToolbar > *:not(#minimizeExtraBtn),
-#organizePanel.is-minimized .organizeModuleSubtitle,
-#organizePanel.is-minimized .organizeModuleActions > *:not(#organizePanelToggleBtn),
+:is(#organizePanel,#customsDocumentsPanel).is-minimized .organizeModuleSubtitle,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized .organizeModuleActions > *:not(:is(#organizePanelToggleBtn,#customsDocumentsToggleBtn)),
 #shipPanel.is-minimized .shipTerminalTabsBlock,
 #shipPanel.is-minimized .shipToolbarActions > *:not(#minimizeShipsBtn),
 #bookingLookupPanel.is-minimized .bookingModuleSubtitle,
 #bookingLookupPanel.minimized .bookingModuleSubtitle,
 #serverConsolePanel.is-minimized .serverConsoleSubtitle,
 #serverConsolePanel.is-minimized .serverConsoleActions > *:not(#serverConsoleToggle),
-#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
-#organizePanel .notificationPanel.is-minimized .notificationSubtitle,
-#organizePanel .postItPanel.is-minimized .postItSubtitle,
-#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions > *:not(#operativeChecklistToggleBtn),
-#organizePanel .notificationPanel.is-minimized .notificationActions > *:not(#notificationToggleBtn),
-#organizePanel .postItPanel.is-minimized .postItActions > *:not(#postItToggleBtn){
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized .operativeChecklistSubtitle,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized .notificationSubtitle,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized .postItSubtitle,
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized .operativeChecklistActions > *:not(#operativeChecklistToggleBtn),
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized .notificationActions > *:not(#notificationToggleBtn),
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized .postItActions > *:not(#postItToggleBtn){
   display:none !important;
 }
 
@@ -25103,15 +25331,15 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized .doganaTopButtons,
 #extraPanel.is-minimized .extraTopToolbar,
 #extraPanel.minimized .extraTopToolbar,
-#organizePanel.is-minimized .organizeModuleActions,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized .organizeModuleActions,
 #shipPanel.is-minimized .shipToolbarActions,
 #bookingLookupPanel.is-minimized .bookingModuleActions,
 #bookingLookupPanel.minimized .bookingModuleActions,
 #invoice-classifier-section.is-minimized .invoiceClassifierHeadActions,
 #serverConsolePanel.is-minimized .serverConsoleActions,
-#organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistActions,
-#organizePanel .notificationPanel.is-minimized .notificationActions,
-#organizePanel .postItPanel.is-minimized .postItActions{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized .operativeChecklistActions,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized .notificationActions,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized .postItActions{
   box-sizing:border-box !important;
   position:static !important;
   display:flex !important;
@@ -25137,18 +25365,18 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized #doganaMinimizeBtn,
 #extraPanel.is-minimized #minimizeExtraBtn,
 #extraPanel.minimized #minimizeExtraBtn,
-#organizePanel.is-minimized #organizePanelToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn),
 #shipPanel.is-minimized #minimizeShipsBtn,
 #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn,
 #bookingLookupPanel.minimized #minimizeBookingLookupBtn,
 #invoice-classifier-section.is-minimized #invoiceClassifierToggle,
 #serverConsolePanel.is-minimized #serverConsoleToggle,
-#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
-#organizePanel .notificationPanel.is-minimized #notificationToggleBtn,
-#organizePanel .postItPanel.is-minimized #postItToggleBtn,
-#organizePanel #a22TemplateModule.is-minimized #a22Toggle,
-#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle,
-#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized #notificationToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized #postItToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel) #a22TemplateModule.is-minimized #a22Toggle,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed #eur1Toggle,
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel.is-minimized #usefulToolsToggleBtn{
   --dogana-btn-tone:var(--dogana-user-accent) !important;
   box-sizing:border-box !important;
   position:static !important;
@@ -25190,18 +25418,18 @@ body[data-theme="dark"] #extraPanel .extraTopToolbar #minimizeExtraBtn.doganaMod
 .doganaTableModuleCard.is-minimized #doganaMinimizeBtn .doganaModuleToggleSvg,
 #extraPanel.is-minimized #minimizeExtraBtn .doganaModuleToggleSvg,
 #extraPanel.minimized #minimizeExtraBtn .doganaModuleToggleSvg,
-#organizePanel.is-minimized #organizePanelToggleBtn .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel).is-minimized :is(#organizePanelToggleBtn,#customsDocumentsToggleBtn) .doganaModuleToggleSvg,
 #shipPanel.is-minimized #minimizeShipsBtn .doganaModuleToggleSvg,
 #bookingLookupPanel.is-minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
 #bookingLookupPanel.minimized #minimizeBookingLookupBtn .doganaModuleToggleSvg,
 #invoice-classifier-section.is-minimized #invoiceClassifierToggle .doganaModuleToggleSvg,
 #serverConsolePanel.is-minimized #serverConsoleToggle .doganaModuleToggleSvg,
-#organizePanel .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg,
-#organizePanel .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg,
-#organizePanel .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg,
-#organizePanel #a22TemplateModule.is-minimized #a22Toggle .doganaModuleToggleSvg,
-#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle .doganaModuleToggleSvg,
-#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn .doganaModuleToggleSvg{
+:is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized #operativeChecklistToggleBtn .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized #notificationToggleBtn .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized #postItToggleBtn .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel) #a22TemplateModule.is-minimized #a22Toggle .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed #eur1Toggle .doganaModuleToggleSvg,
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel.is-minimized #usefulToolsToggleBtn .doganaModuleToggleSvg{
   display:block !important;
   width:19px !important;
   min-width:19px !important;
@@ -25256,7 +25484,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
   .doganaTableModuleCard.is-minimized,
   #extraPanel.is-minimized,
   #extraPanel.minimized,
-  #organizePanel.is-minimized,
+  :is(#organizePanel,#customsDocumentsPanel).is-minimized,
   #shipPanel.is-minimized,
   #bookingLookupPanel.is-minimized,
   #bookingLookupPanel.minimized,
@@ -25271,15 +25499,15 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
   .doganaTableModuleCard.is-minimized .miniTitle,
   #extraPanel.is-minimized .miniTitle,
   #extraPanel.minimized .miniTitle,
-  #organizePanel.is-minimized .organizeModuleTitle,
+  :is(#organizePanel,#customsDocumentsPanel).is-minimized .organizeModuleTitle,
   #shipPanel.is-minimized .shipToolbarTitle h2,
   #bookingLookupPanel.is-minimized .bookingModuleTitle,
   #bookingLookupPanel.minimized .bookingModuleTitle,
   #invoice-classifier-section.is-minimized .invoiceClassifierTitle,
 #serverConsolePanel.is-minimized .serverConsoleTitle,
-  #organizePanel .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
-  #organizePanel .notificationPanel.is-minimized .notificationTitle,
-  #organizePanel .postItPanel.is-minimized .postItTitle{
+  :is(#organizePanel,#customsDocumentsPanel) .operativeChecklistPanel.is-minimized .operativeChecklistTitle,
+  :is(#organizePanel,#customsDocumentsPanel) .notificationPanel.is-minimized .notificationTitle,
+  :is(#organizePanel,#customsDocumentsPanel) .postItPanel.is-minimized .postItTitle{
     font-size:13px !important;
   }
 
@@ -25335,7 +25563,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 #invoice-classifier-section.invoiceClassifierPanel,
 #dogana-section,
 #extraPanel,
-#organizePanel,
+:is(#organizePanel,#customsDocumentsPanel),
 #operativeChecklistPanel,
 #notificationPanel,
 #postItPanel,
@@ -25353,7 +25581,7 @@ body #shipPanel.shipPanel.is-minimized > .toolbar.shipToolbar > .left.shipToolba
 #invoice-classifier-section::before,
 #dogana-section::before,
 #extraPanel::before,
-#organizePanel::before,
+:is(#organizePanel,#customsDocumentsPanel)::before,
 #operativeChecklistPanel::before,
 #notificationPanel::before,
 #postItPanel::before,
@@ -25416,7 +25644,7 @@ body[data-theme="dark"] #customs-ai-section.customsAiPanel::before,
 body[data-theme="dark"] #invoice-classifier-section::before,
 body[data-theme="dark"] #dogana-section::before,
 body[data-theme="dark"] #extraPanel::before,
-body[data-theme="dark"] #organizePanel::before,
+body[data-theme="dark"] :is(#organizePanel,#customsDocumentsPanel)::before,
 body[data-theme="dark"] #operativeChecklistPanel::before,
 body[data-theme="dark"] #notificationPanel::before,
 body[data-theme="dark"] #postItPanel::before,
@@ -25435,7 +25663,7 @@ body[data-theme="dark"] .appFooter::before{
   #invoice-classifier-section::before,
   #dogana-section::before,
   #extraPanel::before,
-  #organizePanel::before,
+  :is(#organizePanel,#customsDocumentsPanel)::before,
   #operativeChecklistPanel::before,
   #notificationPanel::before,
   #postItPanel::before,
@@ -25463,7 +25691,7 @@ body[data-theme="dark"] .appFooter::before{
 #customs-ai-section.customsAiPanel,
 #invoice-classifier-section.invoiceClassifierPanel,
 #extraPanel,
-#organizePanel,
+:is(#organizePanel,#customsDocumentsPanel),
 #shipPanel,
 #bookingLookupPanel,
 #serverConsolePanel,
@@ -25576,7 +25804,7 @@ body[data-theme="dark"] .appFooter::before{
   #customs-ai-section.customsAiPanel,
   #invoice-classifier-section.invoiceClassifierPanel,
   #extraPanel,
-  #organizePanel,
+  :is(#organizePanel,#customsDocumentsPanel),
   #shipPanel,
   #bookingLookupPanel,
   #serverConsolePanel,
@@ -27188,82 +27416,82 @@ body .appQuickNav #doganaAiNavToggle.appNavDropdownToggle:focus-visible{
 })();
 </script>
 <style id="dogana-useful-tools-style">
-#organizePanel .usefulToolsPanel{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsPanel{
   position:relative;
   width:100%; min-width:0; margin:0; overflow:hidden; border:1px solid var(--grid-soft);
   border-radius:20px; background:linear-gradient(180deg,var(--surface),var(--surface-soft));
   box-shadow:var(--shadow-soft);
 }
-#organizePanel .usefulToolsHead{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead{
   position:relative; display:flex; justify-content:space-between; align-items:start;
   gap:12px; padding:16px; border-bottom:1px solid var(--grid-soft);
 }
-#organizePanel .usefulToolsHead::before{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead::before{
   content:""; position:absolute; top:0; left:16px; right:16px; height:2px;
   background:linear-gradient(90deg,transparent,rgba(59,130,246,.84),transparent);
 }
-#organizePanel .usefulToolsTitle{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsTitle{
   color:var(--heading); font-family:var(--font); font-size:13px; font-weight:800;
   line-height:1.15; letter-spacing:.07em; text-transform:uppercase;
 }
-#organizePanel .usefulToolsSubtitle{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsSubtitle{
   margin-top:5px; color:var(--muted); font-size:11px; font-weight:700; line-height:1.4;
 }
-#organizePanel #usefulToolsToggleBtn{
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsToggleBtn{
   flex:none; --dogana-btn-tone:var(--dogana-user-accent,var(--accent));
   border-color:color-mix(in srgb,var(--dogana-btn-tone) 48%,var(--btn-border));
   color:var(--heading); background:var(--surface);
 }
-#organizePanel .usefulToolsBody{ padding:16px; }
-#organizePanel .usefulToolsGrid{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsBody{ padding:16px; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsGrid{
   display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px;
 }
-#organizePanel .usefulToolCard{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard{
   display:flex; flex-direction:column; align-items:stretch; min-width:0; gap:9px;
   margin:0; padding:16px; border:1px solid var(--grid-soft); border-radius:16px;
   background:var(--surface);
 }
-#organizePanel .usefulToolCard h3{ margin:0; color:var(--heading); font-size:15px; }
-#organizePanel .usefulToolCard p{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard h3{ margin:0; color:var(--heading); font-size:15px; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard p{
   margin:0; color:var(--muted); font-size:12px; line-height:1.5;
 }
-#organizePanel .usefulToolCard label{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard label{
   margin-top:5px; color:var(--heading); font-size:12px; font-weight:800;
 }
-#organizePanel .usefulToolCard input[type=file],
-#organizePanel .usefulToolCard select{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard input[type=file],
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard select{
   width:100%; min-width:0; min-height:42px; padding:9px 11px;
   border:1px solid var(--grid-soft); border-radius:11px;
   background:var(--surface); color:var(--text); font:inherit;
 }
-#organizePanel .usefulToolCard input[type=file]::file-selector-button{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard input[type=file]::file-selector-button{
   margin-right:10px; padding:7px 10px; border:1px solid var(--grid-soft);
   border-radius:8px; background:var(--surface-soft); color:var(--heading); font-weight:800;
   cursor:pointer;
 }
-#organizePanel .usefulToolCard .usefulToolHint{ margin:4px 0; font-size:11px; }
-#organizePanel .usefulToolCard > button{ align-self:flex-start; min-height:42px; }
-#organizePanel .usefulToolCard > button:disabled{ opacity:.6; cursor:wait; }
-#organizePanel .usefulToolStatus{ min-height:18px; color:var(--muted); font-size:12px; line-height:1.4; }
-#organizePanel .usefulToolStatus[data-state="ok"]{ color:var(--success,#15803d); }
-#organizePanel .usefulToolStatus[data-state="error"]{ color:var(--danger,#b91c1c); }
-#organizePanel .usefulToolsPanel.is-minimized > .usefulToolsBody{ display:none; }
-#organizePanel .usefulToolsPanel.is-minimized{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard .usefulToolHint{ margin:4px 0; font-size:11px; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard > button{ align-self:flex-start; min-height:42px; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolCard > button:disabled{ opacity:.6; cursor:wait; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolStatus{ min-height:18px; color:var(--muted); font-size:12px; line-height:1.4; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolStatus[data-state="ok"]{ color:var(--success,#15803d); }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolStatus[data-state="error"]{ color:var(--danger,#b91c1c); }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsPanel.is-minimized > .usefulToolsBody{ display:none; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsPanel.is-minimized{
   height:var(--dogana-collapsed-height,66px); min-height:var(--dogana-collapsed-height,66px);
 }
-#organizePanel .usefulToolsPanel.is-minimized > .usefulToolsHead{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsPanel.is-minimized > .usefulToolsHead{
   align-items:center; height:100%; border-bottom:0;
 }
-#organizePanel .usefulToolsPanel.is-minimized .usefulToolsSubtitle{ display:none; }
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsPanel.is-minimized .usefulToolsSubtitle{ display:none; }
 @media (max-width:800px){
-  #organizePanel .usefulToolsGrid{ grid-template-columns:minmax(0,1fr); }
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolsGrid{ grid-template-columns:minmax(0,1fr); }
 }
 @media (max-width:700px){
-  #organizePanel .organizeModuleChips{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
-  #organizePanel .usefulToolsBody{ padding:10px; }
-  #organizePanel .usefulToolCard{ padding:12px; }
-  #organizePanel .usefulToolCard > button{ width:100%; min-height:44px; }
-  #organizePanel .usefulToolsHead{ padding:12px; }
+  :is(#organizePanel,#customsDocumentsPanel) .organizeModuleChips{ grid-template-columns:repeat(2,minmax(0,1fr)) !important; }
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolsBody{ padding:10px; }
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolCard{ padding:12px; }
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolCard > button{ width:100%; min-height:44px; }
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead{ padding:12px; }
 }
 </style>
 
@@ -28070,53 +28298,53 @@ body #doganaSideDockTabs{display:none}
 
 <style id="dogana-organize-order-r75">
 /* R75 — template autonomo e strumenti raggruppati, con la geometria esistente. */
-#organizeNavMenu{min-width:260px;max-width:calc(100vw - 32px)}
-#organizeNavMenu .organizeNavGroupLabel{
+:is(#organizeNavMenu,#customsDocumentsNavMenu){min-width:260px;max-width:calc(100vw - 32px)}
+:is(#organizeNavMenu,#customsDocumentsNavMenu) .organizeNavGroupLabel{
   display:block;padding:10px 11px 5px;color:var(--muted);
   font-size:10px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;
 }
-#organizeNavMenu .organizeNavGroupLabel:not(:first-child){
+:is(#organizeNavMenu,#customsDocumentsNavMenu) .organizeNavGroupLabel:not(:first-child){
   margin-top:3px;border-top:1px solid var(--grid-soft);
 }
-#organizeNavMenu a{white-space:normal;line-height:1.4}
-#organizePanel .organizeModuleChip{white-space:normal!important;line-height:1.35}
-#organizePanel .usefulToolsBody{display:flex;flex-direction:column;gap:14px}
-#organizePanel .usefulToolsChips{margin:0}
-#organizePanel #invoice-classifier-section{margin:0!important}
-#organizePanel #eur1TemplateModule,
-#organizePanel #pdfToolsPanel{
+:is(#organizeNavMenu,#customsDocumentsNavMenu) a{white-space:normal;line-height:1.4}
+:is(#organizePanel,#customsDocumentsPanel) .organizeModuleChip{white-space:normal!important;line-height:1.35}
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsBody{display:flex;flex-direction:column;gap:14px}
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsChips{margin:0}
+:is(#organizePanel,#customsDocumentsPanel) #invoice-classifier-section{margin:0!important}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel{
   position:relative;width:100%;min-width:0;margin:0;overflow:hidden;
   border:1px solid var(--grid-soft);border-radius:20px;
   background:linear-gradient(180deg,var(--surface),var(--surface-soft));
   box-shadow:var(--shadow-soft);
 }
-#organizePanel .usefulToolsHead,
-#organizePanel #eur1TemplateModule .eur1-head,
-#organizePanel .pdfToolsHead{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-head,
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsHead{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
   min-width:0;padding:16px;border-bottom:1px solid var(--grid-soft);
 }
-#organizePanel .usefulToolsHead > :first-child,
-#organizePanel .pdfToolsHead > :first-child{flex:1;min-width:0}
-#organizePanel .usefulToolsTitle,
-#organizePanel #eur1TemplateModule .eur1-title,
-#organizePanel .pdfToolsTitle{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead > :first-child,
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsHead > :first-child{flex:1;min-width:0}
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsTitle,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-title,
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsTitle{
   color:var(--heading);font-family:var(--font);font-size:15px;
   font-weight:800;letter-spacing:.07em;line-height:1.2;text-transform:uppercase;
 }
-#organizePanel #eur1TemplateModule .eur1-title{flex:1;min-width:0}
-#organizePanel #eur1TemplateModule .eur1-title > :first-child{min-width:0}
-#organizePanel #eur1TemplateModule .eur1-badge{flex:none}
-#organizePanel #eur1TemplateModule .eur1-head-actions{flex:none}
-#organizePanel .pdfToolsSubtitle{
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-title{flex:1;min-width:0}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-title > :first-child{min-width:0}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-badge{flex:none}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-head-actions{flex:none}
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsSubtitle{
   margin-top:5px;color:var(--muted);font-size:11px;font-weight:700;line-height:1.4;
 }
-#organizePanel .pdfToolsBody{padding:16px}
-#organizePanel #pdfToolsPanel [hidden]{display:none!important}
-#organizePanel .pdfToolsHead .doganaModuleSvgToggleBtn{flex:none}
-#organizePanel #usefulToolsPanel::before,
-#organizePanel #eur1TemplateModule::before,
-#organizePanel #pdfToolsPanel::before{
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsBody{padding:16px}
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel [hidden]{display:none!important}
+:is(#organizePanel,#customsDocumentsPanel) .pdfToolsHead .doganaModuleSvgToggleBtn{flex:none}
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel::before,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule::before,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel::before{
   content:"";display:block;position:absolute;z-index:40;top:0;left:24px;right:24px;
   height:2px;border-radius:999px;pointer-events:none;opacity:.74;filter:saturate(.88);
   background:linear-gradient(90deg,transparent 0%,rgba(37,99,235,.10) 4%,#2563eb 14%,
@@ -28124,29 +28352,29 @@ body #doganaSideDockTabs{display:none}
     rgba(37,99,235,.10) 96%,transparent 100%);
   box-shadow:0 1px 5px rgba(56,189,248,.14),0 0 10px rgba(139,92,246,.08);
 }
-#organizePanel .usefulToolsHead::before,
-#organizePanel #eur1TemplateModule .eur1-head::before{content:none;display:none}
-#organizePanel #usefulToolsPanel.is-minimized,
-#organizePanel #pdfToolsPanel.is-minimized,
-#organizePanel #eur1TemplateModule.eur1-collapsed{
+:is(#organizePanel,#customsDocumentsPanel) .usefulToolsHead::before,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-head::before{content:none;display:none}
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel.is-minimized,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel.is-minimized,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed{
   height:var(--dogana-collapsed-height,66px);min-height:var(--dogana-collapsed-height,66px);
   max-height:var(--dogana-collapsed-height,66px);border-radius:var(--dogana-collapsed-radius,18px);
 }
-#organizePanel #usefulToolsPanel.is-minimized > .usefulToolsHead,
-#organizePanel #pdfToolsPanel.is-minimized > .pdfToolsHead,
-#organizePanel #eur1TemplateModule.eur1-collapsed > .eur1-head{
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel.is-minimized > .usefulToolsHead,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel.is-minimized > .pdfToolsHead,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed > .eur1-head{
   flex-wrap:nowrap;height:100%;min-height:0;
   padding:0 var(--dogana-collapsed-pad-x,16px);border-bottom:0;
 }
-#organizePanel #pdfToolsPanel.is-minimized > .pdfToolsBody,
-#organizePanel #pdfToolsPanel.is-minimized .pdfToolsSubtitle{display:none}
-#organizePanel #eur1TemplateModule.eur1-collapsed .eur1-title{flex-wrap:nowrap}
-#organizePanel #eur1TemplateModule.eur1-collapsed .eur1-title > :first-child{
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel.is-minimized > .pdfToolsBody,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel.is-minimized .pdfToolsSubtitle{display:none}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed .eur1-title{flex-wrap:nowrap}
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed .eur1-title > :first-child{
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
 }
-#organizePanel #usefulToolsPanel.is-minimized #usefulToolsToggleBtn,
-#organizePanel #pdfToolsPanel.is-minimized #pdfToolsToggleBtn,
-#organizePanel #eur1TemplateModule.eur1-collapsed #eur1Toggle{
+:is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel.is-minimized #usefulToolsToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel.is-minimized #pdfToolsToggleBtn,
+:is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule.eur1-collapsed #eur1Toggle{
   width:var(--dogana-collapsed-toggle,40px)!important;
   min-width:var(--dogana-collapsed-toggle,40px)!important;
   max-width:var(--dogana-collapsed-toggle,40px)!important;
@@ -28155,20 +28383,20 @@ body #doganaSideDockTabs{display:none}
   max-height:var(--dogana-collapsed-toggle,40px)!important;
   padding:0!important;flex:none;
 }
-body[data-theme="dark"] #organizePanel #usefulToolsPanel::before,
-body[data-theme="dark"] #organizePanel #eur1TemplateModule::before,
-body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter:saturate(.82)}
+body[data-theme="dark"] :is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel::before,
+body[data-theme="dark"] :is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule::before,
+body[data-theme="dark"] :is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel::before{opacity:.66;filter:saturate(.82)}
 @media(max-width:768px){
-  #organizePanel #usefulToolsPanel::before,
-  #organizePanel #eur1TemplateModule::before,
-  #organizePanel #pdfToolsPanel::before{left:16px;right:16px}
+  :is(#organizePanel,#customsDocumentsPanel) #usefulToolsPanel::before,
+  :is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule::before,
+  :is(#organizePanel,#customsDocumentsPanel) #pdfToolsPanel::before{left:16px;right:16px}
 }
 @media(max-width:700px){
-  #organizePanelBody > .organizeModuleChips > :last-child:nth-child(odd){grid-column:1 / -1}
-  #organizePanel .usefulToolsChips{grid-template-columns:minmax(0,1fr)!important}
-  #organizePanel #eur1TemplateModule .eur1-head,
-  #organizePanel .pdfToolsHead{padding:12px}
-  #organizePanel .pdfToolsBody{padding:10px}
+  :is(#organizePanelBody,#customsDocumentsBody) > .organizeModuleChips > :last-child:nth-child(odd){grid-column:1 / -1}
+  :is(#organizePanel,#customsDocumentsPanel) .usefulToolsChips{grid-template-columns:minmax(0,1fr)!important}
+  :is(#organizePanel,#customsDocumentsPanel) #eur1TemplateModule .eur1-head,
+  :is(#organizePanel,#customsDocumentsPanel) .pdfToolsHead{padding:12px}
+  :is(#organizePanel,#customsDocumentsPanel) .pdfToolsBody{padding:10px}
 }
 </style>
 
@@ -28937,7 +29165,7 @@ body[data-theme="dark"] #organizePanel #pdfToolsPanel::before{opacity:.66;filter
     return loading.promise;
   }
   async function reveal() {
-    window.doganaEnsureOrganizeExpanded?.();
+    window.doganaEnsureCustomsDocumentsExpanded?.();
     panel.classList.remove("eur1-collapsed"); $("eur1Body").hidden = false;
     $("eur1Toggle").setAttribute("aria-expanded","true"); $("eur1Toggle").setAttribute("aria-label","Riduci a icona EUR.1"); $("eur1Toggle").title = "Riduci a icona";
     window.setDoganaModuleToggleIcon?.($("eur1Toggle"),false);
@@ -30386,7 +30614,7 @@ nuclear facility.
     const url=URL.createObjectURL(blob),link=document.createElement("a");link.href=url;link.download=name;document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }
   function filename(){const model=read(),mrns=core.mrnCodes(model.mrn);return "A22_"+(mrns.length>1?`${mrns[0]}_e_altri_${mrns.length-1}`:mrns[0]||model.exporter||"modello").replace(/[^A-Za-z0-9._-]+/g,"_").slice(0,90);}
-  function reveal(){ensureUser();window.doganaEnsureOrganizeExpanded?.();panel.classList.remove("is-minimized");$("a22Body").hidden=false;$("a22Toggle").setAttribute("aria-expanded","true");$("a22Toggle").setAttribute("aria-label","Riduci a icona A22");$("a22Toggle").title="Riduci a icona";window.setDoganaModuleToggleIcon?.($("a22Toggle"),false);refresh();}
+  function reveal(){ensureUser();window.doganaEnsureCustomsDocumentsExpanded?.();panel.classList.remove("is-minimized");$("a22Body").hidden=false;$("a22Toggle").setAttribute("aria-expanded","true");$("a22Toggle").setAttribute("aria-label","Riduci a icona A22");$("a22Toggle").title="Riduci a icona";window.setDoganaModuleToggleIcon?.($("a22Toggle"),false);refresh();}
   $("a22Toggle").addEventListener("click",()=>{if(panel.classList.contains("is-minimized"))reveal();else{writeDraft();panel.classList.add("is-minimized");$("a22Body").hidden=true;$("a22Toggle").setAttribute("aria-expanded","false");$("a22Toggle").setAttribute("aria-label","Mostra modulo A22");$("a22Toggle").title="Mostra modulo";window.setDoganaModuleToggleIcon?.($("a22Toggle"),true);}});
   for(const node of Object.values(inputs))node.addEventListener(node.tagName==="SELECT"?"change":"input",()=>{ensureUser();state.example=false;if(node===inputs.office){if(node.value==="other"){inputs.officeName.value="";inputs.officeCode.value="";inputs.taxCode.value="";inputs.rate.value="";}officeFields();}if(state.documents.length===1){for(const field of ["gross","container"]){if(node===inputs[field]){state.documents[0][field]=node.value;const detail=$(`a22Doc1${field}`);if(detail)detail.value=node.value;}}if(!state.documents[0].sourceKey){for(const field of ["exporter","vat","nationality","description"]){if(node===inputs[field])state.documents[0][field]=node.value;}}}changed();});
   $("a22Review").addEventListener("change",changed);
@@ -30632,5 +30860,12 @@ body[data-theme="dark"] #bookingLookupPanel .eoriLookupResult[data-valid="false"
 })();
 </script>
 
+
+<style id="dogana-customs-documents-layout">
+#customsDocumentsPanel [hidden]{display:none!important}
+@media(min-width:769px) and (max-width:1100px){
+  #appTopBar .appQuickNav#doganaMobileNav{flex-wrap:wrap!important}
+}
+</style>
 </body>
 </html>
