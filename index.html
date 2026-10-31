@@ -11276,7 +11276,7 @@ button.doganaModuleSvgToggleBtn:active,
       return String(value || "")
         .trim()
         .toUpperCase()
-        .replace(/\s+/g, "");
+        .replace(/[^A-Z0-9]/g, "");
     }
 
     function getExtraContainerCheckDigit(value){
@@ -11383,11 +11383,15 @@ button.doganaModuleSvgToggleBtn:active,
     }
 
     function parsePastedExtraContainers(text){
+      // Spazi e punteggiatura possono appartenere allo stesso codice:
+      // CIPU 528332.2 è un solo contenitore, non tre righe.
       return String(text || "")
-        .replace(/\r/g, "\n")
-        .split(/[\n\t,; ]+/)
+        .split(/[\r\n\t,;]+/)
         .map(normalizeExtraContainerValue)
-        .filter(Boolean);
+        .filter(Boolean)
+        .flatMap(value => /^(?:[A-Z]{4}\d{7})+$/.test(value)
+          ? value.match(/[A-Z]{4}\d{7}/g)
+          : [value]);
     }
 
     function clearExtraStatusForContainerField(row, field){
@@ -11860,9 +11864,23 @@ button.doganaModuleSvgToggleBtn:active,
             if (!extraRows[rowIndex]) return;
 
             if (isExtraContainerField(key)) {
-              // Durante la digitazione non normalizziamo e non validiamo nulla.
-              // Il controllo ISO 6346 viene eseguito solo quando la cella perde il focus.
-              clearExtraContainerValidation(e.target);
+              // Normalizza subito, conservando il cursore anche nelle modifiche
+              // a metà codice. La validazione ISO resta applicata all'uscita.
+              const input = e.target;
+              const start = input.selectionStart;
+              const end = input.selectionEnd;
+              const before = input.value;
+              const clean = normalizeExtraContainerValue(before);
+              if (before !== clean) {
+                input.value = clean;
+                if (start !== null && end !== null) {
+                  input.setSelectionRange(
+                    normalizeExtraContainerValue(before.slice(0, start)).length,
+                    normalizeExtraContainerValue(before.slice(0, end)).length
+                  );
+                }
+              }
+              clearExtraContainerValidation(input);
             }
 
             extraRows[rowIndex] = normalizeExtraRow(extraRows[rowIndex]);
