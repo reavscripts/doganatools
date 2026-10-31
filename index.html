@@ -7168,16 +7168,18 @@ body[data-theme="dark"] #extraPanel .extraTabs .extraCheckInfoItem{
 #extraTable .extraVesselCell{padding:10px;line-height:1.5;overflow-wrap:anywhere;}
 #extraTable .extraVesselCell strong,#extraTable .extraVesselCell small,#extraTable .extraVesselCell a{display:block;}
 #extraTable .extraVesselCell small{color:var(--muted);}
-#extraTable .extraVesselName{line-height:1.35;margin-bottom:3px;font-size:12px;}
-#extraTable .extraVesselVoyage{display:inline-block;margin-left:5px;font-size:10px;color:var(--muted);font-weight:600;}
-#extraTable .extraVesselDate{display:flex;align-items:center;gap:5px;font-size:11px;line-height:1.6;font-weight:600;}
+#extraTable .extraVesselName{line-height:1.35;margin-bottom:5px;font-size:14px;}
+#extraTable .extraVesselVoyage{display:inline-block;margin-left:6px;font-size:12px;color:var(--text);font-weight:600;}
+#extraTable .extraVesselDate{display:flex;align-items:center;gap:7px;font-size:13px;line-height:1.6;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums;margin-top:3px;}
 #extraTable .extraVesselDate > span:last-child{min-width:0;overflow-wrap:anywhere;}
-#extraTable .extraVesselIcon{display:inline-flex;flex:0 0 15px;width:15px;height:15px;color:var(--muted);}
+#extraTable .extraVesselIcon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;color:var(--text);}
 #extraTable .extraVesselIcon svg{width:100%;height:100%;}
+#extraTable .extraVesselDate--boarding .extraVesselIcon{color:#2563eb;}
+body[data-theme="dark"] #extraTable .extraVesselDate--boarding .extraVesselIcon{color:#60a5fa;}
 @media(max-width:900px){
  #extraPanel #extraTable td.extraVesselCell{width:auto !important;min-width:0;max-width:100%;}
- #extraTable .extraVesselName{font-size:13px;}
- #extraTable .extraVesselDate{font-size:12px;}
+ #extraTable .extraVesselName{font-size:14px;}
+ #extraTable .extraVesselDate{font-size:13px;}
 }
 </style>
 </head>
@@ -11685,14 +11687,14 @@ button.doganaModuleSvgToggleBtn:active,
       return {...extraVesselIdentity(name), estimatedBoarding};
     }
     function extraVesselDateLine(icon, value, label) {
-      const line = document.createElement("div"); line.className="extraVesselDate";
+      const line = document.createElement("div"); line.className=`extraVesselDate extraVesselDate--${icon === "closing" ? "closing" : "boarding"}`;
       line.title=label; line.setAttribute("aria-label", `${label}: ${value}`);
       const symbol = document.createElement("span"); symbol.className="extraVesselIcon";
       symbol.setAttribute("aria-hidden", "true");
       const paths = icon === "closing"
-        ? '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-12 5 2 2 4-4"/>'
-        : '<path d="M5 12V5h10v7M9 5V2m-6 11 9 3 9-3-3 7H6l-3-7ZM16 3h6m-3-3 3 3-3 3"/>';
-      symbol.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
+        ? '<path d="M3 13 13 5l10 8H3Z" fill="currentColor" fill-opacity=".12"/><path d="M5 13v14h16V13M2 27h22M9 17h4v10M17 17v3M12 9h2"/><path d="M7 23h10"/><circle cx="24" cy="10" r="7" fill="var(--surface,#fff)" stroke="#dc2626"/><path d="m21.5 7.5 5 5m0-5-5 5" stroke="#dc2626" stroke-width="2.4"/>'
+        : '<path d="M8 16V9h11v7M11 9V5h5v4M3 18l13-4 13 4-5 8H8l-5-8Z" fill="currentColor" fill-opacity=".15"/><path d="M12 11h1m3 0h1M16 15v10M3 28c2 2 4 2 6 0 2 2 4 2 7 0 2 2 4 2 7 0 2 2 4 2 6 0M22 5h8m-4-4 4 4-4 4M1 12h4M1 15h3"/>';
+      symbol.innerHTML=`<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${paths}</svg>`;
       const date=document.createElement("span"); date.textContent=value;
       line.append(symbol,date); return line;
     }
