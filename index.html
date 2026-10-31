@@ -31270,5 +31270,46 @@ body[data-theme="dark"] .extraErrorBadge[data-message-tone="error"]{--message-bg
 #extraModernErrorTooltip[data-message-tone="warning"] strong{color:#fcd34d;}
 #extraModernErrorTooltip[data-message-tone="success"] strong{color:#86efac;}
 </style>
+
+<style id="compact-right-notifications">
+#extraToastStack.extraToastStack,#doganaErrorNotifications{
+ right:10px !important;left:auto !important;bottom:18px !important;
+ width:var(--dogana-notice-width,190px) !important;max-width:calc(100vw - 20px) !important;
+ align-items:stretch;gap:8px;
+}
+#extraToastStack .extraToast,#doganaErrorNotifications .doganaErrorNotification{
+ box-sizing:border-box;min-width:0 !important;width:100% !important;max-width:100% !important;
+ margin:0 !important;padding:0 !important;background:transparent !important;border:0 !important;box-shadow:none !important;
+}
+#extraToastStack button.extraErrorBadge,#doganaErrorNotifications button.extraErrorBadge{
+ box-sizing:border-box !important;display:flex !important;flex-direction:column !important;
+ align-items:center !important;justify-content:center !important;
+ width:100% !important;max-width:100% !important;min-width:0 !important;margin:0 !important;
+ padding:10px 8px !important;gap:6px !important;text-align:center !important;
+ line-height:1.45 !important;font-size:11px !important;white-space:normal !important;
+}
+#extraToastStack button.extraErrorBadge > span:last-child,
+#doganaErrorNotifications button.extraErrorBadge > span:last-child{
+ display:block;min-width:0;max-width:100%;white-space:pre-line;overflow-wrap:anywhere;
+}
+@media(max-width:768px){
+ #extraToastStack.extraToastStack,#doganaErrorNotifications{width:min(210px,calc(100vw - 20px)) !important;bottom:16px !important;}
+}
+</style>
+<script id="notification-right-gutter">
+(function(){
+ function fit(){
+  const wrap=document.querySelector('body > .wrap') || document.querySelector('.wrap');
+  const gap=wrap?Math.floor(window.innerWidth-wrap.getBoundingClientRect().right-20):0;
+  // Se esiste spazio laterale, resta interamente nel margine; su schermi
+  // senza margine conserva una notifica piccola allineata a destra.
+  const width=gap>=96?Math.min(220,gap):190;
+  document.documentElement.style.setProperty('--dogana-notice-width',width+'px');
+ }
+ fit();window.addEventListener('resize',fit);
+ if(window.ResizeObserver){const wrap=document.querySelector('.wrap');if(wrap)new ResizeObserver(fit).observe(wrap);}
+ new MutationObserver(fit).observe(document.body,{attributes:true,attributeFilter:['class']});
+})();
+</script>
 </body>
 </html>
