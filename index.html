@@ -12491,6 +12491,7 @@ button.doganaModuleSvgToggleBtn:active,
       return extraRows.filter(row =>
         rowBelongsToTerminal(row, "sct") &&
         !isExtraRowPendingDelete(row?.__id) &&
+        !!normalizeExtraContainerValue(row?.sct) &&
         isValidExtraContainerCode(normalizeExtraContainerValue(row?.sct)) &&
         !(row?.sctStatus === "PDF PRONTO" && String(row?.sctPdfUrl || "").trim())
       ).length;
@@ -12536,6 +12537,7 @@ button.doganaModuleSvgToggleBtn:active,
       const cfg=EXTRA_TERMINALS[terminalKey];
       return !!cfg && extraRows.some(row=>rowBelongsToTerminal(row,terminalKey) &&
         !isExtraRowPendingDelete(row?.__id) &&
+        !!normalizeExtraContainerValue(row?.[cfg.containerField]) &&
         isValidExtraContainerCode(normalizeExtraContainerValue(row?.[cfg.containerField])));
     }
 
