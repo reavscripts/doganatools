@@ -11608,6 +11608,11 @@ button.doganaModuleSvgToggleBtn:active,
         label="Verifica ingresso in corso";explanation="Attendere l’esito della verifica di ingresso: al termine verranno recuperati nave e date disponibili.";
       }else if(/Chiusura non disponibile in NAVI/i.test(detail)){
         label="Chiusura non disponibile";explanation="Il modulo NAVI non fornisce una chiusura doganale certa per questa nave, viaggio e terminal. Il dato non viene sostituito con l’ETA o con la data di imbarco.";
+      }else if(/^(?:NON TROVATO|NON ENTRATO|PDF non trovato|NON RISULTA|NON PRESENTE)$/i.test(detail)){
+        label=/NON ENTRATO/i.test(detail)?"Non entrato":"Non trovato";
+        explanation=/NON ENTRATO/i.test(detail)
+          ? "All’ultimo controllo il terminal non ha confermato un ingresso valido del contenitore. La ricerca continuerà automaticamente se attiva; puoi richiedere un controllo prioritario dalla riga."
+          : "All’ultimo controllo il terminal non ha restituito un risultato o un memorandum per questo contenitore. Questo esito non conferma da solo l’assenza fisica dal terminal. La ricerca continuerà se attiva; puoi riprovare dal pulsante della riga.";
       }else if(/Nave non disponibile nel tracking/i.test(detail)){
         label="Nave non disponibile";explanation="La risposta di tracking del terminal non contiene il nome della nave di imbarco.";
       }
@@ -13676,6 +13681,8 @@ function colorStatus(cell, status, container, terminal = activeExtraTerminal, pd
   cell.textContent = errorInfo.label || "-";
   if (errorInfo.isError) {
     renderDoganaError(cell,errorInfo.detail);
+  } else if (/NON TROVATO|NON ENTRATO|PDF NON TROVATO|NON RISULTA|NON PRESENTE/.test(value)) {
+    renderDoganaMessage(cell,status,"warning");
   } else {
     cell.removeAttribute("title");
     cell.removeAttribute("aria-label");
