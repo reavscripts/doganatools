@@ -11845,6 +11845,20 @@ button.doganaModuleSvgToggleBtn:active,
       const date=document.createElement("span"); date.textContent=value;
       line.append(symbol,date); return line;
     }
+    async function loadExtraSctVesselReport(container, entered, sessionUnavailable, force) {
+      const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${sessionUnavailable ? '&cacheOnly=1' : ''}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
+      const payload = await res.json().catch(() => null);
+      if (!payload) throw new Error(`Risposta report nave SCT non valida (HTTP ${res.status})`);
+      // Compatibilità con backend precedenti: un 404 esplicito o il messaggio
+      // JMT 81044 possono essere arrivati come errore HTTP del report.
+      const legacyNotFound = (res.status === 404 || res.status === 502) &&
+        /^(?:Report nave non trovato|Nessun risultato per la selezione corrente\.?)$/i.test(String(payload.error || "").trim());
+      if ((res.ok && payload.success && payload.found === false) || legacyNotFound) {
+        return {name:"", message:entered ? "Nessun risultato nel memorandum SCT" : "Nessun risultato nel posizionamento doganale SCT"};
+      }
+      if (!res.ok || !payload.success) throw new Error(payload.error || "Report nave non disponibile");
+      return {...await extraReadVesselPdf(payload.pdfBase64, container), source:payload.source, pdfUrl:payload.pdfUrl, fetchedAt:payload.fetchedAt};
+    }
     function renderExtraVesselCell(td, row, term) {
       td.className = "extraMobileField extraVesselCell";
       td.dataset.extraLabel = "Nave";
@@ -11881,15 +11895,13 @@ button.doganaModuleSvgToggleBtn:active,
                 info.voyage = tracking?.IdViaggio || tracking?.voyage || info.voyage;
                 return {...info, estimatedBoarding:tracking?.DataStimataImbarco || tracking?.dataStimataImbarco || tracking?.estimatedBoarding || "", source:`Tracking ${cfg.label}`};
               }
-              const res = await fetch(apiUrl(`/api/container-vessel-report?container=${encodeURIComponent(container)}&entered=${entered ? 1 : 0}${sessionUnavailable ? '&cacheOnly=1' : ''}${force ? '&refresh=1' : ''}`), {cache:"no-store"});
-              const payload = await res.json();
-              if (!res.ok || !payload.success) throw new Error(payload.error || "Report nave non disponibile");
-              return {...await extraReadVesselPdf(payload.pdfBase64, container), source:payload.source, pdfUrl:payload.pdfUrl, fetchedAt:payload.fetchedAt};
+              return loadExtraSctVesselReport(container, entered, sessionUnavailable, force);
             })();
             cached = {promise:task, until:Date.now()+10*60*1000};
             extraVesselCache.set(key,cached);
             task.then(info => {
               if (info.name) writeExtraVesselPersistent(reportKey, info, 8*60*60*1000);
+              else if (extraVesselCache.get(key)===cached) cached.until=Date.now()+60000;
             }, () => { if (extraVesselCache.get(key)===cached) cached.until=Date.now()+60000; });
           }
           const info = await cached.promise;
