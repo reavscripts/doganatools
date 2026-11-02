@@ -7196,6 +7196,10 @@ body[data-theme="dark"] #extraTable .extraVesselDate--boarding .extraVesselIcon{
  #extraPanel #extraTable input[data-extra-field="conateco"],
  #extraPanel #extraTable input[data-extra-field="flavio"]{padding-left:8px;padding-right:8px;}
  #extraPanel #extraTable td:nth-child(4){overflow-wrap:anywhere;}
+ /* Stato e nave partono dalla stessa quota, anche con l'orario sotto lo stato. */
+ #extraPanel #extraTable td:is(.sct-status,.conateco-status,.flavio-status,.extraVesselCell){
+  vertical-align:top !important;padding:12px 10px !important;
+ }
 }
 </style>
 <style id="extra-stable-pdf-links">

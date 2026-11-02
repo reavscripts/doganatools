@@ -23,10 +23,12 @@ function section(source, start, end) {
 
 async function requestReport(data, {entered = false, ok = true} = {}) {
   let handler;
+  let corsMiddleware;
   let evaluations = 0;
   let downloads = 0;
   const context = vm.createContext({
-    app: {get(route, callback) { handler = callback; }},
+    app: {get(route, callback) { handler = callback; }, use(callback) { corsMiddleware = callback; }},
+    DOGANA_FRONTEND_ORIGIN:"https://dogana.reav.website",
     readLocalContainerVesselReport: () => null,
     pdfCache: new Map(), loadDiskCache: () => null, PDF_CACHE_TTL_MS: 1,
     ensureJmtSession: async () => ({evaluate: async () => ++evaluations <= 3
@@ -49,10 +51,14 @@ async function requestReport(data, {entered = false, ok = true} = {}) {
     buildContainerVesselPayload: (container, entered, buffer, pdfUrl) => ({success:true, pdfUrl, pdfBase64:buffer.toString("base64")}),
     jmtBusy:Promise.resolve(), URL
   });
+  vm.runInContext(section(backend, "function doganaOriginMatchesRequest(", "// DOGANA AI accetta soltanto"), context);
   vm.runInContext(section(backend, "const containerVesselReports = new Map();", 'app.get(["/get-pdf"'), context);
-  const res = {statusCode:200, setHeader() {}, status(value) { this.statusCode=value; return this; }, json(value) { this.body=value; return this; }};
-  await handler({query:{container:"SLEU4959160", entered:entered ? "1" : "0"}}, res);
-  return {status:res.statusCode, body:res.body, downloads};
+  const res = {statusCode:200, headers:{}, setHeader(name, value) { this.headers[name]=value; }, status(value) { this.statusCode=value; return this; }, json(value) { this.body=value; return this; }};
+  const req = {method:"GET", headers:{origin:"https://dogana.reav.website"}, query:{container:"SLEU4959160", entered:entered ? "1" : "0"}};
+  let allowed = false;
+  corsMiddleware(req, res, () => { allowed=true; });
+  if (allowed) await handler(req, res);
+  return {status:res.statusCode, body:res.body, headers:res.headers, downloads};
 }
 
 for (const entered of [false, true]) {
@@ -95,6 +101,15 @@ backendTest("La sessione JMT scaduta mantiene il cooldown", async () => {
   const result = await requestReport({Errors:[{Code:"-999", Message:"Fatal error"}], Data:null});
   assert.equal(result.status, 429);
   assert.equal(result.body.sessionExpired, true);
+});
+
+backendTest("Il report conserva CORS anche per risultati vuoti, sessione scaduta ed errori", async () => {
+  for (const code of ["81044", "83106", "-999", "12345"]) {
+    const result = await requestReport({Errors:[{Code:code, Message:"Risposta JMT"}], Data:null});
+    assert.equal(result.headers["Access-Control-Allow-Origin"], "https://dogana.reav.website");
+    assert.equal(result.headers["Access-Control-Allow-Credentials"], "true");
+    assert.equal(result.headers["Vary"], "Origin");
+  }
 });
 
 function createFrontend(fetch) {
