@@ -10149,9 +10149,9 @@ button.doganaModuleSvgToggleBtn:active,
     let extraNextCheckAt = null; // prossimo SCT
     let extraFastNextCheckAt = null; // prossimo CONATECO/TFG
     let extraAutoCheckScheduledInterval = null;
-    // SCT: intervallo dinamico lineare. Ogni contenitore da cercare aggiunge 60 secondi.
-    // Esempi: 1 da cercare = 1m, 10 da cercare = 10m, 20 da cercare = 20m.
-    const EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW = 60;
+    // SCT: intervallo dinamico lineare. Ogni contenitore da cercare aggiunge 90 secondi.
+    // Esempi: 1 da cercare = 1m 30s, 10 da cercare = 15m, 20 da cercare = 30m.
+    const EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW = 90;
     const EXTRA_FAST_CHECK_INTERVAL = 3 * 60 * 1000;
 
     const EXTRA_CLIENT_ID_KEY = "peso_sheet_extra_client_id_v1";
@@ -12591,7 +12591,7 @@ button.doganaModuleSvgToggleBtn:active,
 
     function getExtraAutomaticCheckSeconds(){
       // Solo i contenitori validi ancora da cercare contribuiscono al cooldown.
-      // Il valore minimo di 60s si usa alla ripartenza; a lista esaurita
+      // Il valore minimo di 90s si usa alla ripartenza; a lista esaurita
       // il motore sospende completamente il timer.
       return Math.max(1, getExtraSctPendingSearchCount()) * EXTRA_SCT_AUTOCHECK_SECONDS_PER_ROW;
     }
@@ -12728,7 +12728,7 @@ button.doganaModuleSvgToggleBtn:active,
       const remainingLabel = formatExtraCountdown(remaining);
 
       // Badge contestuale: mostra soltanto il terminal attualmente selezionato.
-      // SCT: 60s × contenitore da cercare; CONATECO e TFG mantengono il ciclo rapido.
+      // SCT: 90s × contenitore da cercare; CONATECO e TFG mantengono il ciclo rapido.
       if (dynamicBadge) {
         dynamicBadge.textContent = `${terminalLabel} · ${activeIntervalLabel} · TRA ${remainingLabel}`;
         dynamicBadge.title = activeIsSct
